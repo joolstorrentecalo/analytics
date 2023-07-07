@@ -7,11 +7,11 @@ packages:
     revision: "{{env_var('DATA_TEST_BRANCH')}}"
     warn-unpinned: false
   - package: dbt-labs/audit_helper
-    version: 0.9.0
+    version: 0.5.0
   - package: dbt-labs/dbt_utils
-    version: 0.9.6
+    version: 0.8.5
   - package: dbt-labs/snowplow
-    version: 0.15.1
+    version: 0.14.0
   - package: dbt-labs/dbt_external_tables
-    version: 0.8.3
+    version: 0.8.0
 

@@ -74,7 +74,7 @@ class DbtModelClone:
         """
         joined = " ".join(model_input)
 
-        delimeter = '{"database":'
+        delimeter = '{"depends_on":'
 
         input_list = [delimeter + x for x in joined.split(delimeter) if x]
 

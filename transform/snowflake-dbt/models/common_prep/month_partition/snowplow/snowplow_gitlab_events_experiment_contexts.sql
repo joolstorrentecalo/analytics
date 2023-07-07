@@ -1,6 +1,6 @@
-{% set year_value = var('year', (run_started_at - modules.datetime.timedelta(1)).strftime('%Y')) | int %}
-{% set month_value = var('month', (run_started_at - modules.datetime.timedelta(1)).strftime('%m')) | int %}
-{% set start_date = modules.datetime.datetime(year_value, month_value, 1) %}
+{% set year_value = var('year', (run_started_at - modules.datetime.timedelta(1)).strftime('%Y')) %}
+{% set month_value = var('month', (run_started_at - modules.datetime.timedelta(1)).strftime('%m')) %}
+{% set start_date = modules.datetime.date(year=year_value| int , month=month_value | int, day=01) %}
 {% set end_date = (start_date + modules.datetime.timedelta(days=31)).strftime('%Y-%m-01') %}
 
 WITH base AS (
