@@ -1,0 +1,30 @@
+version: 2
+ 
+models:
+ - name: all_fabrication_stats_source
+   description: Base model for all_fabrication_stats
+   columns:
+     - name: custKey
+       tests:
+         - not_null
+     - name: job_url
+       tests:
+         - not_null
+ - name: all_test_stats_source
+   description: Base model for all_test_stats
+   columns:
+     - name: id
+       tests:
+         - not_null
+     - name: test_case
+       tests:
+         - not_null
+ - name: main_test_stats_source
+   description: Base model for main_test_stats
+   columns:
+     - name: id
+       tests:
+         - not_null
+     - name: test_case
+       tests:
+         - not_null
