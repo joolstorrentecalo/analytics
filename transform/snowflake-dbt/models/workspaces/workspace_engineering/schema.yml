@@ -162,6 +162,15 @@ models:
         - name: is_epic_reference
           description: A boolean field to indentify a note entry with an epic cross-reference
 
+    - name: influx_db_all_fabrication_stats
+      description: A model containing data for all_fabrication_stats generated from influx db.
+
+    - name: influx_db_all_test_stats
+      description: A model containing data for all_test_stats generated from influx db.
+    
+    - name: influx_db_main_test_stats
+      description: A model containing data for main_test_stats generated from influx db.
+
     - name: infradev_issues_base
       description: A model to limit GitLab.com issues to only thous relevant to infradev engineering team.    
 
