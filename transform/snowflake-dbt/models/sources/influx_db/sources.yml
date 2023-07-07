@@ -1,7 +1,7 @@
 version: 2
  
 sources:
- - name: influx db
+ - name: influx_db
    database: '{{ env_var("SNOWFLAKE_LOAD_DATABASE") }}'
    schema: influx_db
    loaded_at_field: _uploaded_at
@@ -17,4 +17,3 @@ sources:
      - name: all_fabrication_stats
      - name: all_test_stats
      - name: main_test_stats
-     
