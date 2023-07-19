@@ -6,7 +6,7 @@ WITH source AS (
 ), final AS (
  
     SELECT   
-      custKey::NUMBER                    AS custKey,
+      timestamp::TIMESTAMP               AS timestamp,
       resource::TEXT                     AS resource,
       fabrication_method::TEXT           AS fabrication_method,
       http_method::TEXT                  AS http_method,
