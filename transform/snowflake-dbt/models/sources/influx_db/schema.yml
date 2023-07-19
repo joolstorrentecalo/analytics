@@ -4,7 +4,7 @@ models:
  - name: all_fabrication_stats_source
    description: Base model for all_fabrication_stats
    columns:
-     - name: custKey
+     - name: timestamp
        tests:
          - not_null
      - name: job_url
