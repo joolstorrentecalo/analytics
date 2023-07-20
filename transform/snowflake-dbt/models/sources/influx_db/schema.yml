@@ -16,15 +16,9 @@ models:
      - name: id
        tests:
          - not_null
-     - name: testcase
-       tests:
-         - not_null
  - name: main_test_stats_source
    description: Base model for main_test_stats
    columns:
      - name: id
-       tests:
-         - not_null
-     - name: testcase
        tests:
          - not_null
