@@ -244,6 +244,9 @@ models:
       handbook:
         +schema: handbook
 
+      influx_db:
+        +schema: influx_db
+
       level_up:
         +schema: level_up
 
