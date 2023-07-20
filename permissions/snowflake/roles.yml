@@ -388,6 +388,7 @@ roles:
             - gitlab_data_yaml
             - gitlab_dotcom
             - handbook
+            - influx_db
             - license_db
             - postgres_pipeline
             - salesforce
@@ -1990,6 +1991,21 @@ roles:
             tables:
                 read:
                     - prep.sensitive.poc_pump_marketing_contact_namespace_detail
+    
+    - influx_db:
+        privileges:
+            databases:
+                read:
+                    - prep
+                    - raw
+            schemas:
+                read:
+                    - prep.influx_db
+                    - raw.influx_db
+            tables:
+                read:
+                    - prep.influx_db.*
+                    - raw.influx_db.* 
 
     - license_db:
         privileges:
