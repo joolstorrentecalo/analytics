@@ -25,6 +25,6 @@ models:
      - name: id
        tests:
          - not_null
-     - name: test_case
+     - name: testcase
        tests:
          - not_null
