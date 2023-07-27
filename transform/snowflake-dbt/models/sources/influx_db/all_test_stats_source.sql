@@ -21,7 +21,7 @@ WITH source AS (
       merge_request_iid::NUMBER                     AS merge_request_iid,	
       smoke::BOOLEAN                                AS smoke,
       reliable::BOOLEAN                             AS reliable,
-      quarantined::BOOLEAN	                        AS quarantined,
+      quarantined::BOOLEAN	                      AS quarantined,
       retried::BOOLEAN	                            AS retried,
       retry_attempts::NUMBER                        AS retry_attempts,
       run_time::NUMBER                              AS run_time,	
