@@ -6,15 +6,15 @@ WITH source AS (
 ), final AS (
  
     SELECT   
-      timestamp::TIMESTAMP               AS timestamp,
-      resource::TEXT                     AS resource,
-      fabrication_method::TEXT           AS fabrication_method,
-      http_method::TEXT                  AS http_method,
-      run_type::TEXT                     AS run_type,
-      merge_request::TEXT                AS merge_request,
-      fabrication_time::FLOAT            AS fabrication_time,
-      info::TEXT                         AS info,
-      job_url::TEXT                      AS job_url
+      timestamp::TIMESTAMP                  AS timestamp,
+      resource::VARCHAR                     AS resource,
+      fabrication_method::VARCHAR           AS fabrication_method,
+      http_method::VARCHAR                  AS http_method,
+      run_type::VARCHAR                     AS run_type,
+      merge_request::VARCHAR                AS merge_request,
+      fabrication_time::FLOAT               AS fabrication_time,
+      info::VARCHAR                         AS info,
+      job_url::VARCHAR                      AS job_url
     FROM source
 )
 
