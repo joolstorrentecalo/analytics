@@ -5,20 +5,129 @@ models:
    description: Base model for all_fabrication_stats
    columns:
      - name: timestamp
+       description: Time when the test was run.
        tests:
          - not_null
+     - name: resource
+       description: Type of resource created - MR, Issue, project, etc.
+     - name: fabrication_method
+       description: Resource was fabricated via UI or API.
+     - name: http_method
+       description: The HTTP method used.
+     - name: run_type
+       description: Name of the test run in CI.
+     - name: merge_request
+       description: Boolean value to idetify if this resource a merge_request?
+     - name: fabrication_time
+       description: Time taken to create the resource in milliseconds.
+     - name: info
+       description: Any information regarding the resource created.
      - name: job_url
+       description: Name of the CI Job where tests are run.
        tests:
          - not_null
  - name: all_test_stats_source
    description: Base model for all_test_stats
    columns:
      - name: id
+       description: Unique id to identify a testcase in RSpec.
        tests:
          - not_null
+     - name: testcase
+       description: Url of the testcase in the gitlab project.
+     - name: file_path
+       description: Relative file path of the testfile in gitlab project.
+     - name: name
+       description: Description of the testcase.
+     - name: product_group
+       description: Prdocut group under which the testcase falls under.
+     - name: stage
+       description: Stage under which the testcase falls under.
+     - name: JOB_ID
+       description: Job_ID of the CI Job that triggered the test
+     - name: JOB_NAME
+       description: Job name of the CI Job that triggered the test.
+     - name: JOB_URL
+       description: Job URL of the CI Job that triggered the test.
+     - name: PIPELINE_ID
+       description: Pipeline ID of the CI pipeline that triggered the test.
+     - name: PIPELINE_URL
+       description: Pipeline URL of the CI pipeline that triggered the test.
+     - name: MERGE_REQUEST
+       description: Is this test triggered from a merge request?
+     - name: MERGE_REQUEST_IID
+       description: If triggered from MR, iid of the merge request.
+     - name: SMOKE
+       description: Is this test part of the smoke tests bucket?
+     - name: RELIABLE
+       description: Is this test part of the reliable tests bucket?
+     - name: QUARANTINED
+       description: Is this test currently quarantined?
+     - name: RETRIED
+       description: Is this test retried because of a failure?
+     - name: RETRY_ATTEMPTS
+       description: The number of times this test is retried.
+     - name: RUN_TIME
+       description: Number of milliseconds to complete the test.
+     - name: RUN_TYPE
+       description: The test job from whcih the test is triggered.
+     - name: STATUS
+       description: Has the test passed or failed?
+     - name: UI_FABRICATION
+       description: Number of milliseconds to finish fabrication of test resources via UI.
+     - name: API_FABRICATION
+       description: Number of milliseconds to finish fabrication of test resources via API.
+     - name: TOTAL_FABRICATION
+       description: Total number of milliseconds to finish fabrication of test resources via API and UI.0
  - name: main_test_stats_source
    description: Base model for main_test_stats
    columns:
      - name: id
        tests:
          - not_null
+     - name: testcase
+       description: Url of the testcase in the gitlab project.
+     - name: file_path
+       description: Relative file path of the testfile in gitlab project.
+     - name: name
+       description: Description of the testcase.
+     - name: product_group
+       description: Prdocut group under which the testcase falls under.
+     - name: stage
+       description: Stage under which the testcase falls under.
+     - name: JOB_ID
+       description: Job_ID of the CI Job that triggered the test
+     - name: JOB_NAME
+       description: Job name of the CI Job that triggered the test.
+     - name: JOB_URL
+       description: Job URL of the CI Job that triggered the test.
+     - name: PIPELINE_ID
+       description: Pipeline ID of the CI pipeline that triggered the test.
+     - name: PIPELINE_URL
+       description: Pipeline URL of the CI pipeline that triggered the test.
+     - name: MERGE_REQUEST
+       description: Is this test triggered from a merge request?
+     - name: MERGE_REQUEST_IID
+       description: If triggered from MR, iid of the merge request.
+     - name: SMOKE
+       description: Is this test part of the smoke tests bucket?
+     - name: RELIABLE
+       description: Is this test part of the reliable tests bucket?
+     - name: QUARANTINED
+       description: Is this test currently quarantined?
+     - name: RETRIED
+       description: Is this test retried because of a failure?
+     - name: RETRY_ATTEMPTS
+       description: The number of times this test is retried.
+     - name: RUN_TIME
+       description: Number of milliseconds to complete the test.
+     - name: RUN_TYPE
+       description: The test job from whcih the test is triggered.
+     - name: STATUS
+       description: Has the test passed or failed?
+     - name: UI_FABRICATION
+       description: Number of milliseconds to finish fabrication of test resources via UI.
+     - name: API_FABRICATION
+       description: Number of milliseconds to finish fabrication of test resources via API.
+     - name: TOTAL_FABRICATION
+       description: Total number of milliseconds to finish fabrication of test resources via API and UI.0
