@@ -74,7 +74,7 @@ fct_event_project_monthly AS (
       fact_with_month.dim_billing_account_id,
       dim_project.project_created_month,
       dim_project.project_creator_id,
-      dim_project.project_is_learn_gitlab
+      dim_project.project_is_learn_gitlab,
       plan_by_month.plan_id_at_event_date         AS plan_id_at_event_month,
       plan_by_month.plan_name_at_event_date       AS plan_name_at_event_month,
       plan_by_month.plan_was_paid_at_event_date   AS plan_was_paid_at_event_month,
