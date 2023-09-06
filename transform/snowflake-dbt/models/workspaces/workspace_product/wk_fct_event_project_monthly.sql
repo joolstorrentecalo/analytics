@@ -102,7 +102,7 @@ fct_event_project_monthly AS (
       AND fact_with_month.dim_ultimate_parent_namespace_id = project.ultimate_parent_namespace_id
     WHERE fact_with_month.dim_ultimate_parent_namespace_id IS NOT NULL
       AND fact_with_month.dim_project_id IS NOT NULL
-    {{ dbt_utils.group_by(n=21) }}
+    {{ dbt_utils.group_by(n=22) }}
         
 )
 
