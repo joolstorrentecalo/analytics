@@ -25,7 +25,7 @@ fact_with_month AS (
 
 --find project-specific information
 
-dim_project AS (
+project AS (
 
   SELECT
     dim_project.dim_project_id,
@@ -72,9 +72,9 @@ fct_event_project_monthly AS (
       fact_with_month.dim_latest_subscription_id,
       fact_with_month.dim_crm_account_id,
       fact_with_month.dim_billing_account_id,
-      dim_project.project_created_month,
-      dim_project.project_creator_id,
-      dim_project.project_is_learn_gitlab,
+      project.project_created_month,
+      project.project_creator_id,
+      project.project_is_learn_gitlab,
       plan_by_month.plan_id_at_event_date         AS plan_id_at_event_month,
       plan_by_month.plan_name_at_event_date       AS plan_name_at_event_month,
       plan_by_month.plan_was_paid_at_event_date   AS plan_was_paid_at_event_month,
@@ -97,9 +97,9 @@ fct_event_project_monthly AS (
     INNER JOIN plan_by_month
       ON fact_with_month.dim_ultimate_parent_namespace_id = plan_by_month.dim_ultimate_parent_namespace_id
       AND fact_with_month.event_calendar_month = plan_by_month.event_calendar_month
-    INNER JOIN dim_project
-      ON fact_with_month.dim_project_id = dim_project.dim_project_id
-      AND fact_with_month.dim_ultimate_parent_namespace_id = dim_project.ultimate_parent_namespace_id
+    INNER JOIN project
+      ON fact_with_month.dim_project_id = project.dim_project_id
+      AND fact_with_month.dim_ultimate_parent_namespace_id = project.ultimate_parent_namespace_id
     WHERE fact_with_month.dim_ultimate_parent_namespace_id IS NOT NULL
       AND fact_with_month.dim_project_id IS NOT NULL
     {{ dbt_utils.group_by(n=21) }}
@@ -110,6 +110,6 @@ fct_event_project_monthly AS (
     cte_ref="fct_event_project_monthly",
     created_by="@dpeterson",
     updated_by="@dpeterson",
-    created_date="2023-09-05",
-    updated_date="2023-09-05"
+    created_date="2023-09-06",
+    updated_date="2023-09-06"
 ) }}
