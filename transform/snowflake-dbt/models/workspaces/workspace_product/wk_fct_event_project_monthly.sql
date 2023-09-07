@@ -1,5 +1,5 @@
 {{ config(
-    materialized='table',
+    materialized='view',
     tags=["mnpi_exception", "product"]
 ) }}
 
