@@ -1,6 +1,6 @@
 {{ config(
     materialized='view',
-    tags=["mnpi_exception", "product"]
+    tags=["product"]
 ) }}
 
 {{ simple_cte([
