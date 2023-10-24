@@ -121,6 +121,7 @@ renamed AS (
     high_priority__c AS is_high_priority,
     ptp_score_date__c AS ptp_score_date,
     ptp_score_group__c AS ptp_score_group,
+    is_defaulted_trial__c as is_defaulted_trial,
     pqlnamespacecreatorjobdescription__c AS pql_namespace_creator_job_description,
     pql_namespace_id__c AS pql_namespace_id,
     pql_namespace_name__c AS pql_namespace_name,

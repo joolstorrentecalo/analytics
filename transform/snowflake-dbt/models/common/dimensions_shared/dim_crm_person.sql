@@ -108,6 +108,7 @@ WITH crm_person AS (
       account_demographics_upa_street,
       account_demographics_upa_postal_code,
       propensity_to_purchase_score_group,
+      is_defaulted_trial,
       pql_namespace_creator_job_description,
       pql_namespace_id,
       pql_namespace_name,
@@ -126,7 +127,7 @@ WITH crm_person AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@jjstark",
-    updated_by="@jpeguero",
+    updated_by="@degan",
     created_date="2020-09-10",
-    updated_date="2023-10-13"
+    updated_date="2023-10-24"
 ) }}

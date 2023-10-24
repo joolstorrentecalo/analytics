@@ -244,6 +244,7 @@ WITH biz_person AS (
       time_from_mql_to_last_transfer,
       ptp_score_date                                 AS propensity_to_purchase_score_date,
       ptp_score_group                                AS propensity_to_purchase_score_group,
+      is_defaulted_trial,
       pql_namespace_creator_job_description,
       pql_namespace_id,
       pql_namespace_name,
@@ -404,6 +405,7 @@ WITH biz_person AS (
       time_from_mql_to_last_transfer,
       ptp_score_date                                 AS propensity_to_purchase_score_date,
       ptp_score_group                                AS propensity_to_purchase_score_group,
+      is_defaulted_trial,
       pql_namespace_creator_job_description,
       pql_namespace_id,
       pql_namespace_name,
@@ -483,7 +485,7 @@ WITH biz_person AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mcooperDD",
-    updated_by="@jpeguero",
+    updated_by="@degan",
     created_date="2020-12-08",
-    updated_date="2023-10-11"
+    updated_date="2023-10-24"
 ) }}

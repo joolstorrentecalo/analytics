@@ -132,6 +132,7 @@
       dim_crm_person.partner_prospect_owner_name,
       dim_crm_person.partner_prospect_id,
       dim_crm_person.propensity_to_purchase_score_group,
+      dim_crm_person.is_defaulted_trial,
       dim_crm_person.pql_namespace_creator_job_description,
       dim_crm_person.pql_namespace_id,
       dim_crm_person.pql_namespace_name,
@@ -292,7 +293,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@jpeguero",
+    updated_by="@degan",
     created_date="2020-12-07",
-    updated_date="2023-10-11",
+    updated_date="2023-10-24",
   ) }}  
