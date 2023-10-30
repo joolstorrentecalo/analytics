@@ -228,6 +228,8 @@ clone_stop:
 gemnasium-dependency_scanning:
   stage: 🐍 Python
   when: manual
+  refs:
+      - merge_request
   image:
     name: $CI_TEMPLATE_REGISTRY_HOST/security-products/gemnasium-python:4-python-3.10
 
