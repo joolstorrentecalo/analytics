@@ -196,6 +196,19 @@ clone_stop:
     - echo "Changed files are $CHANGED_FILES"
     - flake8 $CHANGED_FILES --ignore=E203,E501,W503,W605
 
+🌽python_requirements:
+  stage: 🐍 Python
+  image: registry.gitlab.com/gitlab-data/data-image/data-image:v0.0.13
+  tags:
+    - analytics
+  only:
+    refs:
+      - merge_request
+  script:
+    - pip install -r requirements.txt
+  when: manual
+  allow_failure: false
+
 🗒️python_pylint:
   <<: *python_check
   script:
