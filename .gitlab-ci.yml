@@ -208,12 +208,12 @@ clone_stop:
       - merge_request
   before_script:
     - apt-get update && apt-get install -y curl git jq
-  script:
     - pip install --upgrade pip
+  script:
     - pip install -r requirements.txt
     - curl -k -sSL https://install.python-poetry.org/ | python3 -
     - export PATH="/root/.local/bin:$PATH"
-    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry install && poetry shell;
+    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry run install && poetry run shell;
     - dbt --version
     - python -m pytest -vv -x --junitxml=report.xml
   when: manual
