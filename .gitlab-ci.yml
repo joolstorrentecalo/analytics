@@ -196,7 +196,7 @@ clone_stop:
     - echo "Changed files are $CHANGED_FILES"
     - flake8 $CHANGED_FILES --ignore=E203,E501,W503,W605
 
-🧰python_requirements:
+🛠️python_requirements:
   stage: 🐍 Python
   image: python:3.8-slim-buster
   tags:
@@ -209,7 +209,7 @@ clone_stop:
   script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - sudo apt-get install curl
+    - apt-get install curl
     - curl -k -sSL https://install.python-poetry.org/ | python3 -
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry install
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
