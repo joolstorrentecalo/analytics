@@ -178,7 +178,7 @@ mypy:
 
 pylint:
 	@echo "Running pylint..."
-	@poetry run pylint extract/ --ignore=analytics/dags --disable=line-too-long,E0401,E0611,W1203,W1202,W0212,C0103,R0801,R0902,W0212,W0104,W0106,W0703
+	@poetry run pylint extract/ --ignore=analytics/dags --disable=line-too-long,E0401,E0611,W1203,W1202,C0103,R0801,R0902,W0212,W0104,W0106,W0703
 
 complexity:
 	@echo "Running complexity (Xenon)..."
