@@ -206,10 +206,11 @@ clone_stop:
       - "**/requirements.txt"
     refs:
       - merge_request
+  before_script:
+    - apt-get update && apt-get install -y curl git jq
   script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - apt-get install curl
     - curl -k -sSL https://install.python-poetry.org/ | python3 -
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry install
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
