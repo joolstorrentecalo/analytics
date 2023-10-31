@@ -217,6 +217,7 @@ clone_stop:
     - poetry --version
     - poetry install
     - poetry run dbt --version
+    - cd $CI_PROJECT_DIR/
     - python -m pytest -vv -x --junitxml=report.xml
   when: always
   allow_failure: false
