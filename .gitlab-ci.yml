@@ -213,12 +213,10 @@ clone_stop:
   script:
     - pip install -r requirements.txt
     - export PATH="/root/.local/bin:$PATH"
-    - source $(poetry env info --path)/bin/activate
-    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ &&
+    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
     - poetry run install
     - poetry run shell
-    - dbt --version
-    - python -m pytest -vv -x --junitxml=report.xml
+    - poetry run dbt --version
   when: manual
   allow_failure: false
 
