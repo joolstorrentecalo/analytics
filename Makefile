@@ -155,7 +155,7 @@ prepare-python:
 	which poetry || python3 -m pip install poetry
 	poetry install
 
-upgrade-python:
+upgrade-python-libraries:
 	@echo "Upgrade Python libraries"
 	@pip install --upgrade pip
 	@pip install -r requirements.txt
