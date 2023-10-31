@@ -215,6 +215,8 @@ clone_stop:
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
     - poetry --version
     - poetry install
+    - poetry shell
+    - dbt --version
   when: always
   allow_failure: false
 
