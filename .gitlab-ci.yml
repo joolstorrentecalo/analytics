@@ -207,6 +207,7 @@ clone_stop:
     refs:
       - merge_request
   script:
+    - pip install --upgrade pip
     - pip install -r requirements.txt
   when: manual
   allow_failure: false
