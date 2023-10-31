@@ -210,13 +210,13 @@ clone_stop:
     - apt-get update && apt-get install -y curl git jq
     - pip install --upgrade pip
     - curl -k -sSL https://install.python-poetry.org/ | python3 -
-  script:
     - export PATH="/root/.local/bin:$PATH"
+  script:
+    - pip install -r requirements.txt
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
     - poetry --version
     - poetry install
-    - poetry shell
-    - dbt --version
+    - poetry run dbt --version
   when: always
   allow_failure: false
 
