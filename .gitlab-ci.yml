@@ -202,6 +202,8 @@ clone_stop:
   tags:
     - analytics
   only:
+    changes:
+      - "**/requirements.txt"
     refs:
       - merge_request
   script:
