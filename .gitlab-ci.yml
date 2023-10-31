@@ -212,9 +212,8 @@ clone_stop:
     - pip install --upgrade pip
     - pip install -r requirements.txt
     - curl -k -sSL https://install.python-poetry.org/ | python3 -
-    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry install
-    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
-    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry shell;
+    - export PATH="/root/.local/bin:$PATH"
+    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry install && poetry shell;
     - dbt --version
     - python -m pytest -vv -x --junitxml=report.xml
   when: manual
