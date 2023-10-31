@@ -209,6 +209,10 @@ clone_stop:
   script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
+    - curl -k -sSL https://install.python-poetry.org/ | python3 -
+    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry install
+    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
+    - cd $CI_PROJECT_DIR/transform/snowflake-dbt/ && poetry shell;
   when: manual
   allow_failure: false
 
