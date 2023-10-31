@@ -213,7 +213,7 @@ clone_stop:
   script:
     - export PATH="/root/.local/bin:$PATH"
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
-    - poetry run install
+    - poetry --version
   when: always
   allow_failure: false
 
