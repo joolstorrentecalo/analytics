@@ -211,13 +211,10 @@ clone_stop:
     - pip install --upgrade pip
     - curl -k -sSL https://install.python-poetry.org/ | python3 -
   script:
-    - pip install -r requirements.txt
     - export PATH="/root/.local/bin:$PATH"
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
     - poetry run install
-    - poetry run shell
-    - poetry run dbt --version
-  when: manual
+  when: always
   allow_failure: false
 
 🗒️python_pylint:
