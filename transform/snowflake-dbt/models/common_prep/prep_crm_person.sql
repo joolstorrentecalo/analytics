@@ -2,7 +2,7 @@ WITH biz_person AS (
 
     SELECT *
     FROM {{ref('sfdc_bizible_person_source')}}
-    WHERE is_deleted = 'FALSE'
+    WHERE is_deleted = 'FALSE' 
 
 ), biz_touchpoints AS (
 
@@ -485,7 +485,7 @@ WITH biz_person AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mcooperDD",
-    updated_by="@degan",
+    updated_by="@rkohnke",
     created_date="2020-12-08",
-    updated_date="2023-10-24"
+    updated_date="2023-11-01"
 ) }}

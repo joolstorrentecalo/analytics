@@ -63,8 +63,8 @@ renamed AS (
     zi_contact_city__c AS zoominfo_contact_city,
     zi_company_city__c AS zoominfo_company_city,
     zi_industry__c AS zoominfo_company_industry,
-    zi_phone_number__c AS zoominfo_phone_number, 
-    zi_mobile_phone_number__c AS zoominfo_mobile_phone_number, 
+    zi_phone_number__c AS zoominfo_phone_number,
+    zi_mobile_phone_number__c AS zoominfo_mobile_phone_number,
     zi_do_not_call_direct_phone__c AS zoominfo_do_not_call_direct_phone,
     zi_do_not_call_mobile_phone__c AS zoominfo_do_not_call_mobile_phone,
     buying_process_for_procuring_gitlab__c AS buying_process,
@@ -80,7 +80,7 @@ renamed AS (
     matched_account_owner_role__c AS matched_account_owner_role,
     matched_account_sdr_assigned__c AS matched_account_sdr_assigned,
     matched_account_gtm_strategy__c AS matched_account_gtm_strategy,
-    matched_account_bdr_prospecting_status__c AS matched_account_bdr_prospecting_status,
+    NULL AS matched_account_bdr_prospecting_status,
     engagio__matched_account_type__c AS matched_account_type,
     engagio__matched_account_owner_name__c AS matched_account_account_owner_name,
     mql_date__c AS marketo_qualified_lead_date,
@@ -120,10 +120,10 @@ renamed AS (
     true_initial_mql_date__c AS true_initial_mql_date,
     true_mql_date__c AS true_mql_date,
     last_transfer_date_time__c AS last_transfer_date_time,
-    initial_mql_date__c AS initial_marketo_mql_date_time,
+    NULL AS initial_marketo_mql_date_time,
 	  time_from_last_transfer_to_sequence__c AS time_from_last_transfer_to_sequence,
 	  time_from_mql_to_last_transfer__c AS time_from_mql_to_last_transfer,
-    high_priority__c AS is_high_priority,
+    NULL AS is_high_priority,
     ptp_score_date__c AS ptp_score_date,
     ptp_score_group__c AS ptp_score_group,
     is_defaulted_trial__c as is_defaulted_trial,
@@ -171,7 +171,7 @@ renamed AS (
     --Traction Fields
     tracrtc__first_response_time_start__c AS traction_first_response_time,
     tracrtc__first_response_time_in_seconds__c AS traction_first_response_time_seconds,
-    tracrtc__response_time_within_business_hours__c AS traction_response_time_in_business_hours, 
+    tracrtc__response_time_within_business_hours__c AS traction_response_time_in_business_hours,
 
     --path factory info
     pathfactory_experience_name__c AS pathfactory_experience_name,
@@ -202,10 +202,10 @@ renamed AS (
     cognism_number_of_employees__c AS cognism_employee_count,
 
     --LeanData
-    leandata__matched_account_billing_state__c as leandata_matched_account_billing_state,
-    leandata__matched_account_billing_postal_code__c as leandata_matched_account_billing_postal_code,
-    leandata__matched_account_billing_country__c as leandata_matched_account_billing_country,
-    leandata__matched_account_employees__c AS leandata_matched_account_employee_count,
+    NULL AS leandata_matched_account_billing_state,
+    NULL AS leandata_matched_account_billing_postal_code,
+    NULL AS leandata_matched_account_billing_country,
+    NULL AS leandata_matched_account_employee_count,
     lean_data_matched_account_sales_segment__c AS leandata_matched_account_sales_segment,
 
 

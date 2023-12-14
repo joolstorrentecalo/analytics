@@ -1,6 +1,23 @@
 version: 2
 
 models:
+  - name: agg_mttr_mttm
+    description: Aggregated model for MTTR and MTTM by month and day for project_id 7444821
+    columns:
+      - name: granularity_level
+        description: Granularity of data, either monthly or daily
+      - name: date
+        description: Either month or date
+      - name: incidents
+        description: Number of total incidents in project_id 7444821
+      - name: resolved_incidents
+        description: Number of resolved incidents in project_id 7444821
+      - name: mitigated_incidents
+        description: Number of mitigated incidents in project_id 7444821
+      - name: mttr
+        description: Mean time to resolve
+      - name: mttm
+        description: Mean time to mitigate
   - name: zengrc_assessment
     description: '{{ doc("zengrc_assessments_desc") }}'
     columns:
@@ -461,6 +478,13 @@ models:
       - name: updated_at
         tests:
           - not_null
+  - name: time_to_first_failure
+    description: Table containing data to compute TtFF metric
+    columns:
+      - name: ci_pipeline_id
+        tests:
+          - not_null
+          - unique
   - name: wk_omamori_entity_data
     description: entity_data from the GitLab Omamori application
     columns:

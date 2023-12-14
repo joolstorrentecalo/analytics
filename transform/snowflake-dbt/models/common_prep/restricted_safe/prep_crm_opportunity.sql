@@ -1,7 +1,8 @@
 {{ config(
     tags=["six_hourly"],
     materialized="incremental",
-    unique_key="primary_key"
+    unique_key="primary_key",
+    on_schema_change="sync_all_columns"
 ) }}
 
 {{ simple_cte([
@@ -12,7 +13,8 @@
     ('sfdc_opportunity_source', 'sfdc_opportunity_source'),
     ('sfdc_opportunity_snapshots_source','sfdc_opportunity_snapshots_source'),
     ('sfdc_opportunity_stage', 'sfdc_opportunity_stage_source'),
-    ('sfdc_record_type_source', 'sfdc_record_type_source')
+    ('sfdc_record_type_source', 'sfdc_record_type_source'),
+    ('sfdc_account_snapshots_source','sfdc_account_snapshots_source')
 ]) }}
 
 , first_contact  AS (
@@ -23,6 +25,22 @@
       {{ dbt_utils.surrogate_key(['contact_id']) }}                               AS dim_crm_person_id,
       ROW_NUMBER() OVER (PARTITION BY opportunity_id ORDER BY created_date ASC)   AS row_num
     FROM {{ ref('sfdc_opportunity_contact_role_source')}}
+
+), account_history_final AS (
+ 
+  SELECT
+    account_id_18 AS dim_crm_account_id,
+    owner_id AS dim_crm_user_id,
+    ultimate_parent_id AS dim_crm_parent_account_id,
+    abm_tier_1_date,
+    abm_tier_2_date,
+    abm_tier,
+    MIN(dbt_valid_from)::DATE AS valid_from,
+    MAX(dbt_valid_to)::DATE AS valid_to
+  FROM sfdc_account_snapshots_source
+  WHERE abm_tier_1_date >= '2022-02-01'
+    OR abm_tier_2_date >= '2022-02-01'
+  {{dbt_utils.group_by(n=6)}}
 
 ), attribution_touchpoints AS (
 
@@ -310,9 +328,93 @@
       AND zqu__primary = TRUE
     QUALIFY record_number = 1
 
-), final AS (
+), sao_base AS (
+  
+  SELECT
+   --IDs
+    sfdc_opportunity.dim_crm_opportunity_id,
+  
+  --Opp Data  
+
+    sfdc_opportunity.sales_accepted_date,
+    -- account_history_final.abm_tier_1_date,
+    -- account_history_final.abm_tier_2_date,
+    -- account_history_final.abm_tier,
+    CASE 
+      WHEN sfdc_opportunity.is_edu_oss = 0
+          AND sfdc_opportunity.stage_name != '10-Duplicate'
+          AND sales_accepted_date BETWEEN valid_from AND valid_to
+        THEN TRUE
+      ELSE FALSE
+    END AS is_abm_tier_sao  
+  FROM sfdc_opportunity
+  LEFT JOIN account_history_final
+    ON sfdc_opportunity.dim_crm_account_id=account_history_final.dim_crm_account_id
+  WHERE abm_tier IS NOT NULL
+  AND sales_accepted_date IS NOT NULL
+  AND sales_accepted_date >= '2022-02-01'
+  AND (abm_tier_1_date IS NOT NULL
+    OR abm_tier_2_date IS NOT NULL)
+  AND is_abm_tier_sao = TRUE
+
+), cw_base AS (
+  
+  SELECT
+   --IDs
+    sfdc_opportunity.dim_crm_opportunity_id,
+  
+  --Opp Data  
+    sfdc_opportunity.close_date,
+    -- account_history_final.abm_tier_1_date,
+    -- account_history_final.abm_tier_2_date,
+    -- account_history_final.abm_tier,
+    CASE 
+      WHEN stage_name = 'Closed Won'
+        AND close_date BETWEEN valid_from AND valid_to
+        THEN TRUE
+      ELSE FALSE
+    END AS is_abm_tier_closed_won 
+  FROM sfdc_opportunity
+  LEFT JOIN account_history_final
+    ON sfdc_opportunity.dim_crm_account_id=account_history_final.dim_crm_account_id
+  WHERE abm_tier IS NOT NULL
+  AND close_date IS NOT NULL
+  AND close_date >= '2022-02-01'
+  AND (abm_tier_1_date IS NOT NULL
+    OR abm_tier_2_date IS NOT NULL)
+  AND is_abm_tier_closed_won = TRUE
+  
+), abm_tier_id AS (
 
     SELECT
+        dim_crm_opportunity_id
+    FROM sao_base
+    UNION ALL
+    SELECT
+        dim_crm_opportunity_id
+    FROM cw_base
+
+), abm_tier_id_final AS (
+
+    SELECT DISTINCT
+        dim_crm_opportunity_id
+    FROM abm_tier_id
+
+), abm_tier_unioned AS (
+  
+SELECT
+  abm_tier_id_final.dim_crm_opportunity_id,
+  is_abm_tier_sao,
+  is_abm_tier_closed_won
+FROM abm_tier_id_final
+LEFT JOIN sao_base
+  ON abm_tier_id_final.dim_crm_opportunity_id=sao_base.dim_crm_opportunity_id  
+LEFT JOIN cw_base
+  ON abm_tier_id_final.dim_crm_opportunity_id=cw_base.dim_crm_opportunity_id    
+
+), final AS (
+
+    SELECT DISTINCT
       -- opportunity information
       sfdc_opportunity.*,
       sfdc_opportunity.crm_opportunity_snapshot_id||'-'||sfdc_opportunity.is_live                  AS primary_key,
@@ -397,6 +499,8 @@
       END                                                                     AS net_arr,
 
       -- opportunity flags
+      is_abm_tier_sao,
+      is_abm_tier_closed_won,
       CASE
         WHEN (sfdc_opportunity.days_in_stage > 30
           OR sfdc_opportunity.incremental_acv > 100000
@@ -1222,6 +1326,9 @@
         AND sfdc_opportunity.order_type = net_iacv_to_net_arr_ratio.order_type
     LEFT JOIN sfdc_record_type_source 
       ON sfdc_opportunity.record_type_id = sfdc_record_type_source.record_type_id
+    LEFT JOIN abm_tier_unioned
+      ON sfdc_opportunity.dim_crm_opportunity_id=abm_tier_unioned.dim_crm_opportunity_id
+        AND sfdc_opportunity.is_live = 1
 
 )
 

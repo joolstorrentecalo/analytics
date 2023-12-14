@@ -98,7 +98,8 @@
     full_url,
     {{ dbt_utils.get_url_parameter(field='full_url', url_parameter='utm_campaign') }} AS utm_campaign,
     {{ dbt_utils.get_url_parameter(field='full_url', url_parameter='utm_channel') }} AS utm_channel,
-    {{ dbt_utils.get_url_parameter(field='full_url', url_parameter='utm_medium') }} AS utm_medium
+    {{ dbt_utils.get_url_parameter(field='full_url', url_parameter='utm_medium') }} AS utm_medium,
+    {{ dbt_utils.get_url_parameter(field='full_url', url_parameter='utm_source') }} AS utm_source
   FROM intermediate
 
 )
@@ -108,5 +109,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-09-12",
-    updated_date="2023-12-05",
+    updated_date="2023-12-13",
   ) }}

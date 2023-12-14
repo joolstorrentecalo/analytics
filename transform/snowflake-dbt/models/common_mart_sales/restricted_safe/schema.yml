@@ -450,6 +450,10 @@ models:
         description: Red, Yellow, Green health rating based on the Net ARR field
       - name: renewal_ownership
         description: This field determines Rules of Engagement (ROE) and ownership for the Renewal between the Renewals Manager and the Account Executive
+      - name: is_abm_tier_sao
+        description: A flag that indicates whether or not the opportunity's account was in an ABM Tier at the time of SAO
+      - name: is_abm_tier_closed_won
+        description: A flag that indicates whether or not the opportunity's account was in an ABM Tier at the time of Closed Won
 
   - name: mart_crm_opportunity_daily_snapshot
     description: Model with single pane of glass sales and marketing metrics, snapshotted daily.

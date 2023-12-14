@@ -180,6 +180,10 @@ models:
           description: This field indicates the number of days that passed since this user started a trial.
         - name: is_partner_recalled
           description: A boolean field from Salesforce on the lead and contact, these are persons taken back by GitLab when the person was previously passed to partners. The partner had exceeded the time period in which they were supposed to qualify the lead, so they return to GitLab’s possession
+        - name: is_abm_tier_inquiry
+          description: A flag that indicates whether or not the person's account was in an ABM Tier at the time of Inquiry
+        - name: is_abm_tier_mql
+          description: A flag that indicates whether or not the person's account was in an ABM Tier at the time of MQL
 
     - name: mart_marketing_contact_no_pii
       description: Non sensitive version of the mart_marketing_contact model.

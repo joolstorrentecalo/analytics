@@ -2258,7 +2258,6 @@ tables:
       , view_diffs_file_by_file
       , id
       , gitpod_enabled
-      , use_legacy_web_ide
       , use_new_navigation
       FROM user_preferences
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp

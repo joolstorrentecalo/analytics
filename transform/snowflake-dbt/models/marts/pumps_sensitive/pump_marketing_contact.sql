@@ -79,7 +79,6 @@ SELECT
   ptpt_score_group,
   ptpt_insights,
   ptpt_score_date,
-  ptpt_past_score_group,
 
   -- Namespace notification dates
   user_limit_notification_at,
@@ -88,13 +87,6 @@ SELECT
   user_limit_namespace_id,
 
   marketo_lead_id,
-
-  --Ptpf fields
-  is_ptpf_contact,
-  ptpf_namespace_id,
-  ptpf_score_group,
-  ptpf_score_date,
-  ptpf_past_score_group,
 
     --Ptp fields
   is_ptp_contact,

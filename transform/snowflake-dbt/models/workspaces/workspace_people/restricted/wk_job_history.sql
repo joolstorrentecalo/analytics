@@ -387,7 +387,8 @@ pr AS (
     job_grade                   AS pr_job_grade,
     department                  AS pr_department,
     division                    AS pr_division,
-    total_direct_reports        AS pr_total_direct_reports
+    total_direct_reports        AS pr_total_direct_reports,
+    hire_rank                   AS pr_hire_rank
   FROM eda 
 
 ),
@@ -460,6 +461,7 @@ hist_stage AS (
   LEFT JOIN pr
     ON cur_id = pr_id
       AND cur_date_actual - 1 = pr_date_actual
+      AND hire_rank = pr_hire_rank
   WHERE filter = 1
     AND cur_date_actual <= CURRENT_DATE()
   ORDER BY 1, 2 DESC 
@@ -472,6 +474,7 @@ job_history AS (
     employee_id,
     date_actual,
     job_title,
+    job_role,
     COALESCE(LEAD(job_title) OVER ( PARTITION BY employee_id ORDER BY date_actual DESC ), job_title) AS pr_job_title,
     LAG(date_actual) OVER ( PARTITION BY employee_id ORDER BY date_actual DESC ),
     is_hire_date,
@@ -487,7 +490,8 @@ job_date AS (
     employee_id,
     date_actual                                                                                                AS job_start_date,
     COALESCE(lag(date_actual) OVER ( PARTITION BY employee_id ORDER BY date_actual DESC ) - 1, CURRENT_DATE()) AS job_end_date,
-    job_title
+    job_title,
+    job_role
   FROM job_history
   ORDER BY 1,2 DESC
 
@@ -546,17 +550,23 @@ SELECT
   termination_reason,
   exit_impact,
   job_date.job_start_date,
-  CASE
-    WHEN last_date < job_date.job_end_date THEN last_date
-    ELSE job_date.job_end_date
-  END                                     AS job_end_date,
-  COALESCE(total_discretionary_bonuses,0) AS discretionary_bonus_count
+  LEAST(last_date,job_date.job_end_date) AS job_end_date,
+  COALESCE(total_discretionary_bonuses,0) AS discretionary_bonus_count,
+  pr_job.job_role                         AS prior_job_role,
+  pr_job.job_title                        AS prior_job_title,
+  pr_job.job_start_date                   AS prior_job_start_date,
+  pr_job.job_end_date                     AS prior_job_end_date
 FROM  hist_stage
 LEFT JOIN promo
   ON hist_stage.cur_id = promo.employee_number
     AND hist_stage.cur_date_actual = promo.promotion_date::DATE
 LEFT JOIN job_date
   ON hist_stage.cur_id = job_date.employee_id
-    AND hist_stage.cur_date_actual BETWEEN job_date.job_start_date AND job_date.job_end_date
+    AND IFF(employment_status = 'T', hist_stage.last_date, hist_stage.cur_date_actual)
+    BETWEEN job_date.job_start_date AND job_date.job_end_date
+LEFT JOIN job_date AS pr_job
+  ON hist_stage.cur_id = pr_job.employee_id
+  AND DATEADD('d', -1, job_date.job_start_date) BETWEEN pr_job.job_start_date AND pr_job.job_end_date
+  AND pr_job.job_start_date BETWEEN hire_date AND last_date
 WHERE NOT COALESCE(hist_stage.cur_employee_type,'') IN ('Intern (Trainee)')
 ORDER BY  hist_stage.cur_id ASC, min_date DESC

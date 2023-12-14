@@ -330,3 +330,9 @@ sheets:
     owner: '@dmicovic'
     tabs: 
       - abm_key_account_list
+
+  - name: partner_discount_summary
+    owner: '@vagrawalg'
+    tabs: 
+      - partner_discount_summary
+  

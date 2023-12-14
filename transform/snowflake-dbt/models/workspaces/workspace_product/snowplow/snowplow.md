@@ -9,7 +9,8 @@ This ID is generated using `event_id` from [prep_snowplow_unnested_events_all](h
 **Filters Applied to Model:**
 - Include events containing the `code_suggestions_context`
 - Include events from the following app_ids: `gitlab_ai_gateway`, `gitlab_ide_extension`
-- Exclude events from VS Code extension version 3.76.0. These are excluded by using both `user_agent` and `ide_name`+`extension_version` values.
+- Exclude IDE events from VS Code extension version 3.76.0. These are excluded by using both `ide_name` and `extension_version` values.
+  - Note: The Gateway did not send duplicate events from that extension version, so it is okay to let those flow through
 - `Inherited` - This model only includes Structured events (when `event=struct` from `dim_behavior_event`)
 
 **Tips for use:**
@@ -22,7 +23,7 @@ This ID is generated using `event_id` from [prep_snowplow_unnested_events_all](h
   - These events carry the `code_suggestions_context`, but not the `ide_extension_version` context
 - `app_id = 'gitlab_ide_extension'`
   - These events originate from the IDEs, but can be blocked by the user (e.g. via disabling tracking)
-  - There can be multiple events per suggestion, all with different `event_action` values (ex: `suggestion_requested`, `suggestion_loaded`, `suggestion_shown`, etc. Therefore these events can be used to calculate acceptance rate, etc.
+  - There can be multiple events per suggestion, all with different `event_action` values (ex: `suggestion_requested`, `suggestion_loaded`, `suggestion_shown`, etc). Therefore these events can be used to calculate acceptance rate, etc.
   - These events carry a unique suggestion identifier in `event_label`. This can be joined across multiple events to calculate acceptance rate, etc.
   - These events carry both the `code_suggestions_context` and the `ide_extension_version` context
 

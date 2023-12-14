@@ -4,7 +4,7 @@ sources:
   - name: salesforce
     tags: ["tdf","sfdc"]
     database: '{{ env_var("SNOWFLAKE_LOAD_DATABASE") }}'
-    schema: salesforce_stitch
+    schema: salesforce_v2_stitch
     loader: Stitch
     loaded_at_field: _sdc_batched_at
 

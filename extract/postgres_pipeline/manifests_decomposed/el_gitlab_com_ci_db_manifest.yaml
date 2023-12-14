@@ -5,81 +5,6 @@ connection_info:
   port: GITLAB_COM_CI_DB_PORT
   user: GITLAB_COM_CI_DB_USER
 tables:
-  ci_builds:
-    dbt_source_model: true
-    export_schema: 'gitlab_com'
-    export_table: ci_builds
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , status
-      , finished_at
-      , created_at
-      , updated_at
-      , started_at
-      , runner_id
-      , coverage
-      , commit_id
-      , CASE
-            WHEN name = '%%container_scanning%%' THEN 'container_scanning'
-            WHEN name = '%%dast%%' THEN 'dast'
-            WHEN name = '%%dependency_scanning%%' THEN 'dependency_scanning'
-            WHEN name = '%%license_management%%' THEN 'license_management'
-            WHEN name = '%%license_scanning%%' THEN 'license_scanning'
-            WHEN name = '%%sast%%' THEN 'sast'
-            WHEN name = '%%secret_detection%%' THEN 'secret_detection'
-            WHEN name = '%%coverage_fuzzing%%' THEN 'coverage_fuzzing'
-            WHEN name = '%%apifuzzer_fuzz%%' THEN 'apifuzzer_fuzz'
-            WHEN name = '%%apifuzzer_fuzz_dnd%%' THEN 'apifuzzer_fuzz_dnd'
-            ELSE NULL
-        END as name -- https://gitlab.com/gitlab-data/analytics/-/issues/18231#note_1529996846
-      , NULL AS options
-      , allow_failure
-      , NULL AS stage
-      , trigger_request_id
-      , stage_idx
-      , tag
-      , NULL AS ref
-      , user_id
-      , type
-      , NULL AS description
-      , project_id
-      , erased_by_id
-      , erased_at
-      , CASE WHEN artifacts_expire_at > '2262-01-01' THEN '2262-01-01' ELSE artifacts_expire_at END AS artifacts_expire_at
-      , NULL AS environment
-      , queued_at
-      , lock_version
-      , coverage_regex
-      , auto_canceled_by_id
-      , retried
-      , stage_id
-      , protected
-      , failure_reason
-      , scheduled_at
-      , upstream_pipeline_id
-      FROM p_ci_builds
-      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
-        AND '{END_TIMESTAMP}'::timestamp
-  ci_builds_internal_only:
-    additional_filtering: AND project_id in {INTERNAL_PROJECT_IDS}
-    dbt_source_model: true
-    export_schema: 'gitlab_com'
-    export_table: ci_builds_internal_only
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , updated_at
-      , name
-      , stage
-      , ref
-      , description
-      , project_id
-      FROM p_ci_builds
-      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
-        AND '{END_TIMESTAMP}'::timestamp
   ci_editor_ai_conversation_messages:
     dbt_source_model: true
     export_schema: 'gitlab_com'
@@ -310,21 +235,6 @@ tables:
       , public_projects_minutes_cost_factor
       , private_projects_minutes_cost_factor
       FROM ci_runners
-      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
-        AND '{END_TIMESTAMP}'::timestamp
-  ci_trigger_requests:
-    dbt_source_model: true
-    export_schema: 'gitlab_com'
-    export_table: ci_trigger_requests
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , trigger_id
-      , created_at
-      , updated_at
-      , commit_id
-      FROM ci_trigger_requests
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
   ci_triggers:

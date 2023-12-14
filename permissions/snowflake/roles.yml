@@ -124,6 +124,11 @@ databases:
     - jpeguero_prep:
         shared: no
 
+    - jsingh_prod:
+        shared: no
+    - jsingh_prep:
+        shared: no
+
     - jstark_prod:
         shared: no
     - jstark_prep:
@@ -896,7 +901,7 @@ roles:
                       - prep.preparation
                       - prep.customers
                       - raw.data_science
-                      - raw.salesforce_stitch
+                      - raw.salesforce_v2_stitch
                       - raw.snapshots
               tables:
                   read:
@@ -914,7 +919,7 @@ roles:
                       - prod.restricted_safe_common.*
                       - prod.restricted_safe_workspace_sales.*
                       - prod.common_mart_marketing.*
-                      - raw.salesforce_stitch.*
+                      - raw.salesforce_v2_stitch.*
                       - raw.snapshots.*
                       - raw.data_science.*
 
@@ -947,7 +952,7 @@ roles:
                       - prep.preparation
                       - prep.customers
                       - raw.data_science
-                      - raw.salesforce_stitch
+                      - raw.salesforce_v2_stitch
                       - raw.snapshots
 
               tables:
@@ -967,7 +972,7 @@ roles:
                       - prod.restricted_safe_workspace_sales.*
                       - prod.common_mart_marketing.*
                       - prod.pumps_sensitive.*
-                      - raw.salesforce_stitch.*
+                      - raw.salesforce_v2_stitch.*
                       - raw.snapshots.*
                       - raw.data_science.*
 
@@ -1007,7 +1012,7 @@ roles:
                       - prep.customers
                       - prep.sfdc
                       - raw.data_science
-                      - raw.salesforce_stitch
+                      - raw.salesforce_v2_stitch
                       - raw.snapshots
                   write:
                       - raw.data_science
@@ -1032,7 +1037,7 @@ roles:
                       - prod.restricted_safe_workspace_sales.*
                       - prod.common_mart_marketing.*
                       - prod.pumps_sensitive.*
-                      - raw.salesforce_stitch.*
+                      - raw.salesforce_v2_stitch.*
                       - raw.snapshots.*
                   write:
                       - raw.data_science.*
@@ -2107,7 +2112,7 @@ roles:
                     - prod.legacy.customers_db_trial_histories
                     - prod.legacy.gitlab_dotcom_memberships
                     - prod.workspace_marketing.marketo_form_fills_missing_touchpoints
-                    - prod.workspace_product.wk_rpt_namespace_onboarding
+                    - prod.common_mart_product.rpt_namespace_onboarding
 
     - license_db:
         privileges:
@@ -2354,11 +2359,11 @@ roles:
             schemas:
                 read:
                     - prep.sfdc
-                    - raw.salesforce_stitch
+                    - raw.salesforce_v2_stitch
             tables:
                 read:
                     - prep.sfdc.*
-                    - raw.salesforce_stitch.*
+                    - raw.salesforce_v2_stitch.*
 
     - salesforce_sandbox:
         warehouses:
@@ -3103,6 +3108,14 @@ roles:
                     - apiaseczna_prep.*.*
                     - apiaseczna_prod.*.*
 
+    - asalimi:
+        member_of:
+            - analyst_finance
+            - restricted_safe
+            - sales_analytics_read
+        warehouses:
+            - dev_xs
+
     - bbutterfield:
         member_of:
             - analyst_sales
@@ -3387,6 +3400,7 @@ roles:
 
     - dfelton:
         member_of:
+            - analyst_sales_sensitive
             - reporter
             - restricted_safe
         warehouses:
@@ -3983,6 +3997,45 @@ roles:
             - analyst_sales
         warehouses:
             - dev_xs
+
+    - jsingh:
+        member_of:
+            - engineer
+            - restricted_safe
+        warehouses:
+            - dev_xs
+        owns:
+            databases:
+                - jsingh_prep
+                - jsingh_prod
+            schemas:
+                - jsingh_prep.*
+                - jsingh_prod.*
+            tables:
+                - jsingh_prep.*.*
+                - jsingh_prod.*.*
+        privileges:
+            databases:
+                read:
+                    - jsingh_prep
+                    - jsingh_prod
+                write:
+                    - jsingh_prep
+                    - jsingh_prod
+            schemas:
+                read:
+                    - jsingh_prep.*
+                    - jsingh_prod.*
+                write:
+                    - jsingh_prep.*
+                    - jsingh_prod.*
+            tables:
+                read:
+                    - jsingh_prep.*.*
+                    - jsingh_prod.*.*
+                write:
+                    - jsingh_prep.*.*
+                    - jsingh_prod.*.*
 
     - jstark:
         member_of:
@@ -5240,6 +5293,15 @@ roles:
         member_of: []
         warehouses: []
 
+    - sawezec:
+        member_of:
+            - analyst_growth
+            - restricted_safe
+            - data_team_analyst
+            - bi_tool_eval_read
+        warehouses:
+            - dev_xs
+
     - sbalasani:
         member_of:
          - analytics_engineer_core
@@ -5512,20 +5574,20 @@ roles:
                     - raw
             schemas:
                 read:
-                    - raw.salesforce_stitch
+                    - raw.salesforce_v2_stitch
                     - raw.stitch_google_sheets
                     - raw.zuora_stitch
                 write:
-                    - raw.salesforce_stitch
+                    - raw.salesforce_v2_stitch
                     - raw.stitch_google_sheets
                     - raw.zuora_stitch
             tables:
                 read:
-                    - raw.salesforce_stitch.*
+                    - raw.salesforce_v2_stitch.*
                     - raw.stitch_google_sheets.*
                     - raw.zuora_stitch.*
                 write:
-                    - raw.salesforce_stitch.*
+                    - raw.salesforce_v2_stitch.*
                     - raw.stitch_google_sheets.*
                     - raw.zuora_stitch.*
 
@@ -5832,6 +5894,11 @@ users:
         member_of:
             - apiaseczna
 
+    - asalimi:
+        can_login: yes
+        member_of:
+            - asalimi
+
     - bi_tool_eval:
         can_login: yes
         member_of:
@@ -6055,6 +6122,11 @@ users:
         can_login: yes
         member_of:
             - jpetr
+
+    - jsingh:
+        can_login: yes
+        member_of:
+            - jsingh
 
     - jstark:
         can_login: yes
@@ -6315,6 +6387,11 @@ users:
         can_login: yes
         member_of:
             - sbalasani
+
+    - sawezec:
+        can_login: yes
+        member_of:
+            - sawezec
 
     - schaturvedi:
         can_login: yes

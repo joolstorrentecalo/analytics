@@ -261,7 +261,8 @@ final AS (
     internal_issues.epic_title,
     ARRAY_TO_STRING(internal_issues.epic_labels, '|')                                                                                                                                                                                                                                                   AS epic_labels,
     internal_issues.epic_state,
-    internal_issues.issue_assignee
+    internal_issues.issue_assignee_user_name,
+    ARRAY_CONTAINS('customer'::VARIANT, internal_issues.labels)                                                                                                                                                                                                                                         AS is_customer_related
   FROM internal_issues
   LEFT JOIN {{ ref('dim_project') }} AS projects
     ON internal_issues.project_id = projects.dim_project_id

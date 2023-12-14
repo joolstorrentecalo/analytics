@@ -2420,7 +2420,7 @@ Programming language of the completions request. Appears in the `code_suggestion
 
 {% docs code_suggestions_user_agent %}
 
-User-agent string of the request (holds information about the origin of the request). Appears in the `code_suggestions_context`
+Do not use this field. It is not reliable and is going to be removed from the `code_suggestions_context`
 
 {% enddocs %}
 

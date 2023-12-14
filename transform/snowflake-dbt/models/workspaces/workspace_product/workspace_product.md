@@ -35,26 +35,6 @@ so the `has_event_during_reporting_period` flag needs to be used in order for th
 
 {% enddocs %}
 
-{% docs wk_rpt_namespace_onboarding %}
-
-**Description:**
-
-This model is aggregated at the ultimate parent namespaces level and contains a wide variety of namesapace onboarding behaviors and attributes. This model contains one row per ultimate_parent_namespace_id and is designed to meet most of the primary analytics use cases for the Growth team. 
-
-**Data Grain:**
-* ultimate_parent_namespace_id
-* namespace_created_at
-
-**Intended Usage**
-
-This model is intended to be used as a reporting model for the Growth Section and any other teams at GitLab that are interested in ultimate parent namespace level onboarding behaviors and attributes.
-
-**Filters & Business Logic in this Model:**
-
-* This model filters out internal ultimate parent namespaces, ultimate parent namespaces whose creator is blocked, and is aggregated at the ultimate parent namespace level meaning that sub-groups and projects are not included in this model.
-
-
-{% enddocs %}
 
 {% docs wk_rpt_behavior_code_suggestion_outcome %}
 
@@ -72,7 +52,7 @@ This is an alias of `event_label` from the Snowplow data
 - Exclude suggestions that have more than one event for a given `event_action`
 - Exclude `suggestion_rejected` events if the suggestion also has a `suggestion_accepted` event (see "Other Comments" below)
 - `Inherited` - Include events containing the `code_suggestions_context`
-- `Inherited` - Exclude events from VS Code extension version 3.76.0. These are excluded by using both `user_agent` and `ide_name`+`extension_version` values.
+- `Inherited` - Exclude IDE events from VS Code extension version 3.76.0. These are excluded by using both `ide_name` and `extension_version` values.
 
 **Intended Usage**
 

@@ -72,10 +72,8 @@ code_suggestions_joined_to_fact_and_dim AS (
     dim_behavior_event.event_action,
     dim_behavior_event.event_label,
     dim_behavior_event.event_property,
-    --Need to exclude VS Code 3.76.0 (which sent duplicate events)
     CASE
-      WHEN user_agent LIKE '%3.76.0 VSCode%' THEN TRUE --exclude events which carry the version in user_agent from the code_suggestions_context
-      WHEN ide_name = 'Visual Studio Code' AND extension_version = '3.76.0' THEN TRUE --exclude events from with version from the ide_extension_version context
+      WHEN ide_name = 'Visual Studio Code' AND extension_version = '3.76.0' THEN TRUE --exclude IDE events from VS Code extension version 3.76.0 (which sent duplicate events)
       ELSE FALSE
     END AS is_event_to_exclude
   FROM joined_code_suggestions_contexts
@@ -129,5 +127,5 @@ filtered_code_suggestion_events AS (
     created_by="@cbraza",
     updated_by="@cbraza",
     created_date="2023-10-09",
-    updated_date="2023-10-11"
+    updated_date="2023-12-07"
 ) }}

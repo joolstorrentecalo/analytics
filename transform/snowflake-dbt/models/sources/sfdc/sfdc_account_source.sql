@@ -126,8 +126,8 @@ renamed AS (
     count_of_products_purchased__c AS count_products_purchased,
     count_of_won_opportunities__c AS count_won_opportunities,
     concurrent_ee_subscriptions__c AS count_concurrent_ee_subscriptions,
-    ce_instances__c AS count_ce_instances,
-    active_ce_users__c AS count_active_ce_users,
+    NULL AS count_ce_instances,
+    NULL AS count_active_ce_users,
     number_of_open_opportunities__c AS count_open_opportunities,
     using_ce__c AS count_using_ce,
 
@@ -142,13 +142,13 @@ renamed AS (
     abm_tier_3_date__c AS abm_tier_3_date,
 
     --demandbase fields
-    account_list__c AS demandbase_account_list,
-    intent__c AS demandbase_intent,
-    page_views__c AS demandbase_page_views,
-    score__c AS demandbase_score,
-    sessions__c AS demandbase_sessions,
-    trending_offsite_intent__c AS demandbase_trending_offsite_intent,
-    trending_onsite_engagement__c AS demandbase_trending_onsite_engagement,
+    NULL AS demandbase_account_list,
+    NULL AS demandbase_intent,
+    NULL AS demandbase_page_views,
+    NULL AS demandbase_score,
+    NULL AS demandbase_sessions,
+    NULL AS demandbase_trending_offsite_intent,
+    NULL AS demandbase_trending_onsite_engagement,
 
     --6 Sense Fields
     x6sense_6qa__c::BOOLEAN AS has_six_sense_6_qa,
@@ -172,7 +172,7 @@ renamed AS (
     ultimate_parent_sales_segment_employees__c AS sales_segment,
     sales_segmentation_new__c AS account_segment,
 
-    locally_managed__c AS is_locally_managed_account,
+    NULL AS is_locally_managed_account,
     strategic__c AS is_strategic_account,
 
     -- ************************************
@@ -207,7 +207,7 @@ renamed AS (
     zi_total_funding__c AS zoom_info_total_funding,
 
     -- NF: Added on 20220427 to support EMEA reporting
-    key_account__c                     AS is_key_account,
+    NULL                     AS is_key_account,
 
     -- Gainsight Fields
     gs_first_value_date__c AS gs_first_value_date,

@@ -56,7 +56,21 @@ This model assumes that only one priority is placed in a given description or no
 
 {% docs prep_ptp_scores_by_user %}
 
-Takes the scores from prep_ptpt_scores_by_user, prep_ptpf_scores_by_user and prep_ptpl_scores_by_user, and return a single score per user.
+Takes the scores from prep_ptpt_scores_by_user_historical and returns the most recent score for each user.
+
+A user will appear in this table only if:
+
+1. They are in a trial 
+1. They have a score in the "Free" model of 3-stars or higher
+1. They have a score in the "Leads" model of 3-stars or higher.
+
+The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
+
+{% enddocs %}
+
+{% docs prep_ptp_scores_by_user_historical %}
+
+Takes scores from ptpt_scores, ptpf_scores, ptpl_scores and combines using the following logic to construct each user's score over time.
 
 The rules for de-duplication of scores are:
 
@@ -64,19 +78,23 @@ The rules for de-duplication of scores are:
 1. If user only has PtP free score then use that score
 1. If user has multiple scores then:
 
-   a. If Trial PTP Score is 4 or 5 stars then use Trial PtP
+   a. If active Trial PTP Score is 4 or 5 stars then use Trial PtP
    
-   b. If Free PtP Score is 5 stars then use Free Ptp
+   b. If active Free PtP Score is 5 stars then use Free Ptp
 
-   c. If Lead PtP Score is 5 stars then use Lead Ptp
+   c. If active Lead PtP Score is 5 stars then use Lead Ptp
 
-   d. If Free PtP Score is 4 stars then use Free Ptp
+   d. If active Free PtP Score is 4 stars then use Free Ptp
 
-   e. If Lead PtP Score is 4 stars then use Lead Ptp
+   e. If active Lead PtP Score is 4 stars then use Lead Ptp
 
    f. Else use Trial, Free or Lead Score, in that order
 
-The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
+The resulting table is unique at the dim_marketing_contact_id and valid_from columns. The most recent scores for each user will have a NULL valid_to column
+
+A new row is added for each dim_marketing_contact_id whenever:
+- Their star rating changes
+- Their model source (Trial, Free, Lead) changes
 
 {% enddocs %}
 
@@ -84,23 +102,17 @@ The scores of this model are then used in mart_marketing_contact and the marketi
 
 Takes the scores from ptpt_scores, transforms it to user / email address grain and uses the latest score date available.
 
-The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
-
 {% enddocs %}
 
 {% docs prep_ptpf_scores_by_user %}
 
 Takes the scores from ptpf_scores, transforms it to user / email address grain and uses the latest score date available. It only syncs contacts with a `score_group >= 3`.
 
-The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
-
 {% enddocs %}
 
 {% docs prep_ptpl_scores_by_user %}
 
 Takes the scores from ptpl_scores (Propensity to Purchase: Leads), transforms it to user / email address grain and uses the latest score date available. It only syncs contacts with a `score_group >= 3`.
-
-The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
 
 {% enddocs %}
 

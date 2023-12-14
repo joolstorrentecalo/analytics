@@ -122,10 +122,28 @@ prep_epic AS (
 
 ),
 
+gitlab_user AS (
+
+  SELECT *
+  FROM {{ ref('dim_gitlab_dotcom_gitlab_emails') }}
+
+),
+
 issue_to_assignee AS (
 
   SELECT *
   FROM {{ ref('gitlab_dotcom_issue_assignees_source') }}
+
+),
+
+list_assignees AS (
+
+  SELECT
+    a.issue_id,
+    LISTAGG(gitlab_dotcom_user_name, ' | ') AS issue_assignee_user_name
+  FROM issue_to_assignee AS a
+  INNER JOIN gitlab_user AS b ON a.user_id = b.gitlab_dotcom_user_id
+  GROUP BY 1
 
 ),
 
@@ -207,7 +225,7 @@ joined AS (
     issues.service_desk_reply_to,
     issues.duplicated_to_id,
     issues.promoted_to_epic_id,
-    issues.issue_type,
+    issues.work_item_type_id as issue_type,
     agg_labels.labels,
     ARRAY_TO_STRING(agg_labels.labels, '|')                                                                                                                          AS masked_label_title,
     issue_metrics.first_mentioned_in_commit_at,
@@ -218,7 +236,7 @@ joined AS (
     prep_epic.epic_title,
     prep_epic.labels                                                                                                                                                 AS epic_labels,
     prep_epic.epic_state,
-    issue_to_assignee.user_id                                                                                                                                        AS issue_assignee
+    list_assignees.issue_assignee_user_name
   FROM issues
   LEFT JOIN agg_labels
     ON issues.issue_id = agg_labels.issue_id
@@ -234,8 +252,8 @@ joined AS (
     ON issues.issue_id = epic_to_issue.issue_id
   LEFT JOIN prep_epic
     ON epic_to_issue.epic_id = prep_epic.epic_id
-  LEFT JOIN issue_to_assignee
-    ON issues.issue_id = issue_to_assignee.issue_id
+  LEFT JOIN list_assignees
+    ON issues.issue_id = list_assignees.issue_id
 
 )
 

@@ -444,34 +444,71 @@ models:
         description: Unique identifier for the marketing contact.
         tests:
           - not_null
-          - unique
+          
+  - name: prep_ptp_scores_by_user_historical
+    description: '{{ doc("prep_ptp_scores_by_user_historical") }}'
+    columns:
+      - name: dim_marketing_contact_id
+        description: Unique identifier for the marketing contact.
+        tests:
+          - not_null
+      - name: valid_from
+        description: First date score_group and ptp_source combo is valid from for the marketing contact
+        tests:
+          - not_null
+      - name: valid_to
+        description: Last date score_group and ptp_source combo is valid from for the marketin contact
 
   - name: prep_ptpt_scores_by_user
     description: '{{ doc("prep_ptpt_scores_by_user") }}'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - dim_marketing_contact_id
+            - score_date
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
         tests:
           - not_null
-          - unique
+      - name: score_date
+        description: Date of the score.
+        tests:
+          - not_null
 
   - name: prep_ptpf_scores_by_user
     description: '{{ doc("prep_ptpf_scores_by_user") }}'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - dim_marketing_contact_id
+            - score_date
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
         tests:
           - not_null
-          - unique
+      - name: score_date
+        description: Date of the score.
+        tests:
+          - not_null
 
   - name: prep_ptpl_scores_by_user
     description: '{{ doc("prep_ptpl_scores_by_user") }}'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - dim_marketing_contact_id
+            - score_date
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
         tests:
           - not_null
-          - unique
+      - name: score_date
+        description: Date of the score.
+        tests:
+          - not_null
 
   - name: prep_sales_segment
     description: '{{ doc("prep_sales_segment") }}'

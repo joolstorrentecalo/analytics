@@ -43,6 +43,14 @@
     is_net_arr_pipeline_created,
     is_eligible_age_analysis,
     is_eligible_open_pipeline,
+    opportunity_business_development_representative,
+    opportunity_sales_development_representative,
+    CASE 
+    WHEN opportunity_business_development_representative IS NOT NULL 
+    THEN 'BDR' 
+    WHEN opportunity_sales_development_representative IS NOT NULL 
+    THEN 'SDR' 
+    END AS sales_dev_bdr_or_sdr,
     coalesce(opportunity_business_development_representative,opportunity_sales_development_representative) AS sdr_bdr_user_id
     FROM mart_crm_opportunity_stamped_hierarchy_hist
     LEFT JOIN dim_date 
@@ -224,6 +232,7 @@
     dim_mql_date.day_of_fiscal_quarter as mql_day_of_fiscal_quarter,
     dim_mql_date.fiscal_quarter_name_fy as mql_fiscal_quarter_name,
     mart_crm_person.inquiry_date_pt,
+    mart_crm_person.true_inquiry_date,
     dim_inquiry_date.day_of_fiscal_quarter as inquiry_day_of_fiscal_quarter,
     dim_inquiry_date.fiscal_quarter_name_fy as inquiry_fiscal_quarter_name,
     mart_crm_person.account_demographics_sales_segment AS person_sales_segment,
@@ -272,6 +281,9 @@
     opp_to_lead.pipeline_created_date,
     Opp_to_lead.activity_to_SAO_days,
     opp_to_lead.order_type,
+    opp_to_lead.sales_dev_bdr_or_sdr,
+    opp_to_lead.opportunity_sales_development_representative,
+    opp_to_lead.opportunity_business_development_representative,
     opp_to_lead.crm_opp_owner_sales_segment_stamped,
     opp_to_lead.crm_opp_owner_business_unit_stamped,
     opp_to_lead.crm_opp_owner_geo_stamped,
@@ -320,6 +332,7 @@
     NULL AS mql_day_of_fiscal_quarter,
     NULL AS mql_fiscal_quarter_name,
     NULL AS inquiry_date_pt,
+    NULL AS true_inquiry_date,
     NULL AS inquiry_day_of_fiscal_quarter,
     NULL AS inquiry_fiscal_quarter_name,
     NULL AS person_sales_segment,
@@ -356,6 +369,9 @@
     opps_missing_link.pipeline_created_date,
     opps_missing_link.activity_to_SAO_days,
     opps_missing_link.order_type,
+    opps_missing_link.sales_dev_bdr_or_sdr,
+    opps_missing_link.opportunity_sales_development_representative,
+    opps_missing_link.opportunity_business_development_representative,
     opps_missing_link.crm_opp_owner_sales_segment_stamped,
     opps_missing_link.crm_opp_owner_business_unit_stamped,
     opps_missing_link.crm_opp_owner_geo_stamped,
@@ -394,5 +410,5 @@
     created_by="@rkohnke",
     updated_by="@dmicovic",
     created_date="2023-09-06",
-    updated_date="2023-12-07",
+    updated_date="2023-12-08",
   ) }}

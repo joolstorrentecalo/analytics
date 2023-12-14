@@ -202,6 +202,8 @@
       sfdc_opportunity.is_booked_net_arr,
       sales_rep.is_hybrid_user AS is_hybrid_opp_owner_opp,
       sales_rep_account.is_hybrid_user AS is_hybrid_account_owner_opp,
+      sfdc_opportunity.is_abm_tier_sao,
+      sfdc_opportunity.is_abm_tier_closed_won,
 
       sfdc_opportunity.primary_solution_architect,
       sfdc_opportunity.product_details,
@@ -318,7 +320,7 @@
 {{ dbt_audit(
     cte_ref="final_opportunities",
     created_by="@mcooperDD",
-    updated_by="@jpeguero",
+    updated_by="@rkohnke",
     created_date="2020-11-30",
-    updated_date="2023-10-20"
+    updated_date="2023-11-21"
 ) }}

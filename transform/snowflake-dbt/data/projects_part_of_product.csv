@@ -305,3 +305,7 @@ gitlab-org/remote-development/gitlab-workspaces-proxy,43788427,@oregand
 gitlab-org/cluster-integration/gitlab-agent-ci-image,29138380
 gitlab-org/charts/gitlab-agent,34907799
 gitlab-org/terraform-provider-gitlab,40916776
+gitlab-org/editor-extensions/gitlab-jetbrains-plugin,32950782
+gitlab-org/editor-extensions/gitlab-visual-studio-extension,46231956
+gitlab-org/editor-extensions/gitlab.vim,47052693
+gitlab-org/editor-extensions/gitlab-lsp,46519181

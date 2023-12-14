@@ -113,13 +113,6 @@
     FROM redis_metrics_28d_user
     WHERE metrics_path = 'redis_hll_counters.analytics.g_analytics_valuestream_monthly'
 
-), ci_templates AS (
-
-    SELECT
-      *
-    FROM redis_metrics_28d_user
-    WHERE metrics_path = 'redis_hll_counters.ci_templates.ci_templates_total_unique_counts_monthly'
-
 ), packages_pushed AS (
 
     SELECT
@@ -291,9 +284,7 @@
       monthly_sm_metrics.projects_all_time_event,
       monthly_sm_metrics.deployments_28_days_event,
       monthly_sm_metrics.packages_28_days_event,
-      monthly_sm_metrics.sast_jobs_all_time_event,
       monthly_sm_metrics.dast_jobs_all_time_event,
-      monthly_sm_metrics.dependency_scanning_jobs_all_time_event,
       monthly_sm_metrics.license_management_jobs_all_time_event,
       monthly_sm_metrics.secret_detection_jobs_all_time_event,
       monthly_sm_metrics.projects_jenkins_active_all_time_event,
@@ -301,7 +292,6 @@
       monthly_sm_metrics.projects_jira_active_all_time_event,
       monthly_sm_metrics.projects_drone_ci_active_all_time_event,
       monthly_sm_metrics.projects_github_active_all_time_event,
-      monthly_sm_metrics.projects_jira_server_active_all_time_event,
       monthly_sm_metrics.projects_jira_dvcs_cloud_active_all_time_event,
       monthly_sm_metrics.projects_with_repositories_enabled_all_time_event,
       monthly_sm_metrics.protected_branches_all_time_event,
@@ -317,25 +307,21 @@
       monthly_sm_metrics.auto_devops_enabled,
       monthly_sm_metrics.gitaly_clusters_instance,
       monthly_sm_metrics.epics_deepest_relationship_level_instance,
-      monthly_sm_metrics.clusters_applications_cilium_all_time_event,
       monthly_sm_metrics.network_policy_forwards_all_time_event,
       monthly_sm_metrics.network_policy_drops_all_time_event,
       monthly_sm_metrics.requirements_with_test_report_all_time_event,
       monthly_sm_metrics.requirement_test_reports_ci_all_time_event,
       monthly_sm_metrics.projects_imported_from_github_all_time_event,
-      monthly_sm_metrics.projects_jira_cloud_active_all_time_event,
       monthly_sm_metrics.projects_jira_dvcs_server_active_all_time_event,
       monthly_sm_metrics.service_desk_issues_all_time_event,
       monthly_sm_metrics.ci_pipelines_all_time_user,
       monthly_sm_metrics.service_desk_issues_28_days_user,
       monthly_sm_metrics.projects_jira_active_28_days_user,
-      monthly_sm_metrics.projects_jira_dvcs_cloud_active_28_days_user,
       monthly_sm_metrics.projects_jira_dvcs_server_active_28_days_user,
       monthly_sm_metrics.merge_requests_with_required_code_owners_28_days_user,
       monthly_sm_metrics.analytics_value_stream_28_days_event,
       monthly_sm_metrics.code_review_user_approve_mr_28_days_user,
       monthly_sm_metrics.epics_usage_28_days_user,
-      monthly_sm_metrics.ci_templates_usage_28_days_event,
       monthly_sm_metrics.project_management_issue_milestone_changed_28_days_user,
       monthly_sm_metrics.project_management_issue_iteration_changed_28_days_user,
       -- Wave 5.1
@@ -343,13 +329,6 @@
       monthly_sm_metrics.ci_cd_lead_time_usage_28_days_event,
       monthly_sm_metrics.ci_cd_deployment_frequency_usage_28_days_event,
       monthly_sm_metrics.projects_with_repositories_enabled_all_time_user,
-      monthly_sm_metrics.coverage_fuzzing_pipeline_usage_28_days_event,
-      monthly_sm_metrics.api_fuzzing_pipeline_usage_28_days_event,
-      monthly_sm_metrics.dependency_scanning_pipeline_usage_28_days_event,
-      monthly_sm_metrics.sast_pipeline_usage_28_days_event,
-      monthly_sm_metrics.secret_detection_pipeline_usage_28_days_event,
-      monthly_sm_metrics.dast_pipeline_usage_28_days_event,
-      monthly_sm_metrics.coverage_fuzzing_jobs_28_days_user,
       monthly_sm_metrics.environments_all_time_event,
       monthly_sm_metrics.feature_flags_all_time_event,
       monthly_sm_metrics.successful_deployments_28_days_event,
@@ -406,7 +385,6 @@
       monthly_sm_metrics.compliance_frameworks_pipeline_all_time_event,
       monthly_sm_metrics.compliance_frameworks_pipeline_28_days_event,
       monthly_sm_metrics.groups_streaming_destinations_all_time_event,
-      monthly_sm_metrics.groups_streaming_destinations_28_days_event,
       monthly_sm_metrics.audit_event_destinations_all_time_event,
       monthly_sm_metrics.audit_event_destinations_28_days_event,
       monthly_sm_metrics.projects_status_checks_all_time_event,
@@ -544,9 +522,7 @@
       monthly_saas_metrics.projects_all_time_event,
       monthly_saas_metrics.deployments_28_days_event,
       monthly_saas_metrics.packages_28_days_event,
-      monthly_saas_metrics.sast_jobs_all_time_event,
       monthly_saas_metrics.dast_jobs_all_time_event,
-      monthly_saas_metrics.dependency_scanning_jobs_all_time_event,
       monthly_saas_metrics.license_management_jobs_all_time_event,
       monthly_saas_metrics.secret_detection_jobs_all_time_event,
       monthly_saas_metrics.projects_jenkins_active_all_time_event,
@@ -554,7 +530,6 @@
       monthly_saas_metrics.projects_jira_active_all_time_event,
       monthly_saas_metrics.projects_drone_ci_active_all_time_event,
       monthly_saas_metrics.projects_github_active_all_time_event,
-      monthly_saas_metrics.projects_jira_server_active_all_time_event,
       monthly_saas_metrics.projects_jira_dvcs_cloud_active_all_time_event,
       monthly_saas_metrics.projects_with_repositories_enabled_all_time_event,
       monthly_saas_metrics.protected_branches_all_time_event,
@@ -570,25 +545,21 @@
       monthly_saas_metrics.auto_devops_enabled,
       monthly_saas_metrics.gitaly_clusters_instance,
       monthly_saas_metrics.epics_deepest_relationship_level_instance,
-      monthly_saas_metrics.clusters_applications_cilium_all_time_event,
       monthly_saas_metrics.network_policy_forwards_all_time_event,
       monthly_saas_metrics.network_policy_drops_all_time_event,
       monthly_saas_metrics.requirements_with_test_report_all_time_event,
       monthly_saas_metrics.requirement_test_reports_ci_all_time_event,
       monthly_saas_metrics.projects_imported_from_github_all_time_event,
-      monthly_saas_metrics.projects_jira_cloud_active_all_time_event,
       monthly_saas_metrics.projects_jira_dvcs_server_active_all_time_event,
       monthly_saas_metrics.service_desk_issues_all_time_event,
       monthly_saas_metrics.ci_pipelines_all_time_user,
       monthly_saas_metrics.service_desk_issues_28_days_user,
       monthly_saas_metrics.projects_jira_active_28_days_user,
-      monthly_saas_metrics.projects_jira_dvcs_cloud_active_28_days_user,
       monthly_saas_metrics.projects_jira_dvcs_server_active_28_days_user,
       monthly_saas_metrics.merge_requests_with_required_code_owners_28_days_user,
       COALESCE(analytics_valuestream.distinct_users_whole_month, 0) AS analytics_value_stream_28_days_event,
       COALESCE(user_approve_mr.distinct_users_whole_month, 0) AS code_review_user_approve_mr_28_days_user,
       COALESCE(epics_users.distinct_users_whole_month, 0) AS epics_usage_28_days_user,
-      COALESCE(ci_templates.distinct_users_whole_month, 0) AS ci_templates_usage_28_days_event,
       monthly_saas_metrics.project_management_issue_milestone_changed_28_days_user,
       COALESCE(iterations_users.distinct_users_whole_month, 0) AS project_management_issue_iteration_changed_28_days_user,
       -- Wave 5.1
@@ -596,13 +567,6 @@
       monthly_saas_metrics.ci_cd_lead_time_usage_28_days_event,
       monthly_saas_metrics.ci_cd_deployment_frequency_usage_28_days_event,
       monthly_saas_metrics.projects_with_repositories_enabled_all_time_user,
-      monthly_saas_metrics.coverage_fuzzing_pipeline_usage_28_days_event,
-      monthly_saas_metrics.api_fuzzing_pipeline_usage_28_days_event,
-      monthly_saas_metrics.dependency_scanning_pipeline_usage_28_days_event,
-      monthly_saas_metrics.sast_pipeline_usage_28_days_event,
-      monthly_saas_metrics.secret_detection_pipeline_usage_28_days_event,
-      monthly_saas_metrics.dast_pipeline_usage_28_days_event,
-      monthly_saas_metrics.coverage_fuzzing_jobs_28_days_user,
       monthly_saas_metrics.environments_all_time_event,
       monthly_saas_metrics.feature_flags_all_time_event,
       monthly_saas_metrics.successful_deployments_28_days_event,
@@ -659,7 +623,6 @@
       monthly_saas_metrics.compliance_frameworks_pipeline_all_time_event,
       monthly_saas_metrics.compliance_frameworks_pipeline_28_days_event,
       monthly_saas_metrics.groups_streaming_destinations_all_time_event,
-      monthly_saas_metrics.groups_streaming_destinations_28_days_event,
       monthly_saas_metrics.audit_event_destinations_all_time_event,
       monthly_saas_metrics.audit_event_destinations_28_days_event,
       monthly_saas_metrics.projects_status_checks_all_time_event,
@@ -717,9 +680,6 @@
     LEFT JOIN analytics_valuestream
       ON analytics_valuestream.date_month = monthly_saas_metrics.snapshot_month
       AND analytics_valuestream.ultimate_parent_namespace_id = monthly_saas_metrics.dim_namespace_id
-    LEFT JOIN ci_templates
-      ON ci_templates.date_month = monthly_saas_metrics.snapshot_month
-      AND ci_templates.ultimate_parent_namespace_id = monthly_saas_metrics.dim_namespace_id
     LEFT JOIN packages_pushed
       ON packages_pushed.month = monthly_saas_metrics.snapshot_month
       AND packages_pushed.ultimate_parent_namespace_id = monthly_saas_metrics.dim_namespace_id
@@ -787,5 +747,5 @@
     created_by="@ischweickartDD",
     updated_by="@annapiaseczna",
     created_date="2021-06-11",
-    updated_date="2023-12-06"
+    updated_date="2023-12-07"
 ) }}
