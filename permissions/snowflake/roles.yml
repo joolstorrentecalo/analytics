@@ -3497,6 +3497,8 @@ roles:
             - reporter
             - analyst_marketing
             - restricted_safe
+            - snowflake_analyst_safe
+            - snowflake_analyst
         warehouses:
             - dev_xs
 
@@ -3552,6 +3554,8 @@ roles:
             - linkedin_ads
             - static_pmg_readonly
             - analyst_marketing_sensitive
+            - snowflake_analyst_safe
+            - snowflake_analyst
         warehouses:
             - dev_xs
         owns:
@@ -3616,6 +3620,9 @@ roles:
             - data_science_readonly
             - facebook_ads
             - linkedin_ads
+            - analyst_marketing_sensitive
+            - snowflake_analyst_safe
+            - snowflake_analyst
         warehouses:
             - dev_xs
 
@@ -3878,6 +3885,8 @@ roles:
             - data_science_readonly
             - facebook_ads
             - linkedin_ads
+            - snowflake_analyst_safe
+            - snowflake_analyst
         warehouses:
             - dev_xs
 
@@ -5556,6 +5565,8 @@ roles:
             - restricted_safe
             - zuora_order
             - zuora_stitch_rest_api
+            - snowflake_analyst_safe
+            - snowflake_analyst
         warehouses:
             - dev_xs
         owns:
