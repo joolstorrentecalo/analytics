@@ -4,4 +4,4 @@
 ]) }}
 
 
-SELECT * FROM entity_data
+SELECT *, hello_world FROM entity_data
