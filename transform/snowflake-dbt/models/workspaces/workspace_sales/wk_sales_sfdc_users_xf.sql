@@ -75,14 +75,16 @@ WITH source_user AS (
       base.user_email,
       base.manager_name,
       base.manager_id,
+      base.user_business_unit,
       base.user_geo,
       base.user_region,
+      base.user_area,
       -- NF: adjusted to account for the updates the data team ran on source
       -- Needed to adjust ALL to Large
       base.final_user_segment AS user_segment,
       base.raw_user_segment,
       base.adjusted_user_segment,
-      base.user_area,
+ 
       base.role_name,
       base.role_type,
       base.start_date,
