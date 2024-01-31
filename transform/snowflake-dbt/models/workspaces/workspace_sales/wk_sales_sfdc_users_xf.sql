@@ -28,11 +28,10 @@ WITH source_user AS (
       edm_user.manager_name,
       edm_user.manager_id,
       
-      IFNULL(edm_user.crm_user_geo, 'Other')                AS user_geo,
-      IFNULL(edm_user.crm_user_region, 'Other')             AS user_region,
-
-
-      edm_user.crm_user_business_unit,
+      IFNULL(edm_user.crm_user_geo, 'N/A')                AS user_geo,
+      IFNULL(edm_user.crm_user_business_unit, 'N/A')      AS user_business_unit,
+      IFNULL(edm_user.crm_user_region, 'N/A')             AS user_region,
+      IFNULL(edm_user.crm_user_area, 'N/A')               AS user_area,
 
       CASE 
         WHEN LOWER(source_user.user_segment) = 'lrg' 
@@ -44,37 +43,16 @@ WITH source_user AS (
         WHEN LOWER(source_user.user_segment) = 'all' 
           THEN 'All'        
         ELSE
-          IFNULL(source_user.user_segment, 'Other') 
+          IFNULL(source_user.user_segment, 'N/A') 
       END                                                   AS final_user_segment,
 
       LOWER(source_user.user_segment)                       AS raw_user_segment,
 
-        -- JK 2023-02-06 adding adjusted segment
-        -- If MM / SMB and Region = META then Segment = Large
-        -- If MM/SMB and Region = LATAM then Segment = Large
-        -- If MM/SMB and Geo = APAC then Segment = Large
-        -- Use that Adjusted Segment Field in our FY23 models
-        CASE
-        WHEN LOWER(crm_user_business_unit) = 'japan'
-            THEN 'Japan'
-        WHEN (LOWER(final_user_segment) = 'mid-market'
-                OR LOWER(final_user_segment)  = 'smb')
-            AND LOWER(user_region) = 'meta'
-            THEN 'Large'
-        WHEN (LOWER(final_user_segment)  = 'mid-market'
-                OR LOWER(final_user_segment)  = 'smb')
-            AND LOWER(user_region) = 'latam'
-            THEN 'Large'
-        WHEN (LOWER(final_user_segment)  = 'mid-market'
-                OR LOWER(final_user_segment)  = 'smb')
-            AND LOWER(user_geo) = 'apac'
-            THEN 'Large'
-        WHEN LOWER(source_user.user_segment) = 'all' 
-          THEN 'Large'     
-        ELSE final_user_segment
-        END                                            AS adjusted_user_segment,
+        -- NF: in FY24 we adjusted segments to represent the new GTM structure
+        -- for FY25 we are not doing that anymore. 
+      IFNULL(final_user_segment, 'N/A') AS adjusted_user_segment,
 
-      IFNULL(edm_user.crm_user_area, 'Other')          AS user_area,
+    
       IFNULL(edm_user.user_role_name, 'Other')         AS role_name,
       IFNULL(edm_user.crm_user_role_type, 'Other')     AS role_type,
       edm_user.start_date,
@@ -130,94 +108,22 @@ WITH source_user AS (
     SELECT
       consolidation.*,
 
-      -- Business Unit (X-Ray 1st hierarchy)
-      -- will be replaced with the actual field
-      /*CASE 
-        WHEN LOWER(user_segment) IN ('large','pubsec','all') -- "all" segment is PubSec for ROW
-            THEN 'ENTG'
-        WHEN LOWER(user_region) IN ('latam','meta')
-            OR LOWER(user_geo) IN ('apac')
-            THEN 'ENTG'         
-        WHEN LOWER(user_segment) IN ('mid-market','smb')
-            THEN 'COMM'
-        WHEN LOWER(user_segment) = 'jihu' THEN 'JiHu'
-        ELSE 'Other'
-      END
-      */ 
-      
-      crm_user_business_unit AS business_unit,
 
+      -- NF: These fields need to be remvoved           
+      user_geo AS business_unit,
       -- Sub-Business Unit (X-Ray 2nd hierarchy)
       /*
-      JK 2023-02-06: sub-BU is used in lower hierarchy fields calculation (division & asm).
-      Therefore when making changes to the field, make sure to understand implications on the whole key hierarchy
+      NF: 2024-01-30 In FY24 we created new fields to accomodate a complex logic that was used to simplify reporting.
+      In FY25 that logic is pretty much already integrated in the geo, bu, region, area fields
+
+      I am maintaining this fields for now, but changing the order, this fields are logical fields, not necessarily correlate with 
+      with the SFDC field. For example, Business Unit here is equivalent to GEO. This fields could be better called Levels. 
       */
-      CASE
-        WHEN LOWER(business_unit) = 'entg'
-          THEN user_geo
-        -- H2 update
-        WHEN LOWER(business_unit) = 'japan'
-          THEN 'Japan'      
-        WHEN
-          LOWER(business_unit) = 'comm'
-          AND
-            (
-            LOWER(user_segment) = 'mid-market'
-            AND LOWER(role_type) = 'fo'
-            )
-          THEN 'MM First Orders'  --mid-market FO(?)
-        WHEN
-          LOWER(business_unit) = 'comm'
-          AND LOWER(user_geo) = 'emea'
-          THEN  'EMEA'
-        WHEN
-          LOWER(business_unit) = 'comm'
-          AND LOWER(user_geo) = 'amer'
-          THEN 'AMER'
-        ELSE 'Other'
-      END AS sub_business_unit,
-
+      user_business_unit                AS sub_business_unit,
       -- Division (X-Ray 3rd hierarchy)
-      CASE 
-        WHEN LOWER(business_unit) = 'entg'
-          THEN user_region
-        WHEN LOWER(business_unit) = 'japan'
-          THEN 'Japan'   
-        WHEN
-          LOWER(business_unit) = 'comm'
-          AND LOWER(user_segment) = 'mid-market'         
-          AND LOWER(sub_business_unit) = 'mm first orders'
-          THEN 'MM First Orders'
-        WHEN 
-          LOWER(business_unit) = 'comm'
-          AND LOWER(sub_business_unit) != 'mm first orders'
-          AND LOWER(user_segment) = 'mid-market'
-          THEN 'Mid-Market'
-        WHEN
-          LOWER(business_unit) = 'comm'
-          AND LOWER(sub_business_unit) != 'mm first orders'
-          AND LOWER(user_segment) = 'smb'
-          THEN 'SMB'
-        ELSE 'Other'
-      END AS division,
-
+      user_region                       AS division,
       -- ASM (X-Ray 4th hierarchy): definition pending
-      CASE
-        WHEN LOWER(business_unit) = 'japan'
-          THEN user_area 
-        WHEN 
-          LOWER(business_unit) = 'entg'
-          THEN user_area  
-        WHEN 
-          LOWER(business_unit) = 'comm'
-          AND LOWER(division) = 'mm first orders'
-          THEN user_geo
-        WHEN
-          LOWER(business_unit) = 'comm'
-          AND LOWER(division) IN ('smb','mid-market')
-          THEN user_area
-        ELSE 'Other'
-      END AS asm
+      user_area                         AS asm
     FROM consolidation
 
 ), final AS (
