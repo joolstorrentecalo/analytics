@@ -19,6 +19,8 @@ WHERE
 e.event_label = 'chat'
 OR
 e.event_label = 'gitlab_duo_chat_answer'
+OR 
+e.event_action = 'process_gitlab_duo_slash_command'
 
 )
 AND
@@ -28,7 +30,8 @@ e.behavior_date > '2023-03-01'
         SELECT
         e.event_property AS request_id,
         MAX(CASE WHEN e.event_action = 'submit_gitlab_duo_question' THEN e.page_url_path ELSE '' END) AS url,
-        MAX(CASE WHEN e.event_action = 'process_gitlab_duo_question' AND e.event_value = 1 THEN 'Successful' ELSE 'Failure' END) AS successful_process_submit_event
+        MAX(CASE WHEN e.event_action = 'process_gitlab_duo_question' AND e.event_value = 1 THEN 'Successful' ELSE 'Failure' END) AS successful_process_submit_event,
+        ARRAY_AGG(DISTINCT CASE WHEN e.event_action = 'process_gitlab_duo_slash_command' THEN e.event_label ELSE NULL END) AS all_slash_use
         --,MAX(CASE WHEN e.event_action = 'process_gitlab_duo_question' AND e.event_label IS NOT NULL THEN e.event_label ELSE NULL END) AS process_gl_q_tool
         FROM {{ ref('mart_behavior_structured_event') }} e 
         WHERE
@@ -36,6 +39,8 @@ e.behavior_date > '2023-03-01'
         e.event_action = 'process_gitlab_duo_question' 
         OR
         e.event_action = 'submit_gitlab_duo_question'
+        OR
+        e.event_action = 'process_gitlab_duo_slash_command'
         )
         AND
         e.behavior_date > '2023-03-01'
@@ -69,6 +74,7 @@ e.behavior_date > '2023-03-01'
         p.*,
         m.url,
         m.successful_process_submit_event,
+        m.all_slash_use,
         DATEDIFF(SECOND,p.first_event,p.last_event) AS seconds_between_events
         FROM
         prep p 
