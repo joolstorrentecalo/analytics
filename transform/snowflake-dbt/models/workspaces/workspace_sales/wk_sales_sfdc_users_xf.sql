@@ -89,7 +89,6 @@ WITH source_user AS (
       base.is_active,
       base.is_hybrid_flag,
       base.employee_number,
-      base.crm_user_business_unit,
 
      
       CASE
@@ -135,10 +134,18 @@ WITH source_user AS (
 
 SELECT *,
 
+    -- Fy24 GTM keys
     LOWER(business_unit)                                                              AS key_bu,
     LOWER(business_unit || '_' || sub_business_unit)                                  AS key_bu_subbu,
     LOWER(business_unit || '_' || sub_business_unit || '_' || division)               AS key_bu_subbu_division,
     LOWER(business_unit || '_' || sub_business_unit || '_' || division || '_' || asm) AS key_bu_subbu_division_asm,
-    LOWER(key_bu_subbu_division_asm || '_' || role_type || '_' || TO_VARCHAR(employee_number))  AS key_sal_heatmap
+    --FY24 LOWER(key_bu_subbu_division_asm || '_' || role_type || '_' || TO_VARCHAR(employee_number))  AS key_sal_heatmap
+
+    -- FY25 GTM keys
+    LOWER(user_geo)                                                                         AS key_geo,
+    LOWER(user_geo || '_' || user_business_unit)                                            AS key_geo_bu,
+    LOWER(user_geo || '_' || user_business_unit || '_' || user_region)                      AS key_geo_bu_region,
+    LOWER(user_geo || '_' || user_business_unit || '_' || user_region || '_' || user_area)  AS key_geo_bu_region_area,
+    LOWER(key_geo_bu_region_area || '_' || role_type || '_' || TO_VARCHAR(employee_number)) AS key_sal_heatmap
 
 FROM final
