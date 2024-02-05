@@ -192,21 +192,21 @@
       LOWER(agg_demo_keys.key_bu_subbu_division_asm)   AS key_bu_subbu_division_asm,
 
       --NF 2024-01-31: FY25 keys
-      agg_demo_keys_base.key_geo,
+      agg_demo_keys.key_geo,
 
-      agg_demo_keys_base.key_geo_ot,
-      agg_demo_keys_base.key_geo_sqs,
+      agg_demo_keys.key_geo_ot,
+      agg_demo_keys.key_geo_sqs,
             
-      agg_demo_keys_base.key_geo_bu,
-      agg_demo_keys_base.key_geo_bu_ot,
-      agg_demo_keys_base.key_geo_bu_sqs,
+      agg_demo_keys.key_geo_bu,
+      agg_demo_keys.key_geo_bu_ot,
+      agg_demo_keys.key_geo_bu_sqs,
 
-      agg_demo_keys_base.key_geo_bu_region,
-      agg_demo_keys_base.key_geo_bu_region_ot,
-      agg_demo_keys_base.key_geo_bu_region_sqs,
+      agg_demo_keys.key_geo_bu_region,
+      agg_demo_keys.key_geo_bu_region_ot,
+      agg_demo_keys.key_geo_bu_region_sqs,
 
-      agg_demo_keys_base.key_geo_bu_region_area,
-      agg_demo_keys_base.key_geo_bu_region_area_segment
+      agg_demo_keys.key_geo_bu_region_area,
+      agg_demo_keys.key_geo_bu_region_area_segment
 
     FROM mart_sales_funnel_target_expanded funnel_target
     INNER JOIN  date_details target_month
