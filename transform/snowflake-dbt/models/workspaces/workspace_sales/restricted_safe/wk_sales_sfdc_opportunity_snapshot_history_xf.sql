@@ -90,6 +90,21 @@ WITH date_details AS (
       key_bu_subbu_division_sqs,
       key_bu_subbu_division_asm,
 
+      -- FY25 keys
+      key_geo,
+      key_geo_ot,
+      key_geo_sqs,
+          
+      key_geo_bu,
+      key_geo_bu_ot,
+      key_geo_bu_sqs,
+
+      key_geo_bu_region,
+      key_geo_bu_region_ot,
+      key_geo_bu_region_sqs,
+
+      key_geo_bu_region_area,
+      key_geo_bu_region_area_segment,
 
       parent_crm_account_upa_country,
       parent_crm_account_upa_state,
@@ -489,6 +504,23 @@ WITH date_details AS (
       sfdc_opportunity_xf.parent_crm_account_upa_postal_code,
       sfdc_opportunity_xf.parent_crm_account_upa_country_name,
       sfdc_opportunity_xf.parent_crm_account_business_unit,
+
+      -- FY25 keys
+      sfdc_opportunity_xf.key_geo,
+      sfdc_opportunity_xf.key_geo_ot,
+      sfdc_opportunity_xf.key_geo_sqs,
+          
+      sfdc_opportunity_xf.key_geo_bu,
+      sfdc_opportunity_xf.key_geo_bu_ot,
+      sfdc_opportunity_xf.key_geo_bu_sqs,
+
+      sfdc_opportunity_xf.key_geo_bu_region,
+      sfdc_opportunity_xf.key_geo_bu_region_ot,
+      sfdc_opportunity_xf.key_geo_bu_region_sqs,
+
+      sfdc_opportunity_xf.key_geo_bu_region_area,
+      sfdc_opportunity_xf.key_geo_bu_region_area_segment,
+
 
       sfdc_opportunity_xf.industry,
 

@@ -189,7 +189,24 @@
       LOWER(agg_demo_keys.key_bu_subbu_division)       AS key_bu_subbu_division,
       LOWER(agg_demo_keys.key_bu_subbu_division_ot)    AS key_bu_subbu_division_ot,
       LOWER(agg_demo_keys.key_bu_subbu_division_sqs)   AS key_bu_subbu_division_sqs,
-      LOWER(agg_demo_keys.key_bu_subbu_division_asm)   AS key_bu_subbu_division_asm
+      LOWER(agg_demo_keys.key_bu_subbu_division_asm)   AS key_bu_subbu_division_asm,
+
+      --NF 2024-01-31: FY25 keys
+      agg_demo_keys_base.key_geo,
+
+      agg_demo_keys_base.key_geo_ot,
+      agg_demo_keys_base.key_geo_sqs,
+            
+      agg_demo_keys_base.key_geo_bu,
+      agg_demo_keys_base.key_geo_bu_ot,
+      agg_demo_keys_base.key_geo_bu_sqs,
+
+      agg_demo_keys_base.key_geo_bu_region,
+      agg_demo_keys_base.key_geo_bu_region_ot,
+      agg_demo_keys_base.key_geo_bu_region_sqs,
+
+      agg_demo_keys_base.key_geo_bu_region_area,
+      agg_demo_keys_base.key_geo_bu_region_area_segment
 
     FROM mart_sales_funnel_target_expanded funnel_target
     INNER JOIN  date_details target_month
@@ -270,7 +287,21 @@
              fy24_targets.key_bu_subbu_division,
              fy24_targets.key_bu_subbu_division_ot,
              fy24_targets.key_bu_subbu_division_sqs,
-             fy24_targets.key_bu_subbu_division_asm
+             fy24_targets.key_bu_subbu_division_asm,
+
+             -- FY25 keys
+             fy24_targets.key_geo,
+             fy24_targets.key_geo_ot,
+             fy24_targets.key_geo_sqs,                
+             fy24_targets.key_geo_bu,
+             fy24_targets.key_geo_bu_ot,
+             fy24_targets.key_geo_bu_sqs,
+             fy24_targets.key_geo_bu_region,
+             fy24_targets.key_geo_bu_region_ot,
+             fy24_targets.key_geo_bu_region_sqs,
+             fy24_targets.key_geo_bu_region_area,
+             fy24_targets.key_geo_bu_region_area_segment
+
       FROM fy24_targets
       LEFT JOIN date_details fy25_date
         ON fy25_date.date_actual = DATEADD(month,12,fy24_targets.target_month)
@@ -349,7 +380,20 @@
              fy24_targets.key_bu_subbu_division,
              fy24_targets.key_bu_subbu_division_ot,
              fy24_targets.key_bu_subbu_division_sqs,
-             fy24_targets.key_bu_subbu_division_asm
+             fy24_targets.key_bu_subbu_division_asm,
+
+             -- FY25 keys
+             fy24_targets.key_geo,
+             fy24_targets.key_geo_ot,
+             fy24_targets.key_geo_sqs,                
+             fy24_targets.key_geo_bu,
+             fy24_targets.key_geo_bu_ot,
+             fy24_targets.key_geo_bu_sqs,
+             fy24_targets.key_geo_bu_region,
+             fy24_targets.key_geo_bu_region_ot,
+             fy24_targets.key_geo_bu_region_sqs,
+             fy24_targets.key_geo_bu_region_area,
+             fy24_targets.key_geo_bu_region_area_segment
       FROM fy24_targets
       LEFT JOIN date_details fy25_date
         ON fy25_date.date_actual = DATEADD(month,12,fy24_targets.target_month)
