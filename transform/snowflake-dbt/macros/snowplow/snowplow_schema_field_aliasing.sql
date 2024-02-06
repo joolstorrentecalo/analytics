@@ -1,9 +1,7 @@
 {% macro snowplow_schema_field_aliasing(schema, context_name, field_alias_datatype_list = {'field': None, 'formula': None, 'data_type': None, 'alias': None}) %}
 
   IFF(context_data_schema LIKE '{{schema}}', context_data, NULL)                              AS {{context_name}}_context,
-  
   IFF(context_data_schema LIKE '{{schema}}', context_data_schema, NULL)                       AS {{context_name}}_context_schema,
-
   IFF(context_data_schema LIKE '{{schema}}', TRUE, FALSE)::BOOLEAN                            AS has_{{context_name}}_context,
 
 {%- for context_col in field_alias_datatype_list %}

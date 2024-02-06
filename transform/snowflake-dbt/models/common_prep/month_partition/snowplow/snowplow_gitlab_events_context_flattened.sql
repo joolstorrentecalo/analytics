@@ -66,7 +66,7 @@ WITH filtered_source as (
             {'field':'project_id', 'data_type':'number'},
             {'field':'pseudonymized_user_id'},
             {'field':'source'},
-            {'field':'is_gitlab_team_member'}
+            {'field':'is_gitlab_team_member', 'data_type':'boolean'}
             ]
         )
       }},
