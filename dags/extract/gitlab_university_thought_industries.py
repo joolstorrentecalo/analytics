@@ -22,7 +22,7 @@ from kube_secrets import (
     SNOWFLAKE_LOAD_ROLE,
     SNOWFLAKE_LOAD_USER,
     SNOWFLAKE_LOAD_WAREHOUSE,
-    LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY,
+    GITLAB_UNIVERSITY_THOUGHT_INDUSTRIES_API_KEY,
 )
 
 from kubernetes_helpers import get_affinity, get_toleration
@@ -43,7 +43,7 @@ default_args = {
 
 # Define the DAG
 dag = DAG(
-    "el_level_up_thought_industries",
+    "el_gitlab_university_thought_industries",
     default_args=default_args,
     # daily 1:00 UTC: wait one hour as buffer before running previous day
     schedule_interval="0 1 * * *",
@@ -66,7 +66,7 @@ extract_tasks = []
 for endpoint_class in endpoint_classes:
     extract_command = (
         f"{clone_and_setup_extraction_cmd} && "
-        f"python level_up_thought_industries/src/execute.py --class_name_to_run={endpoint_class}"
+        f"python gitlab_university_thought_industries/src/execute.py --class_name_to_run={endpoint_class}"
     )
 
     extract_task = KubernetesPodOperator(
@@ -80,7 +80,7 @@ for endpoint_class in endpoint_classes:
             SNOWFLAKE_LOAD_USER,
             SNOWFLAKE_LOAD_WAREHOUSE,
             SNOWFLAKE_LOAD_PASSWORD,
-            LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY,
+            GITLAB_UNIVERSITY_THOUGHT_INDUSTRIES_API_KEY,
         ],
         env_vars={
             **pod_env_vars,

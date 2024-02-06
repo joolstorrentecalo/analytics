@@ -7,10 +7,10 @@ use role loader;
 use database <raw_db>;
 
 -- set-up stage
-create schema level_up;
-use schema level_up;
+create schema gitlab_university;
+use schema gitlab_university;
 
-CREATE STAGE level_up_load_stage
+CREATE STAGE gitlab_university_load_stage
 FILE_FORMAT = (TYPE = 'JSON');
 
 
