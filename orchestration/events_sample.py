@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-
+"""
+The main module for events sample generating
+"""
 import logging
 from os import environ as env
 
@@ -21,7 +23,7 @@ def main(engine: Engine) -> None:
     WITH raw AS (
     SELECT * EXCLUDE (geo_zipcode, geo_latitude, geo_longitude, user_ipaddress)
     FROM raw.snowplow.gitlab_events
-    WHERE uploaded_at::DATE > dateadd(day, -1, current_date)::DATE
+    WHERE uploaded_at::DATE > dateadd(day, -7, current_date)::DATE
     LIMIT 5000000)
     SELECT *,
     NULL AS geo_zipcode,
@@ -39,11 +41,11 @@ def main(engine: Engine) -> None:
 
     for query in query_list:
         try:
-            logging.info("Executing Query: {}".format(query))
+            logging.info(f"Executing Query: {query}")
             connection = engine.connect()
             connection.execute(query)
         except:
-            logging.info(f"Failed to create table.")
+            logging.info("Failed to create table.")
         finally:
             connection.close()
             engine.dispose()
