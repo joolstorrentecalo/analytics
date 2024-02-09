@@ -279,7 +279,7 @@ clone_stop:
 🧊⚙permifrost_run:
   <<: *permifrost
   script:
-    - permifrost run permissions/snowflake/roles.yml --diff --dry
+    - permifrost run permissions/snowflake/roles.yml --diff --role rbacovic --dry
   when: manual
   allow_failure: true
 
