@@ -5535,6 +5535,7 @@ roles:
                 read:
                     - rbacovic_prep.*.*
                     - rbacovic_prod.*.*
+                    - raw.aws_billing.dedicated_legacy_0475
                 write:
                     - rbacovic_prep.*.*
                     - rbacovic_prod.*.*
