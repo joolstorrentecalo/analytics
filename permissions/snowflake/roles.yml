@@ -5529,7 +5529,7 @@ roles:
                 read:
                     - rbacovic_prep.*
                     - rbacovic_prod.*
-                    - aws_billing
+                    - raw.aws_billing
                 write:
                     - rbacovic_prep.*
                     - rbacovic_prod.*
