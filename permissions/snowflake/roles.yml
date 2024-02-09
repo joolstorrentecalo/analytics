@@ -5521,6 +5521,7 @@ roles:
                 read:
                     - rbacovic_prep
                     - rbacovic_prod
+                    - raw
                 write:
                     - rbacovic_prep
                     - rbacovic_prod
@@ -5528,6 +5529,7 @@ roles:
                 read:
                     - rbacovic_prep.*
                     - rbacovic_prod.*
+                    - aws_billing
                 write:
                     - rbacovic_prep.*
                     - rbacovic_prod.*
