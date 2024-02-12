@@ -3514,12 +3514,6 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: chairston
-    user_name_domain: gitlab.com
-    site_role: Unlicensed
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: chaming
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
