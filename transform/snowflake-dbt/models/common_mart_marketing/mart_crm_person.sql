@@ -122,6 +122,7 @@
       is_valuable_signup,
       dim_crm_person.email_hash,
       dim_crm_person.status,
+      dim_crm_person.sfdc_record_type,
       dim_crm_person.lead_source,
       dim_crm_person.title,
       dim_crm_person.was_converted_lead,
@@ -300,7 +301,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@rkohnke",
+    updated_by="@degan",
     created_date="2020-12-07",
-    updated_date="2024-01-19",
+    updated_date="2024-02-01",
   ) }}  
