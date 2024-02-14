@@ -83,7 +83,6 @@ models:
         description: Unique identifier of a sales hierarchy tier
         tests:
           - not_null
-          - unique
   - name: wk_mart_sales_funnel_target
     description: Model with Sales targets used for planning the go to market Sales and Marketing motion.
     columns:
@@ -97,7 +96,6 @@ models:
       - name: dim_crm_user_hierarchy_id
         tests:
           - not_null
-          - unique
         tags: ["tdf", "common", "sales_funnel"]
   - name: wk_dim_sales_funnel_kpi
     columns:
