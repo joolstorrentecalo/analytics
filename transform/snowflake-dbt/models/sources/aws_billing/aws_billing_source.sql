@@ -82,7 +82,9 @@ SELECT * FROM legacy_gitlab_0347
 UNION ALL
 SELECT * FROM services_org_6953
 
-)
+),
+
+parsed AS (
 
 SELECT     
   value['bill_bill_type']::VARCHAR AS bill_bill_type,
@@ -245,5 +247,21 @@ SELECT
   value['savings_plan_savings_plan_rate']::DECIMAL as savings_plan_savings_plan_rate,
   value['savings_plan_total_commitment_to_date']::DECIMAL as savings_plan_total_commitment_to_date,
   value['savings_plan_used_commitment']::DECIMAL as savings_plan_used_commitment,
-  modified_at_ as modified_at
+  modified_at_ as modified_at_
 FROM all_raw
+),
+
+unique_ids as (
+
+SELECT 
+  DISTINCT value_partition_concat 
+FROM parsed
+), 
+
+filtered as (
+
+SELECT * FROM parsed
+WHERE value_partition_concat IN unique_ids
+)
+
+SELECT * FROM filtered
