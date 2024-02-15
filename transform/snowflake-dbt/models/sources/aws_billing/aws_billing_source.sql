@@ -247,7 +247,8 @@ SELECT
   value['savings_plan_savings_plan_rate']::DECIMAL as savings_plan_savings_plan_rate,
   value['savings_plan_total_commitment_to_date']::DECIMAL as savings_plan_total_commitment_to_date,
   value['savings_plan_used_commitment']::DECIMAL as savings_plan_used_commitment,
-  modified_at_ as modified_at_
+  modified_at_ as modified_at,
+  CONCAT(value, year_mo_partition) as value_partition_concat
 FROM all_raw
 ),
 
@@ -261,7 +262,8 @@ FROM parsed
 filtered as (
 
 SELECT * FROM parsed
-WHERE value_partition_concat IN unique_ids
+WHERE value_partition_concat IN 
+  (SELECT * FROM unique_ids)
 )
 
 SELECT * FROM filtered
