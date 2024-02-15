@@ -255,15 +255,14 @@ FROM all_raw
 unique_ids as (
 
 SELECT 
-  DISTINCT value_partition_concat 
+  DISTINCT value_partition_concat AS ids
 FROM parsed
 ), 
 
 filtered as (
 
 SELECT * FROM parsed
-WHERE value_partition_concat IN 
-  (SELECT * FROM unique_ids)
+INNER JOIN unique_ids ON parsed.value_partition_concat = unique_ids.ids
 )
 
 SELECT * FROM filtered
