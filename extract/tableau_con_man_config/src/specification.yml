@@ -3927,12 +3927,6 @@ users:
     groups:
       - Engineering All Access
       - General All Access
-  - user_name: daknox
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: damurphy
     user_name_domain: gitlab.com
     site_role: Viewer
