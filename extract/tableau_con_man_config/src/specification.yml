@@ -3013,6 +3013,7 @@ users:
       - Customer Success All Access
       - General All Access
       - General SAFE Access
+      - RSA SAFE Access
       - Sales All Access
       - Sales Development SAFE Access
   - user_name: bcaller
