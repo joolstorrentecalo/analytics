@@ -7,12 +7,12 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - user_email
-            - crm_user_geo
+            - crm_geo
     columns:
       - name: user_email
         tests: 
             - not_null
-      - name: crm_user_geo
+      - name: crm_geo
         tests: 
             - not_null
       - name: entitlement_basis
