@@ -94,7 +94,7 @@ services:
         DBT_PROFILES_DIR: /usr/local/dbt_profiles/
         DATA_TEST_BRANCH: "main"
         DATA_SIREN_BRANCH: "master"
-        SNOWFLAKE_SNAPSHOT_DATABASE: "SNOWFLAKE"
+        SNOWFLAKE_SNAPSHOT_DATABASE: "RAW"
         SNOWFLAKE_LOAD_DATABASE: "RAW"
         SNOWFLAKE_PREP_DATABASE: "PREP"
         SNOWFLAKE_PREP_SCHEMA: "preparation"
