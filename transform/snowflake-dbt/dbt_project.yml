@@ -143,6 +143,14 @@ models:
     +materialized: view
 
     # ------------------
+    # entitlement
+    # ------------------
+
+    entitlement:
+      +database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}" # PROD
+      +schema: entitlement
+
+    # ------------------
     # Sources
     # ------------------
     sources:

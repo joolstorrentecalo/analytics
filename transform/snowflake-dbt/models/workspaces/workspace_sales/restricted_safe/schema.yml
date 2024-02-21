@@ -152,15 +152,3 @@ models:
     description: an opportunity entitlment table to be used for row level security in Tableau
     columns:
       - name: opportunity_id
-  - name: wk_crm_user_entitlement
-    description: a user entitlement table based on user's Geo segment in Salesforce. It is used for row level security in Tableau. 
-    columns:
-      - name: dim_crm_user_id
-        tests: 
-            - not_null
-            - unique
-      - name: user_name
-      - name: user_email
-      - name: user_role_name
-      - name: user_geo
-
