@@ -4,6 +4,7 @@
 
 WITH
 target_geos AS (
+  -- This table is the target subset of the assigned user geo values in Salesforce
   SELECT *
   FROM (
     VALUES
@@ -18,6 +19,8 @@ target_geos AS (
 ),
 
 target_user_roles AS (
+  -- This table is a list of the user roles and PUBSEC access of those roles
+  -- for those Salesforce users that do not have an assigned geo
   SELECT *
   FROM (
     VALUES
@@ -52,6 +55,7 @@ tableau_group_source AS (
 ),
 
 sfdc_filtered AS (
+  -- This CTE is for applying the user parameters that will later be used for application of geos.
   SELECT
     sfdc_user_source.dim_crm_user_id,
     sfdc_user_source.user_email,
@@ -73,6 +77,7 @@ sfdc_filtered AS (
 ),
 
 tableau_safe_users AS (
+  -- This CTE is for collecting a the list of SAFE Tableau users from the primary Tableau site.
   SELECT user_email
   FROM tableau_group_source
   WHERE site_luid = '2ae725b5-5a7b-40ba-a05c-35b7aa9ab731' -- Main Tableau Site
@@ -88,6 +93,7 @@ geo_list AS (
 ),
 
 geo_users AS (
+  -- This CTE if for filtering to a list of Salesforce users that have an assigned geo
   SELECT
     dim_crm_user_id,
     crm_user_geo AS crm_geo,
@@ -98,6 +104,8 @@ geo_users AS (
 ),
 
 all_accounts AS (
+  -- This CTE if for filtering to a list of Salesforce users that have no assigned geo but 
+  -- have SAFE access and one of the target Salesforce user roles
   SELECT
     geo_list.crm_user_geo AS crm_geo,
     sfdc_filtered.user_email,
@@ -114,7 +122,8 @@ all_accounts AS (
 ),
 
 non_pubsec AS (
-
+  -- This CTE if for filtering to a list of Salesforce users that have no assigned geo but 
+  -- have SAFE access, one of the target Salesforce user roles, but do not ave access the PUBSEC geo
   SELECT
     geo_list.crm_user_geo AS crm_geo,
     sfdc_filtered.user_email,
