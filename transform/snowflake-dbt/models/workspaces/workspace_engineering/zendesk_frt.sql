@@ -131,6 +131,8 @@ final AS (
     , date_trunc('month',zendesk_tickets.ticket_created_at)::date AS ticket_create_month
     , reply_timestamps.first_reply_at
     , date_trunc('month',reply_timestamps.first_reply_at)::date AS first_reply_month
+    , date_trunc('week',reply_timestamps.first_reply_at)::date AS first_reply_week
+    , WEEK(reply_timestamps.first_reply_at) AS first_reply_week_num
     , 'captured in tableau' AS vlookup_column
     , reply_timestamps.first_reply_time_sla --includes business/calendar calculations
     , tickets_sla_priority.sla_policy
