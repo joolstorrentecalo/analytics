@@ -20,8 +20,6 @@ WITH source AS (
       data_by_row['description']::TEXT                                                                  AS description,
       data_by_row['instrumentation_class']::TEXT                                                        AS instrumentation_class,
       data_by_row['product_group']::TEXT                                                                AS product_group,
-      data_by_row['product_section']::TEXT                                                              AS product_section,
-      data_by_row['product_stage']::TEXT                                                                AS product_stage,
       data_by_row['milestone']::TEXT                                                                    AS milestone,
       data_by_row['skip_validation']::TEXT                                                              AS skip_validation,
       data_by_row['status']::TEXT                                                                       AS metrics_status,
