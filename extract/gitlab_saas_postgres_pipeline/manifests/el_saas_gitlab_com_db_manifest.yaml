@@ -2687,7 +2687,7 @@ tables:
     import_query: |-
       SELECT work_item_progresses.created_at
       , work_item_progresses.updated_at
-      , work_item_progressesissue_id
+      , work_item_progresses.issue_id
       , work_item_progresses.progress AS progress
       , work_item_progresses.reminder_frequency
       , issues.project_id
