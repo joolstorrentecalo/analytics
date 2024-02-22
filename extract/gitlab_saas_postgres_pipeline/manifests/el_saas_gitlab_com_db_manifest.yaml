@@ -2676,6 +2676,26 @@ tables:
       FROM work_item_progresses
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
+  work_item_progresses_internal_only:
+    additional_filtering: AND (project_id in {INTERNAL_PROJECT_IDS}
+    dbt_source_model: true
+    deletes_exempt: True
+    export_schema: 'gitlab_com'
+    export_table: 'work_item_progresses'
+    export_table_primary_key: issue_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT work_item_progresses.created_at
+      , work_item_progresses.updated_at
+      , work_item_progressesissue_id
+      , work_item_progresses.progress AS progress
+      , work_item_progresses.reminder_frequency
+      , issues.project_id
+      FROM work_item_progresses
+      LEFT OUTER JOIN issues
+        ON issues.issue_id = work_item_progresses.issue_id
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
   workspaces:
     deletes_exempt: True
     export_schema: 'gitlab_com'
