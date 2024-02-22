@@ -2,8 +2,7 @@
   materialized='table'
   ) }}
 
-WITH
-target_geos AS (
+WITH target_geos AS (
   -- This table is the target subset of the assigned user geo values in Salesforce
   SELECT *
   FROM (
@@ -141,12 +140,18 @@ non_pubsec AS (
 ),
 
 combined AS (
-  SELECT *
+  SELECT 
+    crm_geo,
+    user_email,
+    entitlement_basis
   FROM non_pubsec
 
   UNION ALL
 
-  SELECT *
+  SELECT 
+    crm_geo,
+    user_email,
+    entitlement_basis
   FROM all_accounts
 
   UNION ALL
