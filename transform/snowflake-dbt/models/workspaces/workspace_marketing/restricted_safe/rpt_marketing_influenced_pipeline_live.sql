@@ -253,5 +253,5 @@ combined_models AS (
     created_by="@dmicovic",
     updated_by="@rkohnke",
     created_date="2023-09-01",
-    updated_date="2024-02-12",
+    updated_date="2024-02-22",
   ) }}
