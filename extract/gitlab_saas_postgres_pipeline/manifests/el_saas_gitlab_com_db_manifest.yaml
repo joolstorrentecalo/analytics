@@ -2693,7 +2693,7 @@ tables:
       , issues.project_id
       FROM work_item_progresses
       LEFT OUTER JOIN issues
-        ON issues.issue_id = work_item_progresses.issue_id
+        ON issues.id = work_item_progresses.issue_id
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
   workspaces:
