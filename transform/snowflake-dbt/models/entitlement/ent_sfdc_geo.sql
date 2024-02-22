@@ -41,7 +41,7 @@ target_user_roles AS (
     ('Implementation Engineers - Global (with/without Pubsec)', FALSE),
     ('Marketing Operations Manager', FALSE),
     ('Marketing Program Manager', FALSE)
-  ) AS geos (target_roles, has_pubsec)
+  ) AS roles (target_roles, has_pubsec)
 ),
 
 sfdc_user_source AS (
