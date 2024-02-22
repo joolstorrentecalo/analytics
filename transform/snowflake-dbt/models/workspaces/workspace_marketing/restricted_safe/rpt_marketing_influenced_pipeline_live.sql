@@ -55,6 +55,7 @@
     wk_sales_sfdc_opportunity_xf.sales_type,
     wk_sales_sfdc_opportunity_xf.order_type_stamped AS order_type,
     wk_sales_sfdc_opportunity_xf.sales_qualified_source AS sales_qualified_source_name,
+    wk_sales_sfdc_opportunity_xf.stage_name,
 
 --Account Info
     wk_sales_sfdc_opportunity_xf.parent_crm_account_sales_segment,
@@ -70,6 +71,8 @@
     wk_sales_sfdc_opportunity_xf.pipeline_created_fiscal_year,
     wk_sales_sfdc_opportunity_xf.net_arr_created_date,
     wk_sales_sfdc_opportunity_xf.close_date,
+    wk_sales_sfdc_opportunity_xf.close_fiscal_quarter_name,
+
     dim_date.day_of_fiscal_quarter_normalised as pipeline_created_day_of_fiscal_quarter_normalised,
     dim_date.day_of_fiscal_year_normalised as pipeline_created_day_of_fiscal_year_normalised,
 
@@ -135,6 +138,7 @@ combined_models AS (
     wk_sales_sfdc_opportunity_xf_base.pipeline_created_day_of_fiscal_year_normalised,
     wk_sales_sfdc_opportunity_xf_base.net_arr_created_date,
     wk_sales_sfdc_opportunity_xf_base.close_date,
+    wk_sales_sfdc_opportunity_xf_base.close_fiscal_quarter_name,
     attribution_touchpoint_base.bizible_touchpoint_date,
   --Account Info
     wk_sales_sfdc_opportunity_xf_base.parent_crm_account_sales_segment,
@@ -158,6 +162,7 @@ combined_models AS (
     wk_sales_sfdc_opportunity_xf_base.sales_type,
     wk_sales_sfdc_opportunity_xf_base.order_type,
     wk_sales_sfdc_opportunity_xf_base.sales_qualified_source_name,
+    wk_sales_sfdc_opportunity_xf_base.stage_name,
 
 
 --Touchpoint Dimensions
