@@ -444,6 +444,7 @@ roles:
             - static
             - tableau_cloud
             - airflow_stitch
+            - entitlements
 
     - analyst_engineering:
         warehouses:
@@ -1748,7 +1749,6 @@ roles:
                     - prod.common_mart_people
                     - prod.common_prep
                     - prod.data_quality
-                    - prod.entitlement
                     - prod.legacy
                     - prod.pumps
                     - prod.workspace_customer_success
@@ -1773,7 +1773,6 @@ roles:
                     - prod.common_mart_people.*
                     - prod.common_prep.*
                     - prod.data_quality.*
-                    - prod.entitlement.*
                     - prod.legacy.*
                     - prod.pumps.*
                     - prod.workspace_customer_success.*
@@ -1888,6 +1887,20 @@ roles:
                 read:
                     - raw.elasticsearch_billing.*
 
+    - entitlements:
+        warehouses:
+            - dev_xs
+        privileges:
+            databases:
+                read:
+                    - prod
+            schemas:
+                read:
+                    - prod.entitlements
+            tables:
+                read:
+                    - prod.entitlements.*
+
     - facebook_ads:
         privileges:
             databases:
@@ -1899,20 +1912,6 @@ roles:
             tables:
                 read:
                     - raw.facebook_ads.*
-
-    - feature_store:
-        warehouses:
-            - dev_xs
-        privileges:
-            databases:
-                read:
-                    - feature_store
-            schemas:
-                read:
-                    - feature_store.feast
-            tables:
-                read:
-                    - feature_store.feast.*
 
     - gainsight_pump:
         warehouses:
@@ -4605,7 +4604,6 @@ roles:
             - analyst_core
             - bi_tool_eval_read
             - data_team_analyst
-            - feature_store
             - google_analytics_360
             - marketo
             - salesforce
@@ -4713,7 +4711,6 @@ roles:
             - customers_db
             - data_team_analyst
             - analyst_finance
-            - feature_store
             - gainsight
             - analyst_core
             - restricted_safe
@@ -6585,7 +6582,6 @@ roles:
         member_of:
             - data_team_analyst
             - analyst_core
-            - feature_store
             - restricted_safe
             - snowplow
         warehouses:
