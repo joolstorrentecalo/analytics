@@ -1899,7 +1899,7 @@ roles:
                     - raw.facebook_ads.*
 
     - feature_store:
-        warehouse:
+        warehouses:
             - dev_xs
         privileges:
             databases:
