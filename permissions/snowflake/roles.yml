@@ -1906,9 +1906,11 @@ roles:
                 read:
                     - feature_store
             schemas:
-                read: feature_store.feast
+                read: 
+                    - feature_store.feast
             tables:
-                read: feature_store.feast.*
+                read: 
+                    - feature_store.feast.*
 
     - gainsight_pump:
         warehouses:
