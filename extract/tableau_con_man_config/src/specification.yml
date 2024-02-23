@@ -10091,13 +10091,6 @@ users:
     groups:
       - Engineering All Access
       - General All Access
-  - user_name: urselak
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
-      - People All Access
   - user_name: vagrawal
     user_name_domain: gitlab.com
     site_role: Creator
