@@ -4601,6 +4601,7 @@ roles:
             - analyst_core
             - bi_tool_eval_read
             - data_team_analyst
+            - feature_store
             - google_analytics_360
             - marketo
             - salesforce
@@ -4708,6 +4709,7 @@ roles:
             - customers_db
             - data_team_analyst
             - analyst_finance
+            - feature_store
             - gainsight
             - analyst_core
             - restricted_safe
@@ -6579,6 +6581,7 @@ roles:
         member_of:
             - data_team_analyst
             - analyst_core
+            - feature_store
             - restricted_safe
             - snowplow
         warehouses:
