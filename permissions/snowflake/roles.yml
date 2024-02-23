@@ -1898,6 +1898,18 @@ roles:
                 read:
                     - raw.facebook_ads.*
 
+    - feature_store:
+        warehouse:
+            - dev_xs
+        privileges:
+            databases:
+                read:
+                    - feature_store
+            schemas:
+                read: feature_store.feast
+            tables:
+                read: feature_store.feast.*
+
     - gainsight_pump:
         warehouses:
             - gainsight_xs
