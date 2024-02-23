@@ -1447,7 +1447,6 @@ tables:
       , setup_for_company
       , jobs_to_be_done
       , experiment_features_enabled
-      , third_party_ai_features_enabled
       , code_suggestions
       FROM namespace_settings
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp

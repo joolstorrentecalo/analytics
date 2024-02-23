@@ -20,7 +20,6 @@ WITH source AS (
       setup_for_company::BOOLEAN                          AS is_setup_for_company,
       jobs_to_be_done::NUMBER                             AS jobs_to_be_done,
       experiment_features_enabled::BOOLEAN                AS experiment_features_enabled,
-      third_party_ai_features_enabled::BOOLEAN            AS third_party_ai_features_enabled,
       code_suggestions::BOOLEAN                           AS code_suggestions
     FROM source
 
