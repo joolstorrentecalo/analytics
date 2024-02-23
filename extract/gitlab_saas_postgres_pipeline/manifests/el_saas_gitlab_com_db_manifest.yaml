@@ -2677,7 +2677,7 @@ tables:
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
   work_item_progresses_internal_only:
-    additional_filtering: AND (project_id in {INTERNAL_PROJECT_IDS}
+    additional_filtering: AND project_id in {INTERNAL_PROJECT_IDS}
     dbt_source_model: true
     deletes_exempt: True
     export_schema: 'gitlab_com'
