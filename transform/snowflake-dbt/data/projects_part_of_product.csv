@@ -128,12 +128,14 @@ gitlab-org/security-products/gemnasium/semver,5778095,@thiagocsf
 gitlab-org/security-products/gemnasium/web,5828233,@thiagocsf
 gitlab-org/security-products/gitlab-cyclonedx-property-taxonomy,37734140
 gitlab-org/security-products/license-management,6130122,@thiagocsf
+gitlab-org/security-products/license-db/advisory-processor,45266022,@thiagocsf
 gitlab-org/security-products/license-db/license-exporter,39298809,@thiagocsf
 gitlab-org/security-products/license-db/license-feeder,40857363,@thiagocsf
 gitlab-org/security-products/license-db/license-interfacer,39622674,@thiagocsf
 gitlab-org/security-products/license-db/license-processor,39229232,@thiagocsf
 gitlab-org/security-products/license-db/deployment,39233486,@thiagocsf
 gitlab-org/security-products/license-db/schema,39193358,@thiagocsf
+gitlab-org/security-products/analyzers/trivy-k8s-wrapper,52241202,@thiagocsf
 gitlab-org/security-products/sast,5373222
 gitlab-org/serverless/runtimes/nodejs,11373038
 gitlab-org/serverless/runtimes/ruby,11533294
