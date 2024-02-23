@@ -444,7 +444,7 @@ roles:
             - static
             - tableau_cloud
             - airflow_stitch
-            - entitlements
+            - entitlement
 
     - analyst_engineering:
         warehouses:
@@ -1887,7 +1887,7 @@ roles:
                 read:
                     - raw.elasticsearch_billing.*
 
-    - entitlements:
+    - entitlement:
         warehouses:
             - dev_xs
         privileges:
@@ -1896,10 +1896,10 @@ roles:
                     - prod
             schemas:
                 read:
-                    - prod.entitlements
+                    - prod.entitlement
             tables:
                 read:
-                    - prod.entitlements.*
+                    - prod.entitlement.*
 
     - facebook_ads:
         privileges:
