@@ -741,6 +741,9 @@ snapshots:
     netsuite:
       +tags: ["daily"]
 
+    salesforce_sandbox:
+      +tags: ["daily"]
+
     sfdc:
       +tags: ["daily"]
 
