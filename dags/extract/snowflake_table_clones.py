@@ -22,6 +22,8 @@ from kube_secrets import (
     SNOWFLAKE_USER,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set env vars
 env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -52,7 +54,6 @@ secrets = [
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -65,7 +66,10 @@ default_args = {
 # Create the DAG
 #  DAG will be triggered at 06:59am UTC which is 23:59 PM PST
 dag = DAG(
-    "snowflake_table_clones", default_args=default_args, schedule_interval="0 7 * * *"
+    "snowflake_table_clones",
+    default_args=default_args,
+    schedule_interval="0 7 * * *",
+    catchup=False,
 )
 
 clone_table_config = [
@@ -86,7 +90,7 @@ for config in clone_table_config:
         {clone_repo_cmd} &&
         export PYTHONPATH="$CI_PROJECT_DIR/orchestration/:$PYTHONPATH" &&
         cd analytics/orchestration/ &&
-    
+
     python3 manage_snowflake.py create-table-clone  \
         --source_database {config.get('source_database')}  \
         --source_schema {config.get('source_schema')}  \
@@ -103,5 +107,7 @@ for config in clone_table_config:
         secrets=secrets,
         env_vars=pod_env_vars,
         arguments=[container_cmd],
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         dag=dag,
     )

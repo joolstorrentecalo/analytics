@@ -18,17 +18,17 @@ WITH gitlab_dotcom_label_links_source AS (
         WHEN gitlab_dotcom_label_links_source.target_type = 'Issue' 
         THEN gitlab_dotcom_label_links_source.target_id
         ELSE NULL
-      END AS dim_issue_id,
+      END AS issue_id,
       CASE
         WHEN gitlab_dotcom_label_links_source.target_type = 'MergeRequest' 
         THEN gitlab_dotcom_label_links_source.target_id
         ELSE NULL
-      END AS dim_merge_request_id,
+      END AS merge_request_id,
       CASE
         WHEN gitlab_dotcom_label_links_source.target_type = 'Epic' 
         THEN gitlab_dotcom_label_links_source.target_id
         ELSE NULL
-      END AS dim_epic_id,
+      END AS epic_id,
       --
       gitlab_dotcom_label_links_source.target_type,
       gitlab_dotcom_label_links_source.label_link_created_at       AS label_added_at,
@@ -47,7 +47,7 @@ WITH gitlab_dotcom_label_links_source AS (
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@dtownsend",
-    updated_by="@dtownsend",
+    updated_by="@michellecooper",
     created_date="2021-08-04",
-    updated_date="2021-08-04"
+    updated_date="2023-10-30"
 ) }}

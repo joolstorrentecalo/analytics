@@ -75,15 +75,6 @@
     "is_representative_of_stage": "False"
   },
   {
-    "event_name": "clusters_applications_helm",
-    "source_table_name": "gitlab_dotcom_clusters_applications_helm_xf",
-    "user_column_name": "user_id",
-    "key_to_parent_project": "cluster_project_id",
-    "primary_key": "clusters_applications_helm_id",
-    "stage_name": "configure",
-    "is_representative_of_stage": "True"
-  },
-  {
     "event_name": "container_scanning",
     "source_cte_name": "container_scanning_jobs",
     "user_column_name": "ci_build_user_id",
@@ -130,7 +121,7 @@
   },
   {
     "event_name": "epics",
-    "source_table_name": "gitlab_dotcom_epics",
+    "source_table_name": "gitlab_dotcom_epics_source",
     "user_column_name": "author_id",
     "key_to_parent_group": "group_id",
     "primary_key": "epic_id",
@@ -157,7 +148,7 @@
   },
   {
     "event_name": "merge_requests",
-    "source_table_name": "gitlab_dotcom_merge_requests",
+    "source_table_name": "gitlab_dotcom_merge_requests_source",
     "user_column_name": "author_id",
     "key_to_parent_project": "project_id",
     "primary_key": "merge_request_id",
@@ -175,7 +166,7 @@
   },
   {
     "event_name": "packages",
-    "source_table_name": "gitlab_dotcom_packages_packages",
+    "source_table_name": "gitlab_dotcom_packages_packages_source",
     "user_column_name": "creator_id",
     "key_to_parent_project": "project_id",
     "primary_key": "packages_package_id",
@@ -220,9 +211,9 @@
   },
   {
     "event_name": "requirements",
-    "source_table_name": "gitlab_dotcom_requirements",
+    "source_table_name": "prep_requirement",
     "user_column_name": "author_id",
-    "key_to_parent_project": "project_id",
+    "key_to_parent_project": "dim_project_id",
     "primary_key": "requirement_id",
     "stage_name": "plan",
     "is_representative_of_stage": "False"
@@ -259,13 +250,13 @@
     "source_cte_name": "services_source",
     "user_column_name": "NULL",
     "key_to_parent_project": "project_id",
-    "primary_key": "service_id",
+    "primary_key": "integration_id",
     "stage_name": "create",
     "is_representative_of_stage": "False"
   },
   {
     "event_name": "snippets",
-    "source_table_name": "gitlab_dotcom_snippets",
+    "source_table_name": "gitlab_dotcom_snippets_source",
     "user_column_name": "author_id",
     "key_to_parent_project": "project_id",
     "primary_key": "snippet_id",
@@ -411,8 +402,8 @@
 ), services_source AS (
 
     SELECT *
-    FROM {{ ref('gitlab_dotcom_integrations') }}
-    WHERE service_type != 'GitlabIssueTrackerService'
+    FROM {{ ref('gitlab_dotcom_integrations_source') }}
+    WHERE integration_type != 'GitlabIssueTrackerService'
 
 ), successful_ci_pipelines_source AS (
 
@@ -546,8 +537,8 @@ joins AS (
 
       LEFT JOIN gitlab_subscriptions
         ON ultimate_namespace.namespace_id = gitlab_subscriptions.namespace_id
-        AND data.event_created_at >= TO_DATE(gitlab_subscriptions.valid_from)
-        AND data.event_created_at < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
+        AND TO_DATE(data.event_created_at) >= TO_DATE(gitlab_subscriptions.valid_from)
+        AND TO_DATE(data.event_created_at) < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
       LEFT JOIN plans
         ON gitlab_subscriptions.plan_id = plans.plan_id
       LEFT JOIN blocked_users

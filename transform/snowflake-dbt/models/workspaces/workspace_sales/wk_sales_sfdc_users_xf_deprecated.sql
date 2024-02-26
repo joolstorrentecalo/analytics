@@ -78,11 +78,11 @@ WITH RECURSIVE users AS (
       name,
       role_name,
       manager_name,
-      SPLIT_PART(path, '::', 1)::VARCHAR(50) AS level_1,
-      SPLIT_PART(path, '::', 2)::VARCHAR(50) AS level_2,
-      SPLIT_PART(path, '::', 3)::VARCHAR(50) AS level_3,
-      SPLIT_PART(path, '::', 4)::VARCHAR(50) AS level_4,
-      SPLIT_PART(path, '::', 5)::VARCHAR(50) AS level_5
+      SPLIT_PART(path, '::', 1)::VARCHAR(100) AS level_1,
+      SPLIT_PART(path, '::', 2)::VARCHAR(100) AS level_2,
+      SPLIT_PART(path, '::', 3)::VARCHAR(100) AS level_3,
+      SPLIT_PART(path, '::', 4)::VARCHAR(100) AS level_4,
+      SPLIT_PART(path, '::', 5)::VARCHAR(100) AS level_5
     FROM managers
 
 ), final AS (

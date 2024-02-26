@@ -63,3 +63,24 @@ Only activity since 2020-01-01 is being processed due to the high volume of the 
 - Currently, bridges uses the order to bridge from subscription to namespace. In the future, we will use Zuora subscription tables to get the namespace directly from the subscription.
 
 {% enddocs %}
+
+{% docs rpt_namespace_onboarding %}
+
+**Description:**
+
+This model is aggregated at the ultimate parent namespaces level and contains a wide variety of namesapace onboarding behaviors and attributes. This model contains one row per ultimate_parent_namespace_id and is designed to meet most of the primary analytics use cases for the Growth team. 
+
+**Data Grain:**
+* ultimate_parent_namespace_id
+* namespace_created_at
+
+**Intended Usage**
+
+This model is intended to be used as a reporting model for the Growth Section and any other teams at GitLab that are interested in ultimate parent namespace level onboarding behaviors and attributes.
+
+**Filters & Business Logic in this Model:**
+
+* This model filters out internal ultimate parent namespaces, ultimate parent namespaces whose creator is blocked, and is aggregated at the ultimate parent namespace level meaning that sub-groups and projects are not included in this model.
+
+
+{% enddocs %}

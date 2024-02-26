@@ -1,29 +1,34 @@
-WITH team_member_mapping AS (
+WITH cost_center AS (
+
+  /* We have a Islands problem in the cost_center calculation
+  We need to find groups based on when the cost center changes and not just the value of the cost_center
+  Example: We have team members that belong to one cost_center, get moved to a different one but then return to the
+  initial cost_center afterwards
+  */
 
   SELECT 
     employee_id,
     cost_center,
-    age,
-    CASE 
-      WHEN age BETWEEN 18 AND 24  THEN '18-24'
-      WHEN age BETWEEN 25 AND 29  THEN '25-29'
-      WHEN age BETWEEN 30 AND 34  THEN '30-34'
-      WHEN age BETWEEN 35 AND 39  THEN '35-39'
-      WHEN age BETWEEN 40 AND 44  THEN '40-44'
-      WHEN age BETWEEN 44 AND 49  THEN '44-49'
-      WHEN age BETWEEN 50 AND 54  THEN '50-54'
-      WHEN age BETWEEN 55 AND 59  THEN '55-59'
-      WHEN age >= 60              THEN '60+'
-      WHEN age IS NULL            THEN 'Unreported'
-      WHEN age = -1               THEN 'Unreported'
-      ELSE NULL 
-    END                                                                                             AS age_cohort,
-    DATE(valid_from)                                                                                AS valid_from,
-    DATE(valid_to)                                                                                  AS valid_to
+    DATE(valid_from)                                                                                           AS valid_from,
+    DATE(valid_to)                                                                                             AS valid_to,
+    LAG(cost_center, 1, NULL) OVER (PARTITION BY employee_id ORDER BY valid_from)                              AS lag_cost_center,
+    CONDITIONAL_TRUE_EVENT(cost_center != lag_cost_center) OVER (PARTITION BY employee_id ORDER BY valid_from) AS cost_center_group,
+    LEAD(valid_from,1) OVER (PARTITION BY employee_id ORDER BY valid_from)                                     AS next_entry
   FROM {{ ref('workday_employee_mapping_source') }} 
-  --Remove multiple records for the same day
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY employee_id, DATE(valid_from) ORDER BY DATE(valid_to) DESC) = 1
+  
+),
 
+cost_center_group AS (
+
+  SELECT 
+    employee_id, 
+    cost_center, 
+    cost_center_group, 
+    MIN(valid_from)                                                                                            AS valid_from,
+    MAX(valid_to)                                                                                              AS valid_to 
+  FROM cost_center
+  {{ dbt_utils.group_by(n=3)}}
+  
 ),
 
 team_member AS (
@@ -39,6 +44,22 @@ team_member AS (
     gender,
     work_email,
     date_of_birth,
+    DATEDIFF(year, date_of_birth, valid_from) + CASE WHEN (DATEADD(year,DATEDIFF(year, date_of_birth, valid_from) , date_of_birth) > valid_from) THEN - 1 ELSE 0 END 
+                                                                                                    AS age_calculated,
+    CASE 
+      WHEN age_calculated BETWEEN 18 AND 24  THEN '18-24'
+      WHEN age_calculated BETWEEN 25 AND 29  THEN '25-29'
+      WHEN age_calculated BETWEEN 30 AND 34  THEN '30-34'
+      WHEN age_calculated BETWEEN 35 AND 39  THEN '35-39'
+      WHEN age_calculated BETWEEN 40 AND 44  THEN '40-44'
+      WHEN age_calculated BETWEEN 44 AND 49  THEN '44-49'
+      WHEN age_calculated BETWEEN 50 AND 54  THEN '50-54'
+      WHEN age_calculated BETWEEN 55 AND 59  THEN '55-59'
+      WHEN age_calculated >= 60              THEN '60+'
+      WHEN age_calculated IS NULL            THEN 'Unreported'
+      WHEN age_calculated = -1               THEN 'Unreported'
+      ELSE NULL 
+    END                                                                                             AS age_cohort,
     gitlab_username,
     team_id,
     country,
@@ -64,6 +85,7 @@ team_member AS (
           'United States of America',
           'Non-US')                                                                                 AS urg_region,
     hire_date,
+    employee_type,
     termination_date,
     is_current_team_member,
     is_rehire,
@@ -76,24 +98,24 @@ team_member AS (
 team_member_position AS (
 
   SELECT 
-    dim_team_member_sk,
-    dim_team_sk,
-    employee_id,
-    team_id,
-    manager,
-    suporg,
-    job_code,
-    position,
-    job_family,
-    job_specialty_single,
-    job_specialty_multi,
-    management_level,
-    job_grade,
-    department,
-    division,
-    entity,
-    effective_date AS valid_from,
-    LEAD(valid_from, 1, {{var('tomorrow')}})  OVER (PARTITION BY employee_id ORDER BY valid_from) AS valid_to
+    dim_team_member_sk                                                                            AS dim_team_member_sk,
+    dim_team_sk                                                                                   AS dim_team_sk,
+    employee_id                                                                                   AS employee_id,
+    COALESCE(team_id,'Unknown Team ID')                                                           AS team_id,
+    manager                                                                                       AS manager,
+    COALESCE(suporg,'Unknown Supervisory Organization')                                           AS suporg,
+    COALESCE(job_code,'Unknown Job Code')                                                         AS job_code,
+    position                                                                                      AS position,
+    COALESCE(job_family,'Unknown Job Family')                                                     AS job_family,
+    job_specialty_single                                                                          AS job_specialty_single,
+    job_specialty_multi                                                                           AS job_specialty_multi,
+    COALESCE(management_level,'Unknown Management Level')                                         AS management_level,
+    COALESCE(job_grade,'Unknown Job Grade')                                                       AS job_grade,
+    department                                                                                    AS department,
+    division                                                                                      AS division,
+    entity                                                                                        AS entity,
+    valid_from                                                                                    AS valid_from,
+    valid_to                                                                                      AS valid_to
   FROM {{ ref('fct_team_member_position') }}
 
 
@@ -105,7 +127,7 @@ unioned_dates AS (
     employee_id, 
     NULL AS team_id,
     valid_from
-  FROM team_member_mapping
+  FROM cost_center_group
   
   UNION
 
@@ -143,7 +165,7 @@ final AS (
 
     -- Surrogate keys
     team_member.dim_team_member_sk,
-    {{ dbt_utils.surrogate_key(['team_member.team_id']) }}                                   AS dim_team_sk,
+    {{ dbt_utils.generate_surrogate_key(['team_member.team_id']) }}                AS dim_team_sk,
 
     --Natural keys
     team_member.employee_id,
@@ -157,9 +179,9 @@ final AS (
     team_member.gender,
     team_member.work_email,
     team_member.date_of_birth,
-    team_member_mapping.age,
-    team_member_mapping.age_cohort,
-    team_member_mapping.cost_center,
+    team_member.age_calculated                                            AS age,
+    team_member.age_cohort,
+    COALESCE(cost_center_group.cost_center,'Unknown Cost Center')         AS cost_center,
     team_member.gitlab_username,
     team_member.country,
     team_member.region,
@@ -169,6 +191,7 @@ final AS (
     team_member.urg_group,
     team_member.urg_region,
     team_member.hire_date,
+    team_member.employee_type,
     team_member.termination_date,
     team_member.is_current_team_member,
     team_member.is_rehire,
@@ -195,10 +218,10 @@ final AS (
       AND date_range.valid_from != date_range.valid_to
         AND NOT (team_member.valid_to <= date_range.valid_from
           OR team_member.valid_from >= date_range.valid_to)
-  LEFT JOIN team_member_mapping
-    ON date_range.employee_id = team_member_mapping.employee_id 
-      AND NOT (team_member_mapping.valid_to <= date_range.valid_from
-          OR team_member_mapping.valid_from >= date_range.valid_to)
+  LEFT JOIN cost_center_group
+    ON date_range.employee_id = cost_center_group.employee_id 
+      AND NOT (cost_center_group.valid_to <= date_range.valid_from
+          OR cost_center_group.valid_from >= date_range.valid_to)
   LEFT JOIN team_member_position
     ON date_range.employee_id = team_member_position.employee_id 
       AND NOT (team_member_position.valid_to <= date_range.valid_from
@@ -211,5 +234,5 @@ final AS (
     created_by="@lisvinueza",
     updated_by="@lisvinueza",
     created_date="2023-07-06",
-    updated_date="2023-07-06"
+    updated_date="2023-09-26"
 ) }}

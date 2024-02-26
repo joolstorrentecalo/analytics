@@ -179,3 +179,79 @@ Flag indicating date that is the first day of last month of fiscal year. E.g TRU
 {% docs date_days_in_month_count %}
 Number of calendar days in the given month.
 {% enddocs %}
+
+{% docs current_day_of_month %}
+The day of the month for the current date. Since it references the current date it is the same number for every record in the data model.
+
+Example: For current_date = '2023-08-15', `current_day_of_month` -> 15
+{% enddocs %}
+
+{% docs current_day_of_fiscal_quarter %}
+The day of the fiscal quarter for the current date. Since it references the current date it is the same number for every record in the data model.
+
+Example: For current_date = '2023-08-15', `current_day_of_fiscal_quarter` -> 15. Because the fiscal quarter associated with this current_date starts on August.
+{% enddocs %}
+
+{% docs current_day_of_fiscal_year %}
+The day of the fiscal year for the current date. Since it references the current date it is the same number for every record in the data model.
+
+Example: For current_date = '2023-08-15', `current_day_of_fiscal_year` -> 196. Because we count the number of days from Feb 1st 2023 (start of fiscal quarter) to 15th August 2023 (current_date).
+{% enddocs %}
+
+{% docs is_fiscal_month_to_date %}
+Boolean flag indicating if the day `day_of_month` is less than or equal to the current_date `current_day_of_month`. This calculation is not only done for the current month, it is done for ALL months.
+
+Example: For current_date = '2023-08-15', and date_actual = 2023-07-14 `is_fiscal_month_to_date` -> TRUE. Because the day of date_actual = 14 which is less than or equal to the day of the current_date, even though the months are different.
+
+{% enddocs %}
+
+{% docs is_fiscal_quarter_to_date %}
+Boolean flag indicating if the day of the `day_of_fiscal_quarter` is less than or equal to the current_date `current_day_of_fiscal_quarter`. This calculation is not only done for the current fiscal quarter, it is done for ALL fiscal quarters.
+
+Example: For current_date = '2023-08-15', and date_actual = 2023-07-14 `is_fiscal_quarter_to_date` -> TRUE. Because the `day_of_fiscal_quarter` = 14 which is less than or equal to the day of the `current_day_of_fiscal_quarter`.
+
+{% enddocs %}
+
+{% docs is_fiscal_year_to_date %}
+Boolean flag indicating if the day of the `day_of_fiscal_year` is less than or equal to the current_date `current_day_of_fiscal_year`. This calculation is not only done for the current fiscal year, it is done for ALL fiscal years.
+
+Example: For current_date = '2023-02-15', and date_actual = 2022-02-14 `is_fiscal_year_to_date` -> TRUE. Because the `day_of_fiscal_year` = 14 which is less than or equal to the day of the `current_day_of_fiscal_year`.
+
+{% enddocs %}
+
+{% docs fiscal_days_ago %}
+Calculates how many days have passed between the current_date and the date_actual. For dates in the future, negatives values are used. If the date_actual is equal to the current_date then zero is used.
+
+Example: For current_date = '2023-08-15', then '2023-08-15' would be 0, '2023-08-16' would be -1, '2023-08-14' would be 1
+
+{% enddocs %}
+
+{% docs fiscal_weeks_ago %}
+Calculates how many weeks have passed between the current_date and the date_actual.
+
+This is calculated based on a Monday to Sunday week.
+
+Example: For current_date = '2023-08-15', then '2023-08-14' would be 0 (since it is still in the same week), '2023-08-21' would be -1 (in the next week), '2023-08-07' would be 1 (Monday of the past week)
+
+{% enddocs %}
+
+{% docs fiscal_months_ago %}
+Calculates how many fiscal months have passed between the current_date and the date_actual.
+
+Example: For current_date = '2023-08-15', then '2023-08-01' would be 0 (same month), '2023-09-28' would be -1 (in the next month), '2023-07-20' would be 1 (past month)
+
+{% enddocs %}
+
+{% docs fiscal_quarters_ago %}
+Calculates how many fiscal quarters have passed between the current_date and the date_actual.
+
+Example: For current_date = '2023-08-15', then '2023-08-01' would be 0 (same fiscal quarter), '2023-11-28' would be -1 (in the next fiscal quarter), '2023-07-20' would be 1 (past fiscal quarter)
+
+{% enddocs %}
+
+{% docs fiscal_years_ago %}
+Calculates how many fiscal years have passed between the current_date and the date_actual.
+
+Example: For current_date = '2023-08-15', then '2023-02-01' would be 0 (same fiscal year), '2024-02-28' would be -1 (in the next fiscal year), '2022-02-20' would be 1 (past fiscal year)
+
+{% enddocs %}

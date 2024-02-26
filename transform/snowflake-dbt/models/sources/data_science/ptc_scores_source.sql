@@ -24,6 +24,7 @@ WITH source AS (
       data_by_row['insights']::VARCHAR                      AS insights,
       data_by_row['renewal_date']::TIMESTAMP                AS renewal_date,
       data_by_row['downtier_likely']::BOOLEAN               AS downtier_likely,
+      data_by_row['model_version']::FLOAT                   AS model_version,
       uploaded_at::TIMESTAMP                                AS uploaded_at
 
     FROM intermediate

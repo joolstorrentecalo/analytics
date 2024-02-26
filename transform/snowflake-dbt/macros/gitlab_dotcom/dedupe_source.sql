@@ -11,7 +11,7 @@ SELECT *
 FROM {{ source(source_schema_name, source_table_name) }}
 {% if is_incremental() %}
 
-WHERE {{ condition_column }} >= (SELECT MAX({{ condition_column }}) FROM {{this}})
+WHERE {{ condition_column }} > (SELECT MAX({{ condition_column }}) FROM {{this}})
 
 {% endif %}
 QUALIFY ROW_NUMBER() OVER (PARTITION BY {{ unique_key }} ORDER BY {{ condition_column }} DESC) = 1

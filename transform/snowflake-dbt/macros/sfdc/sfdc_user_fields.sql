@@ -33,7 +33,7 @@
       {%- if model_type == 'live' %}
         *
       {%- elif model_type == 'snapshot' %}
-      {{ dbt_utils.surrogate_key(['sfdc_user_snapshots_source.user_id','snapshot_dates.date_id'])}}    AS crm_user_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_user_snapshots_source.user_id','snapshot_dates.date_id'])}}    AS crm_user_snapshot_id,
       snapshot_dates.date_id                                                                           AS snapshot_id,
       snapshot_dates.fiscal_year                                                                       AS snapshot_fiscal_year,
       snapshot_dates.date_actual                                                                       AS snapshot_date,
@@ -79,18 +79,18 @@
       sfdc_users.user_timezone,
       sfdc_users.user_role_id,
       sfdc_user_roles_source.name                                                                                                     AS user_role_name,
-      {{ dbt_utils.surrogate_key(['sfdc_users.user_segment']) }}                                                                      AS dim_crm_user_sales_segment_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_segment']) }}                                                                      AS dim_crm_user_sales_segment_id,
       sfdc_users.user_segment                                                                                                         AS crm_user_sales_segment,
       sfdc_users.user_segment_grouped                                                                                                 AS crm_user_sales_segment_grouped,
-      {{ dbt_utils.surrogate_key(['sfdc_users.user_geo']) }}                                                                          AS dim_crm_user_geo_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_geo']) }}                                                                          AS dim_crm_user_geo_id,
       sfdc_users.user_geo                                                                                                             AS crm_user_geo,
-      {{ dbt_utils.surrogate_key(['sfdc_users.user_region']) }}                                                                       AS dim_crm_user_region_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_region']) }}                                                                       AS dim_crm_user_region_id,
       sfdc_users.user_region                                                                                                          AS crm_user_region,
-      {{ dbt_utils.surrogate_key(['sfdc_users.user_area']) }}                                                                         AS dim_crm_user_area_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_area']) }}                                                                         AS dim_crm_user_area_id,
       sfdc_users.user_area                                                                                                            AS crm_user_area,
-      {{ dbt_utils.surrogate_key(['sfdc_users.user_business_unit']) }}                                                                AS dim_crm_user_business_unit_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_business_unit']) }}                                                                AS dim_crm_user_business_unit_id,
       sfdc_users.user_business_unit                                                                                                   AS crm_user_business_unit,
-      {{ dbt_utils.surrogate_key(['sfdc_users.user_role_type']) }}                                                                    AS dim_crm_user_role_type_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_type']) }}                                                                    AS dim_crm_user_role_type_id,
       sfdc_users.user_role_type                                                                                                       AS crm_user_role_type,
       CASE 
         WHEN sfdc_users.is_hybrid_user = 'Yes' 

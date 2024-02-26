@@ -45,7 +45,7 @@ WITH customers_db_licenses AS (
       licenses.dim_license_id,
 
       -- Foreign Keys
-      licenses.dim_subscription_id,
+      TRIM(licenses.dim_subscription_id, ' ')                          AS dim_subscription_id,
       original_subscription.original_id                                AS dim_subscription_id_original,
       original_subscription.previous_subscription_id                   AS dim_subscription_id_previous,
 

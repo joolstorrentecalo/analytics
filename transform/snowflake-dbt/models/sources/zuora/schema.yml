@@ -92,3 +92,9 @@ models:
     description: Source layer for Zuora Refunds for cleaning and renaming
   - name: zuora_subscription_source
     description: Source layer for Zuora Subscriptions for cleaning and renaming
+    columns:
+      - name: current_term
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+              severity: warn

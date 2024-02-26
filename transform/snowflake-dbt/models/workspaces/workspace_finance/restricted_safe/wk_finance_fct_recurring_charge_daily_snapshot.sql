@@ -178,7 +178,7 @@ WITH dim_date AS (
 ), final AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['snapshot_id', 'subscription_name', 'dim_product_detail_id', 'charge_id']) }}
+      {{ dbt_utils.generate_surrogate_key(['snapshot_id', 'subscription_name', 'dim_product_detail_id', 'charge_id']) }}
           AS charge_snapshot_id,
       charges_day_by_day.*
     FROM charges_day_by_day

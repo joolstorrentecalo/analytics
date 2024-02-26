@@ -41,6 +41,8 @@ renamed AS (
     business_development_rep__c AS business_development_rep,
     dedicated_service_engineer__c AS dedicated_service_engineer,
     sdr_assigned__c AS sales_development_rep,
+    executive_sponsor__c AS executive_sponsor_id,
+
     -- solutions_architect__c                     AS solutions_architect,
     technical_account_manager_lu__c AS technical_account_manager_id,
 
@@ -96,7 +98,7 @@ renamed AS (
     -- account demographics fields
 
     -- Add sales_segment_cleaning macro to avoid duplication in downstream models
-    {{sales_segment_cleaning('account_demographics_sales_segment__c')}} AS account_sales_segment,
+    {{sales_segment_cleaning('old_segment__c')}} AS account_sales_segment,
     account_demographics_geo__c AS account_geo,
     account_demographics_region__c AS account_region,
     account_demographics_area__c AS account_area,
@@ -126,8 +128,8 @@ renamed AS (
     count_of_products_purchased__c AS count_products_purchased,
     count_of_won_opportunities__c AS count_won_opportunities,
     concurrent_ee_subscriptions__c AS count_concurrent_ee_subscriptions,
-    ce_instances__c AS count_ce_instances,
-    active_ce_users__c AS count_active_ce_users,
+    NULL AS count_ce_instances,
+    NULL AS count_active_ce_users,
     number_of_open_opportunities__c AS count_open_opportunities,
     using_ce__c AS count_using_ce,
 
@@ -142,22 +144,38 @@ renamed AS (
     abm_tier_3_date__c AS abm_tier_3_date,
 
     --demandbase fields
-    account_list__c AS demandbase_account_list,
-    intent__c AS demandbase_intent,
-    page_views__c AS demandbase_page_views,
-    score__c AS demandbase_score,
-    sessions__c AS demandbase_sessions,
-    trending_offsite_intent__c AS demandbase_trending_offsite_intent,
-    trending_onsite_engagement__c AS demandbase_trending_onsite_engagement,
+    NULL AS demandbase_account_list,
+    NULL AS demandbase_intent,
+    NULL AS demandbase_page_views,
+    NULL AS demandbase_score,
+    NULL AS demandbase_sessions,
+    NULL AS demandbase_trending_offsite_intent,
+    NULL AS demandbase_trending_onsite_engagement,
+
+    --6 Sense Fields
+    x6sense_6qa__c::BOOLEAN AS has_six_sense_6_qa,
+    riskrate_third_party_guid__c AS risk_rate_guid,
+    x6sense_account_profile_fit__c AS six_sense_account_profile_fit,
+    x6sense_account_reach_score__c AS six_sense_account_reach_score,
+    x6sense_account_profile_score__c AS six_sense_account_profile_score,
+    x6sense_account_buying_stage__c AS six_sense_account_buying_stage,
+    x6sense_account_numerical_reach_score__c AS six_sense_account_numerical_reach_score,
+    x6sense_account_update_date__c::DATE AS six_sense_account_update_date,
+    x6sense_account_6qa_end_date__c::DATE AS six_sense_account_6_qa_end_date,
+    x6sense_account_6qa_age_in_days__c AS six_sense_account_6_qa_age_days,
+    x6sense_account_6qa_start_date__c::DATE AS six_sense_account_6_qa_start_date,
+    x6sense_account_intent_score__c AS six_sense_account_intent_score,
+    x6sense_segments__c AS six_sense_segments,
 
     -- sales segment fields
-    account_demographics_sales_segment__c AS ultimate_parent_sales_segment,
+    old_segment__c AS ultimate_parent_sales_segment,
     sales_segmentation_new__c AS division_sales_segment,
     account_owner_user_segment__c AS account_owner_user_segment,
     ultimate_parent_sales_segment_employees__c AS sales_segment,
     sales_segmentation_new__c AS account_segment,
+    {{sales_segment_cleaning('account_demographics_sales_segment__c')}} AS ultimate_parent_sales_segment_new,
 
-    locally_managed__c AS is_locally_managed_account,
+    NULL AS is_locally_managed_account,
     strategic__c AS is_strategic_account,
 
     -- ************************************
@@ -192,7 +210,7 @@ renamed AS (
     zi_total_funding__c AS zoom_info_total_funding,
 
     -- NF: Added on 20220427 to support EMEA reporting
-    key_account__c                     AS is_key_account,
+    NULL                     AS is_key_account,
 
     -- Gainsight Fields
     gs_first_value_date__c AS gs_first_value_date,
@@ -203,12 +221,14 @@ renamed AS (
     gs_health_devsecops__c AS gs_health_devsecops,
     gs_health_ci__c AS gs_health_ci,
     gs_health_scm__c AS gs_health_scm,
+    health__c AS gs_health_csm_sentiment,
 
     -- Risk Fields
     risk_impact__c AS risk_impact,
     risk_reason__c AS risk_reason,
     last_timeline_at_risk_update__c AS last_timeline_at_risk_update,
     last_at_risk_update_comments__c AS last_at_risk_update_comments,
+
 
     -- metadata
     createdbyid AS created_by_id,

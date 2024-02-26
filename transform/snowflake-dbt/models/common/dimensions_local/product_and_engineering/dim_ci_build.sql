@@ -15,7 +15,6 @@ WITH prep_ci_build AS (
 
       ci_build_status,
       finished_at,
-      trace,
       created_at,
       updated_at,
       started_at,
@@ -30,13 +29,11 @@ WITH prep_ci_build AS (
       tag,
       ref,
       ci_build_type,
-      target_url,
       ci_build_description,
       erased_by_id,
       erased_at,
       artifacts_expire_at,
       environment,
-      yaml_variables,
       queued_at,
       lock_version,
       coverage_regex,
@@ -53,8 +50,8 @@ WITH prep_ci_build AS (
 {{ dbt_audit(
     cte_ref="prep_ci_build",
     created_by="@mpeychet_",
-    updated_by="@ischweickartDD",
+    updated_by="@jpeguero",
     created_date="2021-06-17",
-    updated_date="2021-07-09"
+    updated_date="2023-07-21"
 ) }}
 

@@ -19,7 +19,6 @@ from kube_secrets import (
     SNOWFLAKE_LOAD_ROLE,
     SNOWFLAKE_LOAD_USER,
     SNOWFLAKE_LOAD_WAREHOUSE,
-    SNOWFLAKE_STATIC_DATABASE,
 )
 from kubernetes_helpers import get_affinity, get_toleration
 
@@ -27,7 +26,6 @@ env = os.environ.copy()
 pod_env_vars = {"CI_PROJECT_DIR": "/analytics"}
 
 default_args = {
-    "catchup": True,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -35,12 +33,15 @@ default_args = {
     "retry_delay": timedelta(minutes=1),
     "sla": timedelta(hours=12),
     "sla_miss_callback": slack_failed_task,
-    "start_date": datetime(2019, 1, 1),
+    "start_date": datetime(2023, 8, 24),
     "dagrun_timeout": timedelta(hours=6),
 }
 
 dag = DAG(
-    "qualtrics_extract", default_args=default_args, schedule_interval="0 */12 * * *"
+    "qualtrics_extract",
+    default_args=default_args,
+    schedule_interval="0 */12 * * *",
+    catchup=True,
 )
 
 # don't add a newline at the end of this because it gets added to in the K8sPodOperator arguments
@@ -62,18 +63,17 @@ qualtrics_operator = KubernetesPodOperator(
         SNOWFLAKE_LOAD_USER,
         SNOWFLAKE_LOAD_WAREHOUSE,
         SNOWFLAKE_LOAD_PASSWORD,
-        SNOWFLAKE_STATIC_DATABASE,
     ],
     env_vars={
         **pod_env_vars,
         **{
-            "START_TIME": "{{ execution_date.isoformat() }}",
+            "START_TIME": "{{ logical_date.isoformat() }}",
             "END_TIME": "{{ next_execution_date.isoformat() }}",
             "QUALTRICS_DATA_CENTER": "eu",
         },
     },
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     arguments=[qualtrics_extract_command],
     dag=dag,
 )

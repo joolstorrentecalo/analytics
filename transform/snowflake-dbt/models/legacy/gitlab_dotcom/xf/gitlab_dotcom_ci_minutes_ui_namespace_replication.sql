@@ -1,4 +1,26 @@
-WITH project_snapshot_monthly AS (
+WITH date_details AS (
+
+  SELECT *
+  FROM {{ ref('date_details') }}
+  WHERE last_day_of_month = date_actual
+
+), gitlab_dotcom_namespace_historical_monthly AS (
+
+    SELECT
+      date_details.first_day_of_month AS snapshot_month,
+      gitlab_dotcom_namespace_historical_daily.namespace_id,
+      gitlab_dotcom_namespace_historical_daily.parent_id,
+      gitlab_dotcom_namespace_historical_daily.owner_id,
+      gitlab_dotcom_namespace_historical_daily.namespace_type,
+      gitlab_dotcom_namespace_historical_daily.visibility_level,
+      gitlab_dotcom_namespace_historical_daily.shared_runners_minutes_limit,
+      gitlab_dotcom_namespace_historical_daily.extra_shared_runners_minutes_limit,
+      gitlab_dotcom_namespace_historical_daily.repository_size_limit
+    FROM {{ ref('gitlab_dotcom_namespace_historical_daily') }}
+    INNER JOIN date_details
+      ON date_details.date_actual = gitlab_dotcom_namespace_historical_daily.snapshot_day
+
+), project_snapshot_monthly AS (
   
     SELECT
       snapshot_month,
@@ -56,7 +78,7 @@ WITH project_snapshot_monthly AS (
       visibility_level,
       shared_runners_minutes_limit,
       extra_shared_runners_minutes_limit
-    FROM {{ ref('gitlab_dotcom_namespace_historical_monthly') }}
+    FROM gitlab_dotcom_namespace_historical_monthly
     WHERE snapshot_month >= '2020-07-01'
       AND snapshot_month < DATE_TRUNC('month', CURRENT_DATE)
 

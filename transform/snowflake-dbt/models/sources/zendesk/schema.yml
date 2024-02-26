@@ -72,6 +72,12 @@ models:
           tests:
             - not_null
             - unique
+    - name: zendesk_ticket_audits_dedupe_source
+      description: This is the dedupe source model for Zendesk ticket audit events.
+      columns:
+      - name: id
+        tests:
+            - unique
     - name: zendesk_ticket_audits_source
       description: This is the source model for Zendesk ticket audit events.
       columns:
@@ -97,7 +103,13 @@ models:
       - name: ticket_metrics_id
         tests:
             - unique
-            - not_null                  
+            - not_null
+    - name: zendesk_tickets_dedupe_source
+      description: This is the dedupe source model for Zendesk tickets.
+      columns:
+      - name: id
+        tests:
+            - unique                
     - name: zendesk_tickets_source
       description: This is the source model for Zendesk tickets.
       columns:

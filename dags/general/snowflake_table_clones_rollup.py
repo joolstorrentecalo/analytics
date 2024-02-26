@@ -23,6 +23,8 @@ from kube_secrets import (
     SNOWFLAKE_STATIC_DATABASE,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set env vars
 env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -67,6 +69,7 @@ dag = DAG(
     "snowflake_table_clone_rollup",
     default_args=default_args,
     schedule_interval="0 12 9 * *",
+    catchup=False,
 )
 tables_to_rollup = [
     "MART_ARR",
@@ -91,5 +94,7 @@ for table in tables_to_rollup:
         secrets=secrets,
         env_vars=pod_env_vars,
         arguments=[container_cmd],
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         dag=dag,
     )

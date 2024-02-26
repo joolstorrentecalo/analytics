@@ -48,7 +48,7 @@ WITH crm_account AS (
     SELECT
 
       --ids
-      {{ dbt_utils.surrogate_key(['quote_amendment.zqu_quote_amendment_id',
+      {{ dbt_utils.generate_surrogate_key(['quote_amendment.zqu_quote_amendment_id',
                                    'COALESCE(rate_plan_charge.zqu_quote_rate_plan_charge_id, MD5(-1))',
                                    'COALESCE(rate_plan_charge.zqu_product_rate_plan_charge_zuora_id, MD5(-1))']
                                 ) }}                                                                AS quote_item_id,

@@ -7,6 +7,7 @@ WITH source AS (
       email                             AS email,
       accountid                         AS accountid,
       lead_source                       AS lead_source,
+      job_title                         AS job_title,
       bizible_stage                     AS bizible_stage,
       bizible_stage_previous            AS bizible_stage_previous,
       odds_of_conversion                AS odds_of_conversion,

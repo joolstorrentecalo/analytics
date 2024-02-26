@@ -217,7 +217,7 @@ WITH date_details AS (
 ), final AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['opportunity_id', 'close_qtr']) }} AS primary_key,
+      {{ dbt_utils.generate_surrogate_key(['opportunity_id', 'close_qtr']) }} AS primary_key,
       opportunity_id,
       close_qtr,
       fiscal_close_year,

@@ -1,9 +1,9 @@
 {%- macro product_category(product_column, output_column_name = 'product_category') -%}
 
 CASE
-  WHEN LOWER({{product_column}}) LIKE '%gold%'
+  WHEN LOWER({{product_column}}) LIKE '%saas - ultimate%'
     THEN 'SaaS - Ultimate'
-  WHEN LOWER({{product_column}}) LIKE '%silver%'
+  WHEN LOWER({{product_column}}) LIKE '%saas - premium%'
     THEN 'SaaS - Premium'
   WHEN LOWER({{product_column}}) LIKE '%dedicated - ultimate%'
     THEN 'Dedicated - Ultimate'
@@ -11,6 +11,10 @@ CASE
     THEN 'Self-Managed - Ultimate'
   WHEN LOWER({{product_column}}) LIKE '%premium%'
     THEN 'Self-Managed - Premium'
+  WHEN LOWER({{product_column}}) LIKE '%gold%'
+    THEN 'SaaS - Ultimate'
+  WHEN LOWER({{product_column}}) LIKE '%silver%'
+    THEN 'SaaS - Premium'
   WHEN LOWER({{product_column}}) LIKE '%bronze%'
     THEN 'SaaS - Bronze'
   WHEN LOWER({{product_column}}) LIKE '%starter%'
@@ -27,6 +31,8 @@ CASE
     THEN 'Basic'
   WHEN {{product_column}} = 'Trueup'
     THEN 'Trueup'
+  WHEN LOWER({{product_column}}) LIKE 'saas - code suggestions%'
+    THEN 'SaaS - AI Add Ons'
   WHEN LTRIM(LOWER({{product_column}})) LIKE 'githost%'
     THEN 'GitHost'
   WHEN LOWER({{product_column}}) LIKE ANY ('%quick start with ha%', '%proserv training per-seat add-on%')
@@ -35,6 +41,7 @@ CASE
                                       'GitLab Service Package'
                                     , 'Implementation Services Quick Start'
                                     , 'Implementation Support'
+                                    , 'Implementation Quick Start'
                                     , 'Support Package'
                                     , 'Admin Training'
                                     , 'CI/CD Training'
@@ -68,6 +75,17 @@ CASE
                                     , 'Dedicated Engineer - 6 Month'
                                     , 'GitLab System Administration Training - Remote'
                                     , 'Expert Services (48 Hours)'
+                                    , 'GitLab CI/CD Training - Onsite'
+                                    , 'GitLab DevSecOps Fundamentals Training - Remote'
+                                    , 'GitLab Agile Portfolio Management Training - Remote'
+                                    , 'GitLab System Administration Training - Onsite'
+                                    , 'GitLab Agile Portfolio Management Training - Onsite'
+                                    , 'GitLab Security Essentials Training - Remote'
+                                    , 'GitLab with Git Fundamentals Training - Onsite'
+                                    , 'GitLab with Git Fundamentals Training - Remote'
+                                    , 'Implementation QuickStart - GitLab.com'
+                                    , 'GitLab Security Essentials Training - Onsite'
+                                    , 'Implementation QuickStart - Self Managed (HA)'
                                     )
     THEN 'Support'
   WHEN LOWER({{product_column}}) LIKE 'gitlab geo%'
@@ -87,6 +105,8 @@ CASE
                                       'File Locking'
                                     , 'Time Tracking'
                                     , '1,000 CI Minutes'
+                                    , '1,000 Compute Minutes'
+                                    , 'Training LMS Settlement Revenue'
                                     )
     THEN 'SaaS - Other'
   WHEN TRIM({{product_column}}) IN ('Gitlab Storage 10GB')

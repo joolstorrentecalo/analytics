@@ -1,31 +1,17 @@
 WITH source AS (
 
-    SELECT *
+    SELECT
+        namespace_id            as namespace_id,
+        score_date              as score_date,
+        score                   as score,
+        decile                  as decile,
+        importance              as importance,
+        grouping                as score_group,
+        insights                as insights,
+        model_version           as model_version,
+        uploaded_at::TIMESTAMP  as uploaded_at
     FROM {{ source('data_science', 'ptpt_scores') }}
-
-), intermediate AS (
-
-    SELECT
-      d.value as data_by_row,
-      uploaded_at
-    FROM source,
-    LATERAL FLATTEN(INPUT => PARSE_JSON(jsontext), outer => true) d
-
-), parsed AS (
-
-    SELECT
-
-      data_by_row['namespace_id']::VARCHAR                  AS namespace_id,
-      data_by_row['score_date']::TIMESTAMP                  AS score_date,
-      data_by_row['score']::NUMBER(38,4)                    AS score,
-      data_by_row['decile']::INT                            AS decile,
-      data_by_row['importance']::INT                        AS importance,
-      data_by_row['grouping']::INT                          AS score_group,
-      data_by_row['insights']::VARCHAR                      AS insights,
-      uploaded_at::TIMESTAMP                                AS uploaded_at
-
-    FROM intermediate
-
 )
+
 SELECT *
-FROM parsed
+FROM source

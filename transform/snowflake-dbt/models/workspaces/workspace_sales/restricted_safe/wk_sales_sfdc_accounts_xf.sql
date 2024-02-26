@@ -1,60 +1,45 @@
 {{ config(alias='sfdc_accounts_xf') }}
 
+-- use warehouse reporting;
+
 WITH raw_account AS (
 
-  SELECT id,
-    account_demographics_upa_country_name__c AS account_upa_country_name
+  SELECT *
   FROM {{ source('salesforce', 'account') }}
+  --FROM raw.salesforce_v2_stitch.account
 
 ), mart_crm_account AS (
 
-    SELECT mart_account.*,
-        raw_account.account_upa_country_name AS parent_crm_account_upa_country_name
+    SELECT mart_account.*
+    --FROM prod.restricted_safe_common_mart_sales.mart_crm_account mart_account
     FROM {{ref('mart_crm_account')}} mart_account
-    LEFT JOIN raw_account
-        ON raw_account.id = mart_account.dim_crm_account_id
 
 ), account_owner AS (
 
-SELECT *
-FROM {{ref('wk_sales_sfdc_users_xf')}}
+    SELECT *
+    FROM {{ref('wk_sales_sfdc_users_xf')}}
+    --FROM prod.workspace_sales.sfdc_users_xf
 
 ), sfdc_record_type AS (
     -- using source in prep temporarily
     SELECT *
-    FROM PREP.sfdc.sfdc_record_type_source
-)
+    FROM {{ref('sfdc_record_type_source')}}
+    --FROM PREP.sfdc.sfdc_record_type_source
+),
+ sfdc_users_xf AS (
+
+    SELECT *
+    --FROM prod.workspace_sales.sfdc_users_xf
+    FROM {{ref('wk_sales_sfdc_users_xf')}}
+ )
 
 SELECT
     mart.dim_crm_account_id                                  AS account_id,
     mart.crm_account_name                                    AS account_name,
     mart.master_record_id,
     mart.dim_crm_user_id                                     AS owner_id,
-    account_owner.business_unit                              AS account_owner_user_business_unit,
-    account_owner.sub_business_unit                          AS account_owner_user_sub_business_unit,
-    account_owner.division                                   AS account_owner_user_division,
-    account_owner.asm                                        AS account_owner_user_asm,
-    account_owner.adjusted_user_segment                      AS account_owner_user_segment,
 
-    -- NF: Add the logic for hybrid users
-    -- If hybrid user we leverage the account demographics data
-    CASE 
-        WHEN account_owner.is_hybrid_flag = 1
-        THEN mart.parent_crm_account_sales_segment  
-        ELSE account_owner.user_segment  
-    END                                                      AS account_owner_raw_user_segment,
-    mart.crm_account_owner_geo                               AS account_owner_user_geo,
-    mart.crm_account_owner_region                            AS account_owner_user_region,
-    
-    -- NF: Add the logic for hybrid users
-    -- If hybrid user we leverage the account demographics data
-       CASE 
-        WHEN account_owner.is_hybrid_flag = 1
-        THEN mart.parent_crm_account_area  
-        ELSE account_owner.user_area  
-       END                                                   AS account_owner_user_area,
 
-    account_owner.role_type                                  AS account_owner_user_role_type,
 
     parent_account_owner.business_unit                       AS parent_account_owner_user_business_unit,
     parent_account_owner.sub_business_unit                   AS parent_account_owner_user_sub_business_unit,
@@ -211,15 +196,178 @@ SELECT
     mart.is_zi_bit_bucket_present                                   AS zi_bit_bucket_presence_flag,
 
     -- fields from RAW table
-    mart.parent_crm_account_upa_country_name
+    '' AS parent_crm_account_upa_country_name,
 
+    CASE
+        WHEN mart.parent_crm_account_lam_dev_count BETWEEN 0 AND 25
+            THEN '[0-25]'
+        WHEN mart.parent_crm_account_lam_dev_count BETWEEN 26 AND 100
+            THEN '(25-100]'
+        WHEN mart.parent_crm_account_lam_dev_count BETWEEN 101 AND 250
+            THEN '(100-250]'
+        WHEN mart.parent_crm_account_lam_dev_count BETWEEN 251 AND 1000
+            THEN '(250-1000]'
+        WHEN mart.parent_crm_account_lam_dev_count BETWEEN 1001 AND 2500
+            THEN '(1000-2500]'
+        WHEN mart.parent_crm_account_lam_dev_count > 2500
+            THEN '(2500+]'
+    END                     AS lam_dev_count_bin,
+
+    --------------------
+    --------------------
+    -- RAW ACCOUNT FIELDS
+    raw_acc.parent_lam_industry_acct_heirarchy__c   AS hierarcy_industry,
+    --raw_acc.has_tam__c                              AS has_tam_flag,
+    raw_acc.public_sector_account__c                AS public_sector_account_flag,
+    raw_acc.pubsec_type__c                          AS pubsec_type,
+    raw_acc.lam_tier__c                             AS account_lam_arr,
+    raw_acc.lam_dev_count__c                        AS account_lam_dev_count,
+    raw_acc.parent_lam_industry_acct_heirarchy__c   AS account_industry,
+
+    -- For segment calculation we leverage the upa logic
+    raw_upa.pubsec_type__c                          AS upa_pubsec_type,
+    raw_upa.lam_tier__c                             AS upa_lam_arr,
+    raw_upa.lam_dev_count__c                        AS upa_lam_dev_count,
+
+
+    raw_upa.parent_lam_industry_acct_heirarchy__c   AS upa_industry,
+
+    -- account owner fields
+    acc_owner.business_unit                              AS account_owner_user_business_unit,
+    acc_owner.sub_business_unit                          AS account_owner_user_sub_business_unit,
+    acc_owner.division                                   AS account_owner_user_division,
+    acc_owner.asm                                        AS account_owner_user_asm,
+    acc_owner.adjusted_user_segment                      AS account_owner_user_segment,
+
+    UPPER(acc_owner.user_geo)                           AS account_owner_user_geo,
+    acc_owner.user_region                               AS account_owner_user_region,
+
+    -- NF: Add the logic for hybrid users
+    -- If hybrid user we leverage the account demographics data
+    CASE
+        WHEN acc_owner.is_hybrid_flag = 1
+            THEN mart.parent_crm_account_area
+        ELSE acc_owner.user_area
+    END                                                     AS account_owner_user_area,
+
+    -- NF: Add the logic for hybrid users
+    -- If hybrid user we leverage the account demographics data
+    CASE
+        WHEN acc_owner.is_hybrid_flag = 1
+        THEN mart.parent_crm_account_sales_segment
+        ELSE acc_owner.user_segment
+    END                                                 AS account_owner_raw_user_segment,
+
+    acc_owner.role_type                                 AS account_owner_user_role_type,
+
+
+    -----------------------------------
+    -- upa owner fields
+
+    upa_owner.user_id                             AS upa_owner_id,
+    upa_owner.name                                AS upa_owner_name,
+    raw_upa.name                                  AS upa_name,
+
+    upa_owner.business_unit                       AS upa_owner_user_business_unit,
+    upa_owner.sub_business_unit                   AS upa_owner_user_sub_business_unit,
+    upa_owner.division                            AS upa_owner_user_division,
+    upa_owner.asm                                 AS upa_owner_user_asm,
+    upa_owner.adjusted_user_segment               AS upa_owner_user_segment,
+
+    UPPER(upa_owner.user_geo)                     AS upa_owner_user_geo,
+    upa_owner.user_region                         AS upa_owner_user_region,
+
+    -- NF: Add the logic for hybrid users
+    -- If hybrid user we leverage the account demographics data
+    CASE
+        WHEN upa_owner.is_hybrid_flag = 1
+            THEN mart.parent_crm_account_area
+        ELSE upa_owner.user_area
+    END                                            AS upa_owner_user_area,
+
+    -- NF: Add the logic for hybrid users
+    -- If hybrid user we leverage the account demographics data
+    CASE
+        WHEN upa_owner.is_hybrid_flag = 1
+        THEN mart.parent_crm_account_sales_segment
+        ELSE upa_owner.user_segment
+    END                                             AS upa_owner_raw_user_segment,
+
+    upa_owner.role_type                             AS upa_owner_user_role_type,
+
+   -- Raw fields
+
+    raw_acc.billingstate                            AS account_billing_state_name,
+    raw_acc.billingstatecode                        AS account_billing_state_code,
+    raw_acc.billingcountry                          AS account_billing_country_name,
+    raw_acc.billingcountrycode                      AS account_billing_country_code,
+    raw_acc.billingcity                             AS account_billing_city,
+    raw_acc.billingpostalcode                       AS account_billing_postal_code,
+
+
+    raw_acc.parentid                                AS parent_id,
+
+    -- this fields might not be upa level
+    raw_acc.account_demographics_business_unit__c        AS account_demographics_business_unit,
+    UPPER(raw_acc.account_demographics_geo__c)           AS account_demographics_geo,
+    raw_acc.account_demographics_region__c               AS account_demographics_region,
+    raw_acc.account_demographics_area__c                 AS account_demographics_area,
+    UPPER(raw_acc.account_demographics_sales_segment__c) AS account_demographics_sales_segment,
+    raw_acc.account_demographics_territory__c            AS account_demographics_territory,
+
+    raw_upa.account_demographics_business_unit__c        AS account_demographics_upa_business_unit,
+    UPPER(raw_upa.account_demographics_geo__c)           AS account_demographics_upa_geo,
+    raw_upa.account_demographics_region__c               AS account_demographics_upa_region,
+    raw_upa.account_demographics_area__c                 AS account_demographics_upa_area,
+    UPPER(raw_upa.account_demographics_sales_segment__c) AS account_demographics_upa_sales_segment,
+    raw_upa.account_demographics_territory__c            AS account_demographics_upa_territory,
+
+    raw_upa.account_demographics_upa_state__c            AS account_demographics_upa_state_code,
+    raw_upa.account_demographics_upa_state_name__c       AS account_demographics_upa_state_name,
+    raw_upa.account_demographics_upa_country_name__c     AS account_demographics_upa_country_name,
+    raw_upa.account_demographics_upa_country__c          AS account_demographics_upa_country_code,
+    raw_upa.account_demographics_upa_city__c             AS account_demographics_upa_city,
+    raw_upa.account_demographics_upa_postal_code__c      AS account_demographics_upa_postal_code,
+    raw_upa.account_demographic_max_family_employees__c  AS account_demographics_upa_max_family_employees,
+
+
+    -- fields from mart account
+    --mart_crm_account.public_sector_account_flag,
+    raw_acc.customer_score__c                            AS customer_score,
+
+
+    COALESCE(raw_acc.decision_maker_count_linkedin__c,0)        AS linkedin_developer,
+    COALESCE(raw_acc.zi_revenue__c,0)                           AS zi_revenue,
+    COALESCE(raw_acc.account_demographics_employee_count__c,0)  AS account_demographics_employees,
+    COALESCE(raw_acc.carr_acct_family__c,0)                     AS account_family_arr,
+    LEAST(50000,GREATEST(COALESCE(raw_acc.number_of_licenses_this_account__c,0),COALESCE(raw_acc.potential_users__c, raw_acc.decision_maker_count_linkedin__c , raw_acc.zi_number_of_developers__c, 0)))           AS calculated_developer_count,
+
+
+    
+    -- fy25 keys
+
+     LOWER(account_owner_user_geo)                                                                                                     AS key_geo,
+     LOWER(account_owner_user_geo || '_' || account_owner_user_business_unit)                                                          AS key_geo_bu,
+     LOWER(account_owner_user_geo || '_' || account_owner_user_business_unit || '_' || account_owner_user_region)                      AS key_geo_bu_region,
+     LOWER(account_owner_user_geo || '_' || account_owner_user_business_unit || '_' || account_owner_user_region|| '_' || account_owner_user_area)   AS key_geo_bu_region_area
 
 FROM mart_crm_account AS mart
 LEFT JOIN sfdc_record_type
     ON mart.record_type_id = sfdc_record_type.record_type_id
-LEFT JOIN account_owner 
-    ON account_owner.user_id = mart.dim_crm_user_id
 LEFT JOIN account_owner parent_account_owner
     ON parent_account_owner.user_id = mart.dim_crm_user_id
-
+INNER JOIN raw_account AS raw_acc
+    ON raw_acc.id = mart.dim_crm_account_id
+-- upa account demographics fields
+LEFT JOIN raw_account AS raw_upa
+    ON raw_upa.id = mart.dim_parent_crm_account_id
+LEFT JOIN sfdc_users_xf AS acc_owner
+    ON raw_acc.ownerid = acc_owner.user_id
+-- upa owner id doesn't seem to be on mart crm
+LEFT JOIN sfdc_users_xf AS upa_owner
+    ON raw_upa.ownerid = upa_owner.user_id
 WHERE mart.is_deleted = FALSE
+
+--------------------
+--------------------
+--------------------

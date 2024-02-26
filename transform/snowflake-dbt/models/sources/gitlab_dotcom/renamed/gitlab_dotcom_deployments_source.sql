@@ -13,7 +13,6 @@ WITH source AS (
       environment_id::NUMBER                          AS environment_id,
       ref::VARCHAR                                     AS ref,
       tag::BOOLEAN                                     AS tag,
-      sha::VARCHAR                                     AS sha,
       user_id::NUMBER                                 AS user_id,
       deployable_id::NUMBER                           AS deployable_id,
       deployable_type::VARCHAR                         AS deployable_type,

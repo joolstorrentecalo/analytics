@@ -10,7 +10,8 @@
     ('map_ip_to_country', 'map_ip_to_country'),
     ('locations', 'prep_location_country'),
     ('prep_ping_instance', 'prep_ping_instance_flattened'),
-    ('dim_product_tier', 'dim_product_tier')
+    ('dim_product_tier', 'dim_product_tier'),
+    ('prep_app_release_major_minor', 'prep_app_release_major_minor')
     ])
 
 }}
@@ -63,7 +64,11 @@
 ), source AS (
 
     SELECT
-      prep_ping_instance.*
+      prep_ping_instance.*,
+      REGEXP_REPLACE(NULLIF(prep_ping_instance.version, ''), '[^0-9.]+')    AS cleaned_version,
+      SPLIT_PART(cleaned_version, '.', 1)::NUMBER                           AS major_version,
+      SPLIT_PART(cleaned_version, '.', 2)::NUMBER                           AS minor_version,
+      major_version || '.' || minor_version                                 AS major_minor_version
     FROM prep_ping_instance
       {% if is_incremental() %}
                   WHERE uploaded_at >= (SELECT MAX(uploaded_at) FROM {{this}})
@@ -81,29 +86,42 @@
 ), prep_usage_ping_cte AS (
 
     SELECT
-      dim_ping_instance_id                                AS dim_ping_instance_id,
-      dim_host_id                                         AS dim_host_id,
-      dim_instance_id                                     AS dim_instance_id,
-      dim_installation_id                                 AS dim_installation_id,
-      dim_product_tier.dim_product_tier_id                AS dim_product_tier_id,
-      ping_created_at                                     AS ping_created_at,
-      uploaded_at                                         AS uploaded_at,
-      license_md5                                         AS license_md5,
-      license_sha256                                      AS license_sha256,
-      dim_location_country_id                             AS dim_location_country_id,
-      license_trial_ends_on                               AS license_trial_ends_on,
-      license_subscription_id                             AS license_subscription_id,
-      umau_value                                          AS umau_value,
-      product_tier                                        AS product_tier,
-      main_edition                                        AS main_edition,
-      metrics_path                                        AS metrics_path,
-      metric_value                                        AS metric_value,
-      has_timed_out                                       AS has_timed_out,
-      ping_type                                           AS ping_type
+      dim_ping_instance_id                                          AS dim_ping_instance_id,
+      dim_host_id                                                   AS dim_host_id,
+      dim_instance_id                                               AS dim_instance_id,
+      dim_installation_id                                           AS dim_installation_id,
+      dim_product_tier.dim_product_tier_id                          AS dim_product_tier_id,
+      prep_app_release_major_minor.dim_app_release_major_minor_sk   AS dim_app_release_major_minor_sk,
+      latest_version.dim_app_release_major_minor_sk                 AS dim_latest_available_app_release_major_minor_sk,
+      ping_created_at                                               AS ping_created_at,
+      uploaded_at                                                   AS uploaded_at,
+      license_md5                                                   AS license_md5,
+      license_sha256                                                AS license_sha256,
+      dim_location_country_id                                       AS dim_location_country_id,
+      license_trial_ends_on                                         AS license_trial_ends_on,
+      license_subscription_id                                       AS license_subscription_id,
+      umau_value                                                    AS umau_value,
+      product_tier                                                  AS product_tier,
+      main_edition                                                  AS main_edition,
+      metrics_path                                                  AS metrics_path,
+      metric_value                                                  AS metric_value,
+      has_timed_out                                                 AS has_timed_out,
+      ping_type                                                     AS ping_type
     FROM add_country_info_to_usage_ping
     LEFT JOIN dim_product_tier
     ON TRIM(LOWER(add_country_info_to_usage_ping.product_tier)) = TRIM(LOWER(dim_product_tier.product_tier_historical_short))
     AND add_country_info_to_usage_ping.ping_deployment_type = dim_product_tier.product_deployment_type
+    LEFT JOIN prep_app_release_major_minor
+      ON prep_app_release_major_minor.major_minor_version = add_country_info_to_usage_ping.major_minor_version
+      AND prep_app_release_major_minor.application = 'GitLab'
+    LEFT JOIN prep_app_release_major_minor AS latest_version -- Join the latest version released at the time of the ping.
+      ON add_country_info_to_usage_ping.ping_created_at BETWEEN latest_version.release_date AND {{ coalesce_to_infinity('latest_version.next_version_release_date') }}
+      AND latest_version.application = 'GitLab'
+    QUALIFY RANK() OVER(PARTITION BY add_country_info_to_usage_ping.dim_ping_instance_id ORDER BY latest_version.release_date DESC) = 1
+    -- Adding the QUALIFY statement because of the latest_version CTE. There is rare case when the ping_created_at is right between the last day of a release and when the new one comes out.
+    -- This causes two records to be matched and then we have two records per one ping.
+    -- The rank statements gets rid of this. Using rank instead row_number since rank will preserve other might be duplicates in the data, while rank only addresses
+    -- the duplicates that are entered in the data consequence of the latest_version CTE join condition. 
 
 ), joined_payload AS (
 
@@ -129,8 +147,10 @@
 
 ), flattened_high_level as (
     SELECT
-      {{ dbt_utils.surrogate_key(['dim_ping_instance_id', 'joined_payload.metrics_path']) }}                      AS ping_instance_metric_id,
+      {{ dbt_utils.generate_surrogate_key(['dim_ping_instance_id', 'joined_payload.metrics_path']) }}                      AS ping_instance_metric_id,
       dim_ping_instance_id                                                                                        AS dim_ping_instance_id,
+      dim_app_release_major_minor_sk                                                                              AS dim_app_release_major_minor_sk,
+      dim_latest_available_app_release_major_minor_sk                                                             AS dim_latest_available_app_release_major_minor_sk,
       joined_payload.metrics_path                                                                                 AS metrics_path,
       metric_value                                                                                                AS metric_value,
       has_timed_out                                                                                               AS has_timed_out,
@@ -161,7 +181,7 @@
 {{ dbt_audit(
     cte_ref="flattened_high_level",
     created_by="@icooper-acp",
-    updated_by="@jpeguero",
+    updated_by="@michellecooper",
     created_date="2022-03-08",
-    updated_date="2023-06-12"
+    updated_date="2023-06-30"
 ) }}

@@ -19,14 +19,15 @@ WITH prep_epic_user_request AS (
     SELECT prep_epic_user_request_collaboration_project.*
     FROM prep_epic_user_request_collaboration_project
     LEFT JOIN prep_epic_user_request
-      ON prep_epic_user_request.dim_epic_id = prep_epic_user_request_collaboration_project.dim_epic_id
+      ON prep_epic_user_request.epic_id = prep_epic_user_request_collaboration_project.epic_id
       AND prep_epic_user_request.dim_crm_account_id = prep_epic_user_request_collaboration_project.dim_crm_account_id
-    WHERE prep_epic_user_request.dim_epic_id IS NULL
+    WHERE prep_epic_user_request.epic_id IS NULL
 
 ), unioned AS (
 
     SELECT
-      dim_epic_id,
+      epic_id,
+      dim_epic_sk,
       link_type,
       dim_crm_opportunity_id,
       dim_crm_account_id,
@@ -40,7 +41,8 @@ WITH prep_epic_user_request AS (
     UNION
 
     SELECT
-      dim_epic_id,
+      epic_id,
+      dim_epic_sk,
       'Account'             AS link_type,
       MD5(-1)               AS dim_crm_opportunity_id,
       dim_crm_account_id,
@@ -56,7 +58,7 @@ WITH prep_epic_user_request AS (
 {{ dbt_audit(
     cte_ref="unioned",
     created_by="@jpeguero",
-    updated_by="@jpeguero",
+    updated_by="@michellecooper",
     created_date="2021-10-12",
-    updated_date="2021-11-16",
+    updated_date="2023-09-08",
 ) }}

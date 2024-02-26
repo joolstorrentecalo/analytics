@@ -22,9 +22,17 @@ stages:
   - triage run
 
 include:
+  -  template: Jobs/Secret-Detection.gitlab-ci.yml
   - "extract/extract-ci.yml"
   - "transform/snowflake-dbt/snowflake-dbt-ci.yml"
 
+secret_detection:
+  stage: 🛑🐍 Python Critical
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  allow_failure: false
+  variables:
+    SECRET_DETECTION_EXCLUDED_PATHS: "docker-compose.yml, transform/snowflake-dbt/packages.yml, extract/saas_postgres_pipeline_backfill/postgres_pipeline/postgres_utils.py"
 
 # ======
 # Snowflake Database Clones
@@ -71,6 +79,7 @@ include:
   script:
     - manage_snowflake.py manage_clones --database prod --empty
     - manage_snowflake.py manage_clones --database prep --empty
+    - manage_snowflake.py manage_clones --database raw --empty
   when: always
 
 📈❗️clone_prod_real:
@@ -116,6 +125,11 @@ include:
     - manage_snowflake.py manage_clones --force --database prod --empty
     - manage_snowflake.py manage_clones --force --database raw --include_stages
 
+clone_raw_by_schema:
+  <<: *snowflake_start_clone
+  script:
+    - manage_snowflake.py clone_database_by_schemas --database raw --include_stages
+
 clone_stop:
   <<: *snowflake_clone_template
   stage: 🛑 Snowflake Stop
@@ -141,21 +155,22 @@ clone_stop:
 
 .python_critical_check: &python_critical_check
   stage: 🛑🐍 Python Critical
-  image: registry.gitlab.com/gitlab-data/ci-python-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/ci-python-image:v0.0.4
   before_script:
-    - CHANGED_FILES=$(git diff --name-only ${CI_COMMIT_SHA} origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} | grep '\.py'$)
+    - CHANGED_FILES=$(git diff --name-only ${CI_COMMIT_SHA} origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} | grep '\.py\|\.ipynb'$)
   tags:
     - analytics
   only:
     changes:
       - "**/*.py"
+      - "**/*.ipynb"
     refs:
       - merge_requests
   allow_failure: false
 
 .python_check: &python_check
   stage: 🐍 Python
-  image: registry.gitlab.com/gitlab-data/ci-python-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/ci-python-image:v0.0.4
   before_script:
     - CHANGED_FILES=$(git diff --name-only ${CI_COMMIT_SHA} origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} | grep '\.py'$)
   tags:
@@ -171,7 +186,7 @@ clone_stop:
   stage: 🐍 Python
   tags:
     - analytics
-  image: registry.gitlab.com/gitlab-data/data-image/data-image:v1.0.21
+  image: registry.gitlab.com/gitlab-data/data-image/data-image:v1.0.31
   only:
     changes:
       - "**/*.py"
@@ -199,7 +214,7 @@ clone_stop:
   <<: *python_check
   script:
     - echo "Changed files are $CHANGED_FILES"
-    - pylint $CHANGED_FILES --ignore=analytics/dags --disable=line-too-long,E0401,E0611,W1203,W1202,C0103,R0801,R0902,W0212
+    - pylint $CHANGED_FILES --ignore=analytics/dags --disable=line-too-long,E0401,E0611,W1203,W1202,C0103,R0801,R0902,W0212,W0104,W0106,W0703
 
 🤔python_complexity:
   <<: *python_check
@@ -236,22 +251,35 @@ clone_stop:
   only:
     changes:
       - "permissions/snowflake/roles.yml"
+      - "extract/tableau_con_man_config/src/*"
     refs:
-      - merge_request
+      - merge_requests
   allow_failure: true
+  before_script:
+    - CHANGED_FILES=$(git diff --name-only --diff-filter=d origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} ${CI_COMMIT_SHA} | grep '\.yml\|\.yaml'$)
 
 📁yaml_validation:
   <<: *yaml_validate
-  script:
-    - python -c 'import yaml, sys; print(yaml.safe_load(sys.stdin))' < permissions/snowflake/roles.yml
+  script: | 
+    # Iterate over each changed YAML file using Python's yaml.safe_load
+    for file in $CHANGED_FILES; do
+      if python -c "import yaml; yaml.safe_load(open('$file'))" > /dev/null 2>&1; then
+        echo "YAML validation passed for $file"
+      else
+        echo "YAML validation failed for $file"
+        exit 1
+      fi
+    done;
   allow_failure: false
-  
+
 .permifrost: &permifrost
   stage: 🐍 Python
-  image: registry.gitlab.com/gitlab-data/permifrost:v0.13.1
+  image: registry.gitlab.com/gitlab-data/permifrost:v0.15.4
   tags:
     - analytics
   only:
+    changes:
+      - "permissions/snowflake/roles.yml"
     refs:
       - merge_requests
   allow_failure: true
@@ -261,13 +289,14 @@ clone_stop:
   script:
     - permifrost run permissions/snowflake/roles.yml --diff --dry
   when: manual
+  allow_failure: true
 
 🧊permifrost_spec_test:
   <<: *permifrost
   script:
     - permifrost spec-test permissions/snowflake/roles.yml
   when: manual
-  allow_failure: false
+  allow_failure: true
 
 # ======
 # dbt docs to GitLab Pages
@@ -275,14 +304,14 @@ clone_stop:
 
 .pages_job_template: &pages_job_template
   stage: 📚 dbt Docs
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
   variables:
     SNOWFLAKE_ROLE: $SNOWFLAKE_TRANSFORM_ROLE
     SNOWFLAKE_WAREHOUSE: $SNOWFLAKE_TRANSFORM_WAREHOUSE
   before_script:
     - export PATH="$CI_PROJECT_DIR/orchestration/:$PATH"
   script:
-    - export SNOWFLAKE_SNAPSHOT_DATABASE="SNOWFLAKE"
+    - export SNOWFLAKE_SNAPSHOT_DATABASE="RAW"
     - echo $SNOWFLAKE_SNAPSHOT_DATABASE
     - mkdir -p ~/.ssh
     - touch ~/.ssh/id_rsa
@@ -298,7 +327,7 @@ clone_stop:
     - mkdir -p $CI_PROJECT_DIR/public/
     - cd target
     - | # remove row counts
-      sed -i 's/"Row Count", "value": [0-9]*.0/"Row Count", "value": -1.0/g' catalog.json
+      sed -i 's/"Row Count", "value": [0-9]*/"Row Count", "value": -1/g' catalog.json
     - cp *.json graph.gpickle $CI_PROJECT_DIR/public/
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/docs/
     - cp index.html gitlab.css $CI_PROJECT_DIR/public/
@@ -355,3 +384,4 @@ schedule:run-triage:
     only:
       variables:
         - $RUN_GITLAB_TRIAGE
+

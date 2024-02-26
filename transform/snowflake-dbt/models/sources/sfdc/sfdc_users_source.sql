@@ -16,6 +16,8 @@ WITH source AS (
       name                                                              AS name,
       email                                                             AS user_email,
       employeenumber                                                    AS employee_number,
+      profileid                                                         AS profile_id,
+      username                                                          AS user_name,
 
       -- info
       title                                                             AS title,
@@ -26,6 +28,11 @@ WITH source AS (
       isactive                                                          AS is_active,
       userroleid                                                        AS user_role_id,
       user_role_type__c                                                 AS user_role_type,
+      role_level_1__c                                                   AS user_role_level_1,
+      role_level_2__c                                                   AS user_role_level_2,
+      role_level_3__c                                                   AS user_role_level_3,
+      role_level_4__c                                                   AS user_role_level_4,
+      role_level_5__c                                                   AS user_role_level_5,
       start_date__c                                                     AS start_date,
       ramping_quota__c                                                  AS ramping_quota,
       {{ sales_hierarchy_sales_segment_cleaning('user_segment__c') }}   AS user_segment,

@@ -4,8 +4,13 @@
 
 WITH merge_requests AS (
 
-    SELECT *
-    FROM {{ ref('gitlab_dotcom_merge_requests_xf') }}
+    SELECT
+      prep_merge_request.*,
+      prep_namespace.namespace_id
+    FROM {{ ref('prep_merge_request') }}
+    LEFT JOIN {{ ref('prep_namespace') }}
+      ON prep_merge_request.dim_namespace_sk = prep_namespace.dim_namespace_sk
+    WHERE prep_namespace.is_currently_valid = TRUE
 
 ), notes AS (
 
@@ -27,7 +32,7 @@ WITH merge_requests AS (
     SELECT 
       merge_requests.project_id,
       merge_requests.namespace_id,
-      merge_requests.merge_request_iid,
+      merge_requests.merge_request_internal_id,
       merge_requests.merge_request_title,
       merge_requests.merge_request_id,
       notes.note_author_id,

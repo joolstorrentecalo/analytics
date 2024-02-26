@@ -8,10 +8,10 @@ from airflow_utils import (
     clone_and_setup_extraction_cmd,
     gitlab_defaults,
     slack_failed_task,
+    gitlab_pod_env_vars,
 )
 from kube_secrets import (
     SNOWFLAKE_ACCOUNT,
-    SNOWFLAKE_LOAD_DATABASE,
     SNOWFLAKE_LOAD_PASSWORD,
     SNOWFLAKE_LOAD_ROLE,
     SNOWFLAKE_LOAD_USER,
@@ -21,12 +21,10 @@ from kube_secrets import (
 from kubernetes_helpers import get_affinity, get_toleration
 
 # Load the env vars into a dict and set Secrets
-env = os.environ.copy()
-pod_env_vars = {"CI_PROJECT_DIR": "/analytics"}
+pod_env_vars = gitlab_pod_env_vars
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -40,7 +38,10 @@ default_args = {
 
 # Create the DAG
 dag = DAG(
-    "engineering_extract", default_args=default_args, schedule_interval="0 */8 * * *"
+    "engineering_extract",
+    default_args=default_args,
+    schedule_interval="0 */8 * * *",
+    catchup=False,
 )
 
 engineering_extract_cmd = f"""
@@ -54,14 +55,13 @@ engineering_extract = KubernetesPodOperator(
     name="engineering-extract",
     secrets=[
         SNOWFLAKE_ACCOUNT,
-        SNOWFLAKE_LOAD_DATABASE,
         SNOWFLAKE_LOAD_ROLE,
         SNOWFLAKE_LOAD_USER,
         SNOWFLAKE_LOAD_WAREHOUSE,
         SNOWFLAKE_LOAD_PASSWORD,
     ],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     env_vars=pod_env_vars,
     arguments=[engineering_extract_cmd],
     dag=dag,
@@ -82,15 +82,14 @@ advisory_database_extract = KubernetesPodOperator(
     name="advisory-db-extract",
     secrets=[
         SNOWFLAKE_ACCOUNT,
-        SNOWFLAKE_LOAD_DATABASE,
         SNOWFLAKE_LOAD_ROLE,
         SNOWFLAKE_LOAD_USER,
         SNOWFLAKE_LOAD_WAREHOUSE,
         SNOWFLAKE_LOAD_PASSWORD,
         GEMNASIUM_DB_DATA_TOKEN,
     ],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     env_vars=pod_env_vars,
     arguments=[advisory_database_extract_cmd],
     dag=dag,

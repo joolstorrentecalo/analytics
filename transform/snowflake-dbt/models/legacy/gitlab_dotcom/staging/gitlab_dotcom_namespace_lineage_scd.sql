@@ -83,7 +83,7 @@ This CTE finds groups of snapshoted chages that changed the parent id. This is a
   ),
   event_index AS (
     SELECT
-      {{ dbt_utils.surrogate_key(['namespace_id', 'lineage_valid_from'] ) }}    AS namespace_lineage_id,
+      {{ dbt_utils.generate_surrogate_key(['namespace_id', 'lineage_valid_from'] ) }}    AS namespace_lineage_id,
       namespace_id,
       parent_id,
       upstream_lineage,

@@ -14,6 +14,7 @@ WITH sfdc_zqu_quote_source AS (
       zqu__primary                                  AS is_primary_quote,
       quote_entity,
       zqu__start_date                               AS quote_start_date,
+      created_date,
       zqu__subscriptiontype                         AS subscription_action_type
     FROM sfdc_zqu_quote_source
 
@@ -22,7 +23,7 @@ WITH sfdc_zqu_quote_source AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@snalamaru",
-    updated_by="@chrissharp",
+    updated_by="@rkohnke",
     created_date="2021-01-07",
-    updated_date="2023-03-15"
+    updated_date="2023-08-07"
 ) }}

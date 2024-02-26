@@ -8,21 +8,21 @@
 
 WITH unioned_view AS (
 
-{{ schema_union_limit('snowplow_', 'snowplow_unnested_events', 'derived_tstamp', 750, database_name=env_var('SNOWFLAKE_PREP_DATABASE')) }}
+{{ schema_union_limit('snowplow_', 'snowplow_unnested_events', 'derived_tstamp', 800, database_name=env_var('SNOWFLAKE_PREP_DATABASE'), boolean_filter_statement='is_staging_url = FALSE') }}
 
 )
 
 SELECT
   event_id                                                                                                          AS event_id,
   derived_tstamp::TIMESTAMP                                                                                         AS behavior_at,
-  {{ dbt_utils.surrogate_key([
-    'event', 
-    'event_name', 
-    'platform', 
-    'gsc_environment', 
-    'se_category', 
-    'se_action', 
-    'se_label', 
+  {{ dbt_utils.generate_surrogate_key([
+    'event',
+    'event_name',
+    'platform',
+    'gsc_environment',
+    'se_category',
+    'se_action',
+    'se_label',
     'se_property'
     ]) }}                                                                                                           AS dim_behavior_event_sk,
   event                                                                                                             AS event,
@@ -50,11 +50,11 @@ SELECT
   br_version                                                                                                        AS browser_minor_version,
   br_lang                                                                                                           AS browser_language,
   br_renderengine                                                                                                   AS browser_engine,
-  {{ dbt_utils.surrogate_key([
-    'br_family', 
-    'br_name', 
-    'br_version', 
-    'br_lang']) 
+  {{ dbt_utils.generate_surrogate_key([
+    'br_family',
+    'br_name',
+    'br_version',
+    'br_lang'])
     }}                                                                                                              AS dim_behavior_browser_sk,
   gsc_environment                                                                                                   AS environment,
   v_tracker                                                                                                         AS tracker_version,
@@ -69,11 +69,12 @@ SELECT
   {{ clean_url('page_urlpath') }} AS clean_url_path,
   page_urlfragment                                                                                                  AS page_url_fragment,
   page_urlquery                                                                                                     AS page_url_query,
-  {{ dbt_utils.surrogate_key([
-    'page_url_host_path', 
-    'app_id', 
+  {{ dbt_utils.generate_surrogate_key([
+    'page_url_host_path',
+    'app_id',
     'page_url_scheme'
     ]) }}                                                                                                           AS dim_behavior_website_page_sk,
+  gitlab_standard_context                                                                                           AS gitlab_standard_context,
   gsc_environment                                                                                                   AS gsc_environment,
   gsc_extra                                                                                                         AS gsc_extra,
   gsc_namespace_id                                                                                                  AS gsc_namespace_id,
@@ -81,12 +82,13 @@ SELECT
   gsc_google_analytics_client_id                                                                                    AS gsc_google_analytics_client_id,
   gsc_project_id                                                                                                    AS gsc_project_id,
   gsc_source                                                                                                        AS gsc_source,
+  gsc_is_gitlab_team_member                                                                                         AS gsc_is_gitlab_team_member,
   os_name                                                                                                           AS os_name,
   os_timezone                                                                                                       AS os_timezone,
   os_family                                                                                                         AS os,
   os_manufacturer                                                                                                   AS os_manufacturer,
-  {{ dbt_utils.surrogate_key([
-    'os_name', 
+  {{ dbt_utils.generate_surrogate_key([
+    'os_name',
     'os_timezone'
     ]) }}                                                                                                           AS dim_behavior_operating_system_sk,
   dvce_type                                                                                                         AS device_type,
@@ -97,9 +99,9 @@ SELECT
   refr_urlscheme                                                                                                    AS referrer_url_scheme,
   refr_urlquery                                                                                                     AS referrer_url_query,
   REGEXP_REPLACE(page_referrer, '^https?:\/\/')                                                                     AS referrer_url_host_path,
-  {{ dbt_utils.surrogate_key([
-    'referrer_url_host_path', 
-    'app_id', 
+  {{ dbt_utils.generate_surrogate_key([
+    'referrer_url_host_path',
+    'app_id',
     'referrer_url_scheme'
     ]) }}                                                                                                           AS dim_behavior_referrer_page_sk,
   IFNULL(geo_city, 'Unknown')::VARCHAR                                                                              AS user_city,
@@ -107,26 +109,28 @@ SELECT
   IFNULL(geo_region, 'Unknown')::VARCHAR                                                                            AS user_region,
   IFNULL(geo_region_name, 'Unknown')::VARCHAR                                                                       AS user_region_name,
   IFNULL(geo_timezone, 'Unknown')::VARCHAR                                                                          AS user_timezone_name,
-  {{ dbt_utils.surrogate_key([
-    'user_city', 
+  {{ dbt_utils.generate_surrogate_key([
+    'user_city',
     'user_country',
     'user_region',
     'user_timezone_name'
     ]) }}                                                                                                           AS dim_user_location_sk,
-  COALESCE(CONTAINS(contexts, 'iglu:org.w3/PerformanceTiming/'), FALSE)::BOOLEAN                                    AS has_performance_timing_context,
-  COALESCE(CONTAINS(contexts, 'iglu:com.snowplowanalytics.snowplow/web_page/'), FALSE)::BOOLEAN                     AS has_web_page_context,
+  has_performance_timing_context,
+  has_web_page_context,
   COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/ci_build_failed/'), FALSE)::BOOLEAN                                  AS has_ci_build_failed_context,
   COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/wiki_page_context/'), FALSE)::BOOLEAN                                AS has_wiki_page_context,
-  COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/gitlab_standard/'), FALSE)::BOOLEAN                                  AS has_gitlab_standard_context,
+  has_gitlab_standard_context,
   COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/email_campaigns/'), FALSE)::BOOLEAN                                  AS has_email_campaigns_context,
-  COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/gitlab_service_ping/'), FALSE)::BOOLEAN                              AS has_gitlab_service_ping_context,
+  has_gitlab_service_ping_context,
   COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/design_management_context/'), FALSE)::BOOLEAN                        AS has_design_management_context,
   COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/customer_standard/'), FALSE)::BOOLEAN                                AS has_customer_standard_context,
   COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/secure_scan/'), FALSE)::BOOLEAN                                      AS has_secure_scan_context,
-  COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/gitlab_experiment/'), FALSE)::BOOLEAN                                AS has_gitlab_experiment_context,
+  has_gitlab_experiment_context,
   COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/subscription_auto_renew/'), FALSE)::BOOLEAN                          AS has_subscription_auto_renew_context,
-  {{ dbt_utils.surrogate_key([
-    'has_performance_timing_context', 
+  COALESCE(CONTAINS(contexts, 'iglu:com.gitlab/code_suggestions_context/'), FALSE)::BOOLEAN                         AS has_code_suggestions_context,
+  has_ide_extension_version_context,
+  {{ dbt_utils.generate_surrogate_key([
+    'has_performance_timing_context',
     'has_web_page_context',
     'has_ci_build_failed_context',
     'has_wiki_page_context',
@@ -136,7 +140,59 @@ SELECT
     'has_design_management_context',
     'has_customer_standard_context',
     'has_secure_scan_context',
-    'has_gitlab_experiment_context', 
-    'has_subscription_auto_renew_context'
-    ]) }}                                                                                                           AS dim_behavior_contexts_sk
+    'has_gitlab_experiment_context',
+    'has_subscription_auto_renew_context',
+    'has_code_suggestions_context',
+    'has_ide_extension_version_context'
+    ]) }}                                                                                                           AS dim_behavior_contexts_sk,
+  ide_extension_version_context                                                                                     AS ide_extension_version_context,
+  extension_name                                                                                                    AS extension_name,
+  extension_version                                                                                                 AS extension_version,
+  ide_name                                                                                                          AS ide_name,
+  ide_vendor                                                                                                        AS ide_vendor,
+  ide_version                                                                                                       AS ide_version,
+  language_server_version                                                                                           AS language_server_version,
+  gitlab_experiment_context                                                                                         AS gitlab_experiment_context,
+  experiment_name                                                                                                   AS experiment_name,
+  experiment_context_key                                                                                            AS experiment_context_key,
+  experiment_variant                                                                                                AS experiment_variant,
+  experiment_migration_keys                                                                                         AS experiment_migration_keys,
+  code_suggestions_context                                                                                          AS code_suggestions_context,
+  model_engine                                                                                                      AS model_engine,
+  model_name                                                                                                        AS model_name,
+  prefix_length                                                                                                     AS prefix_length,
+  suffix_length                                                                                                     AS suffix_length,
+  language                                                                                                          AS language,
+  user_agent                                                                                                        AS user_agent,
+  delivery_type                                                                                                     AS delivery_type,
+  api_status_code                                                                                                   AS api_status_code,
+  namespace_ids                                                                                                     AS namespace_ids,
+  instance_id                                                                                                       AS instance_id,
+  host_name                                                                                                         AS host_name,
+  gitlab_service_ping_context                                                                                       AS gitlab_service_ping_context,
+  redis_event_name                                                                                                  AS redis_event_name,
+  key_path                                                                                                          AS key_path,
+  data_source                                                                                                       AS data_source,
+  performance_timing_context                                                                                        AS performance_timing_context,
+  connect_end                                                                                                       AS connect_end,
+  connect_start                                                                                                     AS connect_start,
+  dom_complete                                                                                                      AS dom_complete,
+  dom_content_loaded_event_end                                                                                      AS dom_content_loaded_event_end,
+  dom_content_loaded_event_start                                                                                    AS dom_content_loaded_event_start,
+  dom_interactive                                                                                                   AS dom_interactive,
+  dom_loading                                                                                                       AS dom_loading,
+  domain_lookup_end                                                                                                 AS domain_lookup_end,
+  domain_lookup_start                                                                                               AS domain_lookup_start,
+  fetch_start                                                                                                       AS fetch_start,
+  load_event_end                                                                                                    AS load_event_end,
+  load_event_start                                                                                                  AS load_event_start,
+  navigation_start                                                                                                  AS navigation_start,
+  redirect_end                                                                                                      AS redirect_end,
+  redirect_start                                                                                                    AS redirect_start,
+  request_start                                                                                                     AS request_start,
+  response_end                                                                                                      AS response_end,
+  response_start                                                                                                    AS response_start,
+  secure_connection_start                                                                                           AS secure_connection_start,
+  unload_event_end                                                                                                  AS unload_event_end,
+  unload_event_start                                                                                                AS unload_event_start
 FROM unioned_view

@@ -12,7 +12,7 @@ WITH source_data AS (
 ), unioned AS (
 
     SELECT DISTINCT
-      {{ dbt_utils.surrogate_key(['order_type_stamped']) }}  AS dim_order_type_id,
+      {{ dbt_utils.generate_surrogate_key(['order_type_stamped']) }}  AS dim_order_type_id,
       order_type_stamped                                     AS order_type_name,
       order_type_grouped
     FROM source_data

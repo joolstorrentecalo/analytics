@@ -10,17 +10,17 @@
   ('gitlab_dotcom_users_source', 'gitlab_dotcom_users_source'),
   ('gitlab_dotcom_members_source', 'gitlab_dotcom_members_source'),
   ('gitlab_dotcom_memberships', 'gitlab_dotcom_memberships'),
-  ('customers_db_charges_xf', 'customers_db_charges_xf'),
-  ('customers_db_trials', 'customers_db_trials'),
+  ('dim_subscription', 'dim_subscription'),
+  ('dim_product_tier', 'dim_product_tier'),
+  ('fct_trial_first', 'fct_trial_first'),
   ('customers_db_leads', 'customers_db_leads_source'),
   ('fct_event_user_daily', 'fct_event_user_daily'),
   ('map_gitlab_dotcom_xmau_metrics', 'map_gitlab_dotcom_xmau_metrics'),
   ('services', 'gitlab_dotcom_integrations_source'),
   ('project', 'prep_project'),
-  ('ptpt_scores_by_user', 'prep_ptpt_scores_by_user'),
-  ('ptpf_scores_by_user', 'prep_ptpf_scores_by_user'),
   ('ptp_scores_by_user', 'prep_ptp_scores_by_user'),
-  ('namespace_details', 'gitlab_dotcom_namespace_details_source')
+  ('namespace_details', 'gitlab_dotcom_namespace_details_source'),
+  ('prep_ptpt_scores_by_user', 'prep_ptpt_scores_by_user')
 ]) }}
 
 -------------------------- Start of PQL logic: --------------------------
@@ -30,6 +30,7 @@
     SELECT
       gitlab_dotcom_users_source.email,
       dim_namespace.dim_namespace_id,
+      dim_namespace.dim_product_tier_id,
       dim_namespace.namespace_name,
       dim_namespace.created_at              AS namespace_created_at,
       dim_namespace.created_at::DATE        AS namespace_created_at_date,
@@ -88,20 +89,22 @@
 ), subscriptions AS (
   
     SELECT 
-      charges.current_gitlab_namespace_id::INT                      AS namespace_id, 
-      MIN(charges.subscription_start_date)                          AS min_subscription_start_date
-    FROM customers_db_charges_xf charges
+      dim_subscription.namespace_id::INT                                     AS namespace_id, 
+      MIN(dim_subscription.subscription_start_date)                          AS min_subscription_start_date
+    FROM dim_subscription
     INNER JOIN namespaces 
-      ON charges.current_gitlab_namespace_id = namespaces.dim_namespace_id
-    WHERE charges.current_gitlab_namespace_id IS NOT NULL
-      AND charges.product_category IN ('SaaS - Ultimate','SaaS - Premium') -- changing to product category field, used by the charges table
+      ON dim_subscription.namespace_id = namespaces.dim_namespace_id
+    INNER JOIN dim_product_tier
+      ON namespaces.dim_product_tier_id = dim_product_tier.dim_product_tier_id
+    WHERE dim_subscription.namespace_id IS NOT NULL
+      AND dim_product_tier.product_tier_name IN ('SaaS - Ultimate','SaaS - Premium')
     GROUP BY 1
   
 ), latest_trial_by_user AS (
   
     SELECT *
-    FROM customers_db_trials
-    QUALIFY ROW_NUMBER() OVER(PARTITION BY gitlab_user_id ORDER BY trial_start_date DESC) = 1
+    FROM fct_trial_first
+    QUALIFY ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY trial_start_date DESC) = 1
 
 ), pqls AS (
   
@@ -126,7 +129,7 @@
       leads.product_interaction,
       leads.user_id,
       users.email,
-      latest_trial_by_user.gitlab_namespace_id    AS dim_namespace_id,
+      latest_trial_by_user.dim_namespace_id       AS dim_namespace_id,
       dim_namespace.namespace_name,
       latest_trial_by_user.trial_start_date::DATE AS trial_start_date,
       leads.created_at                            AS pql_event_created_at
@@ -134,7 +137,7 @@
     LEFT JOIN gitlab_dotcom_users_source AS users
       ON leads.user_id = users.user_id
     LEFT JOIN latest_trial_by_user
-      ON latest_trial_by_user.gitlab_user_id = leads.user_id
+      ON latest_trial_by_user.user_id = leads.user_id
     LEFT JOIN dim_namespace
       ON dim_namespace.dim_namespace_id = leads.namespace_id
     WHERE LOWER(leads.product_interaction) = 'saas trial'
@@ -223,7 +226,7 @@
     SELECT
       latest_pql.email                                                                           AS email,
       COUNT(*)                                                                                   AS pql_nbr_integrations_installed,
-      ARRAY_AGG(DISTINCT services.service_type) WITHIN GROUP (ORDER BY services.service_type)    AS pql_integrations_installed
+      ARRAY_AGG(DISTINCT services.integration_type) WITHIN GROUP (ORDER BY services.integration_type)    AS pql_integrations_installed
     FROM services
     LEFT JOIN project
       ON services.project_id = project.dim_project_id
@@ -258,7 +261,7 @@
 ), namespace_notifications AS (
 
     SELECT
-      COALESCE(notification_email, email) AS email_address,
+      email                               AS email_address,
       namespace_details.namespace_id      AS user_limit_namespace_id,
       dashboard_notification_at           AS user_limit_notification_at,
       dashboard_enforcement_at            AS user_limit_enforcement_at
@@ -359,6 +362,12 @@
       SUM(usage_historical_max_users_not_aligned)                                                   AS usage_historical_max_users_not_aligned
     FROM distinct_contact_subscription
     GROUP BY dim_marketing_contact_id
+
+), last_ptpt_scores AS (
+
+    SELECT *
+    FROM prep_ptpt_scores_by_user
+    WHERE score_date = (SELECT MAX(score_date) from prep_ptpt_scores_by_user)
 
 ), prep AS (
   
@@ -827,34 +836,14 @@
       marketing_contact.wip_is_valid_email_address,
       marketing_contact.wip_invalid_email_address_reason,
 
-      -- Propensity to purchase trials fields
-      IFF(ptpt_scores_by_user.namespace_id IS NOT NULL, TRUE, FALSE)
-                                                  AS is_ptpt_contact,
-      IFF(is_ptpt_contact = TRUE OR (is_ptpt_contact = FALSE AND marketing_contact.is_ptpt_contact_marketo = TRUE), TRUE, FALSE)
-                                                  AS is_ptpt_contact_change,
-      ptpt_scores_by_user.namespace_id            AS ptpt_namespace_id,
-      ptpt_scores_by_user.score_group             AS ptpt_score_group,
-      ptpt_scores_by_user.insights                AS ptpt_insights,
-      ptpt_scores_by_user.score_date              AS ptpt_score_date,
-      ptpt_scores_by_user.past_score_group        AS ptpt_past_score_group,
-      ptpt_scores_by_user.past_score_date         AS ptpt_past_score_date,
-
-      -- Propensity to purchase Free fields
-      IFF(ptpf_scores_by_user.namespace_id IS NOT NULL, TRUE, FALSE)
-                                                  AS is_ptpf_contact,
-      ptpf_scores_by_user.namespace_id            AS ptpf_namespace_id,
-      ptpf_scores_by_user.score_group             AS ptpf_score_group,
-      ptpf_scores_by_user.score_date              AS ptpf_score_date,
-      ptpf_scores_by_user.past_score_group        AS ptpf_past_score_group,
-      ptpf_scores_by_user.past_score_date         AS ptpf_past_score_date,
-
       -- Propensity to purchase fields
-      IFF(ptp_scores_by_user.namespace_id IS NOT NULL, TRUE, FALSE)
+      IFF(ptp_scores_by_user.model_grain_id IS NOT NULL, TRUE, FALSE)
                                                   AS is_ptp_contact,
       IFF(is_ptp_contact = TRUE OR (is_ptp_contact = FALSE AND marketing_contact.is_ptp_contact_marketo = TRUE
         ), TRUE, FALSE)
                                                   AS is_ptp_contact_change,
-      ptp_scores_by_user.namespace_id             AS ptp_namespace_id,
+      IFF(ptp_scores_by_user.ptp_source IN ('Trial', 'Free'), ptp_scores_by_user.model_grain_id, NULL)
+                                                  AS ptp_namespace_id,
       ptp_scores_by_user.score_group              AS ptp_score_group,
       ptp_scores_by_user.score_date               AS ptp_score_date,
       ptp_scores_by_user.insights                 AS ptp_insights,
@@ -868,6 +857,17 @@
         WHEN ptp_scores_by_user.days_since_trial_start >= 90 THEN '90+ days'
       END                                         AS ptp_days_since_trial_start,
       ptp_scores_by_user.ptp_source               AS ptp_source,
+
+       -- Propensity to purchase fields
+      IFF(last_ptpt_scores.dim_marketing_contact_id IS NOT NULL, TRUE, FALSE)
+                                                  AS is_ptpt_contact,
+      IFF(is_ptpt_contact = TRUE OR (is_ptpt_contact = FALSE AND marketing_contact.is_ptpt_contact_marketo = TRUE
+        ), TRUE, FALSE)
+                                                  AS is_ptpt_contact_change,
+      last_ptpt_scores.namespace_id               AS ptpt_namespace_id,
+      last_ptpt_scores.score_group                AS ptpt_score_group,
+      last_ptpt_scores.score_date                 AS ptpt_score_date,
+      last_ptpt_scores.insights                   AS ptpt_insights,
 
       -- Namespace notification dates
       namespace_notifications.user_limit_namespace_id,
@@ -924,12 +924,10 @@
       ON services_by_email.email = marketing_contact.email_address
     LEFT JOIN users_role_by_email
       ON users_role_by_email.email = marketing_contact.email_address
-    LEFT JOIN ptpt_scores_by_user
-      ON ptpt_scores_by_user.dim_marketing_contact_id = marketing_contact.dim_marketing_contact_id
-    LEFT JOIN ptpf_scores_by_user
-      ON ptpf_scores_by_user.dim_marketing_contact_id = marketing_contact.dim_marketing_contact_id
     LEFT JOIN ptp_scores_by_user
       ON ptp_scores_by_user.dim_marketing_contact_id = marketing_contact.dim_marketing_contact_id
+    LEFT JOIN last_ptpt_scores
+      ON last_ptpt_scores.dim_marketing_contact_id = marketing_contact.dim_marketing_contact_id
     LEFT JOIN namespace_notifications
       ON namespace_notifications.email_address = marketing_contact.email_address
 )
@@ -1001,12 +999,11 @@
       'is_pql_change',
       'is_paid_tier_change',
       'is_ptpt_contact',
-      'is_ptpt_contact_change',
+      'is_ptpt_contact_change', 
       'ptpt_namespace_id',
       'ptpt_score_group',
       'ptpt_insights',
       'ptpt_score_date',
-      'ptpt_past_score_group',
       'is_member_of_public_ultimate_parent_namespace',
       'is_member_of_private_ultimate_parent_namespace',
       'user_limit_notification_at',
@@ -1024,7 +1021,8 @@
       'ptp_past_insights',
       'ptp_past_score_group',
       'ptp_days_since_trial_start',
-      'ptp_source'
+      'ptp_source',
+      'is_group_maintainer_of_saas_paid_tier'
       ]
 ) }}
 
@@ -1033,5 +1031,5 @@
     created_by="@trevor31",
     updated_by="@jpeguero",
     created_date="2021-02-09",
-    updated_date="2023-06-19"
+    updated_date="2023-12-04"
 ) }}

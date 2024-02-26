@@ -66,6 +66,25 @@ SELECT DISTINCT
     key_bu_subbu_division,
     key_bu_subbu_division_ot,
     key_bu_subbu_division_sqs,
-    key_bu_subbu_division_asm
+    key_bu_subbu_division_asm,
+
+    --fy25 keys
+    key_geo,
+
+    key_geo_ot,
+    key_geo_sqs,
+        
+    key_geo_bu,
+    key_geo_bu_ot,
+    key_geo_bu_sqs,
+
+    key_geo_bu_region,
+    key_geo_bu_region_ot,
+    key_geo_bu_region_sqs,
+
+    key_geo_bu_region_area,
+    key_geo_bu_region_area_segment
+ 
+
 
 FROM report_agg_keys_base

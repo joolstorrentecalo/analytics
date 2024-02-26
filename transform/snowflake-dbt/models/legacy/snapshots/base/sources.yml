@@ -39,6 +39,7 @@ sources:
       - name: sfdc_lead_snapshots
       - name: sfdc_opportunity_snapshots
       - name: sfdc_user_snapshots
+      - name: sfdc_sandbox_user_snapshots
       - name: sheetload_comp_band_snapshots
       - name: sheetload_employee_location_factor_snapshots
         loaded_at_field: DATEADD(sec, dbt_updated_at, '1970-01-01')
@@ -71,3 +72,6 @@ sources:
       - name: rpt_event_xmau_metric_monthly_snapshot
       - name: dim_user_snapshot
       - name: customers_db_billing_accounts_snapshots
+      - name: job_profiles_snapshots
+      - name: customers_db_billing_account_contacts_snapshots
+      - name: customers_db_cloud_activations_snapshots

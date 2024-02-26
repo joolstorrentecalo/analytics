@@ -100,7 +100,7 @@
 ), prep_usage_ping_and_license AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['prep_usage_ping_cte.dim_ping_instance_id']) }}                         AS ping_instance_id,
+      {{ dbt_utils.generate_surrogate_key(['prep_usage_ping_cte.dim_ping_instance_id']) }}                         AS ping_instance_id,
       prep_usage_ping_cte.dim_ping_instance_id                                                            AS dim_ping_instance_id,
       prep_usage_ping_cte.ping_created_at                                                                 AS ping_created_at,
       prep_usage_ping_cte.uploaded_at                                                                     AS uploaded_at,

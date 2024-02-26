@@ -4,8 +4,9 @@
       ('order_type', 'prep_order_type'),
       ('alliance_type', 'prep_alliance_type_scd'),
       ('channel_type', 'prep_channel_type'),
-      ('date_details_source', 'date_details_source'),
-      ('partner_category', 'prep_partner_category')
+      ('prep_date', 'prep_date'),
+      ('partner_category', 'prep_partner_category'),
+      ('prep_sales_funnel_kpi', 'prep_sales_funnel_kpi')
 ])}}
 
 , date AS (
@@ -14,7 +15,7 @@
      fiscal_month_name_fy,
      fiscal_year,
      first_day_of_month
-   FROM date_details_source
+   FROM prep_date
 
 ), prep_sales_funnel_partner_alliance_target AS (
 
@@ -26,7 +27,7 @@
 ), final_targets AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['prep_sales_funnel_partner_alliance_target.area', 
+      {{ dbt_utils.generate_surrogate_key(['prep_sales_funnel_partner_alliance_target.area',
                                  'date.fiscal_year', 
                                  'prep_sales_funnel_partner_alliance_target.kpi_name', 
                                  'prep_sales_funnel_partner_alliance_target.first_day_of_month', 
@@ -37,8 +38,10 @@
                                  'partner_category.dim_partner_category_id'
                                  ]) }}                                                                    AS sales_funnel_partner_alliance_target_id,
       prep_sales_funnel_partner_alliance_target.kpi_name,
+      prep_sales_funnel_kpi.dim_sales_funnel_kpi_sk,
       date.first_day_of_month,
       date.fiscal_year,
+      prep_date.date_id                                                                                   AS target_month_id,
       prep_sales_funnel_partner_alliance_target.sales_qualified_source,
       {{ get_keyed_nulls('sales_qualified_source.dim_sales_qualified_source_id') }}                       AS dim_sales_qualified_source_id,
       prep_sales_funnel_partner_alliance_target.alliance_partner,
@@ -78,7 +81,11 @@
     LEFT JOIN prep_user_hierarchy
       ON prep_sales_funnel_partner_alliance_target.dim_crm_user_hierarchy_sk = prep_user_hierarchy.dim_crm_user_hierarchy_sk
         AND prep_sales_funnel_partner_alliance_target.fiscal_year = prep_user_hierarchy.fiscal_year
-    {{ dbt_utils.group_by(n=26) }}
+    LEFT JOIN prep_sales_funnel_kpi
+      ON {{ sales_funnel_text_slugify("prep_sales_funnel_kpi.sales_funnel_kpi_name") }} = {{ sales_funnel_text_slugify("prep_sales_funnel_partner_alliance_target.kpi_name") }}
+    LEFT JOIN prep_date
+      ON prep_date.date_actual = date.first_day_of_month
+    {{ dbt_utils.group_by(n=27) }}
 
 
 )
@@ -86,7 +93,7 @@
 {{ dbt_audit(
     cte_ref="final_targets",
     created_by="@jpeguero",
-    updated_by="@michellecooper",
+    updated_by="@jpeguero",
     created_date="2021-04-08",
-    updated_date="2023-03-10"
+    updated_date="2023-10-27"
 ) }}

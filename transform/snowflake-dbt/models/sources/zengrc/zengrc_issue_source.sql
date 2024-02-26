@@ -43,7 +43,7 @@ renamed AS (
       PARSE_JSON(issue_custom_attributes)['204']['value']::VARCHAR              AS remediated_evidence,
       PARSE_JSON(issue_custom_attributes)['198']['value']::VARCHAR              AS financial_assertion_affected_by_deficiency,
       PARSE_JSON(issue_custom_attributes)['201']['value']::VARCHAR              AS compensating_controls,
-      REGEXP_SUBSTR(gitlab_issue_url,'\/issues\/([0-9]+)[^0-9]*',1,1,'e',1)     AS dim_issue_id
+      REGEXP_SUBSTR(gitlab_issue_url,'\/issues\/([0-9]+)[^0-9]*',1,1,'e',1)     AS gitlab_dotcom_issue_id
     FROM source
 
 )

@@ -2,6 +2,7 @@ WITH source AS (
 
   SELECT *
   FROM {{ source('workday','cost_centers') }}
+  WHERE NOT _fivetran_deleted
 
 ),
 

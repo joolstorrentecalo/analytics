@@ -54,10 +54,32 @@ WITH events AS (
       gsc_google_analytics_client_id            AS gsc_google_analytics_client_id,
       gsc_project_id                            AS gsc_project_id,
       gsc_pseudonymized_user_id                 AS gsc_pseudonymized_user_id,
-      gsc_source                                AS gsc_source
+      gsc_source                                AS gsc_source,
+      connect_end,
+      connect_start,
+      dom_complete,
+      dom_content_loaded_event_end,
+      dom_content_loaded_event_start,
+      dom_interactive,
+      dom_loading,
+      domain_lookup_end,
+      domain_lookup_start,
+      fetch_start,
+      load_event_end,
+      load_event_start,
+      navigation_start,
+      redirect_end,
+      redirect_start,
+      request_start,
+      response_end,
+      response_start,
+      secure_connection_start,
+      unload_event_end,
+      unload_event_start
 
     FROM events
     WHERE event = 'struct'
+      AND is_staging_url = FALSE
 
 )
 

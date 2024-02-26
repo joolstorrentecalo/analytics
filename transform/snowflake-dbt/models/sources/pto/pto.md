@@ -82,3 +82,23 @@ If this user has designated a start time, meaning they aren't taking the whole O
 {% docs gitlab_pto_total_hours %}
 How long the user was OOO for. This is different from `recorded_hours` in that it is unaware of holidays and weekends.
 {% enddocs %}
+### pto_group_type
+{% docs gitlab_pto_pto_group_type %}
+Enum: "STL" "EXL" "OTH"
+3-character enumeration denoting the OOO Group Type of this OOO Type.
+"STL" = Short-term Leave
+"EXL" = Extended Leave
+"OTH" = Other
+{% enddocs %}
+### is_pto
+{% docs gitlab_pto_is_pto %}
+If an OOO Event of this type is considered PTO for reporting purposes.
+{% enddocs %}
+### pto_type_name
+{% docs gitlab_pto_pto_type_name %}
+The name of the OOO Type.
+{% enddocs %}
+### pto_type_uuid
+{% docs gitlab_pto_pto_type_uuid %}
+The UUID of this OOO Type.
+{% enddocs %}

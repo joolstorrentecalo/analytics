@@ -2,13 +2,15 @@
       ('prep_crm_user_hierarchy', 'prep_crm_user_hierarchy'),
       ('sales_qualified_source', 'prep_sales_qualified_source'),
       ('order_type', 'prep_order_type'),
-      ('prep_sales_funnel_target', 'prep_sales_funnel_target')
+      ('prep_sales_funnel_target', 'prep_sales_funnel_target'),
+      ('prep_sales_funnel_kpi', 'prep_sales_funnel_kpi'),
+      ('prep_date', 'prep_date')
 ])}}
 
 , final_targets AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['prep_sales_funnel_target.dim_crm_user_hierarchy_sk', 
+      {{ dbt_utils.generate_surrogate_key(['prep_sales_funnel_target.dim_crm_user_hierarchy_sk',
                                  'prep_sales_funnel_target.fiscal_year', 
                                  'prep_sales_funnel_target.kpi_name', 
                                  'prep_sales_funnel_target.first_day_of_month', 
@@ -16,6 +18,8 @@
                                  'prep_sales_funnel_target.order_type',
                                  ]) }}                                                AS sales_funnel_target_id,
      prep_sales_funnel_target.kpi_name,
+     prep_sales_funnel_kpi.dim_sales_funnel_kpi_sk,
+     prep_date.date_id                                                                AS target_month_id,
      prep_sales_funnel_target.first_day_of_month,
      prep_sales_funnel_target.fiscal_year,
      prep_sales_funnel_target.opportunity_source                                      AS sales_qualified_source,
@@ -46,14 +50,18 @@
     LEFT JOIN prep_crm_user_hierarchy
       ON prep_sales_funnel_target.dim_crm_user_hierarchy_sk = prep_crm_user_hierarchy.dim_crm_user_hierarchy_sk
         AND prep_sales_funnel_target.fiscal_year = prep_crm_user_hierarchy.fiscal_year
-    {{ dbt_utils.group_by(n=23)}}
+    LEFT JOIN prep_sales_funnel_kpi
+      ON {{ sales_funnel_text_slugify("prep_sales_funnel_kpi.sales_funnel_kpi_name") }} = {{ sales_funnel_text_slugify("prep_sales_funnel_target.kpi_name") }}
+    LEFT JOIN prep_date
+      ON prep_date.date_actual = prep_sales_funnel_target.first_day_of_month
+    {{ dbt_utils.group_by(n=24)}}
 
 )
 
 {{ dbt_audit(
     cte_ref="final_targets",
     created_by="@michellecooper",
-    updated_by="@michellecooper",
+    updated_by="@jpeguero",
     created_date="2023-02-07",
-    updated_date="2023-03-10"
+    updated_date="2023-10-27"
 ) }}

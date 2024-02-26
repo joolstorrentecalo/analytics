@@ -1,12 +1,11 @@
 {{ config(
-    tags=["mnpi_exception"]
+    tags=["mnpi_exception"] 
 ) }}
 
 WITH bizible_attribution_touchpoints AS (
 
     SELECT *
-    FROM {{ ref('sfdc_bizible_attribution_touchpoint_source') }}
-    WHERE is_deleted = 'FALSE'
+    FROM {{ ref('prep_crm_attribution_touchpoint') }}
 
 ), crm_person AS (
 
@@ -100,7 +99,7 @@ WITH bizible_attribution_touchpoints AS (
 {{ dbt_audit(
     cte_ref="final_attribution_touchpoint",
     created_by="@mcooperDD",
-    updated_by="@lisvinueza",
+    updated_by="@rkohnke",
     created_date="2021-01-21",
-    updated_date="2023-05-21"
+    updated_date="2024-01-31"
 ) }}

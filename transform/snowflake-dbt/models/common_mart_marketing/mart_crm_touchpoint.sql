@@ -18,7 +18,7 @@
     SELECT
       -- touchpoint info
       dim_crm_touchpoint.dim_crm_touchpoint_id,
-      {{ dbt_utils.surrogate_key(['fct_crm_touchpoint.dim_crm_person_id','dim_campaign.dim_campaign_id','dim_crm_touchpoint.bizible_touchpoint_date_time']) }} AS touchpoint_person_campaign_date_id,
+      {{ dbt_utils.generate_surrogate_key(['fct_crm_touchpoint.dim_crm_person_id','dim_campaign.dim_campaign_id','dim_crm_touchpoint.bizible_touchpoint_date_time']) }} AS touchpoint_person_campaign_date_id,
       dim_crm_touchpoint.bizible_touchpoint_date,
       dim_crm_touchpoint.bizible_touchpoint_date_time,
       dim_crm_touchpoint.bizible_touchpoint_month,
@@ -26,6 +26,8 @@
       dim_crm_touchpoint.bizible_touchpoint_source,
       dim_crm_touchpoint.bizible_touchpoint_source_type,
       dim_crm_touchpoint.bizible_touchpoint_type,
+      dim_crm_touchpoint.touchpoint_offer_type,
+      dim_crm_touchpoint.touchpoint_offer_type_grouped,
       dim_crm_touchpoint.bizible_ad_campaign_name,
       dim_crm_touchpoint.bizible_ad_content,
       dim_crm_touchpoint.bizible_ad_group_name,
@@ -46,6 +48,13 @@
       dim_crm_touchpoint.bizible_landing_page_utm_budget,
       dim_crm_touchpoint.bizible_landing_page_utm_allptnr,
       dim_crm_touchpoint.bizible_landing_page_utm_partnerid,
+      dim_crm_touchpoint.utm_campaign,
+      dim_crm_touchpoint.utm_source,
+      dim_crm_touchpoint.utm_medium,
+      dim_crm_touchpoint.utm_content,
+      dim_crm_touchpoint.utm_budget,
+      dim_crm_touchpoint.utm_allptnr,
+      dim_crm_touchpoint.utm_partnerid,
       dim_crm_touchpoint.bizible_salesforce_campaign,
       dim_crm_touchpoint.bizible_integrated_campaign_grouping,
       dim_crm_touchpoint.touchpoint_segment,
@@ -58,6 +67,9 @@
       fct_crm_touchpoint.bizible_count_lead_creation_touch,
       fct_crm_touchpoint.bizible_count_u_shaped,
       dim_crm_touchpoint.bizible_created_date,
+      dim_crm_touchpoint.devrel_campaign_type,
+      dim_crm_touchpoint.devrel_campaign_description,
+      dim_crm_touchpoint.devrel_campaign_influence_type,
 
       -- person info
       fct_crm_touchpoint.dim_crm_person_id,
@@ -97,6 +109,7 @@
       dim_crm_person.account_demographics_geo,
       dim_crm_person.account_demographics_region,
       dim_crm_person.account_demographics_area,
+      dim_crm_person.is_partner_recalled,
 
       -- campaign info
       dim_campaign.dim_campaign_id,
@@ -190,6 +203,7 @@
       dim_crm_account.technical_account_manager,
       dim_crm_account.merged_to_account_id,
       dim_crm_account.is_reseller,
+      dim_crm_account.is_focus_partner,
 
       -- bizible influenced
        CASE
@@ -207,6 +221,16 @@
           THEN 1
         ELSE 0
       END AS is_fmm_sourced,
+
+    --budget holder
+    {{integrated_budget_holder(
+      'dim_campaign.budget_holder',
+      'dim_crm_touchpoint.utm_budget',
+      'dim_crm_touchpoint.bizible_ad_campaign_name',
+      'dim_crm_touchpoint.utm_medium',
+      'campaign_owner.user_role_name'
+      ) 
+    }},
 
     -- counts
      CASE
@@ -329,5 +353,5 @@
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2021-02-18",
-    updated_date="2023-05-22"
+    updated_date="2024-01-31"
 ) }}

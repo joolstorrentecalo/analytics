@@ -24,28 +24,32 @@
 ), mart_sales_funnel_target_prep AS (
 
     SELECT
-      sales_funnel_target_id,
-      target_month,
-      kpi_name,
-      crm_user_sales_segment,
-      crm_user_sales_segment_grouped,
-      crm_user_geo,
-      crm_user_region,
-      crm_user_area,
-      crm_user_sales_segment_region_grouped,
-      order_type_name,
-      order_type_grouped,
-      sales_qualified_source_name,
-      sales_qualified_source_grouped,
-      created_by,
-      updated_by,
-      model_created_date,
-      model_updated_date,
-      dbt_updated_at,
-      dbt_created_at,
-      SUM(allocated_target) AS allocated_target
+      tar.sales_funnel_target_id,
+      tar.target_month,
+      tar.kpi_name,
+      CASE 
+        WHEN LOWER(tar.crm_user_business_unit) = 'japan'
+          THEN 'Japan'
+        ELSE tar.crm_user_sales_segment
+        END                 AS crm_user_sales_segment,
+      tar.crm_user_sales_segment_grouped,
+      tar.crm_user_geo,
+      tar.crm_user_region,
+      tar.crm_user_area,
+      tar.crm_user_sales_segment_region_grouped,
+      tar.order_type_name,
+      tar.order_type_grouped,
+      tar.sales_qualified_source_name,
+      tar.sales_qualified_source_grouped,
+      tar.created_by,
+      tar.updated_by,
+      tar.model_created_date,
+      tar.model_updated_date,
+      tar.dbt_updated_at,
+      tar.dbt_created_at,
+      SUM(tar.allocated_target) AS allocated_target
 
-    FROM mart_sales_funnel_target
+    FROM mart_sales_funnel_target tar
     -- FROM prod.restricted_safe_common_mart_sales.mart_sales_funnel_target
     GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
 

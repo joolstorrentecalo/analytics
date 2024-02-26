@@ -81,6 +81,10 @@ sheets:
     owner: '@hselim'
     tabs:
       - fy23_quota
+  - name: fy25_account_geo_map
+    owner: '@rkohnke'
+    tabs:
+      - fy25_account_geo_map
   - name: engineering_contributing_organizations
     owner: '@kwiebers'
     tabs:
@@ -119,11 +123,6 @@ sheets:
     owner: '@ken_aguilar'
     tabs:
       - gitlab_slack_stats
-  - name: google_ip_ranges
-    owner: '@pempey'
-    tabs:
-      - google_user_ip_ranges
-      - google_cloud_ip_ranges
   - name: headcount
     owner: '@wwright'
     tabs:
@@ -231,11 +230,11 @@ sheets:
     owner: '@mmaneval20'
     tabs:
       - rfs_support_requests
-  - name: sales_funnel_partner_alliance_targets
-    owner: '@jeanpeguero'
-    tabs:
-      - sales_funnel_partner_alliance_targets_matrix
-  # - name: sales_funnel_targets  -- paused by https://gitlab.com/gitlab-data/analytics/-/merge_requests/8338
+  # - name: sales_funnel_partner_alliance_targets
+  #   owner: '@jeanpeguero'
+  #   tabs:
+  #     - sales_funnel_partner_alliance_targets_matrix
+  # - name: sales_funnel_targets
   #   owner: '@paul_armstrong'
   #   tabs:
   #     - sales_funnel_targets_dates
@@ -330,8 +329,21 @@ sheets:
     owner: '@nick_vh'
     tabs:
       - leading_organization_entry_dates
-
   - name: abm_key_account_list
     owner: '@dmicovic'
     tabs: 
       - abm_key_account_list
+  - name: partner_discount_summary
+    owner: '@vagrawalg'
+    tabs: 
+      - partner_discount_summary
+  - name: sales_targets
+    owner: '@chrissharp'
+    tabs:
+      - sales_targets
+  - name: devrel_campaigns
+    owner: '@degan'
+    tabs: 
+      - devrel_influenced_campaigns
+      - youtube_views_gitlab
+      - devrel_blog_posts_views

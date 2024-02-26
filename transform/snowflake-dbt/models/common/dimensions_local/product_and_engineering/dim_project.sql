@@ -1,7 +1,17 @@
 WITH prep_project AS (
 
     SELECT 
+
+      -- surrogate key
+      dim_project_sk,
+
+      -- natural key
+      project_id,
+
+      --legacy natural key
       dim_project_id,
+
+      --foreign keys
       dim_namespace_id,
       ultimate_parent_namespace_id,
       dim_user_id_creator,

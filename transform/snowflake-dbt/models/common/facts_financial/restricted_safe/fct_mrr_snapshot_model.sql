@@ -37,7 +37,7 @@ WITH snapshot_dates AS (
 
     SELECT
       date_id                                 AS snapshot_id,
-      {{ dbt_utils.surrogate_key(['date_id', 'subscription_name', 'dim_product_detail_id', 'mrr']) }}
+      {{ dbt_utils.generate_surrogate_key(['date_id', 'subscription_name', 'dim_product_detail_id', 'mrr']) }}
           AS mrr_id,
       date_id                                 AS dim_date_id,
       dim_charge_id                           AS dim_charge_id,
@@ -109,7 +109,7 @@ WITH snapshot_dates AS (
 ), final AS (
 
     SELECT
-     {{ dbt_utils.surrogate_key(['snapshot_id', 'mrr_id']) }} AS fct_mrr_snapshot_id,
+     {{ dbt_utils.generate_surrogate_key(['snapshot_id', 'mrr_id']) }} AS fct_mrr_snapshot_id,
        *
     FROM combined_charges
 

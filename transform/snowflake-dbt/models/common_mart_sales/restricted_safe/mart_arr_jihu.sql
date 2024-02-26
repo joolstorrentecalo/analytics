@@ -50,7 +50,7 @@ WITH dim_billing_account AS (
 
     SELECT
       --primary_key
-      {{ dbt_utils.surrogate_key(['fct_mrr.dim_date_id', 'dim_subscription.subscription_name', 'fct_mrr.dim_product_detail_id']) }}
+      {{ dbt_utils.generate_surrogate_key(['fct_mrr.dim_date_id', 'dim_subscription.subscription_name', 'fct_mrr.dim_product_detail_id']) }}
                                                                                       AS primary_key,
 
       --date info

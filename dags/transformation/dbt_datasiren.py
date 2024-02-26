@@ -35,6 +35,8 @@ from kube_secrets import (
     SNOWFLAKE_STATIC_DATABASE,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -64,7 +66,6 @@ task_secrets = [
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -72,7 +73,9 @@ default_args = {
 }
 
 # Create the DAG
-dag = DAG("dbt_datasiren", default_args=default_args, schedule_interval=None)
+dag = DAG(
+    "dbt_datasiren", default_args=default_args, schedule_interval=None, catchup=False
+)
 
 dbt_datasiren_command = f"""
         {dbt_install_deps_nosha_cmd} &&
@@ -90,6 +93,8 @@ datasiren_operator = KubernetesPodOperator(
     secrets=task_secrets,
     env_vars=pod_env_vars,
     arguments=[dbt_datasiren_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -109,6 +114,8 @@ audit_results_operator = KubernetesPodOperator(
     secrets=task_secrets,
     env_vars=pod_env_vars,
     arguments=[dbt_datasiren_audit_results_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 

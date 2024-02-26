@@ -104,7 +104,7 @@
 ), final AS (
 
     SELECT
-    {{ dbt_utils.surrogate_key(['retention_subs.dim_parent_crm_account_id','retention_month']) }}
+    {{ dbt_utils.generate_surrogate_key(['retention_subs.dim_parent_crm_account_id','retention_month']) }}
                                                 AS fct_retention_id,
       retention_subs.dim_parent_crm_account_id  AS dim_parent_crm_account_id,
       dim_crm_account.crm_account_name         AS parent_crm_account_name,

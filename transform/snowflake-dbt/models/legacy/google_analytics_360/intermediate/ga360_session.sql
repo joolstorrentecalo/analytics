@@ -25,10 +25,11 @@ WITH source AS (
 
 ), final AS (
 
-    SELECT  
+    SELECT
       source.visit_id, 
       source.visitor_id,
       source.visit_start_time, 
+      source.channel_grouping,
       source.session_date, 
       source.export_date,
       source.client_id,      
@@ -62,7 +63,7 @@ WITH source AS (
     ON joined.visit_id = source.visit_id 
             AND joined.visitor_id = source.visitor_id 
                 AND joined.visit_start_time = source.visit_start_time
-    {{ dbt_utils.group_by(n=31)}}
+    {{ dbt_utils.group_by(n=32)}}
 
 )
 

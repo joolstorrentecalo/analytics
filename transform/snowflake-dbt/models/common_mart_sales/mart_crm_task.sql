@@ -1,3 +1,7 @@
+{{ config(
+    tags=["mnpi_exception"]
+) }}
+
 {{ simple_cte([
     ('dim_crm_task', 'dim_crm_task'),
     ('fct_crm_task', 'fct_crm_task')
@@ -23,12 +27,14 @@
     fct_crm_task.dim_crm_person_id,
     fct_crm_task.sfdc_record_id,
     fct_crm_task.dim_crm_opportunity_id,
+    fct_crm_task.dim_mapped_opportunity_id,
 
     -- Task infomation
     fct_crm_task.task_date_id,
     fct_crm_task.task_date,
     fct_crm_task.task_completed_date_id,
     fct_crm_task.task_completed_date,
+    fct_crm_task.task_mapped_to,
     dim_crm_task.full_comments,
     dim_crm_task.task_subject,
     dim_crm_task.task_status,
@@ -156,7 +162,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@michellecooper",
+    updated_by="@jngCES",
     created_date="2022-12-05",
-    updated_date="2023-03-13"
+    updated_date="2023-09-04"
 ) }}

@@ -67,7 +67,7 @@ WITH sfdc_opportunity_xf AS (
       TO_NUMBER(MAX(invoice_amount), 38, 2)                                         AS invoice_amount,
       TO_NUMBER(SUM(item_amount), 38, 2)                                            AS subscription_amount,
       TO_NUMBER(SUM(delta_tcv), 38, 2)                                              AS delta_tcv,
-      TO_NUMBER(SUM(IFF(charge_name = '1,000 CI Minutes', item_amount, 0)), 38, 2)  AS ci_minutes_amount,
+      TO_NUMBER(SUM(IFF(charge_name IN ('1,000 CI Minutes', '1,000 Compute Minutes'), item_amount, 0)), 38, 2)  AS ci_minutes_amount,
       TO_NUMBER(SUM(IFF(charge_name = 'Trueup', item_amount, 0)), 38, 2)            AS trueup_amount
     FROM zuora_invoice_charges
     GROUP BY 1,2,3  

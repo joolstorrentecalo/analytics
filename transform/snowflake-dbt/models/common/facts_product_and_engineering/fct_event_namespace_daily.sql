@@ -17,7 +17,7 @@ fct_event_namespace_daily AS (
     
     SELECT
       --Primary Key 
-      {{ dbt_utils.surrogate_key(['event_date', 'event_name', 'dim_ultimate_parent_namespace_id']) }}       
+      {{ dbt_utils.generate_surrogate_key(['event_date', 'event_name', 'dim_ultimate_parent_namespace_id']) }}
                                             AS event_namespace_daily_pk,
                                             
       --Foreign Keys

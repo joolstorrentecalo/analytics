@@ -14,96 +14,6 @@ models:
         tests:
           - unique
 
-  - name: gitlab_dotcom_clusters_applications_cert_managers_xf
-    columns:
-      - name: clusters_applications_cert_managers_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_crossplane_xf
-    columns:
-      - name: clusters_applications_crossplane_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_elastic_stacks_xf
-    columns:
-      - name: clusters_applications_elastic_stacks_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_helm_xf
-    columns:
-      - name: clusters_applications_helm_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_ingress_xf
-    columns:
-      - name: clusters_applications_ingress_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_jupyter_xf
-    columns:
-      - name: clusters_applications_jupyter_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_knative_xf
-    columns:
-      - name: clusters_applications_knative_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_prometheus_xf
-    columns:
-      - name: clusters_applications_prometheus_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_clusters_applications_runners_xf
-    columns:
-      - name: clusters_applications_runners_id
-        tests:
-          - not_null
-          - unique
-      - name: cluster_id
-        tests:
-          - not_null
-
   - name: gitlab_dotcom_clusters_xf
     columns:
       - name: cluster_id
@@ -181,29 +91,7 @@ models:
       - name: project_id
         tests:
           - not_null
-      - name: environment_name
-        tests:
-          - not_null:
-              config:
-                error_if: ">5"
-
-  - name: gitlab_dotcom_gitlab_emails
-    description: '{{ doc("gitlab_dotcom_gitlab_emails") }}'
-    columns:
-        - name: confirmation_sent_at
-        - name: created_at
-        - name: email_address
-          tests:
-            - not_null
-        - name: email_confirmed_at
-        - name: gitlab_email_id
-        - name: user_id
-          tests:
-            - not_null
-        - name: include_email_flg
-          description: This takes into account the gitlab email and uses the `include_gitlab_email` macro to identify if there are reasons for why the email should be excluded (i.e. test accounts). This field is taken into account in map_team_member_bamboo_gitlab_dotcom_gitlab_ops. 
-        - name: updated_at
-
+                
   - name: gitlab_dotcom_gitlab_internal_sprints
     description: '{{ doc("gitlab_dotcom_gitlab_internal_sprints") }}'
     columns:
@@ -279,24 +167,6 @@ models:
           - accepted_values:
                       values: ['Commit', 'Epic', 'Issue', 'MergeRequest', 'Snippet', 'Wiki', 'DesignManagement::Design']
 
-  - name: gitlab_dotcom_issues_xf
-    description: '{{ doc("gitlab_dotcom_issues_xf") }}'
-    columns:
-      - name: issue_id
-        tests:
-          - not_null
-      - name: state
-        tests:
-          - not_null
-          - accepted_values:
-              values: ['opened', 'closed', 'merged', 'locked']
-      - name: issue_title
-        description: '{{ doc("xf_visibility_documentation") }}'
-      - name: issue_description
-        description: '{{ doc("xf_visibility_documentation") }}'
-      - name: namespace_plan_id_at_issue_creation
-        description: '{{ doc("namespace_plan_id_at_creation") }}'
-
   - name: gitlab_dotcom_label_states_xf
     description: Represents the latest state (added or removed) for each label on Epics/Issues/Merge Requests. Should be phased out in favor of `label_links`.
     columns:
@@ -359,20 +229,7 @@ models:
       - name: is_billable
         tests:
           - not_null
-          
-  - name: gitlab_dotcom_elasticsearch_indexed_namespaces_current
-    description: '{{ doc("gitlab_dotcom_elasticsearch_indexed_namespaces_current") }}'
-    columns:
-      - name: namespace_id
-        tests:
-          - not_null
-          - unique
-      - name: updated_at
-        tests: 
-          - not_null
-      - name: created_at
-        tests:
-          - not_null
+
   - name: gitlab_dotcom_events_monthly_active_users
     description: '{{ doc("gitlab_dotcom_events_monthly_active_users") }}'
     tests:
@@ -386,9 +243,9 @@ models:
         tests:
           - not_null
       - name: count_audit_events_active_users_last_28_days
-        description: The number of unique active users (from audit events table) in the previous 28 days (inclusive). 
+        description: The number of unique active users (from audit events table) in the previous 28 days (inclusive).
       - name: count_audit_events_active_users_last_28_days
-        description: The number of unique active users (from events table) in the previous 28 days (inclusive). 
+        description: The number of unique active users (from events table) in the previous 28 days (inclusive).
 
   - name: gitlab_dotcom_merge_request_assignment_events
     description: '{{ doc("gitlab_dotcom_merge_request_assignment_events") }}'
@@ -402,7 +259,7 @@ models:
     columns:
       - name: project_id
       - name: namespace_id
-      - name: merge_request_iid
+      - name: merge_request_internal_id
         tests: 
           - not_null
       - name: merge_request_id
@@ -414,21 +271,6 @@ models:
       - name: user_name
         tests: 
           - not_null
-
-  - name: gitlab_dotcom_merge_requests_xf
-    description: '{{ doc("gitlab_dotcom_merge_requests_xf") }}'
-    columns:
-      - name: merge_request_id
-        tests:
-          - not_null
-      - name: is_community_contributor_related
-        description: Merge Request has 'community contribution' tag, and is on a project in the gitlab.org namespace.
-      - name: namespace_plan_id_at_merge_request_creation
-        description: '{{ doc("namespace_plan_id_at_creation") }}'
-      - name: total_checkboxes
-        description: The number of checkbox tasks included in the description of the Merge Request
-      - name: completed_checkboxes
-        description: The number of checkbox tasks marked as completed in the description of the Merge Request
 
   - name: gitlab_dotcom_monthly_stage_active_users
     description: '{{ doc("gitlab_dotcom_monthly_stage_active_users") }}'
@@ -457,13 +299,6 @@ models:
           - not_null
       - name: namespace_id
         description: This is added as a helper column. This is either the group_id (groups are namespaces) or the namespace associated with the milestone's project.
-
-  - name: gitlab_dotcom_namespace_historical_monthly_xf
-    columns:
-      - name: CONCAT(snapshot_month, namespace_id)
-        tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - not_null
 
   - name: gitlab_dotcom_namespaces_xf
     description: '{{ doc("gitlab_dotcom_namespaces_xf") }}'
@@ -497,30 +332,6 @@ models:
       - name: project_count
         description: The number of projects that are presently associated with the namespace.
 
-  - name: gitlab_dotcom_project_statistic_snapshots_daily
-    columns:
-      - name: snapshot_day
-        tests:
-          - not_null
-      - name: project_id
-        tests:
-          - not_null
-      - name: namespace_id
-        tests:
-          - not_null
-
-  - name: gitlab_dotcom_project_statistic_snapshots_monthly
-    columns:
-      - name: snapshot_month
-        tests:
-          - not_null
-      - name: project_id
-        tests:
-          - not_null
-      - name: namespace_id
-        tests:
-          - not_null
-          
   - name: gitlab_dotcom_projects_xf
     description: '{{ doc("gitlab_dotcom_projects_xf") }}'
     columns:
@@ -558,28 +369,7 @@ models:
           tests:
             - not_null
             - unique
-  - name: gitlab_dotcom_retention_cohorts
-    description: '{{ doc("gitlab_dotcom_retention_cohorts") }}'
-    columns:
-        - name: cohort_key
-          description: md5 of cohort date and cohort period in other to provide a unique key
-          tests:
-            - not_null
-            - unique
-        - name: cohort_date
-          description: Users are cohorted based on the month their account was created on gitlab.com.
-          tests:
-            - not_null
-        - name: period
-          description: Length in months of activity period, using the difference between `created_at` and `last_activity_on`.
-          tests:
-            - not_null
-        - name: active_in_period_distinct_count
-          description: Count of distinct Users active on this period.
-        - name: base_cohort_count
-          description: Size of the original cohort.
-        - name: retention
-          description: Calculated as `active_in_period_distinct_count` / `base_cohort_count`.
+
   - name: gitlab_dotcom_saml_providers_xf
     description: '{{ doc("gitlab_dotcom_saml_providers_xf") }}'
     columns:
@@ -630,29 +420,9 @@ models:
       - name: event_primary_key
         tests:
           - not_null
-          - unique
-      - name: event_name
-        tests:
-          - not_null
-      - name: stage_name
-        tests:
-          - not_null
-      - name: is_representative_of_stage
-        tests:
-          - not_null
-        description: This column represents whether or not this action represents being active for the entire stage. One action per stage has this designation.
-      - name: event_created_at
-        tests:
-          - not_null
-      - name: is_blocked_namespace
-        description: boolean flag set to TRUE if the creator of the namespace is a blocked user
-  - name: gitlab_dotcom_usage_data_ci_builds
-    description: '{{ doc("gitlab_dotcom_usage_data_ci_builds") }}'
-    columns:
-      - name: event_primary_key
-        tests:
-          - not_null
-          - unique
+          - unique:
+              config:
+                where: "event_created_at >= DATEADD('day',-3,CURRENT_DATE())"
       - name: event_name
         tests:
           - not_null

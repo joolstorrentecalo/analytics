@@ -12,7 +12,7 @@ WITH source_data AS (
 ), unioned AS (
 
     SELECT DISTINCT
-      {{ dbt_utils.surrogate_key([id_column]) }}  AS {{ id_column_name }},
+      {{ dbt_utils.generate_surrogate_key([id_column]) }}  AS {{ id_column_name }},
       {{  dimension_column }}                     AS {{ dimension_column_name }}
     FROM source_data
     UNION ALL

@@ -1,14 +1,20 @@
-{%- macro schema_union_all(schema_part, table_name, exclude_part='scratch', database_name=none, day_limit=none) -%}
+{%- macro schema_union_all(schema_part, table_name, exclude_part='scratch', database_name=none, day_limit=none, boolean_filter_statement=none, excluded_col=[]) -%}
 
- {%- if database_name is not none -%}
+{% set local = var('local', 'no') %}
+
+  {%- if local != 'no' and database is not none -%}
+
+    {%- set database = generate_database_name(database_name) -%}
+
+  {%- elif database_name is not none-%}
 
     {%- set database = database_name -%}
 
- {%- else -%}
+  {%- else -%}
 
     {%- set database = target.database -%}
 
- {%- endif -%}
+  {%- endif -%}
 
  {%- call statement('get_schemata', fetch_result=True) -%}
 
@@ -42,14 +48,36 @@
     {%- if value_list and value_list['data'] -%}
 
         {%- set values = value_list['data'] | map(attribute=0) | list -%}
+              
+        {%- if excluded_col -%}
+
+          {%- set excluded_fields = [] -%}
+
+          {%- for col in excluded_col -%}
+        
+            {%- set excluded_col_string = excluded_fields.append(col | as_text) -%}
+  
+          {%- endfor -%}
+
+          {%- set excluded_col_fields_string = "EXCLUDE (" + ','.join(excluded_fields) + ")" -%}
             
-          {% for schematable in values -%}
-                SELECT *
-                FROM "{{ database }}".{{ schematable }}
-                {% if not loop.last %}
-                UNION ALL
-                {% endif -%}
-              {% endfor %}
+        {%- else -%}
+
+          {%- set excluded_col_fields_string = "" -%}
+
+        {%- endif -%}
+          
+        {% for schematable in values -%}
+              SELECT * {{excluded_col_fields_string}}
+              FROM "{{ database }}".{{ schematable }}
+              {%- if boolean_filter_statement %}
+              WHERE {{ boolean_filter_statement }}
+              {%- endif -%}
+              {% if not loop.last %}
+              UNION ALL
+              {% endif -%}
+        {% endfor %}
+
             
     {%- else -%}
 

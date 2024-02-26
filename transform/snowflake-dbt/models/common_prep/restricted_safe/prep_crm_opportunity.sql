@@ -1,7 +1,8 @@
 {{ config(
     tags=["six_hourly"],
     materialized="incremental",
-    unique_key="primary_key"
+    unique_key="primary_key",
+    on_schema_change="sync_all_columns"
 ) }}
 
 {{ simple_cte([
@@ -12,7 +13,8 @@
     ('sfdc_opportunity_source', 'sfdc_opportunity_source'),
     ('sfdc_opportunity_snapshots_source','sfdc_opportunity_snapshots_source'),
     ('sfdc_opportunity_stage', 'sfdc_opportunity_stage_source'),
-    ('sfdc_record_type_source', 'sfdc_record_type_source')
+    ('sfdc_record_type_source', 'sfdc_record_type_source'),
+    ('sfdc_account_snapshots_source','sfdc_account_snapshots_source')
 ]) }}
 
 , first_contact  AS (
@@ -20,9 +22,25 @@
     SELECT
       opportunity_id,                                                             -- opportunity_id
       contact_id                                                                  AS sfdc_contact_id,
-      {{ dbt_utils.surrogate_key(['contact_id']) }}                               AS dim_crm_person_id,
+      {{ dbt_utils.generate_surrogate_key(['contact_id']) }}                               AS dim_crm_person_id,
       ROW_NUMBER() OVER (PARTITION BY opportunity_id ORDER BY created_date ASC)   AS row_num
     FROM {{ ref('sfdc_opportunity_contact_role_source')}}
+
+), account_history_final AS (
+ 
+  SELECT
+    account_id_18 AS dim_crm_account_id,
+    owner_id AS dim_crm_user_id,
+    ultimate_parent_id AS dim_crm_parent_account_id,
+    abm_tier_1_date,
+    abm_tier_2_date,
+    abm_tier,
+    MIN(dbt_valid_from)::DATE AS valid_from,
+    MAX(dbt_valid_to)::DATE AS valid_to
+  FROM sfdc_account_snapshots_source
+  WHERE abm_tier_1_date >= '2022-02-01'
+    OR abm_tier_2_date >= '2022-02-01'
+  {{dbt_utils.group_by(n=6)}}
 
 ), attribution_touchpoints AS (
 
@@ -51,27 +69,29 @@
     SELECT *
     FROM dim_date
     WHERE date_actual::DATE >= '2020-02-01' -- Restricting snapshot model to only have data from this date forward. More information https://gitlab.com/gitlab-data/analytics/-/issues/14418#note_1134521216
-      AND date_actual <= CURRENT_DATE
+      AND date_actual < CURRENT_DATE
+
+    {% if is_incremental() %}
+
+      AND date_actual > (SELECT MAX(snapshot_date) FROM {{ this }} WHERE is_live = 0)
+
+    {% endif %}
+
+), live_date AS (
+
+    SELECT *
+    FROM dim_date
+    WHERE date_actual = CURRENT_DATE
 
 ), sfdc_account_snapshot AS (
 
     SELECT *
     FROM {{ ref('prep_crm_account_daily_snapshot') }}
-    {% if is_incremental() %}
-
-       WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM {{this}})
-
-    {% endif %}
 
 ), sfdc_user_snapshot AS (
 
     SELECT *
     FROM {{ ref('prep_crm_user_daily_snapshot') }}
-    {% if is_incremental() %}
-
-    WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM {{this}})
-
-    {% endif %}
 
 ), sfdc_account AS (
 
@@ -105,7 +125,7 @@
       sfdc_opportunity_snapshots_source.sales_accepted_date::DATE                                                   AS sales_accepted_date,
       sfdc_opportunity_snapshots_source.close_date::DATE                                                            AS close_date,
       sfdc_opportunity_snapshots_source.net_arr                                                                     AS raw_net_arr,
-      {{ dbt_utils.surrogate_key(['sfdc_opportunity_snapshots_source.opportunity_id','snapshot_dates.date_id'])}}   AS crm_opportunity_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity_snapshots_source.opportunity_id','snapshot_dates.date_id'])}}   AS crm_opportunity_snapshot_id,
       snapshot_dates.date_id                                                                                        AS snapshot_id,
       snapshot_dates.date_actual                                                                                    AS snapshot_date,
       snapshot_dates.first_day_of_month                                                                             AS snapshot_month,
@@ -179,18 +199,6 @@
         AND snapshot_dates.date_id = sfdc_account_snapshot.snapshot_id
     WHERE sfdc_opportunity_snapshots_source.account_id IS NOT NULL
       AND sfdc_opportunity_snapshots_source.is_deleted = FALSE
-     {% if is_incremental() %}
-
-       AND snapshot_dates.date_actual > (SELECT MAX(snapshot_date) FROM {{this}})
-
-    {% endif %}
-
-    QUALIFY ROW_NUMBER() OVER (
-    PARTITION BY 
-        snapshot_dates.date_id, 
-        sfdc_opportunity_snapshots_source.opportunity_id 
-    ORDER BY sfdc_opportunity_snapshots_source.dbt_valid_from DESC
-    ) = 1
 
 ), sfdc_opportunity_live AS (
 
@@ -212,15 +220,15 @@
       sfdc_opportunity_source.sales_accepted_date::DATE                                                     AS sales_accepted_date,
       sfdc_opportunity_source.close_date::DATE                                                              AS close_date,
       sfdc_opportunity_source.net_arr                                                                       AS raw_net_arr,
-      {{ dbt_utils.surrogate_key(['sfdc_opportunity_source.opportunity_id',"'99991231'"])}}                 AS crm_opportunity_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity_source.opportunity_id',"'99991231'"])}}                 AS crm_opportunity_snapshot_id,
       '99991231'                                                                                            AS snapshot_id,
-      snapshot_dates.date_actual                                                                            AS snapshot_date,
-      snapshot_dates.first_day_of_month                                                                     AS snapshot_month,
-      snapshot_dates.fiscal_year                                                                            AS snapshot_fiscal_year,
-      snapshot_dates.fiscal_quarter_name_fy                                                                 AS snapshot_fiscal_quarter_name,
-      snapshot_dates.first_day_of_fiscal_quarter                                                            AS snapshot_fiscal_quarter_date,
-      snapshot_dates.day_of_fiscal_quarter_normalised                                                       AS snapshot_day_of_fiscal_quarter_normalised,
-      snapshot_dates.day_of_fiscal_year_normalised                                                          AS snapshot_day_of_fiscal_year_normalised,
+      live_date.date_actual                                                                                 AS snapshot_date,
+      live_date.first_day_of_month                                                                          AS snapshot_month,
+      live_date.fiscal_year                                                                                 AS snapshot_fiscal_year,
+      live_date.fiscal_quarter_name_fy                                                                      AS snapshot_fiscal_quarter_name,
+      live_date.first_day_of_fiscal_quarter                                                                 AS snapshot_fiscal_quarter_date,
+      live_date.day_of_fiscal_quarter_normalised                                                            AS snapshot_day_of_fiscal_quarter_normalised,
+      live_date.day_of_fiscal_year_normalised                                                               AS snapshot_day_of_fiscal_year_normalised,
       account_owner.user_segment                                                                            AS crm_account_owner_sales_segment_segment,
       account_owner.user_geo                                                                                AS crm_account_owner_geo,
       account_owner.user_region                                                                             AS crm_account_owner_region,
@@ -274,8 +282,8 @@
       CURRENT_DATE()                                                                                        AS dbt_valid_to,
       1                                                                                                     AS is_live
     FROM sfdc_opportunity_source
-    LEFT JOIN snapshot_dates
-      ON CURRENT_DATE() = snapshot_dates.date_actual
+    LEFT JOIN live_date
+      ON CURRENT_DATE() = live_date.date_actual
     LEFT JOIN sfdc_account AS fulfillment_partner
       ON sfdc_opportunity_source.fulfillment_partner = fulfillment_partner.account_id
     LEFT JOIN sfdc_account AS partner_account
@@ -320,9 +328,93 @@
       AND zqu__primary = TRUE
     QUALIFY record_number = 1
 
-), final AS (
+), sao_base AS (
+  
+  SELECT
+   --IDs
+    sfdc_opportunity.dim_crm_opportunity_id,
+  
+  --Opp Data  
+
+    sfdc_opportunity.sales_accepted_date,
+    -- account_history_final.abm_tier_1_date,
+    -- account_history_final.abm_tier_2_date,
+    -- account_history_final.abm_tier,
+    CASE 
+      WHEN sfdc_opportunity.is_edu_oss = 0
+          AND sfdc_opportunity.stage_name != '10-Duplicate'
+          AND sales_accepted_date BETWEEN valid_from AND valid_to
+        THEN TRUE
+      ELSE FALSE
+    END AS is_abm_tier_sao  
+  FROM sfdc_opportunity
+  LEFT JOIN account_history_final
+    ON sfdc_opportunity.dim_crm_account_id=account_history_final.dim_crm_account_id
+  WHERE abm_tier IS NOT NULL
+  AND sales_accepted_date IS NOT NULL
+  AND sales_accepted_date >= '2022-02-01'
+  AND (abm_tier_1_date IS NOT NULL
+    OR abm_tier_2_date IS NOT NULL)
+  AND is_abm_tier_sao = TRUE
+
+), cw_base AS (
+  
+  SELECT
+   --IDs
+    sfdc_opportunity.dim_crm_opportunity_id,
+  
+  --Opp Data  
+    sfdc_opportunity.close_date,
+    -- account_history_final.abm_tier_1_date,
+    -- account_history_final.abm_tier_2_date,
+    -- account_history_final.abm_tier,
+    CASE 
+      WHEN stage_name = 'Closed Won'
+        AND close_date BETWEEN valid_from AND valid_to
+        THEN TRUE
+      ELSE FALSE
+    END AS is_abm_tier_closed_won 
+  FROM sfdc_opportunity
+  LEFT JOIN account_history_final
+    ON sfdc_opportunity.dim_crm_account_id=account_history_final.dim_crm_account_id
+  WHERE abm_tier IS NOT NULL
+  AND close_date IS NOT NULL
+  AND close_date >= '2022-02-01'
+  AND (abm_tier_1_date IS NOT NULL
+    OR abm_tier_2_date IS NOT NULL)
+  AND is_abm_tier_closed_won = TRUE
+  
+), abm_tier_id AS (
 
     SELECT
+        dim_crm_opportunity_id
+    FROM sao_base
+    UNION ALL
+    SELECT
+        dim_crm_opportunity_id
+    FROM cw_base
+
+), abm_tier_id_final AS (
+
+    SELECT DISTINCT
+        dim_crm_opportunity_id
+    FROM abm_tier_id
+
+), abm_tier_unioned AS (
+  
+SELECT
+  abm_tier_id_final.dim_crm_opportunity_id,
+  is_abm_tier_sao,
+  is_abm_tier_closed_won
+FROM abm_tier_id_final
+LEFT JOIN sao_base
+  ON abm_tier_id_final.dim_crm_opportunity_id=sao_base.dim_crm_opportunity_id  
+LEFT JOIN cw_base
+  ON abm_tier_id_final.dim_crm_opportunity_id=cw_base.dim_crm_opportunity_id    
+
+), final AS (
+
+    SELECT DISTINCT
       -- opportunity information
       sfdc_opportunity.*,
       sfdc_opportunity.crm_opportunity_snapshot_id||'-'||sfdc_opportunity.is_live                  AS primary_key,
@@ -407,6 +499,8 @@
       END                                                                     AS net_arr,
 
       -- opportunity flags
+      is_abm_tier_sao,
+      is_abm_tier_closed_won,
       CASE
         WHEN (sfdc_opportunity.days_in_stage > 30
           OR sfdc_opportunity.incremental_acv > 100000
@@ -1197,7 +1291,18 @@
                     '-',
                     close_fiscal_year
                     )
-    END AS dim_crm_opp_owner_stamped_hierarchy_sk
+    END AS dim_crm_opp_owner_stamped_hierarchy_sk, 
+
+    CASE
+        WHEN is_renewal = 1 AND sfdc_opportunity_stage.is_closed = 1
+            THEN DATEDIFF(day, arr_created_date.date_actual, close_date.date_actual)
+        WHEN is_renewal = 0 AND sfdc_opportunity_stage.is_closed = 1
+            THEN DATEDIFF(day, sfdc_opportunity.created_date, close_date.date_actual)
+         WHEN is_renewal = 1 AND sfdc_opportunity.is_open = 1
+            THEN DATEDIFF(day, arr_created_date.date_actual, sfdc_opportunity.snapshot_date)
+        WHEN is_renewal = 0 AND sfdc_opportunity.is_open = 1
+            THEN DATEDIFF(day, sfdc_opportunity.created_date, sfdc_opportunity.snapshot_date)
+    END                                                           AS cycle_time_in_days
 
     FROM sfdc_opportunity
     INNER JOIN sfdc_opportunity_stage
@@ -1221,13 +1326,16 @@
         AND sfdc_opportunity.order_type = net_iacv_to_net_arr_ratio.order_type
     LEFT JOIN sfdc_record_type_source 
       ON sfdc_opportunity.record_type_id = sfdc_record_type_source.record_type_id
+    LEFT JOIN abm_tier_unioned
+      ON sfdc_opportunity.dim_crm_opportunity_id=abm_tier_unioned.dim_crm_opportunity_id
+        AND sfdc_opportunity.is_live = 1
 
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@jngCES",
+    updated_by="@snalamaru",
     created_date="2022-02-23",
-    updated_date="2023-06-15"
+    updated_date="2024-01-24"
 ) }}

@@ -19,15 +19,6 @@ models:
 
   - name: mart_product_usage_paid_user_metrics_monthly
     description: '{{ doc("mart_product_usage_paid_user_metrics_monthly") }}'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - snapshot_month
-            - dim_subscription_id
-            - deployment_type
-            - uuid
-            - hostname
-            - dim_namespace_id
     columns:
       - name: snapshot_month
         description: Month in which the product usage was reported.
@@ -165,18 +156,12 @@ models:
         description: Monthly count of deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlydeployments))
       - name: packages_28_days_event
         description: Monthly count of Packages ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlypackages))
-      - name: sast_jobs_all_time_event
-        description: All-time count of SAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssast_jobs))
       - name: dast_jobs_all_time_event
         description: All-time count of DAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdast_jobs))
-      - name: dependency_scanning_jobs_all_time_event
-        description: All-time count of Dependency Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdependency_scanning_jobs))
       - name: license_management_jobs_all_time_event
         description: All-time count of License Management CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countslicense_management_jobs))
       - name: secret_detection_jobs_all_time_event
         description: All-time count of Secret Detection’ CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssecret_detection_jobs))
-      - name: container_scanning_jobs_all_time_event
-        description: All-time count of Container Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countscontainer_scanning_jobs))
       - name: projects_jenkins_active_all_time_event
         description: All-time count of projects with active integrations for Jenkins ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jenkins_active))
       - name: projects_bamboo_active_all_time_event
@@ -187,9 +172,6 @@ models:
         description: All-time count of projects with active integrations for Drone CI ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_drone_ci_active))
       - name: projects_github_active_all_time_event
         description: All-time count of projects with active integrations for GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_github_active))
-      - name: projects_jira_server_active_all_time_event
-        description: All-time count of active integrations with Jira Server ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_server_active))
-      - name: projects_jira_dvcs_cloud_active_all_time_event
         description: All-time count of active integrations with Jira Cloud (DVCS Connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_cloud_active))
       - name: projects_with_repositories_enabled_all_time_event
         description: All-time count of projects with repositories enabled ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_with_repositories_enabled))
@@ -217,8 +199,6 @@ models:
         description: Number of GitLab Managed clusters both enabled and disabled on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#gitalyclusters))
       - name: epics_deepest_relationship_level_instance
         description: Numeric level of the deepest relationship of all epics on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsepics_deepest_relationship_level))
-      - name: clusters_applications_cilium_all_time_event
-        description: All-time total of GitLab Managed clusters with GitLab Managed App:Cilium installed ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsclusters_applications_cilium))
       - name: network_policy_forwards_all_time_event
         description: Cumulative count of packets forwarded by Cilium (Container Network Security) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsnetwork_policy_forwards))
       - name: network_policy_drops_all_time_event
@@ -229,8 +209,6 @@ models:
         description: All-time count of requirement test reports created from CI ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsrequirement_test_reports_ci))
       - name: projects_imported_from_github_all_time_event
         description: All-time count of project imported from GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_imported_from_github))
-      - name: projects_jira_cloud_active_all_time_event
-        description: All-time count of active integrations with Jira Cloud ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_cloud_active))
       - name: projects_jira_dvcs_server_active_all_time_event
         description: All-time count of active integrations with Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_server_active))
       - name: service_desk_issues_all_time_event
@@ -241,8 +219,6 @@ models:
         description: Monthly count of users opening service desk issues ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanservice_desk_issues))
       - name: projects_jira_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_active))
-      - name: projects_jira_dvcs_cloud_active_28_days_user
-        description: Monthly count of users interacting with active integrations of Jira Cloud (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_cloud_active))
       - name: projects_jira_dvcs_server_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_server_active))
       - name: merge_requests_with_required_code_owners_28_days_user
@@ -253,8 +229,6 @@ models:
         description: Monthly count of users approving merge requests ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_counterscode_reviewi_code_review_user_approve_mr_monthly))
       - name: epics_usage_28_days_user
         description: Monthly users count for epics_usage ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersepics_usageepics_usage_total_unique_counts_monthly))
-      - name: ci_templates_usage_28_days_event
-        description: Monthly count of CI templates ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersci_templatesci_templates_total_unique_counts_monthly))
       - name: project_management_issue_milestone_changed_28_days_user
         description: Monthly count of MAU changing an issue’s milestone ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_milestone_changed_monthly))
       - name: project_management_issue_iteration_changed_28_days_user
@@ -273,42 +247,6 @@ models:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_jobs_usage_28_days_user
-        description: '{{ doc("api_fuzzing_jobs_usage_28_days_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("api_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: container_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("container_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dependency_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("dependency_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: sast_pipeline_usage_28_days_event
-        description: '{{ doc("sast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: secret_detection_pipeline_usage_28_days_event
-        description: '{{ doc("secret_detection_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dast_pipeline_usage_28_days_event
-        description: '{{ doc("dast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_jobs_28_days_user
-        description: '{{ doc("coverage_fuzzing_jobs_28_days_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
@@ -515,10 +453,6 @@ models:
         description: '{{ doc("groups_streaming_destinations_all_time_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
-      - name: groups_streaming_destinations_28_days_event
-        description: '{{ doc("groups_streaming_destinations_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
       - name: audit_event_destinations_all_time_event
         description: '{{ doc("audit_event_destinations_all_time_event_desc") }}'
         tests:
@@ -589,6 +523,38 @@ models:
           - dbt_utils.at_least_one
       - name: ci_internal_pipelines_28_days_event
         description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_builds_28_days_event
+        description: '{{ doc("ci_builds_28_days_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: audit_features_28_days_user
+        description: '{{ doc("audit_features_28_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: groups_all_time_event
+        description: '{{ doc("groups_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: commit_ci_config_file_7_days_user
+        description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_user
+        description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_event
+        description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_event
+        description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_user
+        description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: is_latest_data
@@ -656,7 +622,11 @@ models:
       - name: iso_2_country_code
       - name: iso_3_country_code
       - name: delivery_type
-        description: Indicates if the product usage came from a SaaS or Self-Managed user.
+        description: '{{ doc("ping_delivery_type") }}'
+        tests:
+          - not_null
+      - name: deployment_type
+        description: '{{ doc("ping_deployment_type") }}'
         tests:
           - not_null
       - name: umau_28_days_user
@@ -741,18 +711,12 @@ models:
         description: Monthly count of deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlydeployments))
       - name: packages_28_days_event
         description: Monthly count of Packages ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlypackages))
-      - name: sast_jobs_all_time_event
-        description: All-time count of SAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssast_jobs))
       - name: dast_jobs_all_time_event
         description: All-time count of DAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdast_jobs))
-      - name: dependency_scanning_jobs_all_time_event
-        description: All-time count of Dependency Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdependency_scanning_jobs))
       - name: license_management_jobs_all_time_event
         description: All-time count of License Management CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countslicense_management_jobs))
       - name: secret_detection_jobs_all_time_event
         description: All-time count of Secret Detection’ CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssecret_detection_jobs))
-      - name: container_scanning_jobs_all_time_event
-        description: All-time count of Container Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countscontainer_scanning_jobs))
       - name: projects_jenkins_active_all_time_event
         description: All-time count of projects with active integrations for Jenkins ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jenkins_active))
       - name: projects_bamboo_active_all_time_event
@@ -763,8 +727,6 @@ models:
         description: All-time count of projects with active integrations for Drone CI ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_drone_ci_active))
       - name: projects_github_active_all_time_event
         description: All-time count of projects with active integrations for GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_github_active))
-      - name: projects_jira_server_active_all_time_event
-        description: All-time count of active integrations with Jira Server ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_server_active))
       - name: projects_jira_dvcs_cloud_active_all_time_event
         description: All-time count of active integrations with Jira Cloud (DVCS Connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_cloud_active))
       - name: projects_with_repositories_enabled_all_time_event
@@ -793,8 +755,6 @@ models:
         description: Number of GitLab Managed clusters both enabled and disabled on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#gitalyclusters))
       - name: epics_deepest_relationship_level_instance
         description: Numeric level of the deepest relationship of all epics on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsepics_deepest_relationship_level))
-      - name: clusters_applications_cilium_all_time_event
-        description: All-time total of GitLab Managed clusters with GitLab Managed App:Cilium installed ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsclusters_applications_cilium))
       - name: network_policy_forwards_all_time_event
         description: Cumulative count of packets forwarded by Cilium (Container Network Security) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsnetwork_policy_forwards))
       - name: network_policy_drops_all_time_event
@@ -805,8 +765,6 @@ models:
         description: All-time count of requirement test reports created from CI ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsrequirement_test_reports_ci))
       - name: projects_imported_from_github_all_time_event
         description: All-time count of project imported from GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_imported_from_github))
-      - name: projects_jira_cloud_active_all_time_event
-        description: All-time count of active integrations with Jira Cloud ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_cloud_active))
       - name: projects_jira_dvcs_server_active_all_time_event
         description: All-time count of active integrations with Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_server_active))
       - name: service_desk_issues_all_time_event
@@ -817,8 +775,6 @@ models:
         description: Monthly count of users opening service desk issues ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanservice_desk_issues))
       - name: projects_jira_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_active))
-      - name: projects_jira_dvcs_cloud_active_28_days_user
-        description: Monthly count of users interacting with active integrations of Jira Cloud (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_cloud_active))
       - name: projects_jira_dvcs_server_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_server_active))
       - name: merge_requests_with_required_code_owners_28_days_user
@@ -829,8 +785,6 @@ models:
         description: Monthly count of users approving merge requests ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_counterscode_reviewi_code_review_user_approve_mr_monthly))
       - name: epics_usage_28_days_user
         description: Monthly users count for epics_usage ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersepics_usageepics_usage_total_unique_counts_monthly))
-      - name: ci_templates_usage_28_days_event
-        description: Monthly count of CI templates ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersci_templatesci_templates_total_unique_counts_monthly))
       - name: project_management_issue_milestone_changed_28_days_user
         description: Monthly count of MAU changing an issue’s milestone ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_milestone_changed_monthly))
       - name: project_management_issue_iteration_changed_28_days_user
@@ -849,42 +803,6 @@ models:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_jobs_usage_28_days_user
-        description: '{{ doc("api_fuzzing_jobs_usage_28_days_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("api_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: container_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("container_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dependency_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("dependency_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: sast_pipeline_usage_28_days_event
-        description: '{{ doc("sast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: secret_detection_pipeline_usage_28_days_event
-        description: '{{ doc("secret_detection_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dast_pipeline_usage_28_days_event
-        description: '{{ doc("dast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_jobs_28_days_user
-        description: '{{ doc("coverage_fuzzing_jobs_28_days_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
@@ -1091,10 +1009,6 @@ models:
         description: '{{ doc("groups_streaming_destinations_all_time_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
-      - name: groups_streaming_destinations_28_days_event
-        description: '{{ doc("groups_streaming_destinations_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
       - name: audit_event_destinations_all_time_event
         description: '{{ doc("audit_event_destinations_all_time_event_desc") }}'
         tests:
@@ -1167,6 +1081,38 @@ models:
         description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
+      - name: ci_builds_28_days_event
+        description: '{{ doc("ci_builds_28_days_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: audit_features_28_days_user
+        description: '{{ doc("audit_features_28_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: groups_all_time_event
+        description: '{{ doc("groups_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: commit_ci_config_file_7_days_user
+        description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_user
+        description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_event
+        description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_event
+        description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_user
+        description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
       - name: is_latest_data
         description: Flags the row with the most recently received data from Usage Ping
       - name: primary_key
@@ -1187,29 +1133,6 @@ models:
 
   - name: mart_product_usage_paid_user_metrics_monthly_report_view
     description: '{{ doc("mart_product_usage_paid_user_metrics_monthly_report_view") }}'
-  
-  - name: pump_use_case_adoption_scoring
-    description: Calculates product usage health scores per snapshot_month and installation_id (Self-Managed)/namespace_id (SaaS)
-    columns:
-      - name: snapshot_month
-        tests:
-          - not_null
-      - name: dim_subscription_id
-        tests:
-          - not_null
-      - name: dim_crm_account_id
-        tests:
-          - not_null
-      - name: dim_subscription_id_original
-        tests:
-          - not_null
-      - name: delivery_type
-        tests:
-          - not_null
-      - name: deployment_type
-        tests:
-          - not_null
-      - name: primary_key
-        tests:
-          - unique
-          - not_null
+
+  - name: mart_crm_subscription_id
+    description: '{{ doc("mart_crm_opportunity_id") }}'

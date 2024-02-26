@@ -18,6 +18,7 @@
       metrics_path                      AS metrics_path,
       ping_created_date_month           AS ping_created_date_month,
       ping_delivery_type                AS ping_delivery_type,
+      ping_deployment_type              AS ping_deployment_type,
       ping_edition                      AS ping_edition,
       ping_product_tier                 AS ping_product_tier,
       ping_edition_product_tier         AS ping_edition_product_tier,
@@ -31,7 +32,7 @@
       SUM(monthly_metric_value)         AS recorded_usage
     FROM mart_ping_instance_metric_monthly
         WHERE time_frame IN ('28d', 'all')
-    {{ dbt_utils.group_by(n=13)}}
+    {{ dbt_utils.group_by(n=14)}}
 
 --Join in adoption percentages to determine what to estimate for self managed
 
@@ -48,7 +49,8 @@
     ON fact.ping_created_date_month = mart_pct.ping_created_date_month
       AND fact.metrics_path = mart_pct.metrics_path
       AND fact.ping_edition = mart_pct.ping_edition
-  WHERE ping_delivery_type = 'Self-Managed'
+      AND fact.ping_deployment_type = mart_pct.ping_deployment_type
+  WHERE fact.ping_deployment_type IN ('Self-Managed', 'Dedicated')
 
 -- No need to join in SaaS, it is what it is (all reported and accurate)
 
@@ -59,9 +61,9 @@
       1                                         AS reporting_count,
       0                                         AS not_reporting_count,
       1                                         AS percent_reporting,
-      'SaaS'    AS estimation_grain
+      'GitLab.com'                              AS estimation_grain
     FROM fact
-  WHERE ping_delivery_type = 'SaaS'
+  WHERE ping_deployment_type = 'GitLab.com'
 
 -- Union SaaS and Self Managed tables
 
@@ -78,11 +80,12 @@
 ), final AS (
 
 SELECT
-    {{ dbt_utils.surrogate_key(['ping_created_date_month', 'metrics_path', 'ping_edition', 'estimation_grain', 'ping_edition_product_tier', 'ping_delivery_type']) }}   AS ping_metric_totals_w_estimates_monthly_id,
+    {{ dbt_utils.generate_surrogate_key(['ping_created_date_month', 'metrics_path', 'ping_edition', 'estimation_grain', 'ping_edition_product_tier', 'ping_deployment_type']) }}   AS ping_metric_totals_w_estimates_monthly_id,
     -- identifiers
     metrics_path                                                                                                                                                        AS metrics_path,
     ping_created_date_month                                                                                                                                             AS ping_created_date_month,
     ping_delivery_type                                                                                                                                                  AS ping_delivery_type,
+    ping_deployment_type                                                                                                                                                AS ping_deployment_type,
     -- ping attributes
     ping_edition                                                                                                                                                        AS ping_edition,
     ping_product_tier                                                                                                                                                   AS ping_product_tier,
@@ -111,7 +114,7 @@ SELECT
  {{ dbt_audit(
      cte_ref="final",
      created_by="@icooper-acp",
-     updated_by="@iweeks",
+     updated_by="@jpeguero",
      created_date="2022-04-20",
-     updated_date="2022-07-29"
+     updated_date="2023-06-26"
  ) }}

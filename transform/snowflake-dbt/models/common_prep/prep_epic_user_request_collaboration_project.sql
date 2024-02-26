@@ -2,10 +2,11 @@
     tags=["mnpi_exception"]
 ) }}
 
-WITH gitlab_dotcom_namespaces AS (
+WITH prep_namespace AS (
 
     SELECT *
-    FROM {{ ref('gitlab_dotcom_namespaces_source') }}
+    FROM {{ ref('prep_namespace') }}
+    WHERE is_currently_valid = TRUE
   
 ), issue_links AS (
 
@@ -25,8 +26,8 @@ WITH gitlab_dotcom_namespaces AS (
 ), gitlab_epics AS (
 
     SELECT *
-    FROM {{ ref('gitlab_dotcom_epics_source') }}
-    QUALIFY ROW_NUMBER() OVER(PARTITION BY group_id, epic_internal_id ORDER BY created_at DESC) = 1 
+    FROM {{ ref('prep_epic') }}
+    QUALIFY ROW_NUMBER() OVER(PARTITION BY dim_namespace_sk, epic_internal_id ORDER BY created_at DESC) = 1
 
 ), gitlab_issues AS (
 
@@ -56,8 +57,11 @@ WITH gitlab_dotcom_namespaces AS (
     SELECT
       'https://gitlab.com/' || path AS complete_path,
       source_id                     AS namespace_id,
-      *
+      gitlab_dotcom_routes_source.*,
+      prep_namespace.dim_namespace_sk
     FROM {{ ref('gitlab_dotcom_routes_source') }}
+    LEFT JOIN prep_namespace
+      ON gitlab_dotcom_routes_source.source_id = prep_namespace.namespace_id
     WHERE source_type = 'Namespace' 
 
 ), collaboration_projects_with_ids AS (
@@ -141,17 +145,19 @@ WITH gitlab_dotcom_namespaces AS (
 
     SELECT
       collaboration_projects_issue_description_notes_unioned.*,
-      gitlab_dotcom_namespace_routes.namespace_id AS user_request_namespace_id
+      gitlab_dotcom_namespace_routes.namespace_id AS user_request_namespace_id,
+      gitlab_dotcom_namespace_routes.dim_namespace_sk AS user_request_namespace_sk
     FROM collaboration_projects_issue_description_notes_unioned
     INNER JOIN gitlab_dotcom_namespace_routes
       ON gitlab_dotcom_namespace_routes.path = collaboration_projects_issue_description_notes_unioned.user_request_namespace_path
-    INNER JOIN gitlab_dotcom_namespaces
-      ON gitlab_dotcom_namespaces.namespace_id = gitlab_dotcom_namespace_routes.namespace_id
+    INNER JOIN prep_namespace
+      ON prep_namespace.namespace_id = gitlab_dotcom_namespace_routes.namespace_id
 
 ), final AS ( -- In case there are various issues with the same link to issues and dim_crm_account_id, dedup them by taking the latest updated link
 
     SELECT
-      gitlab_epics.epic_id                                                    AS dim_epic_id,
+      gitlab_epics.epic_id                                                    AS epic_id,
+      gitlab_epics.dim_epic_sk                                                AS dim_epic_sk,
       unioned_with_user_request_namespace_id.account_id                       AS dim_crm_account_id,
       unioned_with_user_request_namespace_id.collaboration_project_id         AS dim_collaboration_project_id,
       unioned_with_user_request_namespace_id.user_request_namespace_id        AS dim_namespace_id,
@@ -160,7 +166,7 @@ WITH gitlab_dotcom_namespaces AS (
       unioned_with_user_request_namespace_id.link_last_updated_at             AS link_last_updated_at
     FROM unioned_with_user_request_namespace_id
     INNER JOIN gitlab_epics
-      ON gitlab_epics.group_id = unioned_with_user_request_namespace_id.user_request_namespace_id
+      ON gitlab_epics.dim_namespace_sk = unioned_with_user_request_namespace_id.user_request_namespace_sk
       AND gitlab_epics.epic_internal_id = unioned_with_user_request_namespace_id.user_request_epic_internal_id
     QUALIFY ROW_NUMBER() OVER(PARTITION BY gitlab_epics.epic_id, unioned_with_user_request_namespace_id.account_id
       ORDER BY unioned_with_user_request_namespace_id.link_last_updated_at DESC NULLS LAST) = 1
@@ -170,8 +176,8 @@ WITH gitlab_dotcom_namespaces AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@jpeguero",
-    updated_by="@jpeguero",
+    updated_by="@michellecooper",
     created_date="2021-10-12",
-    updated_date="2022-01-10",
+    updated_date="2023-09-08",
 ) }}
 

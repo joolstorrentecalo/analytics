@@ -119,28 +119,28 @@ class SnowflakeManager:
         clone_db = f"clone {database}" if not empty else ""
         queries = self.generate_db_queries(create_db, clone_db, schema, database)
 
-        # if force is false, check if the database exists
-        if force:
-            logging.info("Forcing a create or replace...")
-            db_exists = False
-        else:
-            try:
-                logging.info("Checking if DB exists...")
-                connection = self.engine.connect()
-                connection.execute(queries[0])
-                logging.info("DBs exist...")
-                db_exists = True
-            except:
-                logging.info("DB does not exist...")
-                db_exists = False
-            finally:
-                connection.close()
-                self.engine.dispose()
+        db_exists = self.check_if_db_exists(create_db, force)
 
         # If the DB doesn't exist or --force is true, create or replace the db
         if not db_exists:
             logging.info("Creating or replacing DBs")
             for query in queries[1:]:
+                try:
+                    logging.info("Executing Query: {}".format(query))
+                    connection = self.engine.connect()
+                    [result] = connection.execute(query).fetchone()
+                    logging.info("Query Result: {}".format(result))
+                finally:
+                    connection.close()
+                    self.engine.dispose()
+
+            if include_stages:
+                self.clone_stages(create_db, database, schema)
+
+        else:
+            logging.info("DB exists, running clone queries")
+
+            for query in queries[3:]:
                 try:
                     logging.info("Executing Query: {}".format(query))
                     connection = self.engine.connect()
@@ -408,6 +408,74 @@ class SnowflakeManager:
             except ProgrammingError as prg:
                 # Catches permissions errors
                 logging.error(prg._sql_message(as_unicode=False))
+
+    def check_if_db_exists(self, database, force):
+        # if force is false, check if the database exists
+        check_db_exists_query = f"""use database "{database}";"""
+        if force:
+            logging.info("Forcing a create or replace...")
+            db_exists = False
+        else:
+            try:
+                logging.info("Checking if DB exists...")
+                connection = self.engine.connect()
+                connection.execute(check_db_exists_query)
+                logging.info("DBs exist...")
+                db_exists = True
+            except:
+                logging.info("DB does not exist...")
+                db_exists = False
+            finally:
+                connection.close()
+                self.engine.dispose()
+        return db_exists
+
+    def clone_database_by_schemas(
+        self,
+        database: str,
+        include_stages: bool = False,
+    ):
+        databases = {
+            "prep": self.prep_database,
+            "prod": self.prod_database,
+            "raw": self.raw_database,
+        }
+
+        create_db = databases[database]
+
+        db_exists = self.check_if_db_exists(
+            database=create_db,
+            force=False,
+        )
+
+        schema_query = f""" 
+                        SELECT DISTINCT table_schema AS table_schema  
+                        FROM {database}.INFORMATION_SCHEMA.TABLES 
+                        WHERE TABLE_SCHEMA NOT IN ('INFORMATION_SCHEMA', 'PUBLIC')
+                        {' AND TABLE_SCHEMA NOT IN ( SELECT DISTINCT table_schema FROM "{create_db}".INFORMATION_SCHEMA.TABLES)' 
+                        if db_exists else ''} 
+                        """
+
+        try:
+            logging.info(f"Getting schemas {schema_query}")
+            res = query_executor(self.engine, schema_query)
+        except ProgrammingError as prg:
+            # Catches permissions errors
+            logging.error(prg._sql_message(as_unicode=False))
+
+        usage_roles = ["LOADER", "TRANSFORMER", "ENGINEER"]
+
+        for r in res:
+            try:
+                self.manage_clones(
+                    database=database,
+                    force=True,
+                    schema=r["table_schema"],
+                    include_stages=include_stages,
+                )
+            except Exception as exc:
+                logging.info(f"{r['schema']} didn't work")
+                logging.info(exc)
 
 
 if __name__ == "__main__":

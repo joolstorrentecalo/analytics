@@ -104,23 +104,23 @@ models:
         description: As based on current data.  
       - name: gender
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: gender_identity
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: nationality
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: region
         description: Identifies the region of the employees country of residence as it is entered in Workday. 
       - name: region_modified
         description: Identifies if employee is in NORAM, LATAM, EMEA, or JAPAC region based on their country of residence. US and Canada are NORAM, while Mexico is LATAM. All others stay the same.
       - name: gender_region
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ethnicity_region
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: greenhouse_candidate_id
         description: Captures the id associated to the employee in Greenhouse (our recruiting platform). This will only be applicable in Greenhouse starting 2019-12-13, and will help identify which candidates were hired.
         tests: 
@@ -135,7 +135,7 @@ models:
     columns:
       - name: termination_type
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
 
 
   - name: employee_directory
@@ -154,7 +154,7 @@ models:
       - name: full_name
       - name: country
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: work_email
       - name: hire_date
       - name: rehire_date
@@ -196,5 +196,5 @@ models:
       - name: employment_status
       - name: termination_reason
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: initiated_at

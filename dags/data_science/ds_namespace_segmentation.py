@@ -24,6 +24,8 @@ from kube_secrets import (
     GITLAB_ANALYTICS_PRIVATE_TOKEN,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -71,6 +73,7 @@ dag = DAG(
     "ds_namespace_segmentation",
     default_args=default_args,
     schedule_interval="0 4 3 * *",
+    catchup=False,
 )
 
 # Task 1
@@ -94,5 +97,7 @@ KubernetesPodOperator(
     ],
     env_vars=pod_env_vars,
     arguments=[namespace_segmentation_scoring_command],
+    affinity=get_affinity("data_science"),
+    tolerations=get_toleration("data_science"),
     dag=dag,
 )

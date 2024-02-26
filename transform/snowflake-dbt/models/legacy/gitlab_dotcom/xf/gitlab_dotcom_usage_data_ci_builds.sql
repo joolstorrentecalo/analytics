@@ -5,7 +5,8 @@
 {{ config({
         "materialized": "incremental",
         "unique_key": "event_primary_key",
-        "automatic_clustering": true
+        "automatic_clustering": true,
+        "tmp_relation_type": "table"
     })
 }}
 
@@ -24,7 +25,7 @@
 {%- set event_ctes = [
   {
     "event_name": "ci_builds",
-    "source_table_name": "temp_gitlab_dotcom_ci_builds_filtered",
+    "source_table_name": "gitlab_dotcom_ci_builds",
     "user_column_name": "ci_build_user_id",
     "key_to_parent_project": "ci_build_project_id",
     "primary_key": "ci_build_id",
@@ -183,8 +184,8 @@ joins AS (
 
       LEFT JOIN gitlab_subscriptions
         ON ultimate_namespace.namespace_id = gitlab_subscriptions.namespace_id
-        AND data.event_created_at >= TO_DATE(gitlab_subscriptions.valid_from)
-        AND data.event_created_at < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
+        AND TO_DATE(data.event_created_at) >= TO_DATE(gitlab_subscriptions.valid_from)
+        AND TO_DATE(data.event_created_at) < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
       LEFT JOIN plans
         ON gitlab_subscriptions.plan_id = plans.plan_id
       LEFT JOIN blocked_users

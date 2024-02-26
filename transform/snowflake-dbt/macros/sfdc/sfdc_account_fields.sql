@@ -15,6 +15,11 @@ WITH map_merged_crm_account AS (
     SELECT *
     FROM {{ ref('sfdc_user_roles_source') }}
 
+), dim_date AS (
+
+    SELECT *
+    FROM {{ ref('dim_date') }}
+
 ), crm_user AS (
 
     SELECT * 
@@ -31,7 +36,7 @@ WITH map_merged_crm_account AS (
 ), snapshot_dates AS (
 
     SELECT *
-    FROM {{ ref('dim_date') }}
+    FROM dim_date
     WHERE date_actual >= '2020-03-01' and date_actual <= CURRENT_DATE
     {% if is_incremental() %}
 
@@ -61,9 +66,10 @@ WITH map_merged_crm_account AS (
     {%- if model_type == 'live' %}
         *
     {%- elif model_type == 'snapshot' %}
-        {{ dbt_utils.surrogate_key(['sfdc_account_snapshots_source.account_id','snapshot_dates.date_id'])}}   AS crm_account_snapshot_id,
+        {{ dbt_utils.generate_surrogate_key(['sfdc_account_snapshots_source.account_id','snapshot_dates.date_id'])}}   AS crm_account_snapshot_id,
         snapshot_dates.date_id                                                                                AS snapshot_id,
         snapshot_dates.date_actual                                                                            AS snapshot_date,
+        snapshot_dates.fiscal_year                                                                            AS snapshot_fiscal_year,
         sfdc_account_snapshots_source.*
      {%- endif %}
     FROM
@@ -98,7 +104,7 @@ WITH map_merged_crm_account AS (
       {%- if model_type == 'live' %}
         *
       {%- elif model_type == 'snapshot' %}
-      {{ dbt_utils.surrogate_key(['sfdc_user_snapshots_source.user_id','snapshot_dates.date_id'])}}    AS crm_user_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_user_snapshots_source.user_id','snapshot_dates.date_id'])}}    AS crm_user_snapshot_id,
       snapshot_dates.date_id                                                                           AS snapshot_id,
       sfdc_user_snapshots_source.*
       {%- endif %}
@@ -154,6 +160,12 @@ WITH map_merged_crm_account AS (
     {{ dbt_utils.group_by(n=4)}}
     ORDER BY valid_from, valid_to
 
+), current_fiscal_year AS (
+
+    SELECT fiscal_year
+    FROM dim_date
+    WHERE date_actual = CURRENT_DATE()
+
 ), final AS (
 
     SELECT
@@ -176,6 +188,7 @@ WITH map_merged_crm_account AS (
       account_owner.user_id                                               AS crm_account_owner_id,
       proposed_account_owner.user_id                                      AS proposed_crm_account_owner_id,
       technical_account_manager.user_id                                   AS technical_account_manager_id,
+      sfdc_account.executive_sponsor_id,                                   
       sfdc_account.master_record_id,
       prep_crm_person.dim_crm_person_id                                   AS dim_crm_person_primary_contact_id,
 
@@ -196,6 +209,27 @@ WITH map_merged_crm_account AS (
       ----ultimate parent crm account info
        sfdc_account.ultimate_parent_account_name                          AS parent_crm_account_name,
 
+      --technical account manager attributes
+      technical_account_manager.manager_name AS tam_manager,
+
+      --executive sponsor field
+      executive_sponsor.name AS executive_sponsor,
+
+      --6 sense fields
+      sfdc_account.has_six_sense_6_qa,
+      sfdc_account.risk_rate_guid,
+      sfdc_account.six_sense_account_profile_fit,
+      sfdc_account.six_sense_account_reach_score,
+      sfdc_account.six_sense_account_profile_score,
+      sfdc_account.six_sense_account_buying_stage,
+      sfdc_account.six_sense_account_numerical_reach_score,
+      sfdc_account.six_sense_account_update_date,
+      sfdc_account.six_sense_account_6_qa_end_date,
+      sfdc_account.six_sense_account_6_qa_age_days,
+      sfdc_account.six_sense_account_6_qa_start_date,
+      sfdc_account.six_sense_account_intent_score,
+      sfdc_account.six_sense_segments, 
+
       --descriptive attributes
       sfdc_account.account_name                                           AS crm_account_name,
       sfdc_account.account_sales_segment                                  AS parent_crm_account_sales_segment,
@@ -205,6 +239,139 @@ WITH map_merged_crm_account AS (
       sfdc_account.account_territory                                      AS parent_crm_account_territory,
       sfdc_account.account_business_unit                                  AS parent_crm_account_business_unit,
       sfdc_account.account_role_type                                      AS parent_crm_account_role_type,
+
+      {%- if model_type == 'live' %}
+      CASE
+        WHEN LOWER(parent_crm_account_business_unit) = 'comm'
+          THEN CONCAT(
+                      UPPER(parent_crm_account_business_unit), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_sales_segment), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area),
+                      '-',
+                      current_fiscal_year.fiscal_year
+                      )
+        WHEN LOWER(parent_crm_account_business_unit) = 'entg'
+          THEN CONCAT(
+                      UPPER(parent_crm_account_business_unit), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area), 
+                      '-',
+                      UPPER(parent_crm_account_sales_segment),
+                      '-',
+                      current_fiscal_year.fiscal_year
+                      )
+        WHEN parent_crm_account_business_unit IS NOT NULL 
+          AND LOWER(parent_crm_account_business_unit) NOT IN ('comm', 'entg') -- account for non-sales reps
+          THEN CONCAT(
+                      UPPER(parent_crm_account_business_unit), 
+                      '-',
+                      UPPER(parent_crm_account_sales_segment), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area),
+                      '-',
+                      current_fiscal_year.fiscal_year
+                      )
+        WHEN parent_crm_account_business_unit IS NULL -- account for nulls/possible data issues
+          THEN CONCAT(
+                      UPPER(parent_crm_account_sales_segment), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area),
+                      '-',
+                      current_fiscal_year.fiscal_year
+                      )
+        END                                                                                                                           AS dim_crm_parent_account_hierarchy_sk,
+      {%- elif model_type == 'snapshot' %}
+      CASE
+        WHEN sfdc_account.snapshot_fiscal_year < 2024
+          THEN CONCAT(
+                      UPPER(parent_crm_account_sales_segment), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area),
+                      '-',
+                      sfdc_account.snapshot_fiscal_year
+                      )
+        WHEN sfdc_account.snapshot_fiscal_year >= 2024 AND LOWER(parent_crm_account_business_unit) = 'comm'
+          THEN CONCAT(
+                      UPPER(parent_crm_account_business_unit), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_sales_segment), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area),
+                      '-',
+                      sfdc_account.snapshot_fiscal_year
+                      )
+        WHEN sfdc_account.snapshot_fiscal_year >= 2024 AND LOWER(parent_crm_account_business_unit) = 'entg'
+          THEN CONCAT(
+                      UPPER(parent_crm_account_business_unit), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area), 
+                      '-',
+                      UPPER(parent_crm_account_sales_segment),
+                      '-',
+                      sfdc_account.snapshot_fiscal_year
+                      )
+        WHEN sfdc_account.snapshot_fiscal_year >= 2024
+          AND (parent_crm_account_business_unit IS NOT NULL AND LOWER(parent_crm_account_business_unit) NOT IN ('comm', 'entg'))  -- account for non-sales reps
+          THEN CONCAT(
+                      UPPER(parent_crm_account_business_unit), 
+                      '-',
+                      UPPER(parent_crm_account_sales_segment), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area),
+                      '-',
+                      sfdc_account.snapshot_fiscal_year
+                      )
+
+        WHEN sfdc_account.snapshot_fiscal_year >= 2024 AND parent_crm_account_business_unit IS NULL -- account for nulls/possible data issues
+          THEN CONCAT(
+                      UPPER(parent_crm_account_sales_segment), 
+                      '-',
+                      UPPER(parent_crm_account_geo), 
+                      '-',
+                      UPPER(parent_crm_account_region), 
+                      '-',
+                      UPPER(parent_crm_account_area),
+                      '-',
+                      sfdc_account.snapshot_fiscal_year
+                      )
+        END                                                                                                                           AS dim_crm_parent_account_hierarchy_sk,
+      {%- endif %}
+
+
       sfdc_account.account_max_family_employee                            AS parent_crm_account_max_family_employee,
       sfdc_account.account_upa_country                                    AS parent_crm_account_upa_country,
       sfdc_account.account_upa_state                                      AS parent_crm_account_upa_state,
@@ -303,9 +470,11 @@ WITH map_merged_crm_account AS (
       sfdc_account.last_timeline_at_risk_update,
       sfdc_account.last_at_risk_update_comments,
       sfdc_account.bdr_prospecting_status,
+      sfdc_account.gs_health_csm_sentiment,
 
       --degenerative dimensions
       sfdc_account.is_sdr_target_account,
+      sfdc_account.is_focus_partner,
       IFF(sfdc_record_type.record_type_label = 'Partner'
           AND sfdc_account.partner_type IN ('Alliance', 'Channel')
           AND sfdc_account.partner_status = 'Authorized',
@@ -490,6 +659,8 @@ WITH map_merged_crm_account AS (
       ON sfdc_account.owner_id = account_owner.user_id
     LEFT JOIN sfdc_users AS proposed_account_owner
       ON proposed_account_owner.user_id = sfdc_account.proposed_account_owner
+    LEFT JOIN sfdc_users AS executive_sponsor
+      ON executive_sponsor.user_id = sfdc_account.executive_sponsor_id
     LEFT JOIN sfdc_users created_by
       ON sfdc_account.created_by_id = created_by.user_id
     LEFT JOIN sfdc_users AS last_modified_by
@@ -506,6 +677,9 @@ WITH map_merged_crm_account AS (
     LEFT JOIN sfdc_users AS proposed_account_owner
       ON proposed_account_owner.user_id = sfdc_account.proposed_account_owner
         AND proposed_account_owner.snapshot_id = sfdc_account.snapshot_id
+    LEFT JOIN sfdc_users AS executive_sponsor
+      ON executive_sponsor.user_id = sfdc_account.executive_sponsor_id
+        AND executive_sponsor.snapshot_id = sfdc_account.snapshot_id
     LEFT JOIN lam_corrections
       ON sfdc_account.ultimate_parent_account_id = lam_corrections.dim_parent_crm_account_id
         AND sfdc_account.snapshot_id = lam_corrections.snapshot_id
@@ -530,6 +704,7 @@ WITH map_merged_crm_account AS (
     {%- endif %}
      LEFT JOIN sfdc_user_roles_source
       ON account_owner.user_role_id = sfdc_user_roles_source.id
+     LEFT JOIN current_fiscal_year
 
 
 )

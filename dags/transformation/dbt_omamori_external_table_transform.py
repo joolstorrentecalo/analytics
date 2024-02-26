@@ -102,6 +102,8 @@ dbt_external_table_run = KubernetesPodOperator(
     secrets=dbt_secrets,
     env_vars=gitlab_pod_env_vars,
     arguments=[external_table_run_cmd],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -122,8 +124,8 @@ transform_task = KubernetesPodOperator(
     secrets=dbt_secrets,
     env_vars=gitlab_pod_env_vars,
     arguments=[model_run_cmd],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -143,8 +145,8 @@ model_test_task = KubernetesPodOperator(
     secrets=dbt_secrets,
     env_vars=gitlab_pod_env_vars,
     arguments=[model_test_cmd],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 

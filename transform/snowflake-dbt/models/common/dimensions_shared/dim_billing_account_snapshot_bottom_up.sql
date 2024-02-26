@@ -110,8 +110,8 @@
     SELECT 
         
        --surrogate keys from zuora & cdot
-      {{ dbt_utils.surrogate_key(['zuora_account_joined.snapshot_id', 'zuora_account_joined.dim_billing_account_id']) }}                                                                    AS zuora_billing_account_snapshot_id,
-      {{ dbt_utils.surrogate_key(['cdot_billing_account_joined.snapshot_id', 'cdot_billing_account_joined.zuora_account_id']) }}                                                            AS cdot_billing_account_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['zuora_account_joined.snapshot_id', 'zuora_account_joined.dim_billing_account_id']) }}                                                                    AS zuora_billing_account_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['cdot_billing_account_joined.snapshot_id', 'cdot_billing_account_joined.zuora_account_id']) }}                                                            AS cdot_billing_account_snapshot_id,
                                                                                            
       --snapshot keys from zuora & cdot
       zuora_account_joined.snapshot_id                                                                                                                                                      AS zuora_snapshot_id, 
@@ -190,7 +190,7 @@
     SELECT 
 
        --surrogate key
-      {{ dbt_utils.surrogate_key(['intermediary.snapshot_id', 'intermediary.billing_account_snapshot_id']) }}                                                                                         AS billing_account_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['intermediary.snapshot_id', 'intermediary.billing_account_snapshot_id']) }}                                                                                         AS billing_account_snapshot_id,
       intermediary.snapshot_id,
 
       --natural key

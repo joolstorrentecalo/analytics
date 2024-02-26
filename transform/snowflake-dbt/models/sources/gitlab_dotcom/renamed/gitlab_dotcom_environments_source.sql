@@ -12,10 +12,8 @@ WITH source AS (
       name::VARCHAR                                    AS environment_name,
       created_at::TIMESTAMP                            AS created_at,
       updated_at::TIMESTAMP                            AS updated_at,
-      external_url::VARCHAR                            AS external_url,
       environment_type::VARCHAR                        AS environment_type,
-      state::VARCHAR                                   AS state,
-      slug::VARCHAR                                    AS slug
+      state::VARCHAR                                   AS state
     FROM source
 
 )

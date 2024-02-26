@@ -1,3 +1,7 @@
+{{ config(
+    tags=["product"]
+) }}
+
 {% set fields_to_mask = ['note'] %}
 
 WITH prep_note AS (
@@ -30,7 +34,8 @@ WITH prep_note AS (
       resolved_by_id,
       discussion_id,
       cached_markdown_version,
-      resolved_by_push
+      resolved_by_push,
+      action_type
     FROM {{ ref('prep_note') }}
 
 )
@@ -38,7 +43,7 @@ WITH prep_note AS (
 {{ dbt_audit(
     cte_ref="prep_note",
     created_by="@mpeychet_",
-    updated_by="@mpeychet_",
+    updated_by="michellecooper",
     created_date="2021-06-22",
-    updated_date="2021-06-22"
+    updated_date="2023-11-22"
 ) }}

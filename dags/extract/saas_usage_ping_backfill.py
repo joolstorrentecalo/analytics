@@ -33,6 +33,8 @@ from kube_secrets import (
     SNOWFLAKE_USER,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 env = os.environ.copy()
 
 DAG_NAME = "saas_usage_ping_backfill"
@@ -57,7 +59,6 @@ secrets = [
 ]
 
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -74,7 +75,7 @@ def get_command():
     cmd = f"""
             {clone_repo_cmd} &&
             cd analytics/extract/saas_usage_ping/ &&
-            python3 usage_ping.py backfill --ping_date=$RUN_DATE --namespace_metrics_filter=$METRICS_BACKFILL
+            python3 instance_namespace_metrics.py backfill --ping_date=$RUN_DATE --namespace_metrics_filter=$METRICS_BACKFILL
         """
     return cmd
 
@@ -157,6 +158,8 @@ def generate_task(run_date: date) -> None:
         secrets=secrets,
         env_vars=env_vars,
         arguments=[command],
+        affinity=get_affinity("extraction_highmem"),
+        tolerations=get_toleration("extraction_highmem"),
         dag=dag,
     )
 
@@ -191,6 +194,7 @@ if BACKFILL_PARAMETERS:
         schedule_interval=None,
         concurrency=2,
         description=DAG_DESCRIPTION,
+        catchup=False,
     )
 
     for run in get_date_range(start=start_date, end=end_date):

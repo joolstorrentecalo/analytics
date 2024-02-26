@@ -163,7 +163,7 @@ fct AS (
   SELECT
     -- Primary Key
     {{ 
-      dbt_utils.surrogate_key([
+      dbt_utils.generate_surrogate_key([
         'combine.user_id',
         'combine.namespace_id',
         'combine.source_member_id',
@@ -172,8 +172,8 @@ fct AS (
     }} AS user_membership_pk,
 
     -- Foreign Keys
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['combine.user_id'])) }} AS dim_user_sk,
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['combine.namespace_id'])) }} AS dim_namespace_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['combine.user_id'])) }} AS dim_user_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['combine.namespace_id'])) }} AS dim_namespace_sk,
 
     -- Legacy Keys
 

@@ -6,6 +6,8 @@ WITH source AS (
       modified_date           AS modified_date,
       name                    AS name,
       web_site                AS web_site,
+      industry                AS industry,
+      country                 AS country,
       engagement_rating       AS engagement_rating,
       engagement_score        AS engagement_score,
       domain                  AS domain,

@@ -8,21 +8,31 @@ WITH resource_label_events AS (
 , epics AS (
 
     SELECT *
-    FROM {{ ref('gitlab_dotcom_epics') }} 
+    FROM {{ ref('gitlab_dotcom_epics_source') }}
 
 )
 
 , issues AS (
 
-    SELECT *
-    FROM {{ ref('gitlab_dotcom_issues_xf') }} 
+    SELECT
+      prep_issue.*,
+      prep_namespace.namespace_id
+    FROM {{ ref('prep_issue') }}
+    LEFT JOIN  {{ ref('prep_namespace') }}
+      ON prep_issue.dim_namespace_sk = prep_namespace.dim_namespace_sk
+    WHERE prep_namespace.is_currently_valid = TRUE
 
 )
 
 , mrs AS (
 
-    SELECT *
-    FROM {{ ref('gitlab_dotcom_merge_requests_xf') }} 
+    SELECT
+      prep_merge_request.*,
+      prep_namespace.namespace_id
+    FROM {{ ref('prep_merge_request') }}
+    LEFT JOIN  {{ ref('prep_namespace') }}
+      ON prep_merge_request.dim_namespace_sk = prep_namespace.dim_namespace_sk
+    WHERE prep_namespace.is_currently_valid = TRUE
 
 )
 

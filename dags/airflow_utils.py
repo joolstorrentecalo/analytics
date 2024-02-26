@@ -6,28 +6,36 @@ from datetime import date, timedelta
 from typing import List, Dict
 
 from airflow.models import Variable
-from airflow.operators.slack_operator import SlackAPIPostOperator
-from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
+from airflow.providers.slack.operators.slack import SlackAPIPostOperator
+from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
+if os.environ["IN_CLOUD"] == "False":
+    REPO_BASE_PATH = f"{os.environ['AIRFLOW_HOME']}/analytics"
+else:
+    REPO_BASE_PATH = f"{os.environ['AIRFLOW_HOME']}/dags/repo"
 
 SSH_REPO = "git@gitlab.com:gitlab-data/analytics.git"
 HTTP_REPO = "https://gitlab.com/gitlab-data/analytics.git"
-DATA_IMAGE = "registry.gitlab.com/gitlab-data/data-image/data-image:v1.0.27"
-DBT_IMAGE = "registry.gitlab.com/gitlab-data/dbt-image:v0.0.1"
-PERMIFROST_IMAGE = "registry.gitlab.com/gitlab-data/permifrost:v0.13.1"
+DATA_IMAGE = "registry.gitlab.com/gitlab-data/data-image/data-image:v1.0.31"
+DATA_IMAGE_3_10 = "registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.5"
+DBT_IMAGE = "registry.gitlab.com/gitlab-data/dbt-image:v0.0.3"
+PERMIFROST_IMAGE = "registry.gitlab.com/gitlab-data/permifrost:v0.15.4"
 ANALYST_IMAGE = "registry.gitlab.com/gitlab-data/analyst-image:v0.0.2"
+TABLEAU_CONFIG_IMAGE = "registry.gitlab.com/gitlab-data/tableauconman:v0.1.12"
 
 SALES_ANALYTICS_NOTEBOOKS_PATH = "analytics/sales_analytics_notebooks"
+# Needed to find the correct drives as the path when running in cloud in the latest Airflow is different
+AIRFLOW_SALES_ANALYTICS_NOTEBOOKS_PATH = f"{REPO_BASE_PATH}/sales_analytics_notebooks"
 
 
 def get_sales_analytics_notebooks(frequency: str) -> Dict:
     notebooks = []
     fileNames = []
 
-    path = pathlib.Path(f"{SALES_ANALYTICS_NOTEBOOKS_PATH}/{frequency}/")
+    path = pathlib.Path(f"{AIRFLOW_SALES_ANALYTICS_NOTEBOOKS_PATH}/{frequency}/")
 
     for file in path.rglob("*.ipynb"):
-        relative_path = file.relative_to(SALES_ANALYTICS_NOTEBOOKS_PATH)
+        relative_path = file.relative_to(AIRFLOW_SALES_ANALYTICS_NOTEBOOKS_PATH)
         notebooks.append(relative_path.as_posix())
         expanded_name = (
             str(relative_path.parent).replace("/", "_") + "_" + relative_path.stem
@@ -39,13 +47,12 @@ def get_sales_analytics_notebooks(frequency: str) -> Dict:
 
 analytics_pipelines_dag = [
     "dbt",
-    "dbt_full_refresh",
+    "dbt_manual_refresh",
     "dbt_full_refresh_weekly",
     "dbt_netsuite_actuals_income_cogs_opex",
     "dbt_snowplow_backfill",
     "dbt_snowplow_backfill_specific_model",
     "dbt_snowplow_full_refresh",
-    "saas_usage_ping",
     "t_prep_dotcom_usage_events_backfill",
     "dbt_six_hourly",
 ]
@@ -57,6 +64,8 @@ data_science_pipelines_dag = [
     "ds_propensity_to_purchase_trial",
     "ds_namespace_segmentation",
     "ds_propensity_to_purchase_free",
+    "ds_churn_forecasting",
+    "ds_propensity_to_purchase_leads",
 ]
 
 sales_analytics_pipelines_dag = [
@@ -129,7 +138,7 @@ def slack_defaults(context, task_type):
     """
     Function to handle switching between a task failure and success.
     """
-    base_url = "https://airflow.gitlabdata.com"
+    base_url = "http://34.83.216.69:443/"
     execution_date = context["ts"]
     dag_context = context["dag"]
     dag_name = dag_context.dag_id
@@ -264,9 +273,6 @@ def slack_succeeded_task(context):
     return slack_alert.execute(context=None)
 
 
-# Set the resources for the task pods
-pod_resources = {"request_memory": "1Gi", "request_cpu": "500m"}
-
 # GitLab default settings for all DAGs
 gitlab_defaults = dict(
     get_logs=True,
@@ -274,7 +280,6 @@ gitlab_defaults = dict(
     in_cluster=not os.environ["IN_CLUSTER"] == "False",
     is_delete_operator_pod=True,
     namespace=os.environ["NAMESPACE"],
-    resources=pod_resources,
     cmds=["/bin/bash", "-c"],
 )
 
@@ -297,6 +302,9 @@ gitlab_pod_env_vars = {
     "SNOWFLAKE_PROD_DATABASE": "PROD"
     if GIT_BRANCH == "master"
     else f"{GIT_BRANCH.upper()}_PROD",
+    "DBT_RUNNER": "{{ task_instance_key_str }}__{{ run_id }}__{{ task_instance.try_number }}"
+    if GIT_BRANCH == "master"
+    else f"{GIT_BRANCH.upper()}",
 }
 
 # git commands

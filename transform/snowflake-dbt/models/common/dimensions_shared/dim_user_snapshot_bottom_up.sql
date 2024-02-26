@@ -4,7 +4,8 @@
 
 {{ config({
     "materialized": "incremental",
-    "unique_key": "user_snapshot_id"
+    "unique_key": "user_snapshot_id",
+    "tmp_relation_type": "table"
     })
 }}
 
@@ -172,9 +173,9 @@
 
     SELECT  
         --surrogate_key
-        {{ dbt_utils.surrogate_key(['user_spined.user_id','user_spined.spined_date_id']) }}  AS user_snapshot_id,
+        {{ dbt_utils.generate_surrogate_key(['user_spined.user_id','user_spined.spined_date_id']) }}  AS user_snapshot_id,
         user_spined.spined_date_id AS snapshot_id,
-        {{ dbt_utils.surrogate_key(['user_spined.user_id']) }}  AS dim_user_sk,  
+        {{ dbt_utils.generate_surrogate_key(['user_spined.user_id']) }}  AS dim_user_sk,
         --natural_key
         user_spined.user_id,        
         --legacy natural_key to be deprecated during change management plan

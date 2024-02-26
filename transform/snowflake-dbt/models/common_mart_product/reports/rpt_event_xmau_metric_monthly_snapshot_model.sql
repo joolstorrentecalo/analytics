@@ -36,7 +36,7 @@ WITH snapshot_dates AS (
 ), final AS (
 
      SELECT
-       {{ dbt_utils.surrogate_key(['snapshot_id', 'xmau_metric_monthly_id']) }} AS xmau_metric_monthly_snapshot_id,
+       {{ dbt_utils.generate_surrogate_key(['snapshot_id', 'xmau_metric_monthly_id']) }} AS xmau_metric_monthly_snapshot_id,
        *
      FROM rpt_event_xmau_metric_monthly_spined
 

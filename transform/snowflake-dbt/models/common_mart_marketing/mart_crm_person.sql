@@ -8,7 +8,8 @@
     ('dim_sales_segment','dim_sales_segment'),
     ('fct_crm_person','fct_crm_person'),
     ('dim_date','dim_date'),
-    ('dim_crm_user', 'dim_crm_user')
+    ('dim_crm_user', 'dim_crm_user'),
+    ('dim_crm_user_hierarchy', 'dim_crm_user_hierarchy')
 ]) }}
 
 , final AS (
@@ -30,7 +31,7 @@
       mql_date_first_pt.date_day               AS mql_date_first_pt,
       mql_date_first.first_day_of_month        AS mql_month_first,
       mql_date_first_pt.first_day_of_month     AS mql_month_first_pt,
-      mql_date_latest.date_day                 AS mql_date_lastest,
+      mql_date_latest.date_day                 AS mql_date_latest,
        initial_mql_date_first_pt.date_day      AS initial_mql_date_first_pt,
       initial_mql_date_first.first_day_of_month
                                                AS initial_mql_month_first,
@@ -40,17 +41,23 @@
       legacy_mql_date_first.first_day_of_month AS legacy_mql_month_first,
       legacy_mql_date_first_pt.first_day_of_month
                                                AS legacy_mql_month_first_pt,
-      legacy_mql_date_latest.date_day          AS legacy_mql_date_lastest,
+      legacy_mql_date_latest.date_day          AS legacy_mql_date_latest,
       fct_crm_person.mql_datetime_latest,
       fct_crm_person.mql_datetime_latest_pt,
-      mql_date_latest_pt.date_day              AS mql_date_lastest_pt,
+      mql_date_latest_pt.date_day              AS mql_date_latest_pt,
       mql_date_latest.first_day_of_month       AS mql_month_latest,
       mql_date_latest_pt.first_day_of_month    AS mql_month_latest_pt,
-      legacy_mql_date_latest_pt.date_day       AS legacy_mql_date_lastest_pt,
+      legacy_mql_date_latest_pt.date_day       AS legacy_mql_date_latest_pt,
       legacy_mql_date_latest.first_day_of_month
                                                AS legacy_mql_month_latest,
       legacy_mql_date_latest_pt.first_day_of_month
                                                AS legacy_mql_month_latest_pt,
+      fct_crm_person.inferred_mql_date_first,
+      fct_crm_person.inferred_mql_datetime_first_pt,
+      fct_crm_person.inferred_mql_datetime_first,
+      fct_crm_person.inferred_mql_date_latest,
+      fct_crm_person.inferred_mql_datetime_latest_pt,
+      fct_crm_person.inferred_mql_datetime_latest,
       created_date.date_day                    AS created_date,
       created_date_pt.date_day                 AS created_date_pt,
       created_date.first_day_of_month          AS created_month,
@@ -109,19 +116,36 @@
       worked_date_pt.date_day                  AS worked_date_pt,
       worked_date.first_day_of_month           AS worked_month,
       worked_date_pt.first_day_of_month        AS worked_month_pt,
+      fct_crm_person.high_priority_datetime,
       dim_crm_person.email_domain,
       dim_crm_person.email_domain_type,
       is_valuable_signup,
       dim_crm_person.email_hash,
       dim_crm_person.status,
+      dim_crm_person.sfdc_record_type,
       dim_crm_person.lead_source,
+      dim_crm_person.title,
       dim_crm_person.was_converted_lead,
       dim_crm_person.source_buckets,
       dim_crm_person.crm_partner_id,
+      dim_crm_person.is_partner_recalled,
       dim_crm_person.prospect_share_status,
       dim_crm_person.partner_prospect_status,
       dim_crm_person.partner_prospect_owner_name,
       dim_crm_person.partner_prospect_id,
+      dim_crm_person.propensity_to_purchase_score_group,
+      dim_crm_person.pql_namespace_creator_job_description,
+      dim_crm_person.pql_namespace_id,
+      dim_crm_person.pql_namespace_name,
+      dim_crm_person.pql_namespace_users,
+      dim_crm_person.is_product_qualified_lead,
+      dim_crm_person.propensity_to_purchase_insights,
+      dim_crm_person.is_ptp_contact,
+      dim_crm_person.propensity_to_purchase_namespace_id,
+      dim_crm_person.propensity_to_purchase_past_insights,
+      dim_crm_person.propensity_to_purchase_past_score_group,
+      fct_crm_person.propensity_to_purchase_score_date,
+      fct_crm_person.propensity_to_purchase_days_since_trial_start,
       fct_crm_person.ga_client_id,
       dim_crm_person.sequence_step_type,
       dim_crm_person.state,
@@ -150,12 +174,12 @@
       dim_crm_person.is_first_order_initial_mql,
       dim_crm_person.is_first_order_mql,
       dim_crm_person.is_first_order_person,
-      dim_crm_person.account_demographics_sales_segment,
-      dim_crm_person.account_demographics_sales_segment_grouped,
-      dim_crm_person.account_demographics_geo,
-      dim_crm_person.account_demographics_region,
-      dim_crm_person.account_demographics_area,
-      dim_crm_person.account_demographics_segment_region_grouped,
+      dim_crm_user_hierarchy.crm_user_sales_segment                       AS account_demographics_sales_segment,
+      dim_crm_user_hierarchy.crm_user_sales_segment_grouped               AS account_demographics_sales_segment_grouped,
+      dim_crm_user_hierarchy.crm_user_geo                                 AS account_demographics_geo,
+      dim_crm_user_hierarchy.crm_user_region                              AS account_demographics_region,
+      dim_crm_user_hierarchy.crm_user_area                                AS account_demographics_area,
+      dim_crm_user_hierarchy.crm_user_sales_segment_region_grouped        AS account_demographics_segment_region_grouped,
       dim_crm_person.account_demographics_territory,
       dim_crm_person.account_demographics_employee_count,
       dim_crm_person.account_demographics_max_family_employee,
@@ -176,9 +200,16 @@
       fct_crm_person.last_transfer_date_time,
       fct_crm_person.time_from_last_transfer_to_sequence,
       fct_crm_person.time_from_mql_to_last_transfer,
+      fct_crm_person.traction_first_response_time,
+      fct_crm_person.traction_first_response_time_seconds,
+      fct_crm_person.traction_response_time_in_business_hours,
       fct_crm_person.zoominfo_contact_id,
       fct_crm_person.is_mql,
       fct_crm_person.is_inquiry,
+      fct_crm_person.is_bdr_sdr_worked,
+      fct_crm_person.is_abm_tier_inquiry,
+      fct_crm_person.is_abm_tier_mql,
+      fct_crm_person.is_high_priority,
       CASE
         WHEN LOWER(dim_crm_person.lead_source) LIKE '%trial - gitlab.com%' THEN TRUE
         WHEN LOWER(dim_crm_person.lead_source) LIKE '%trial - enterprise%' THEN TRUE
@@ -262,13 +293,15 @@
       ON fct_crm_person.worked_date_pt_id = worked_date_pt.date_id
     LEFT JOIN dim_crm_user 
       ON fct_crm_person.dim_crm_user_id = dim_crm_user.dim_crm_user_id
+    LEFT JOIN dim_crm_user_hierarchy
+      ON dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk = fct_crm_person.dim_account_demographics_hierarchy_sk
 
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@dmicovic",
+    updated_by="@degan",
     created_date="2020-12-07",
-    updated_date="2023-05-10",
+    updated_date="2024-02-01",
   ) }}  

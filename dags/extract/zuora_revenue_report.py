@@ -12,6 +12,7 @@ from airflow_utils import (
     gitlab_defaults,
     slack_failed_task,
     gitlab_pod_env_vars,
+    REPO_BASE_PATH,
 )
 from kube_secrets import (
     GCP_SERVICE_CREDS,
@@ -42,10 +43,11 @@ default_args = {
     "dagrun_timeout": timedelta(hours=6),
 }
 
-airflow_home = env["AIRFLOW_HOME"]
 task_name = "zuora-revenue-report"
 
-full_path = f"{airflow_home}/analytics/extract/zuora_revenue_report/src/zuora_report_api_list.yml"
+full_path = (
+    f"{REPO_BASE_PATH}/extract/zuora_revenue_report/src/zuora_report_api_list.yml"
+)
 
 
 def get_yaml_file(path: str) -> dict:
@@ -73,6 +75,7 @@ dag = DAG(
     default_args=default_args,
     schedule_interval="0 5 * * *",
     concurrency=1,
+    catchup=False,
 )
 
 start = DummyOperator(task_id="Start", dag=dag)
@@ -105,8 +108,8 @@ for report in report_list:
             SNOWFLAKE_LOAD_PASSWORD,
         ],
         env_vars=pod_env_vars,
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         arguments=[container_cmd_load],
         dag=dag,
     )

@@ -17,7 +17,7 @@ handbook_path,file_classification
 data/performance_indicators/infrastructure_department.yml,infrastructure
 data/performance_indicators/development_department.yml,development
 data/performance_indicators/security_department.yml,security
-data/performance_indicators/quality_department.yml,quality
+data/performance_indicators/quality_archived_department.yml,quality
 data/performance_indicators/customer_support_department.yml,support
 data/performance_indicators/ux_department.yml,ux
 data/performance_indicators/incubation_engineering_department.yml,incubation

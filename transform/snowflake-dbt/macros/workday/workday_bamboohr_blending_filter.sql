@@ -4,7 +4,7 @@
 
 SELECT 
   *,
-  {{ dbt_utils.surrogate_key(unique_columns) }} AS unique_filter_key,
+  {{ dbt_utils.generate_surrogate_key(unique_columns) }} AS unique_filter_key,
   IFF(IFF(uploaded_at >= {{ cut_over_date }} ,'workday','bamboohr' ) = source_system,1,0) AS sort_order
 FROM {{ cte }} 
 WHERE (source_system = 'workday' AND {{ filter_date or '\'9999-01-01\'' }} >= {{ cut_over_date }} ) 

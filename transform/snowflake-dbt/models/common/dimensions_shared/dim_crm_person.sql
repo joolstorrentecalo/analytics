@@ -1,3 +1,8 @@
+{{ config({
+    "post-hook": "{{ missing_member_column(primary_key = 'dim_crm_person_id') }}"
+    })
+}}
+
 WITH crm_person AS (
 
     SELECT *
@@ -52,6 +57,7 @@ WITH crm_person AS (
       partner_prospect_status,
       partner_prospect_owner_name,
       partner_prospect_id,
+      is_partner_recalled,
       marketo_last_interesting_moment,
       marketo_last_interesting_moment_date,
       outreach_step_number,
@@ -101,11 +107,18 @@ WITH crm_person AS (
       account_demographics_upa_city,
       account_demographics_upa_street,
       account_demographics_upa_postal_code,
-      LOWER(COALESCE(zoominfo_company_country, 
-                     zoominfo_contact_country,
-                     cognism_company_office_country,
-                     cognism_country)
-       ) AS person_first_country
+      propensity_to_purchase_score_group,
+      pql_namespace_creator_job_description,
+      pql_namespace_id,
+      pql_namespace_name,
+      pql_namespace_users,
+      is_product_qualified_lead,
+      propensity_to_purchase_insights,
+      is_ptp_contact,
+      propensity_to_purchase_namespace_id,
+      propensity_to_purchase_past_insights,
+      propensity_to_purchase_past_score_group,
+      person_first_country
 
     FROM crm_person
 )
@@ -113,7 +126,7 @@ WITH crm_person AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@jjstark",
-    updated_by="@dmicovic",
+    updated_by="@jpeguero",
     created_date="2020-09-10",
-    updated_date="2023-05-11"
+    updated_date="2023-10-13"
 ) }}

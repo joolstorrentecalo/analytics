@@ -392,3 +392,36 @@ The main motivation for introducing this column is for a few reasons:
 1. Support "late_arriving" ping automatically, without the need to full-refresh a full lineage
 
 {% enddocs %}
+
+{% docs ci_builds_28_days_event_desc %}
+  Total monthly (28D) CI builds in Gitlab repositories for all project and project types [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20230531170613_ci_builds.yml)
+{% enddocs %}
+
+{% docs audit_features_28_days_user_desc %}
+  Unique users that have used audit event screen, audit event API, compliance
+  dashboard, or credential inventory [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_28d/20210216183201_compliance_features_track_unique_visits_union.yml)
+{% enddocs %}
+
+{% docs groups_all_time_event_desc %}
+  Total count of groups as of usage ping snapshot [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216180750_groups.yml)
+{% enddocs %}
+
+{% docs commit_ci_config_file_7_days_user_desc %}
+  Weekly unique user count doing commits which contains the CI config file [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_7d/20210216184301_o_pipeline_authoring_unique_users_committing_ciconfigfile_weekly.yml)
+{% enddocs %}
+
+{% docs ci_pipeline_config_repository_all_time_user_desc %}
+  Total count of unique users creating pipelines from CI files in the repository [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216175533_ci_pipeline_config_repository.yml)
+{% enddocs %}
+
+{% docs ci_pipeline_config_repository_all_time_event_desc %}
+  Total Pipelines from CI files in repository [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216175518_ci_pipeline_config_repository.yml)
+{% enddocs %}
+
+{% docs pipeline_schedules_all_time_event_desc %}
+  Pipeline schedules in GitLab [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216175523_ci_pipeline_schedules.yml)
+{% enddocs %}
+
+{% docs pipeline_schedules_all_time_user_desc %}
+  Distinct users creating pipeline schedules [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216175535_ci_pipeline_schedules.yml)
+{% enddocs %}

@@ -36,14 +36,14 @@
       dim_subscription_id_original,
       dim_billing_account_id
     FROM bdg_subscription_product_rate_plan
-    WHERE product_delivery_type = 'Self-Managed'
+    WHERE product_deployment_type IN ('Self-Managed', 'Dedicated')
 
 ), ping_instance_wave_sm AS (
 
     SELECT *
     FROM ping_instance_wave
     WHERE dim_subscription_id IS NOT NULL
-      AND ping_delivery_type = 'Self-Managed'
+      AND ping_deployment_type IN ('Self-Managed', 'Dedicated')
     QUALIFY ROW_NUMBER() OVER (
       PARTITION BY
         dim_subscription_id,
@@ -76,6 +76,8 @@
       ping_instance_wave_sm.dim_location_country_id,
       ping_instance_wave_sm.installation_creation_date,
       ping_instance_wave_sm.dim_installation_id,
+      ping_instance_wave_sm.ping_delivery_type,
+      ping_instance_wave_sm.ping_deployment_type,
       -- Wave 1
       DIV0(
           ping_instance_wave_sm.license_billable_users,
@@ -127,18 +129,14 @@
       ping_instance_wave_sm.projects_all_time_event,
       ping_instance_wave_sm.deployments_28_days_event,
       ping_instance_wave_sm.packages_28_days_event,
-      ping_instance_wave_sm.sast_jobs_all_time_event,
       ping_instance_wave_sm.dast_jobs_all_time_event,
-      ping_instance_wave_sm.dependency_scanning_jobs_all_time_event,
       ping_instance_wave_sm.license_management_jobs_all_time_event,
       ping_instance_wave_sm.secret_detection_jobs_all_time_event,
-      ping_instance_wave_sm.container_scanning_jobs_all_time_event,
       ping_instance_wave_sm.projects_jenkins_active_all_time_event,
       ping_instance_wave_sm.projects_bamboo_active_all_time_event,
       ping_instance_wave_sm.projects_jira_active_all_time_event,
       ping_instance_wave_sm.projects_drone_ci_active_all_time_event,
       ping_instance_wave_sm.projects_github_active_all_time_event,
-      ping_instance_wave_sm.projects_jira_server_active_all_time_event,
       ping_instance_wave_sm.projects_jira_dvcs_cloud_active_all_time_event,
       ping_instance_wave_sm.projects_with_repositories_enabled_all_time_event,
       ping_instance_wave_sm.protected_branches_all_time_event,
@@ -154,25 +152,21 @@
       ping_instance_wave_sm.auto_devops_enabled,
       ping_instance_wave_sm.gitaly_clusters_instance,
       ping_instance_wave_sm.epics_deepest_relationship_level_instance,
-      ping_instance_wave_sm.clusters_applications_cilium_all_time_event,
       ping_instance_wave_sm.network_policy_forwards_all_time_event,
       ping_instance_wave_sm.network_policy_drops_all_time_event,
       ping_instance_wave_sm.requirements_with_test_report_all_time_event,
       ping_instance_wave_sm.requirement_test_reports_ci_all_time_event,
       ping_instance_wave_sm.projects_imported_from_github_all_time_event,
-      ping_instance_wave_sm.projects_jira_cloud_active_all_time_event,
       ping_instance_wave_sm.projects_jira_dvcs_server_active_all_time_event,
       ping_instance_wave_sm.service_desk_issues_all_time_event,
       ping_instance_wave_sm.ci_pipelines_all_time_user,
       ping_instance_wave_sm.service_desk_issues_28_days_user,
       ping_instance_wave_sm.projects_jira_active_28_days_user,
-      ping_instance_wave_sm.projects_jira_dvcs_cloud_active_28_days_user,
       ping_instance_wave_sm.projects_jira_dvcs_server_active_28_days_user,
       ping_instance_wave_sm.merge_requests_with_required_code_owners_28_days_user,
       ping_instance_wave_sm.analytics_value_stream_28_days_event,
       ping_instance_wave_sm.code_review_user_approve_mr_28_days_user,
       ping_instance_wave_sm.epics_usage_28_days_user,
-      ping_instance_wave_sm.ci_templates_usage_28_days_event,
       ping_instance_wave_sm.project_management_issue_milestone_changed_28_days_user,
       ping_instance_wave_sm.project_management_issue_iteration_changed_28_days_user,
       -- Wave 5.1
@@ -180,15 +174,7 @@
       ping_instance_wave_sm.ci_cd_lead_time_usage_28_days_event,
       ping_instance_wave_sm.ci_cd_deployment_frequency_usage_28_days_event,
       ping_instance_wave_sm.projects_with_repositories_enabled_all_time_user,
-      ping_instance_wave_sm.api_fuzzing_jobs_usage_28_days_user,
       ping_instance_wave_sm.coverage_fuzzing_pipeline_usage_28_days_event,
-      ping_instance_wave_sm.api_fuzzing_pipeline_usage_28_days_event,
-      ping_instance_wave_sm.container_scanning_pipeline_usage_28_days_event,
-      ping_instance_wave_sm.dependency_scanning_pipeline_usage_28_days_event,
-      ping_instance_wave_sm.sast_pipeline_usage_28_days_event,
-      ping_instance_wave_sm.secret_detection_pipeline_usage_28_days_event,
-      ping_instance_wave_sm.dast_pipeline_usage_28_days_event,
-      ping_instance_wave_sm.coverage_fuzzing_jobs_28_days_user,
       ping_instance_wave_sm.environments_all_time_event,
       ping_instance_wave_sm.feature_flags_all_time_event,
       ping_instance_wave_sm.successful_deployments_28_days_event,
@@ -245,7 +231,6 @@
       ping_instance_wave_sm.compliance_frameworks_pipeline_all_time_event,
       ping_instance_wave_sm.compliance_frameworks_pipeline_28_days_event,
       ping_instance_wave_sm.groups_streaming_destinations_all_time_event,
-      ping_instance_wave_sm.groups_streaming_destinations_28_days_event,
       ping_instance_wave_sm.audit_event_destinations_all_time_event,
       ping_instance_wave_sm.audit_event_destinations_28_days_event,
       ping_instance_wave_sm.projects_status_checks_all_time_event,
@@ -265,6 +250,15 @@
       ping_instance_wave_sm.pipeline_schedules_28_days_user,
       -- Wave 8
       ping_instance_wave_sm.ci_internal_pipelines_28_days_event,
+      -- Wave 9
+      ping_instance_wave_sm.ci_builds_28_days_event,
+      ping_instance_wave_sm.audit_features_28_days_user,
+      ping_instance_wave_sm.groups_all_time_event,
+      ping_instance_wave_sm.commit_ci_config_file_7_days_user,
+      ping_instance_wave_sm.ci_pipeline_config_repository_all_time_user,
+      ping_instance_wave_sm.ci_pipeline_config_repository_all_time_event,
+      ping_instance_wave_sm.pipeline_schedules_all_time_event,
+      ping_instance_wave_sm.pipeline_schedules_all_time_user,
       -- Data Quality Flags
       IFF(ping_instance_wave_sm.instance_user_count != seat_link.active_user_count,
           ping_instance_wave_sm.instance_user_count, NULL)                                               AS instance_user_count_not_aligned,
@@ -312,7 +306,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@mdrussell",
-    updated_by="@mdrussell",
+    updated_by="@annapiaseczna",
     created_date="2022-10-12",
-    updated_date="2023-05-30"
+    updated_date="2023-12-10"
 ) }}

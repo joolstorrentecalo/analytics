@@ -1,7 +1,8 @@
 WITH source AS (
   SELECT *
   FROM {{ source('workday','job_info') }}
-  WHERE _fivetran_deleted = FALSE
+  WHERE NOT _fivetran_deleted
+  
 ),
 
 renamed AS (

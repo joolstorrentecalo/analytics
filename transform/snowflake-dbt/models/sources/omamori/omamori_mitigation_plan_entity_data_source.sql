@@ -5,6 +5,7 @@ renamed AS (
     json_value['id']::INT                                          AS id,
     json_value['status']::VARCHAR                                  AS status,
     json_value['entity_datum_id']::INT                             AS entity_datum_id,
+    json_value['mitigation_plan_id']::INT                          AS mitigation_plan_id,
     -- convert epoch microseconds to Snowflake timestamp
     (json_value['created_at']::NUMBER(36, 3) / 1000000)::TIMESTAMP AS created_at,
     (json_value['updated_at']::NUMBER(36, 3) / 1000000)::TIMESTAMP AS updated_at,

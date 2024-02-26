@@ -36,7 +36,7 @@ WITH snapshot_dates AS (
 ), final AS (
 
      SELECT
-       {{ dbt_utils.surrogate_key(['snapshot_id', 'primary_key']) }} AS mart_available_to_renew_snapshot_id,
+       {{ dbt_utils.generate_surrogate_key(['snapshot_id', 'primary_key']) }} AS mart_available_to_renew_snapshot_id,
        *
      FROM mart_available_to_renew_spined
 

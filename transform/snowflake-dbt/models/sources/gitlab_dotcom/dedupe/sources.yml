@@ -47,6 +47,8 @@ sources:
       - name: banned_users
         identifier: gitlab_db_banned_users
         freshness: null
+      - name: batched_background_migrations
+        identifier: gitlab_db_batched_background_migrations
       - name: board_assignees
         identifier: gitlab_db_board_assignees
       - name: board_labels
@@ -61,10 +63,10 @@ sources:
         freshness: null
       - name: ci_builds
         identifier: gitlab_db_ci_builds
+      - name: ci_builds_internal_only
+        identifier: gitlab_db_ci_builds_internal_only
       - name: ci_builds_runner_session
         identifier: gitlab_db_ci_builds_runner_session
-      - name: ci_editor_ai_conversation_messages
-        identifier: gitlab_db_ci_editor_ai_conversation_messages
       - name: ci_group_variables
         identifier: gitlab_db_ci_group_variables
       - name: ci_job_artifacts
@@ -73,6 +75,8 @@ sources:
         identifier: gitlab_db_ci_job_token_project_scope_links
       - name: ci_namespace_monthly_usages
         identifier: gitlab_db_ci_namespace_monthly_usages
+      - name: ci_pipeline_artifacts
+        identifier: gitlab_db_ci_pipeline_artifacts
       - name: ci_pipeline_chat_data
         identifier: gitlab_db_ci_pipeline_chat_data
       - name: ci_pipeline_schedule_variables
@@ -81,6 +85,8 @@ sources:
         identifier: gitlab_db_ci_pipeline_schedules
       - name: ci_pipelines
         identifier: gitlab_db_ci_pipelines
+      - name: ci_pipelines_internal_only
+        identifier: gitlab_db_ci_pipelines_internal_only
       - name: ci_platform_metrics
         identifier: gitlab_db_ci_platform_metrics
       - name: ci_project_monthly_usages
@@ -147,6 +153,8 @@ sources:
           error_after: {count: 15, period: day}
       - name: deployment_approvals
         identifier: gitlab_db_deployment_approvals
+      - name: dependency_proxy_packages_settings
+        identifier: gitlab_db_dependency_proxy_packages_settings
       - name: deployments
         identifier: gitlab_db_deployments
       - name: deployment_merge_requests
@@ -171,6 +179,8 @@ sources:
         identifier: gitlab_db_epic_issues
       - name: epics
         identifier: gitlab_db_epics
+      - name: epics_internal_only
+        identifier: gitlab_db_epics_internal_only
       - name: events
         identifier: gitlab_db_events
       - name: experiment_subjects
@@ -197,8 +207,6 @@ sources:
         identifier: gitlab_db_group_group_links
       - name: identities
         identifier: gitlab_db_identities
-      - name: in_product_marketing_emails
-        identifier: gitlab_db_in_product_marketing_emails
       - name: issuable_severities
         identifier: gitlab_db_issuable_severities
       - name: issue_assignees
@@ -217,6 +225,8 @@ sources:
         identifier: gitlab_db_label_priorities
       - name: labels
         identifier: gitlab_db_labels
+      - name: labels_internal_only
+        identifier: gitlab_db_labels_internal_only
       - name: lfs_objects_projects
         identifier: gitlab_db_lfs_objects_projects
       - name: lists
@@ -235,6 +245,8 @@ sources:
         identifier: gitlab_db_merge_request_predictions
       - name: merge_requests
         identifier: gitlab_db_merge_requests
+      - name: merge_requests_internal_only
+        identifier: gitlab_db_merge_requests_internal_only
       - name: merge_requests_closing_issues
         identifier: gitlab_db_merge_requests_closing_issues
       - name: merge_request_reviewers
@@ -243,6 +255,8 @@ sources:
         identifier: gitlab_db_milestone_releases
       - name: milestones
         identifier: gitlab_db_milestones
+      - name: milestones_internal_only
+        identifier: gitlab_db_milestones_internal_only
       - name: ml_candidates
         identifier: gitlab_db_ml_candidates
       - name: ml_experiments
@@ -257,8 +271,12 @@ sources:
         identifier: gitlab_db_namespace_statistics
       - name: namespaces
         identifier: gitlab_db_namespaces
+      - name: namespaces_internal_only
+        identifier: gitlab_db_namespaces_internal_only
       - name: notes
         identifier: gitlab_db_notes
+      - name: notes_internal_only
+        identifier: gitlab_db_notes_internal_only
       - name: notification_settings
         identifier: gitlab_db_notification_settings
       - name: oauth_access_tokens
@@ -340,6 +358,8 @@ sources:
           error_after: {count: 15, period: day}
       - name: saml_providers
         identifier: gitlab_db_saml_providers
+      - name: service_desk_settings
+        identifier: gitlab_db_service_desk_settings
       - name: slack_integrations
         identifier: gitlab_db_slack_integrations
       - name: shards
@@ -350,6 +370,12 @@ sources:
         identifier: gitlab_db_ssh_signatures
       - name: subscriptions
         identifier: gitlab_db_subscriptions
+      - name: subscription_add_ons
+        identifier: gitlab_db_subscription_add_ons
+      - name: subscription_add_on_purchases
+        identifier: gitlab_db_subscription_add_on_purchases
+      - name: subscription_user_add_on_assignments
+        identifier: gitlab_db_subscription_user_add_on_assignments
       - name: system_note_metadata
         identifier: gitlab_db_system_note_metadata
       - name: snippets
@@ -375,6 +401,10 @@ sources:
         identifier: gitlab_db_vulnerabilities
       - name: vulnerability_occurrences
         identifier: gitlab_db_vulnerability_occurrences
+      - name: vulnerability_reads
+        identifier: gitlab_db_vulnerability_reads
+      - name: vulnerability_state_transitions
+        identifier: gitlab_db_vulnerability_state_transitions
       - name: alert_management_http_integrations
         identifier: gitlab_db_alert_management_http_integrations
         freshness: null
@@ -502,3 +532,13 @@ sources:
         identifier: gitlab_db_user_credit_card_validations
       - name: boards_epic_boards
         identifier: gitlab_db_boards_epic_boards
+      - name: merge_request_diff_commit_users
+        identifier: gitlab_db_merge_request_diff_commit_users
+      - name: merge_request_diff_commits
+        identifier: gitlab_db_merge_request_diff_commits
+      - name: routes_internal_only
+        identifier: gitlab_db_routes_internal_only
+      - name: projects_internal_only
+        identifier: gitlab_db_projects_internal_only
+      - name: issues_internal_only
+        identifier: gitlab_db_issues_internal_only

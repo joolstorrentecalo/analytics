@@ -1,3 +1,6 @@
+import time
+import ssl
+
 from io import BytesIO
 from logging import info
 from os import environ as env
@@ -29,6 +32,7 @@ class GoogleDriveClient:
 
         :return: pandas Dataframe of data available in file_id
         """
+        info("Downloading data from drive into dataframe...")
         request = self.service.files().get_media(fileId=file_id)
         fh = BytesIO()
         downloader = MediaIoBaseDownload(fh, request)
@@ -37,7 +41,9 @@ class GoogleDriveClient:
             status, done = downloader.next_chunk()
 
         bytes_data = fh.getvalue()
+        fh.close()
         df = pd.read_csv(BytesIO(bytes_data))
+        info("Completed downloading data from drive into dataframe...")
         return df
 
     def get_item_id(
@@ -178,8 +184,24 @@ class GoogleDriveClient:
         :param to_folder_id: folder id to move to
         :return:
         """
-        # Retrieve the existing parents to remove
-        file = self.service.files().get(fileId=file_id, fields="parents").execute()
+        # retry on ssl error
+        max_retry_request_count, wait = 5, 30
+        for retry_request_count in range(max_retry_request_count):
+            try:
+                # Retrieve the existing parents to remove
+                file = (
+                    self.service.files().get(fileId=file_id, fields="parents").execute()
+                )
+                break
+            except ssl.SSLError as e:
+                info(f"Caught SSL error when retrieving parent folder: {e}")
+                if retry_request_count <= max_retry_request_count:
+                    info(
+                        f"Retrying in {wait} seconds, {retry_request_count+1}/{max_retry_request_count} tries"
+                    )
+                    time.sleep(wait)
+                else:
+                    raise e
 
         previous_parents = ",".join(file.get("parents"))
 
@@ -191,6 +213,6 @@ class GoogleDriveClient:
             fields="id, parents",
         ).execute()
 
-        info(f"{file_id} moved to {to_folder_id}")
+        info(f"Moved file {file_id} to folder {to_folder_id}")
 
         return True

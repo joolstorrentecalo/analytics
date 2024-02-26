@@ -121,3 +121,7 @@ For example: stores information about CTAs Triggering from Programs.
 This object is used in Analytics on Programs. 
 For example: to retrieve analytics on Program Participant Activities through Report Builder.
 {% enddocs %}
+
+{% docs wk_gs_persona_healthy_activity %}	 
+This object is used to calculate healthy activity counts for gainsight personas. 
+{% enddocs %}

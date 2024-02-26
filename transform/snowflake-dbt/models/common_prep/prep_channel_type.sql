@@ -12,7 +12,7 @@ WITH sfdc_opportunity_source AS (
 ), final AS (
 
     SELECT DISTINCT
-      {{ dbt_utils.surrogate_key(['channel_type']) }}   AS dim_channel_type_id,
+      {{ dbt_utils.generate_surrogate_key(['channel_type']) }}   AS dim_channel_type_id,
       channel_type                                      AS channel_type_name
     FROM sfdc_opportunity_source
 

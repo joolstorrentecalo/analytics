@@ -25,7 +25,7 @@ merge_requests AS (
 merge_request_metrics AS (
 
   SELECT *
-  FROM {{ ref('gitlab_dotcom_merge_request_metrics') }}
+  FROM {{ ref('gitlab_dotcom_merge_request_metrics_source') }}
   QUALIFY MAX(merge_request_metric_id) OVER (PARTITION BY merge_request_id) = merge_request_metric_id
 
 ),

@@ -121,7 +121,7 @@ company_id_spine AS (
 
 report AS (
   SELECT DISTINCT
-    {{ dbt_utils.surrogate_key(['company_id_spine.company_id::INT']) }} AS dim_company_id,
+    {{ dbt_utils.generate_surrogate_key(['company_id_spine.company_id::INT']) }} AS dim_company_id,
     company_id_spine.company_id::INT AS company_id,
     zoom_info_merged.source_company_id,
     COALESCE(zoom_info_base.company_name,

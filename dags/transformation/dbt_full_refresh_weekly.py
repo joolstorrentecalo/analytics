@@ -39,6 +39,8 @@ from kube_secrets import (
     SNOWFLAKE_STATIC_DATABASE,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -72,7 +74,6 @@ secrets_list = [
 ]
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -90,6 +91,7 @@ dag = DAG(
     description="This DAG runs weekly on sunday running full refresh of all the model",
     default_args=default_args,
     schedule_interval="45 8 * * SUN#1",
+    catchup=False,
 )
 
 dag.doc_md = __doc__
@@ -111,6 +113,8 @@ dbt_full_refresh = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_full_refresh_cmd],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -132,6 +136,8 @@ dbt_test = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_test_cmd],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -152,6 +158,8 @@ dbt_workspaces_test = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_workspaces_test_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 # dbt-results
@@ -171,6 +179,8 @@ dbt_results = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_results_cmd],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 

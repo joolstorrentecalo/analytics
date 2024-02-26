@@ -4,18 +4,19 @@ models:
   - name: prep_event
     description: '{{ doc("prep_event") }}'
     columns:
-      - name: event_id
+      - name: event_pk
         description: primary key of the table. Unique ID of the event
         tests:
           - unique
           - not_null
+      - name: event_id
+        description: '{{ doc("event_id") }}'
       - name: ultimate_parent_namespace_id
         description: ID of the ultimate parent namespace in which the event was triggered
       - name: dim_project_id
         description: ID of the project in which the event was triggered. Can be null for events which are not tied to a project
       - name: dim_user_id
         description: ID of the user who triggered the event
-        tests:
       - name: plan_id_at_event_timestamp
         description: ID of the plan of the ultimate parent namespace when the event got triggered
         tests:
@@ -42,5 +43,3 @@ models:
         description:  number of days between the project creation and event date
       - name: project_is_imported
         description: TRUE if the project was imported
-      - name: stage_name
-        description: This field is _not_ the SSOT for the event-to-stage mapping. Please use [`map_gitlab_dotcom_xmau_metrics`](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.map_gitlab_dotcom_xmau_metrics) for the mapping of event to stage.

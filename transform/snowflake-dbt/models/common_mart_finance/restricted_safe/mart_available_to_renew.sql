@@ -225,6 +225,8 @@
       dim_product_detail.product_delivery_type                                        AS product_delivery_type,
       dim_product_detail.service_type                                                 AS service_type,
       dim_product_detail.product_rate_plan_name                                       AS product_rate_plan_name,
+      dim_product_detail.is_arpu                                                      AS is_arpu,
+      dim_product_detail.is_licensed_user                                             AS is_licensed_user,
 
       --Amendment Information
       dim_subscription.dim_amendment_id_subscription,
@@ -319,6 +321,8 @@
       dim_crm_user.crm_user_region,
       dim_crm_user.crm_user_area,
       mart_charge.product_tier_name,
+      mart_charge.is_arpu,
+      mart_charge.is_licensed_user,
       mart_charge.product_delivery_type,
       mart_charge.subscription_name,
       dim_subscription_last_term.zuora_renewal_subscription_name,
@@ -347,6 +351,7 @@
       DATEADD('month',-1,mart_charge.term_end_month)                                                                                                    AS last_paid_month_in_term,
       renewal_subscriptions_{{renewal_fiscal_year}}.subscription_end_month                                                                              AS multi_year_booking_subscription_end_month,
       DATEDIFF(month,mart_charge.effective_start_month,mart_charge.effective_end_month)                                                                 AS charge_term,
+      mart_charge.quantity,
       mart_charge.arr
     FROM mart_charge
     LEFT JOIN dim_subscription_last_term
@@ -372,9 +377,9 @@
         WHEN is_multi_year_booking = TRUE THEN 'MYB'
         ELSE 'Non-MYB'
       END                             AS renewal_type,
-      is_single_fiscal_year_term_subscription,
       is_multi_year_booking,
       is_multi_year_booking_with_multi_subs,
+      is_single_fiscal_year_term_subscription,
       current_term,
       --charge_term,
       dim_charge_id,
@@ -395,7 +400,7 @@
       term_start_month,
       term_end_month,
       subscription_end_month,
-      SUM(arr)   AS arr
+      SUM(arr)      AS arr
     FROM base_{{renewal_fiscal_year}}
     WHERE current_term <= 12
     {{ dbt_utils.group_by(n=23) }}
@@ -839,7 +844,7 @@
 
     SELECT
       CONCAT(dim_date.fiscal_quarter_name_fy, base_{{renewal_fiscal_year}}.term_end_month, base_{{renewal_fiscal_year}}.dim_charge_id)      AS concat_primary_key,
-      {{ dbt_utils.surrogate_key(['concat_primary_key' ]) }}                                                                                AS primary_key,
+      {{ dbt_utils.generate_surrogate_key(['concat_primary_key' ]) }}                                                                                AS primary_key,
       dim_date.fiscal_year                                                                                                                  AS fiscal_year,
       dim_date.fiscal_quarter_name_fy                                                                                                       AS fiscal_quarter_name_fy,
       opportunity_term_group.close_month                                                                                                    AS close_month,
@@ -873,6 +878,8 @@
       base_{{renewal_fiscal_year}}.product_tier_name                                                                                        AS product_tier_name,
       base_{{renewal_fiscal_year}}.product_delivery_type                                                                                    AS product_delivery_type,
       combined_{{renewal_fiscal_year}}.renewal_type                                                                                         AS renewal_type,
+      base_{{renewal_fiscal_year}}.is_arpu                                                                                                  AS is_arpu,
+      base_{{renewal_fiscal_year}}.is_licensed_user                                                                                         AS is_licensed_user,
       base_{{renewal_fiscal_year}}.is_multi_year_booking                                                                                    AS is_multi_year_booking,
       base_{{renewal_fiscal_year}}.is_multi_year_booking_with_multi_subs                                                                    AS is_multi_year_booking_with_multi_subs,
       base_{{renewal_fiscal_year}}.is_single_fiscal_year_term_subscription                                                                  AS is_single_fiscal_year_term_subscription,
@@ -890,6 +897,7 @@
           THEN 'No Opportunity Term'
         ELSE opportunity_term_group.opportunity_term_group
       END                                                                                                                                   AS opportunity_term_group,
+      base_{{renewal_fiscal_year}}.quantity                                                                                                 AS quantity,
       base_{{renewal_fiscal_year}}.arr                                                                                                      AS arr
     FROM combined_{{renewal_fiscal_year}}
     LEFT JOIN dim_date
@@ -948,10 +956,13 @@
     is_multi_year_booking,
     is_multi_year_booking_with_multi_subs,
     is_single_fiscal_year_term_subscription,
+    is_arpu,
+    is_licensed_user,
     subscription_term,
     estimated_total_future_billings,
     is_available_to_renew,
     opportunity_term_group,
+    quantity,
     arr
     FROM renewal_report_{{renewal_fiscal_year}}
     {%- if not loop.last %} UNION ALL {%- endif %}
@@ -963,7 +974,7 @@
 {{ dbt_audit(
     cte_ref="unioned",
     created_by="@michellecooper",
-    updated_by="@nmcavinue",
+    updated_by="@chrissharp",
     created_date="2021-12-06",
-    updated_date="2023-05-30"
+    updated_date="2023-12-19"
 ) }}

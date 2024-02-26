@@ -8,7 +8,7 @@ WITH zuora_revenue_approval_detail AS (
 
     SELECT
     
-    {{ dbt_utils.surrogate_key(['rc_appr_id', 'approver_sequence', 'approval_rule_id']) }}  AS primary_key,
+    {{ dbt_utils.generate_surrogate_key(['rc_appr_id', 'approver_sequence', 'approval_rule_id']) }}  AS primary_key,
     rc_appr_id::VARCHAR                                                                     AS revenue_contract_approval_id, 
     rc_id::VARCHAR                                                                          AS revenue_contract_id, 
     approval_obj_type::VARCHAR                                                              AS approval_object_type, 

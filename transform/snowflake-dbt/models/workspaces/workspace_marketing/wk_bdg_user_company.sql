@@ -41,8 +41,8 @@ rpt AS (
     sf_leads.zoominfo_company_id AS sf_lead_company_id,
     sf_contacts.zoominfo_company_id AS sf_contact_company_id,
     users_enhance.zoominfo_company_id AS gitlab_user_enhance_company_id,
-    {{ dbt_utils.surrogate_key(['users.user_id']) }} AS dim_user_id,
-    {{ dbt_utils.surrogate_key(['company_id']) }} AS dim_company_id
+    {{ dbt_utils.generate_surrogate_key(['users.user_id']) }} AS dim_user_id,
+    {{ dbt_utils.generate_surrogate_key(['company_id']) }} AS dim_company_id
   FROM users
   LEFT JOIN sf_leads
     ON users.email = sf_leads.lead_email

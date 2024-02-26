@@ -7,7 +7,7 @@ WITH prep_app_release AS (
         application,
         MIN(release_date) AS release_date
     FROM {{ ref('prep_app_release') }}
-    WHERE dim_app_release_sk != {{ dbt_utils.surrogate_key(['-1']) }} -- filter out missing member
+    WHERE dim_app_release_sk != {{ dbt_utils.generate_surrogate_key(['-1']) }} -- filter out missing member
     GROUP BY 1,2,3,4
 
 ), yaml_source AS (
@@ -42,7 +42,7 @@ WITH prep_app_release AS (
 
     SELECT
         -- Surrogate key
-        {{ dbt_utils.surrogate_key(['application', 'major_minor_version']) }}                       AS dim_app_release_major_minor_sk,
+        {{ dbt_utils.generate_surrogate_key(['application', 'major_minor_version']) }}                       AS dim_app_release_major_minor_sk,
 
         -- Natural key
         CONCAT(application, '-', major_minor_version)                                               AS app_release_major_minor_id,
@@ -71,7 +71,7 @@ WITH prep_app_release AS (
     -- Add missing member information
     SELECT
     --surrogate_key
-      {{ dbt_utils.surrogate_key(['-1']) }}     AS dim_app_release_major_minor_sk,
+      {{ dbt_utils.generate_surrogate_key(['-1']) }}     AS dim_app_release_major_minor_sk,
 
       --natural key
       '-1'                                      AS app_release_major_minor_id,

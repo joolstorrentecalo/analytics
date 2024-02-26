@@ -25,6 +25,8 @@ This macro is intended to be run as a dbt run-operation. The command to do this 
 
 The sha can be generated separately on the command line as well by doing the following:
 
+***Make sure the email is in lowercase to match the `LOWER()` function used in the deletion operation.***
+
 `echo -n email@redacted.com | shasum -a 256`
 
 The macro gathers all of the columns within the RAW database that match `email` anywhere in the name and delete the rows if they're not in the `snapshots` schema. If the columns are in the snapshot schema it will first update the columns that don't match `email` and also don't match `id`. It will then update all of the email columns to the sha256 value as well.

@@ -204,8 +204,8 @@ joins AS (
 
       LEFT JOIN gitlab_subscriptions
         ON ultimate_namespace.namespace_id = gitlab_subscriptions.namespace_id
-        AND data.event_created_at >= TO_DATE(gitlab_subscriptions.valid_from)
-        AND data.event_created_at < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
+        AND TO_DATE(data.event_created_at) >= TO_DATE(gitlab_subscriptions.valid_from)
+        AND TO_DATE(data.event_created_at) < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
       LEFT JOIN plans
         ON gitlab_subscriptions.plan_id = plans.plan_id
       LEFT JOIN blocked_users

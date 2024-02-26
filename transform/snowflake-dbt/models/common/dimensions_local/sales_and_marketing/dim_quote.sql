@@ -12,7 +12,8 @@ WITH quote AS (
       quote_entity,
       subscription_action_type,
       is_primary_quote,
-      quote_start_date
+      quote_start_date,
+      created_date
     FROM {{ ref('prep_quote') }}
 
 )
@@ -20,7 +21,7 @@ WITH quote AS (
 {{ dbt_audit(
     cte_ref="quote",
     created_by="@snalamaru",
-    updated_by="@chrissharp",
+    updated_by="@rkohnke",
     created_date="2021-01-07",
-    updated_date="2023-03-15"
+    updated_date="2023-08-07"
 ) }}

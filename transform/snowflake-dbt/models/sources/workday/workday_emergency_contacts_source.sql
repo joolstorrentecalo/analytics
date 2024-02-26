@@ -1,6 +1,8 @@
 WITH source AS (
   SELECT *
   FROM {{ source('workday','emergency_contacts') }}
+  WHERE NOT _fivetran_deleted
+  
 ),
 
 renamed AS (

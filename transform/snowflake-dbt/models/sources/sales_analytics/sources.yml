@@ -18,3 +18,11 @@ sources:
       - name: ae_credits
       - name: ae_quotas
       - name: ae_quotas_unpivoted
+      - name: tableau_asm_consolidated_sources
+      - name: input_country_to_region
+      - name: input_state_to_region
+      - name: input_zip_code_to_region
+      - name: input_industry_to_industry_category
+      - name: input_fy25_planning_named
+      - name : fy25_bob_account
+      - name : fy25_bob_upa

@@ -4,7 +4,8 @@
 
 {{ config({
     "materialized": "incremental",
-    "unique_key": "dim_snippet_id"
+    "unique_key": "dim_snippet_sk",
+    "on_schema_change": "sync_all_columns"
     })
 }}
 
@@ -26,12 +27,15 @@
 
 ), joined AS (
 
-    SELECT 
-      snippet_source.snippet_id                                         AS dim_snippet_id,
+    SELECT
+      {{ dbt_utils.generate_surrogate_key(['snippet_source.snippet_id']) }}      AS dim_snippet_sk,
+      snippet_source.snippet_id                                         AS snippet_id,
       snippet_source.author_id                                          AS author_id,
       IFNULL(dim_project.dim_project_id, -1)                            AS dim_project_id,
       IFNULL(dim_namespace_plan_hist.dim_namespace_id, -1)              AS ultimate_parent_namespace_id,
       IFNULL(dim_namespace_plan_hist.dim_plan_id, 34)                   AS dim_plan_id,
+      snippet_source.snippet_type                                       AS snippet_type,
+      snippet_source.visibility_level                                   AS visibility_level,
       dim_date.date_id                                                  AS created_date_id,
       snippet_source.created_at                                         AS created_at,
       snippet_source.updated_at                                         AS updated_at
@@ -48,7 +52,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@chrissharp",
-    updated_by="@chrissharp",
+    updated_by="@michellecooper",
     created_date="2022-03-14",
-    updated_date="2022-06-01"
+    updated_date="2023-08-07"
 ) }}

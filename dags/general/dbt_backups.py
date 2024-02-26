@@ -14,6 +14,7 @@ from airflow_utils import (
     gitlab_defaults,
     gitlab_pod_env_vars,
     slack_failed_task,
+    REPO_BASE_PATH,
 )
 from kube_secrets import (
     GIT_DATA_TESTS_PRIVATE_KEY,
@@ -32,6 +33,8 @@ from kube_secrets import (
     SNOWFLAKE_STATIC_DATABASE,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -40,7 +43,6 @@ pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -51,7 +53,12 @@ default_args = {
 }
 
 # Create the DAG. Run daily at 04:05
-dag = DAG("dbt_backups", default_args=default_args, schedule_interval="5 4 * * *")
+dag = DAG(
+    "dbt_backups",
+    default_args=default_args,
+    schedule_interval="5 4 * * *",
+    catchup=False,
+)
 
 
 def generate_task(task: str, backup_list: list, is_included: bool = False) -> None:
@@ -92,6 +99,8 @@ def generate_task(task: str, backup_list: list, is_included: bool = False) -> No
         ],
         env_vars=pod_env_vars,
         arguments=[dbt_backups_cmd],
+        affinity=get_affinity("dbt"),
+        tolerations=get_toleration("dbt"),
         dag=dag,
     )
 
@@ -104,7 +113,7 @@ def load_manifest_file(file_name: str) -> dict:
         return yaml.load(yaml_file, Loader=yaml.FullLoader)
 
 
-config_dict = load_manifest_file("analytics/dags/general/backup_manifest.yaml")
+config_dict = load_manifest_file(f"{REPO_BASE_PATH}/dags/general/backup_manifest.yaml")
 
 for task_name, task_details in config_dict.items():
     generate_task(

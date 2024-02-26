@@ -65,7 +65,7 @@
       subscription_status,
       product_delivery_type,
       unit_of_measure,
-      {{ dbt_utils.surrogate_key(['dim_date_id',
+      {{ dbt_utils.generate_surrogate_key(['dim_date_id',
                                   'dim_subscription_id',
                                   'product_delivery_type',
                                   'unit_of_measure']) }}                AS mrr_id,

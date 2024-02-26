@@ -76,8 +76,8 @@ WITH stages AS (
       stages.stage_name_modified                                                      AS application_stage,
       stages.is_milestone_stage,
       DATE_TRUNC(MONTH, application_date)                                             AS application_month,
-      IFF(application_stage_name = 'Offer',offer_sent_date, stages.stage_entered_on)  AS stage_entered_on,
-      IFF(application_stage_name = 'Offer', offer_resolved_date, 
+      IFF(application_stage_name = 'Background Check and Offer',offer_sent_date, stages.stage_entered_on)  AS stage_entered_on,
+      IFF(application_stage_name = 'Background Check and Offer', offer_resolved_date, 
             COALESCE(stages.stage_exited_on, CURRENT_DATE()))                         AS stage_exited_on,
       {{repeated_column_names}}
     FROM stages
@@ -146,7 +146,7 @@ WITH stages AS (
     SUM(IFF(application_stage = 'Screen',1,0))                                  AS hit_screening,
     SUM(IFF(application_stage = 'Team Interview - Face to Face',1,0))           AS hit_team_interview,
     SUM(IFF(application_stage = 'Reference Check',1,0))                         AS hit_reference_check,
-    SUM(IFF(application_stage = 'Offer',1,0))                                   AS hit_offer,
+    SUM(IFF(application_stage = 'Background Check and Offer',1,0))              AS hit_offer,
     SUM(IFF(application_stage = 'Hired',1,0))                                   AS hit_hired,
     SUM(IFF(application_stage = 'Rejected',1,0))                                AS hit_rejected
     FROM all_stages
@@ -177,7 +177,7 @@ WITH stages AS (
 ), final AS (   
 
     SELECT
-        {{ dbt_utils.surrogate_key(['stage_order_revamped.application_id', 'stage_order_revamped.candidate_id']) }} AS unique_key,
+        {{ dbt_utils.generate_surrogate_key(['stage_order_revamped.application_id', 'stage_order_revamped.candidate_id']) }} AS unique_key,
         stage_order_revamped.application_id,
         stage_order_revamped.candidate_id,
         application_stage, 
@@ -222,7 +222,7 @@ WITH stages AS (
               ELSE FALSE END                                                        AS in_current_pipeline,
         DATEDIFF(day, stages_pivoted.application_review, stages_pivoted.screen)     AS turn_time_app_review_to_screen,
         DATEDIFF(day, stages_pivoted.screen, stages_pivoted.team_interview    )     AS turn_time_screen_to_interview,
-        DATEDIFF(day, stages_pivoted.team_interview, stages_pivoted.offer)          AS turn_time_interview_to_offer
+        DATEDIFF(day, stages_pivoted.team_interview, stages_pivoted.background_check_and_offer)          AS turn_time_interview_to_offer
     FROM stage_order_revamped
     LEFT JOIN stages_hit 
         ON stage_order_revamped.application_id = stages_hit.application_id

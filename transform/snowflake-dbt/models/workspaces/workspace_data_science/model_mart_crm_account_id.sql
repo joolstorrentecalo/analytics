@@ -12,15 +12,15 @@
 
     SELECT MAX(score_date) AS score_date
     FROM pte_scores
-      
-), ptc_latest_date AS (      
+
+), ptc_latest_date AS (
 
     SELECT MAX(score_date) AS score_date
     FROM ptc_scores
 
 ), pte AS (
 
-    SELECT 
+    SELECT
       crm_account_id,
       score_date AS pte_score_date,
       score AS pte_score,
@@ -30,11 +30,11 @@
       (pte_score - avg_pte_score) / stdev_pte_score AS pte_distance,
       insights,
       uptier_likely
-    FROM pte_scores   
+    FROM pte_scores
 
 ), ptc AS (
 
-     SELECT 
+     SELECT
       crm_account_id,
       score_date AS ptc_score_date,
       score AS ptc_score,
@@ -45,18 +45,18 @@
       insights,
       downtier_likely,
       renewal_date
-    FROM ptc_scores   
+    FROM ptc_scores
 
 )
-       
+
 SELECT
   COALESCE(a.crm_account_id, b.crm_account_id) AS crm_account_id,
   pte_score_date::DATE AS pte_score_date,
   pte_score,
   CASE
-    WHEN pte_score_group = 5 AND ptc_score_group = 1 AND pte_distance < ptc_distance 
+    WHEN pte_score_group = 5 AND ptc_score_group = 1 AND pte_distance < ptc_distance
       THEN 4
-    ELSE pte_score_group 
+    ELSE pte_score_group
   END AS pte_stars,
   a.insights AS pte_insights,
   a.uptier_likely AS pte_uptier_likely,
@@ -66,7 +66,7 @@ SELECT
   CASE
     WHEN pte_score_group = 5 AND ptc_score_group = 1 AND pte_distance >= ptc_distance
       THEN 2
-    ELSE ptc_score_group 
+    ELSE ptc_score_group
   END AS ptc_stars,
   b.insights AS ptc_insights,
   b.downtier_likely AS ptc_downtier_likely,
@@ -80,4 +80,4 @@ SELECT
  LEFT JOIN pte_latest_date c
    ON a.pte_score_date = c.score_date
  LEFT JOIN ptc_latest_date d
-   ON a.pte_score_date = d.score_date
+   ON b.ptc_score_date = d.score_date

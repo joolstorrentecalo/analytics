@@ -27,7 +27,8 @@ WITH source AS (
         sub_region__c                                                       AS sub_region,
         budget_holder__c                                                    AS budget_holder,
         will_there_be_mdf_funding__c                                        AS will_there_be_mdf_funding,
-        
+        vartopiadrs__partner_account__c                                     AS campaign_partner_crm_id,
+
         --projections
         budgetedcost                                                        AS budgeted_cost,
         expectedresponse                                                    AS expected_response,
@@ -56,7 +57,7 @@ WITH source AS (
         numbersent                                                          AS count_sent,
         strat_contribution__c                                               AS strategic_marketing_contribution,
         large_bucket__c                                                     AS large_bucket,
-        reporting_type__c                                                   AS reporting_type,
+        NULL                                                                AS reporting_type,
 
         --metadata
         createddate                                                         AS created_date,

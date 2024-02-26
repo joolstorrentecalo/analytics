@@ -35,9 +35,9 @@ projects AS (
     SELECT DISTINCT
       author_id AS creator_id,
       entity_id AS group_id
-    FROM {{ ref('prep_audit_event_details_clean') }} AS audit_event_details_clean
+    FROM {{ ref('gitlab_dotcom_audit_event_details') }} AS audit_event_details
     LEFT JOIN {{ ref('gitlab_dotcom_audit_events') }} AS audit_events 
-        ON audit_event_details_clean.audit_event_id = audit_events.audit_event_id
+        ON audit_event_details.audit_event_id = audit_events.audit_event_id
     WHERE entity_type = 'Group'
       AND key_name = 'add'
       AND key_value = 'group'

@@ -69,7 +69,7 @@ WITH dim_date AS (
 ), combined AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['arr_agg.dim_charge_id']) }}          AS primary_key,
+      {{ dbt_utils.generate_surrogate_key(['arr_agg.dim_charge_id']) }}          AS primary_key,
       arr_agg.dim_charge_id                                             AS dim_charge_id,
       arr_agg.dim_subscription_id                                       AS dim_subscription_id,
       arr_agg.effective_start_month                                     AS effective_start_month,
@@ -147,7 +147,7 @@ WITH dim_date AS (
 
     SELECT
       combined.*,
-      ABS(invoice_item_charge_amount) / (arr * current_term_years)      AS pct_paid_of_total_revenue,
+      ABS(DIV0(invoice_item_charge_amount, (arr * current_term_years)))               AS pct_paid_of_total_revenue,
       {{ arr_buckets('SUM(arr) OVER(PARTITION BY dim_parent_crm_account_id_invoice,
         effective_start_month, effective_end_month, subscription_name,
         product_rate_plan_charge_name)') }}                                           AS arr_buckets,
@@ -158,10 +158,5 @@ WITH dim_date AS (
 
 )
 
-{{ dbt_audit(
-    cte_ref="final",
-    created_by="@iweeks",
-    updated_by="@nmcavinue",
-    created_date="2020-10-21",
-    updated_date="2023-05-30"
-) }}
+SELECT *
+FROM final

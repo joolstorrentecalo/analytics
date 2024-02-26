@@ -3,7 +3,7 @@
 ) }}
 
 {{ simple_cte([
-    ('epic', 'gitlab_dotcom_epics_source'),
+    ('prep_epic', 'prep_epic'),
     ('map_namespace_internal', 'map_namespace_internal'),
     ('prep_namespace', 'prep_namespace'),
     ('zendesk_ticket', 'zendesk_tickets_source'),
@@ -24,15 +24,16 @@
 
     SELECT
       prep_namespace.ultimate_parent_namespace_id AS dim_namespace_ultimate_parent_id,
-      epic.*
-    FROM epic
+      prep_epic.*
+    FROM prep_epic
     INNER JOIN prep_namespace
-      ON epic.group_id = prep_namespace.dim_namespace_id
+      ON prep_epic.dim_namespace_sk = prep_namespace.dim_namespace_sk
     WHERE prep_namespace.ultimate_parent_namespace_id = 9970 -- Gitlab-org group namespace id
 
 ),  gitlab_epic_description_parsing AS (
 
     SELECT
+      dim_epic_sk,
       epic_id,
       "{{this.database}}".{{target.schema}}.regexp_to_array(epic_description, '(?<=(gitlab.my.|na34.)salesforce.com\/)[0-9a-zA-Z]{15,18}') AS sfdc_link_array,
       "{{this.database}}".{{target.schema}}.regexp_to_array(epic_description, '(?<=gitlab.zendesk.com\/agent\/tickets\/)[0-9]{1,18}')      AS zendesk_link_array,
@@ -44,7 +45,9 @@
 
 ), epic_notes_extended AS (
 
-    SELECT epic_notes.*
+    SELECT
+      epic_notes.*,
+      epic_extended.dim_epic_sk
     FROM epic_notes
     INNER JOIN epic_extended
       ON epic_notes.epic_id = epic_extended.epic_id
@@ -54,6 +57,7 @@
     SELECT
       note_id,
       epic_id,
+      dim_epic_sk,
       "{{this.database}}".{{target.schema}}.regexp_to_array(note, '(?<=(gitlab.my.|na34.)salesforce.com\/)[0-9a-zA-Z]{15,18}') AS sfdc_link_array,
       "{{this.database}}".{{target.schema}}.regexp_to_array(note, '(?<=gitlab.zendesk.com\/agent\/tickets\/)[0-9]{1,18}')      AS zendesk_link_array,
       SPLIT_PART(REGEXP_SUBSTR(note, '~"customer priority::[0-9]{1,2}'), '::', -1)::NUMBER                                     AS request_priority,
@@ -67,6 +71,7 @@
     SELECT
       note_id,
       epic_id,
+      dim_epic_sk,
       "{{this.database}}".{{target.schema}}.id15to18(f.value::VARCHAR)    AS sfdc_id_18char,
       SUBSTR(sfdc_id_18char, 0, 3)                                        AS sfdc_id_prefix,
       CASE
@@ -89,6 +94,7 @@
 
     SELECT
       gitlab_epic_notes_sfdc_links.epic_id,
+      gitlab_epic_notes_sfdc_links.dim_epic_sk,
       gitlab_epic_notes_sfdc_links.sfdc_id_18char,
       gitlab_epic_notes_sfdc_links.sfdc_id_prefix,
       gitlab_epic_notes_sfdc_links.link_type,
@@ -106,6 +112,7 @@
 
     SELECT
       epic_id,
+      dim_epic_sk,
       "{{this.database}}".{{target.schema}}.id15to18(f.value::VARCHAR)  AS sfdc_id_18char,
       SUBSTR(sfdc_id_18char, 0, 3)                                      AS sfdc_id_prefix,
       CASE
@@ -127,6 +134,7 @@
 
     SELECT
       gitlab_epic_description_sfdc_links.epic_id,
+      gitlab_epic_description_sfdc_links.dim_epic_sk,
       gitlab_epic_description_sfdc_links.sfdc_id_18char,
       gitlab_epic_description_sfdc_links.sfdc_id_prefix,
       gitlab_epic_description_sfdc_links.link_type,
@@ -144,6 +152,7 @@
     SELECT
       note_id,
       epic_id,
+      dim_epic_sk,
       REPLACE(f.value, '"', '')                      AS dim_ticket_id,
       'Zendesk Ticket'                               AS link_type,
       request_priority,
@@ -168,6 +177,7 @@
 
     SELECT
       epic_id,
+      dim_epic_sk,
       REPLACE(f.value, '"', '')                      AS dim_ticket_id,
       'Zendesk Ticket'                               AS link_type,
       request_priority,
@@ -190,7 +200,8 @@
 ), union_links AS (
 
     SELECT
-      epic_id AS dim_epic_id,
+      epic_id,
+      dim_epic_sk,
       link_type,
       dim_crm_opportunity_id,
       dim_crm_account_id,
@@ -205,6 +216,7 @@
 
     SELECT
       epic_id,
+      dim_epic_sk,
       link_type,
       NULL dim_crm_opportunity_id,
       dim_crm_account_id,
@@ -219,6 +231,7 @@
 
     SELECT
       gitlab_epic_description_sfdc_links_with_account.epic_id,
+      gitlab_epic_description_sfdc_links_with_account.dim_epic_sk,
       gitlab_epic_description_sfdc_links_with_account.link_type,
       gitlab_epic_description_sfdc_links_with_account.dim_crm_opportunity_id,
       gitlab_epic_description_sfdc_links_with_account.dim_crm_account_id,
@@ -236,6 +249,7 @@
 
     SELECT
       gitlab_epic_description_zendesk_with_sfdc_account.epic_id,
+      gitlab_epic_description_zendesk_with_sfdc_account.dim_epic_sk,
       gitlab_epic_description_zendesk_with_sfdc_account.link_type,
       NULL dim_crm_opportunity_id,
       dim_crm_account_id,
@@ -252,7 +266,8 @@
 ), final AS (
 
     SELECT
-      dim_epic_id,
+      epic_id,
+      dim_epic_sk,
       link_type,
       {{ get_keyed_nulls('dim_crm_opportunity_id') }}    AS dim_crm_opportunity_id,
       dim_crm_account_id,
@@ -267,7 +282,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@jpeguero",
-    updated_by="@jpeguero",
+    updated_by="@michellecooper",
     created_date="2021-10-12",
-    updated_date="2023-03-14"
+    updated_date="2023-09-08"
 ) }}

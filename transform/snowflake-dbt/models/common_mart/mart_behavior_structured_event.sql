@@ -35,6 +35,7 @@ structured_behavior AS (
     gsc_extra,
     gsc_plan,
     gsc_source,
+    gsc_is_gitlab_team_member,
     event_value,
     session_index,
     session_id,
@@ -77,6 +78,7 @@ report AS (
     structured_behavior.gsc_extra,
     structured_behavior.gsc_plan,
     structured_behavior.gsc_source,
+    structured_behavior.gsc_is_gitlab_team_member,
     structured_behavior.event_value,
     structured_behavior.session_index,
     structured_behavior.session_id,
@@ -123,7 +125,7 @@ report AS (
 {{ dbt_audit(
     cte_ref="report",
     created_by="@pempey",
-    updated_by="@pempey",
+    updated_by="@utkarsh060",
     created_date="2023-02-22",
-    updated_date="2023-03-27"
+    updated_date="2024-01-25"
 ) }}

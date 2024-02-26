@@ -9,7 +9,7 @@
         profile_name=target.get('profile_name'),
         target_name=target.get('target_name'),
         target_user=target.get('user'),
-        runner=var('runner', 'developer')
+        runner=env_var('DBT_RUNNER', 'developer')
     ) -%}
     {%- if node is not none -%}
       {%- do comment_dict.update(

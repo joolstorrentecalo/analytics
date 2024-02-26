@@ -3,6 +3,10 @@ sheets:
     owner: '@jeanpeguero'
     tabs:
       - bronze_sus_responders_fy22q1
+  - name: case_creation_data
+    owner: '@sglad'
+    tabs:
+      - case_data
   - name: country_lat_long
     owner: '@nicolegalang'
     tabs:
@@ -40,6 +44,10 @@ sheets:
     owner: '@mfleisher'
     tabs:
       - low_touch_targets_fy23 
+  - name: opportunity_forecasts
+    owner: '@kdietz'
+    tabs:
+      - opportunity_forecasts_202311   
   - name: opt_out_contacts
     owner: '@Jean Peguero'
     tabs:
@@ -48,10 +56,10 @@ sheets:
     owner: '@Jean Peguero'
     tabs:
       - pricing_list
-  - name: ptp_free_scores_temp
-    owner: '@Kevin Dietz'
+  - name: pnps_2023_respondents
+    owner: '@moliver28'
     tabs:
-      - scores_202301    
+      - pnps_2023_respondents 
   - name: q4fy2021_system_usability_scale_results
     owner: '@rbacovic'
     tabs:

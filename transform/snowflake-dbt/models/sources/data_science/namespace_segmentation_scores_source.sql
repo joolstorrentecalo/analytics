@@ -24,6 +24,7 @@ parsed AS (
     data_by_row['grouping']::INT AS grouping,
     data_by_row['score_date']::TIMESTAMP AS score_date,
     data_by_row['segmentation']::VARCHAR AS segmentation,
+    data_by_row['model_version']::FLOAT  AS model_version,
     CURRENT_TIMESTAMP()::TIMESTAMP AS uploaded_at
   FROM intermediate
 

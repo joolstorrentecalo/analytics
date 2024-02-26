@@ -63,8 +63,8 @@ renamed AS (
     zi_contact_city__c AS zoominfo_contact_city,
     zi_company_city__c AS zoominfo_company_city,
     zi_industry__c AS zoominfo_company_industry,
-    zi_phone_number__c AS zoominfo_phone_number, 
-    zi_mobile_phone_number__c AS zoominfo_mobile_phone_number, 
+    zi_phone_number__c AS zoominfo_phone_number,
+    zi_mobile_phone_number__c AS zoominfo_mobile_phone_number,
     zi_do_not_call_direct_phone__c AS zoominfo_do_not_call_direct_phone,
     zi_do_not_call_mobile_phone__c AS zoominfo_do_not_call_mobile_phone,
     buying_process_for_procuring_gitlab__c AS buying_process,
@@ -80,7 +80,7 @@ renamed AS (
     matched_account_owner_role__c AS matched_account_owner_role,
     matched_account_sdr_assigned__c AS matched_account_sdr_assigned,
     matched_account_gtm_strategy__c AS matched_account_gtm_strategy,
-    matched_account_bdr_prospecting_status__c AS matched_account_bdr_prospecting_status,
+    NULL AS matched_account_bdr_prospecting_status,
     engagio__matched_account_type__c AS matched_account_type,
     engagio__matched_account_owner_name__c AS matched_account_account_owner_name,
     mql_date__c AS marketo_qualified_lead_date,
@@ -106,6 +106,7 @@ renamed AS (
     vartopiadrs__partner_prospect_status__c AS partner_prospect_status,
     vartopiadrs__vartopia_prospect_id__c AS partner_prospect_id,
     vartopiadrs__partner_prospect_owner_name__c AS partner_prospect_owner_name,
+    partner_recalled__c AS is_partner_recalled,
     name_of_active_sequence__c AS name_of_active_sequence,
     sequence_task_due_date__c::DATE AS sequence_task_due_date,
     sequence_status__c AS sequence_status,
@@ -119,11 +120,24 @@ renamed AS (
     true_initial_mql_date__c AS true_initial_mql_date,
     true_mql_date__c AS true_mql_date,
     last_transfer_date_time__c AS last_transfer_date_time,
-    initial_mql_date__c AS initial_marketo_mql_date_time,
+    NULL AS initial_marketo_mql_date_time,
 	  time_from_last_transfer_to_sequence__c AS time_from_last_transfer_to_sequence,
 	  time_from_mql_to_last_transfer__c AS time_from_mql_to_last_transfer,
-    high_priority__c AS is_high_priority,
-
+    NULL AS is_high_priority,
+    high_priority_timestamp__c AS high_priority_datetime,
+    ptp_score_date__c AS ptp_score_date,
+    ptp_score_group__c AS ptp_score_group,
+    NULL AS pql_namespace_creator_job_description,
+    NULL AS pql_namespace_id,
+    NULL AS pql_namespace_name,
+    NULL AS pql_namespace_users,
+    pql_product_qualified_lead__c AS is_product_qualified_lead,
+    ptp_days_since_trial_start__c AS ptp_days_since_trial_start,
+    ptp_insights__c AS ptp_insights,
+    ptp_is_ptp_contact__c AS is_ptp_contact,
+    ptp_namespace_id__c AS ptp_namespace_id,
+    ptp_past_insights__c AS ptp_past_insights,
+    ptp_past_score_group__c AS ptp_past_score_group,
 
     {{ sfdc_source_buckets('leadsource') }}
 
@@ -154,6 +168,10 @@ renamed AS (
     account_demographics_upa_street__c AS account_demographics_upa_street,
     account_demographics_upa_postal_code__c AS account_demographics_upa_postal_code,
 
+    --Traction Fields
+    tracrtc__first_response_time_start__c AS traction_first_response_time,
+    tracrtc__first_response_time_in_seconds__c AS traction_first_response_time_seconds,
+    tracrtc__response_time_within_business_hours__c AS traction_response_time_in_business_hours,
 
     --path factory info
     pathfactory_experience_name__c AS pathfactory_experience_name,
@@ -184,10 +202,10 @@ renamed AS (
     cognism_number_of_employees__c AS cognism_employee_count,
 
     --LeanData
-    leandata__matched_account_billing_state__c as leandata_matched_account_billing_state,
-    leandata__matched_account_billing_postal_code__c as leandata_matched_account_billing_postal_code,
-    leandata__matched_account_billing_country__c as leandata_matched_account_billing_country,
-    leandata__matched_account_employees__c AS leandata_matched_account_employee_count,
+    NULL AS leandata_matched_account_billing_state,
+    NULL AS leandata_matched_account_billing_postal_code,
+    NULL AS leandata_matched_account_billing_country,
+    NULL AS leandata_matched_account_employee_count,
     lean_data_matched_account_sales_segment__c AS leandata_matched_account_sales_segment,
 
 

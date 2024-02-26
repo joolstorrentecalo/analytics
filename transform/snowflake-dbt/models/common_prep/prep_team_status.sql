@@ -2,7 +2,6 @@ WITH team_member_position_dup AS (
 
   SELECT *
   FROM {{ ref('fct_team_member_position') }}
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY employee_id, position_effective_date ORDER BY position_date_time_initiated DESC) = 1
 
 ),
 
@@ -22,9 +21,8 @@ team_member_position AS (
     job_grade,
     entity,
     is_position_active,
-    position_effective_date                                                                                          AS position_valid_from,
-    LEAD(position_valid_from, 1, {{ var('tomorrow') }}) OVER (PARTITION BY employee_id ORDER BY position_valid_from) AS position_valid_to,
-    position_date_time_initiated
+    valid_from              AS position_valid_from,
+    valid_to                AS position_valid_to
   FROM team_member_position_dup
   WHERE position_valid_from <= CURRENT_DATE()
 
@@ -69,8 +67,16 @@ final AS (
                                                                                               AS termination_type,
     LAST_VALUE(team_member_status.exit_impact) OVER (PARTITION BY team_member_position.dim_team_member_sk ORDER BY team_member_status.status_valid_from ROWS UNBOUNDED PRECEDING)
                                                                                               AS exit_impact,
-    GREATEST(team_member_status.status_valid_from, team_member_position.position_valid_from)  AS valid_from,
-    LEAST(team_member_status.status_valid_to, team_member_position.position_valid_to)         AS valid_to,
+    CASE 
+      WHEN team_member_status.status_valid_from IS NULL THEN team_member_position.position_valid_from
+      WHEN team_member_position.position_valid_from IS NULL THEN team_member_status.status_valid_from
+      ELSE GREATEST(team_member_status.status_valid_from, team_member_position.position_valid_from)  
+    END AS valid_from,
+    CASE 
+      WHEN team_member_position.position_valid_to IS NULL THEN team_member_status.status_valid_to
+      WHEN team_member_status.status_valid_to IS NULL THEN team_member_position.position_valid_to
+      ELSE LEAST(team_member_status.status_valid_to, team_member_position.position_valid_to) 
+    END AS valid_to,
     IFF(valid_to = DATEADD('day', 1, CURRENT_DATE()), TRUE, FALSE)                            AS is_current
   FROM team_member_position
   LEFT JOIN team_member_status

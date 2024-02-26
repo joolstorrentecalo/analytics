@@ -13,7 +13,7 @@ models:
   - name: bdg_epic_user_request
     description: ' {{ doc("bdg_epic_user_request") }}'
     columns:
-      - name: dim_epic_id
+      - name: epic_id
         tests:
           - not_null
       - name: dim_crm_account_id
@@ -21,7 +21,7 @@ models:
           - not_null
       - name: is_user_request_only_in_collaboration_project
         description: Boolean flag that if TRUE indicates whether the user request was only done in a customer collaboration project.
-      - name: CONCAT(dim_epic_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
+      - name: CONCAT(epic_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
         tests:
           - not_null
           - unique
@@ -29,7 +29,7 @@ models:
   - name: bdg_issue_user_request
     description: ' {{ doc("bdg_issue_user_request") }}'
     columns:
-      - name: dim_issue_id
+      - name: dim_issue_sk
         tests:
           - not_null
       - name: dim_crm_account_id
@@ -37,7 +37,7 @@ models:
           - not_null
       - name: is_user_request_only_in_collaboration_project
         description: Boolean flag that if TRUE indicates whether the user request was only done in a customer collaboration project.
-      - name: CONCAT(dim_issue_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
+      - name: CONCAT(issue_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
         tests:
           - not_null
           - unique
@@ -258,6 +258,10 @@ models:
       - name: ssp_channel
       - name: po_required
       - name: auto_pay
+      - name: billing_account_arr_cohort_month
+        description: First month the billing account has had ARR (Annual Recurrent Revenue).
+      - name: billing_account_arr_cohort_quarter
+        description: First fiscal quarter the billing account has had ARR (Annual Recurrent Revenue).
       - name: is_deleted
         description: The flag indicating if account has been deleted
       - name: batch
@@ -322,6 +326,8 @@ models:
       - name: budget_holder
       - name: bizible_touchpoint_enabled_setting
       - name: strategic_marketing_contribution
+      - name: campaign_partner_crm_id
+        description: The partner associated with this campaign through Vartopia.
 
   - name: dim_crm_person
     description: '{{ doc("dim_crm_person") }}'
@@ -388,9 +394,8 @@ models:
         description: A boolean Salesforce field on the [lead](https://gitlab.my.salesforce.com/00N4M00000Ib1VK) and [contact](https://gitlab.my.salesforce.com/00N4M00000Ib1VP) denoting if the contact is going through an [Outreach](https://about.gitlab.com/handbook/marketing/marketing-operations/outreach/) sequence.
       - name: region
         description: A picklist field on the [lead](https://gitlab.my.salesforce.com/00N61000009n0Sl) and [contact](https://gitlab.my.salesforce.com/00N6100000ELkLu?) object in Salesforce. Currently one of `AMER, APAC, EMEA, LATAM.`
-      - name: person_first_country
-        description: >
-          Selects the first country contact enhanmenet services using abilve data. Following the order:  Zoominfo Company Country, Zoominfo Contact Country, Cognism Company Office Country, Cognism Country
+      - name: is_partner_recalled
+        description: A boolean field from Salesforce on the lead and contact, these are persons taken back by GitLab when the person was previously passed to partners. The partner had exceeded the time period in which they were supposed to qualify the lead, so they return to GitLab’s possession
 
   - name: dim_crm_user
     description: '{{ doc("dim_crm_user") }}'
@@ -427,7 +432,7 @@ models:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
-
+  
   - name: dim_crm_touchpoint
     description: '{{ doc("dim_crm_touchpoint") }}'
     columns:
@@ -458,6 +463,30 @@ models:
         description: The `utm_allptnr` (alliance/partner) parameter of the `bizible_landing_page`
       - name: bizible_landing_page_utm_partnerid
         description: The `utm_partnerid` parameter of the `bizible_landing_page`
+      - name: utm_campaign 
+        description: First non-null value of `utm_campaign` parameter between `bizible_landing_page` and `bizible_form_url`
+      - name: utm_source
+        description: First non-null value of `utm_source` parameter between `bizible_landing_page` and `bizible_form_url`
+      - name: utm_medium
+        description: First non-null value of `utm_medium` parameter between `bizible_landing_page` and `bizible_form_url`
+      - name: utm_content
+        description: First non-null value of `utm_content` parameter between `bizible_landing_page` and `bizible_form_url`
+      - name: utm_budget
+        description: First non-null value of `utm_budget` parameter between `bizible_landing_page` and `bizible_form_url`
+      - name: utm_allptnr
+        description: First non-null value of `utm_allptnr` parameter between `bizible_landing_page` and `bizible_form_url`
+      - name: utm_partnerid
+        description: First non-null value of `utm_partnerid` parameter between `bizible_landing_page` and `bizible_form_url`
+      - name: devrel_campaign_type
+        description: A field explaining if the campaign was in SFDC or UTMs.
+      - name: devrel_campaign_description
+        description: A short description of the work the devrel team did on the campaign.
+      - name: devrel_campaign_influence_type
+        description: The output the devrel team created to contribute to the campaign.
+      - name: touchpoint_offer_type
+        description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
+      - name: touchpoint_offer_type_grouped
+        description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
         
   - name: dim_date
     description: '{{ doc("dim_date") }}'
@@ -601,6 +630,39 @@ models:
       - name: days_in_month_count
         description: '{{ doc("date_days_in_month_count") }}'
 
+      - name: current_day_of_month
+        description: '{{ doc("current_day_of_month") }}'
+      
+      - name: current_day_of_fiscal_quarter
+        description: '{{ doc("current_day_of_fiscal_quarter") }}'
+      
+      - name: current_day_of_fiscal_year
+        description: '{{ doc("current_day_of_fiscal_year") }}'
+      
+      - name: is_fiscal_month_to_date
+        description: '{{ doc("is_fiscal_month_to_date") }}'
+      
+      - name: is_fiscal_quarter_to_date
+        description: '{{ doc("is_fiscal_quarter_to_date") }}'
+      
+      - name: is_fiscal_year_to_date
+        description: '{{ doc("is_fiscal_year_to_date") }}'
+      
+      - name: fiscal_days_ago
+        description: '{{ doc("fiscal_days_ago") }}'
+      
+      - name: fiscal_weeks_ago
+        description: '{{ doc("fiscal_weeks_ago") }}'
+      
+      - name: fiscal_months_ago
+        description: '{{ doc("fiscal_months_ago") }}'
+      
+      - name: fiscal_quarters_ago
+        description: '{{ doc("fiscal_quarters_ago") }}'
+
+      - name: fiscal_years_ago
+        description: '{{ doc("fiscal_years_ago") }}'
+
   - name: dim_dr_partner_engagement
     description: '{{ doc("dim_dr_partner_engagement") }}'
     columns:
@@ -615,7 +677,7 @@ models:
     description: Table with the source data of the data being exposed in dimensional tables where various sources are combined.
 
   - name: dim_gitlab_ops_gitlab_emails
-    description: '{{ doc("gitlab_dotcom_gitlab_emails") }}'
+    description: This model limits the gitlab dotcom emails table to only have records for emails ending with `gitlab.com`.
     columns:
         - name: user_id
           tests:
@@ -852,6 +914,16 @@ models:
           - not_null
           - unique
         tags: [ "tdf", "order_type", "common", "sales_funnel" ]
+
+  - name: dim_sales_funnel_kpi
+    description: '{{ doc("dim_sales_funnel_kpi") }}'
+    columns:
+      - name: dim_sales_funnel_kpi_sk
+        description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
+        tests:
+          - not_null
+      - name: sales_funnel_kpi_name
+        description: '{{ doc("sales_funnel_kpi_name") }}'
 
   - name: dim_host_instance_type
     description: '{{ doc("dim_host_instance_type") }}'
@@ -1336,6 +1408,41 @@ models:
         description: The most recent date a lead or contact was assigned a Marketo Qualified Lead Date.
       - name: is_mql
         description: a boolean field created in the warehouse to flag Marketing Qualified Leads.
+      - name: traction_first_response_time
+        description: The response time from Traction. 
+      - name: traction_first_response_time_seconds
+        description: The response time from Traction in seconds. 
+      - name: traction_response_time_in_business_hours
+        description: The response time from Traction, based only in working hours for the user/rep. 
+      - name: propensity_to_purchase_score_date
+        description: This field indicates the date when most recent probability to purchase score was calculated.
+      - name: propensity_to_purchase_score_group
+        description: This field indicates the propensity to purchase score, 5 being the highest probability to purchase.
+      - name: pql_namespace_creator_job_description
+        description: namespace creator self-described job description
+      - name: pql_namespace_id
+        description: ID of the PQL's namespace, from SFDC. 
+      - name: pql_namespace_name
+        description: Name of the PQL's namespace, from SFDC. 
+      - name: pql_namespace_users
+        description: number of namespace users
+      - name: is_product_qualified_lead
+        description: Whether or not the lead is a PQL. 
+      - name: propensity_to_purchase_insights
+        description: This field provides insights into the probability score of a record to purchase.
+      - name: is_ptp_contact
+        description: This field indicates if the record has a calculated propensity to purchase score.
+      - name: propensity_to_purchase_namespace_id
+        description: This field indicates the namespace ID that has been scored for propensity to purchase.
+      - name: propensity_to_purchase_past_insights
+        description: This field provides insights into the previous probability score of a record to purchase.
+      - name: propensity_to_purchase_past_score_group
+        description: This field indicates the previous propensity to purchase score a user had.
+      - name: propensity_to_purchase_days_since_trial_start
+        description: This field indicates the number of days that passed since this user started a trial.
+      - name: is_partner_recalled
+        description: A boolean field from Salesforce on the lead and contact, these are persons taken back by GitLab when the person was previously passed to partners. The partner had exceeded the time period in which they were supposed to qualify the lead, so they return to GitLab’s possession
+
 
   - name: fct_saas_product_usage_metrics_monthly
     description: '{{ doc("fct_saas_product_usage_metrics_monthly") }}'
@@ -1452,18 +1559,12 @@ models:
         description: Monthly count of deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlydeployments))
       - name: packages_28_days_event
         description: Monthly count of Packages ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlypackages))
-      - name: sast_jobs_all_time_event
-        description: All-time count of SAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssast_jobs))
       - name: dast_jobs_all_time_event
         description: All-time count of DAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdast_jobs))
-      - name: dependency_scanning_jobs_all_time_event
-        description: All-time count of Dependency Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdependency_scanning_jobs))
       - name: license_management_jobs_all_time_event
         description: All-time count of License Management CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countslicense_management_jobs))
       - name: secret_detection_jobs_all_time_event
         description: All-time count of Secret Detection’ CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssecret_detection_jobs))
-      - name: container_scanning_jobs_all_time_event
-        description: All-time count of Container Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countscontainer_scanning_jobs))
       - name: projects_jenkins_active_all_time_event
         description: All-time count of projects with active integrations for Jenkins ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jenkins_active))
       - name: projects_bamboo_active_all_time_event
@@ -1476,8 +1577,6 @@ models:
         description: Monthly count of Issues imported from Jira ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlymanageissue_importsjira)). This metric has been deprecated but we are keeping the field around for history.
       - name: projects_github_active_all_time_event
         description: All-time count of projects with active integrations for GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_github_active))
-      - name: projects_jira_server_active_all_time_event
-        description: All-time count of active integrations with Jira Server ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_server_active))
       - name: projects_jira_dvcs_cloud_active_all_time_event
         description: All-time count of active integrations with Jira Cloud (DVCS Connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_cloud_active))
       - name: projects_with_repositories_enabled_all_time_event
@@ -1506,8 +1605,6 @@ models:
         description: Number of GitLab Managed clusters both enabled and disabled on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#gitalyclusters))
       - name: epics_deepest_relationship_level_instance
         description: Numeric level of the deepest relationship of all epics on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsepics_deepest_relationship_level))
-      - name: clusters_applications_cilium_all_time_event
-        description: All-time total of GitLab Managed clusters with GitLab Managed App:Cilium installed ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsclusters_applications_cilium))
       - name: network_policy_forwards_all_time_event
         description: Cumulative count of packets forwarded by Cilium (Container Network Security) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsnetwork_policy_forwards))
       - name: network_policy_drops_all_time_event
@@ -1518,8 +1615,6 @@ models:
         description: All-time count of requirement test reports created from CI ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsrequirement_test_reports_ci))
       - name: projects_imported_from_github_all_time_event
         description: All-time count of project imported from GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_imported_from_github))
-      - name: projects_jira_cloud_active_all_time_event
-        description: All-time count of active integrations with Jira Cloud ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_cloud_active))
       - name: projects_jira_dvcs_server_active_all_time_event
         description: All-time count of active integrations with Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_server_active))
       - name: service_desk_issues_all_time_event
@@ -1530,8 +1625,6 @@ models:
         description: Monthly count of users opening service desk issues ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanservice_desk_issues))
       - name: projects_jira_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_active))
-      - name: projects_jira_dvcs_cloud_active_28_days_user
-        description: Monthly count of users interacting with active integrations of Jira Cloud (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_cloud_active))
       - name: projects_jira_dvcs_server_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_server_active))
       - name: merge_requests_with_required_code_owners_28_days_user
@@ -1542,8 +1635,6 @@ models:
         description: Monthly count of users approving merge requests ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_counterscode_reviewi_code_review_user_approve_mr_monthly))
       - name: epics_usage_28_days_user
         description: Monthly users count for epics_usage ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersepics_usageepics_usage_total_unique_counts_monthly))
-      - name: ci_templates_usage_28_days_event
-        description: Monthly count of CI templates ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersci_templatesci_templates_total_unique_counts_monthly))
       - name: project_management_issue_milestone_changed_28_days_user
         description: Monthly count of MAU changing an issue’s milestone ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_milestone_changed_monthly))
       - name: project_management_issue_iteration_changed_28_days_user
@@ -1564,40 +1655,8 @@ models:
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
-      - name: api_fuzzing_jobs_usage_28_days_user
-        description: '{{ doc("api_fuzzing_jobs_usage_28_days_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
       - name: coverage_fuzzing_pipeline_usage_28_days_event
         description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("api_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: container_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("container_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dependency_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("dependency_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: sast_pipeline_usage_28_days_event
-        description: '{{ doc("sast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: secret_detection_pipeline_usage_28_days_event
-        description: '{{ doc("secret_detection_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dast_pipeline_usage_28_days_event
-        description: '{{ doc("dast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_jobs_28_days_user
-        description: '{{ doc("coverage_fuzzing_jobs_28_days_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
@@ -1760,6 +1819,38 @@ models:
         description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
+      - name: ci_builds_28_days_event
+        description: '{{ doc("ci_builds_28_days_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: audit_features_28_days_user
+        description: '{{ doc("audit_features_28_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: groups_all_time_event
+        description: '{{ doc("groups_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: commit_ci_config_file_7_days_user
+        description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_user
+        description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_event
+        description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_event
+        description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_user
+        description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
       - name: is_missing_paid_seats
         description: Flags if there are currently active users, but no seats have been paid for
       - name: is_data_in_subscription_month
@@ -1824,6 +1915,8 @@ models:
           - unique:
               config:
                 where: "event_date >= DATEADD('day',-7,CURRENT_DATE())"
+      - name: event_id
+        description: '{{ doc("event_id") }}'
       - name: dim_event_date_id
         description: '{{ doc("dim_event_date_id") }}'
       - name: dim_ultimate_parent_namespace_id
@@ -1905,6 +1998,8 @@ models:
         # tests:
           # - not_null
           # - unique
+      - name: event_id
+        description: '{{ doc("event_id") }}'
       - name: event_name
         description: '{{ doc("event_name") }}'
       - name: dim_event_date_id
@@ -2259,6 +2354,10 @@ models:
       - name: namespace_is_ultimate_parent
         description: '{{ doc("namespace_is_ultimate_parent") }}'
       - name: namespace_name
+      - name: namespace_name_unmasked
+        description: '{{ doc("namespace_name_unmasked") }}'
+        meta:
+          masking_policy: analyst_marketing_sensitive
       - name: namespace_path
       - name: owner_id
       - name: namespace_type
@@ -2355,6 +2454,7 @@ models:
       - name: quote_status
       - name: is_primary_quote
       - name: quote_start_date
+      - name: created_date
       - name: subscription_action_type
         description: '{{ doc("subscription_action_type") }}'
 
@@ -2460,15 +2560,17 @@ models:
   - name: dim_issue
     description: '{{ doc("dim_issue") }}'
     columns:
-      - name: dim_issue_id
+      - name: dim_issue_sk
         description: The unique identifier for each of the issues.
         tests:
           - not_null
           - unique
       - name: dim_project_id
-      - name: dim_plan_id
+      - name: dim_plan_sk_at_creation
         tests:
           - not_null
+      - name: masked_label_title
+        description: '{{ doc("label_title") }}'
 
   - name: dim_ci_pipeline
     description: '{{ doc("dim_ci_pipeline") }}'
@@ -2637,28 +2739,31 @@ models:
   - name: dim_merge_request
     description: '{{ doc("dim_merge_request") }}'
     columns:
-      - name: dim_merge_request_id
+      - name: dim_merge_request_sk
         description: The unique identifier for each of the merge requets.
         tests:
           - not_null
           - unique
-      - name: dim_project_id
-      - name: dim_plan_id
+      - name: dim_project_sk
+      - name: dim_plan_sk_at_creation
         tests:
           - not_null
 
   - name: dim_epic
     description: '{{ doc("dim_epic") }}'
     columns:
-      - name: dim_epic_id
+      - name: dim_epic_sk
         description: The unique identifier for each of the events.
         tests:
           - not_null
           - unique
       - name: dim_project_id
-      - name: dim_plan_id
+      - name: dim_plan_sk_at_creation
+        description: '{{ doc("dim_plan_id_at_creation") }}'
         tests:
           - not_null
+      - name: is_internal_epic
+        description: '{{ doc("is_internal_epic") }}'
 
   - name: dim_note
     description: '{{ doc("dim_note") }}'
@@ -2682,11 +2787,11 @@ models:
         description: The identifier for an issue relationship
         tests:
           - not_null
-      - name: dim_source_issue_id
+      - name: dim_issue_sk_source
         description: The identifier for source issue of an issue link
         tests:
           - not_null
-      - name: dim_target_issue_id
+      - name: dim_issue_sk_target
         description: The identifier for target issue of an issue link
         tests:
           - not_null
@@ -2950,6 +3055,8 @@ models:
         description: '{{ doc("is_smau") }}'
       - name: is_umau
         description: '{{ doc("is_umau") }}'
+      - name: is_health_score_metric
+        description: '{{ doc("is_health_score_metric") }}'
       - name: snapshot_date
         description: The date the data was extracted from metrics YAML files
       - name: uploaded_at
@@ -3090,6 +3197,10 @@ models:
         description: '{{ doc("model_updated_date") }}'
       - name: ping_type
         description: '{{ doc("ping_type") }}'
+      - name: dim_app_release_major_minor_sk
+        description: '{{ doc("dim_app_release_major_minor_sk") }}'
+      - name: dim_latest_available_app_release_major_minor_sk
+        description: '{{ doc("dim_latest_available_app_release_major_minor_sk") }}'
 
   - name: fct_ping_instance_metric_rolling_6_months
     description: '{{ doc("fct_ping_instance_metric_rolling_6_months") }}'
@@ -3513,18 +3624,12 @@ models:
         description: Monthly count of deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlydeployments))
       - name: packages_28_days_event
         description: Monthly count of Packages ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlypackages))
-      - name: sast_jobs_all_time_event
-        description: All-time count of SAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssast_jobs))
       - name: dast_jobs_all_time_event
         description: All-time count of DAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdast_jobs))
-      - name: dependency_scanning_jobs_all_time_event
-        description: All-time count of Dependency Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdependency_scanning_jobs))
       - name: license_management_jobs_all_time_event
         description: All-time count of License Management CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countslicense_management_jobs))
       - name: secret_detection_jobs_all_time_event
         description: All-time count of Secret Detection’ CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssecret_detection_jobs))
-      - name: container_scanning_jobs_all_time_event
-        description: All-time count of Container Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countscontainer_scanning_jobs))
       - name: projects_jenkins_active_all_time_event
         description: All-time count of projects with active integrations for Jenkins ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jenkins_active))
       - name: projects_bamboo_active_all_time_event
@@ -3537,8 +3642,6 @@ models:
         description: Monthly count of Issues imported from Jira ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlymanageissue_importsjira)). This metric has been deprecated but we are keeping the field around for history.
       - name: projects_github_active_all_time_event
         description: All-time count of projects with active integrations for GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_github_active))
-      - name: projects_jira_server_active_all_time_event
-        description: All-time count of active integrations with Jira Server ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_server_active))
       - name: projects_jira_dvcs_cloud_active_all_time_event
         description: All-time count of active integrations with Jira Cloud (DVCS Connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_cloud_active))
       - name: projects_with_repositories_enabled_all_time_event
@@ -3567,8 +3670,6 @@ models:
         description: Number of GitLab Managed clusters both enabled and disabled on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#gitalyclusters))
       - name: epics_deepest_relationship_level_instance
         description: Numeric level of the deepest relationship of all epics on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsepics_deepest_relationship_level))
-      - name: clusters_applications_cilium_all_time_event
-        description: All-time total of GitLab Managed clusters with GitLab Managed App:Cilium installed ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsclusters_applications_cilium))
       - name: network_policy_forwards_all_time_event
         description: Cumulative count of packets forwarded by Cilium (Container Network Security) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsnetwork_policy_forwards))
       - name: network_policy_drops_all_time_event
@@ -3579,8 +3680,6 @@ models:
         description: All-time count of requirement test reports created from CI ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsrequirement_test_reports_ci))
       - name: projects_imported_from_github_all_time_event
         description: All-time count of project imported from GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_imported_from_github))
-      - name: projects_jira_cloud_active_all_time_event
-        description: All-time count of active integrations with Jira Cloud ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_cloud_active))
       - name: projects_jira_dvcs_server_active_all_time_event
         description: All-time count of active integrations with Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_server_active))
       - name: service_desk_issues_all_time_event
@@ -3591,8 +3690,6 @@ models:
         description: Monthly count of users opening service desk issues ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanservice_desk_issues))
       - name: projects_jira_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_active))
-      - name: projects_jira_dvcs_cloud_active_28_days_user
-        description: Monthly count of users interacting with active integrations of Jira Cloud (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_cloud_active))
       - name: projects_jira_dvcs_server_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_server_active))
       - name: merge_requests_with_required_code_owners_28_days_user
@@ -3603,8 +3700,6 @@ models:
         description: Monthly count of users approving merge requests ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_counterscode_reviewi_code_review_user_approve_mr_monthly))
       - name: epics_usage_28_days_user
         description: Monthly users count for epics_usage ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersepics_usageepics_usage_total_unique_counts_monthly))
-      - name: ci_templates_usage_28_days_event
-        description: Monthly count of CI templates ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersci_templatesci_templates_total_unique_counts_monthly))
       - name: project_management_issue_milestone_changed_28_days_user
         description: Monthly count of MAU changing an issue’s milestone ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_milestone_changed_monthly))
       - name: project_management_issue_iteration_changed_28_days_user
@@ -3625,40 +3720,8 @@ models:
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
-      - name: api_fuzzing_jobs_usage_28_days_user
-        description: '{{ doc("api_fuzzing_jobs_usage_28_days_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
       - name: coverage_fuzzing_pipeline_usage_28_days_event
         description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("api_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: container_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("container_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dependency_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("dependency_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: sast_pipeline_usage_28_days_event
-        description: '{{ doc("sast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: secret_detection_pipeline_usage_28_days_event
-        description: '{{ doc("secret_detection_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dast_pipeline_usage_28_days_event
-        description: '{{ doc("dast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_jobs_28_days_user
-        description: '{{ doc("coverage_fuzzing_jobs_28_days_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
@@ -3875,6 +3938,38 @@ models:
           - dbt_utils.at_least_one
       - name: ci_internal_pipelines_28_days_event
         description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_builds_28_days_event
+        description: '{{ doc("ci_builds_28_days_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: audit_features_28_days_user
+        description: '{{ doc("audit_features_28_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: groups_all_time_event
+        description: '{{ doc("groups_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: commit_ci_config_file_7_days_user
+        description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_user
+        description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: ci_pipeline_config_repository_all_time_event
+        description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_event
+        description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
+        tests:
+          - dbt_utils.at_least_one
+      - name: pipeline_schedules_all_time_user
+        description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: instance_user_count_not_aligned
@@ -4206,6 +4301,10 @@ models:
         description: '{{ doc("umau_value") }}'
       - name: data_source
         description: '{{ doc("data_source") }}'
+      - name: dim_app_release_major_minor_sk
+        description: '{{ doc("dim_app_release_major_minor_sk") }}'
+      - name: dim_latest_available_app_release_major_minor_sk
+        description: '{{ doc("dim_latest_available_app_release_major_minor_sk") }}'
       - name: created_by
         description: '{{ doc("created_by") }}'
       - name: updated_by
@@ -4560,6 +4659,50 @@ models:
       - name: zoom_info_company_revenue
       - name: zoom_info_company_state_province
       - name: zoominfo_account_phone
+      - name: is_focus_partner
+        description: A partner account on the focus partner list
+      - name: crm_account_arr_cohort_month
+        description: First month the CRM account has had ARR (Annual Recurrent Revenue).
+      - name: crm_account_arr_cohort_quarter
+        description: First fiscal quarter the CRM account has had ARR (Annual Recurrent Revenue).
+      - name: parent_account_arr_cohort_month
+        description: First month the ultimate parent CRM account has had ARR (Annual Recurrent Revenue).
+      - name: parent_account_arr_cohort_quarter
+        description: First fiscal quarter the ultimate parent CRM account has had ARR (Annual Recurrent Revenue).
+      - name: has_six_sense_6_qa
+        description: The 6QA status of the account for the product.
+      - name: risk_rate_guid
+        description: The globally unique ID (GUID) for the third party record in NavEx RiskRate.
+      - name: six_sense_account_profile_fit
+        description: A measure of how similar a company is to the ideal customer profile.
+      - name: six_sense_account_reach_score
+        description: A measure of current outreach activities against optimal quality.
+      - name: six_sense_account_profile_score
+        description: A measure of how similar a company is to the ideal customer profile.
+      - name: six_sense_account_buying_stage
+        description: The 6QA buting stage of the account
+      - name: six_sense_account_numerical_reach_score
+        description:  measure of current outreach activities against optimal quality.
+      - name: six_sense_account_update_date
+        description: The latest update date and time when 6sense Scores were updated.
+      - name: six_sense_account_6_qa_end_date
+        description: The date the account was disqualified from 6QA status 
+      - name: six_sense_account_6_qa_age_days
+        description: The age of the Account's 6QA data, in days. 
+      - name: six_sense_account_6_qa_start_date
+        description: The date the account qualified for 6QA status 
+      - name: six_sense_account_intent_score
+        description: A measure, between 0 and 100, of how much an account is behaving like accounts with which there is a history of previously opened opportunities.
+      - name: six_sense_segments
+        description: The Account's 6QA segment. 
+      - name: gs_health_csm_sentiment
+        description: This is what the TAM thinks the health of this account should be - Formerly was just Health Score - Gainsight is the SSOT for this field and its value can only be updated in Gainsight.
+      - name: tam_manager
+        description: The name of the manager for the tehchnical account manager who manages the account.
+      - name: executive_sponsor
+        description: executive sponsor of this account
+
+
 
   - name: dim_crm_account_daily_snapshot
     description: '{{ doc("dim_crm_account_daily_snapshot") }}'
@@ -4985,6 +5128,29 @@ models:
         description: '{{ doc("intended_product_tier") }}'
       - name: dim_parent_crm_opportunity_id
         description: '{{ doc("dim_parent_crm_opportunity_id") }}'
+      - name: next_steps
+        description: Free text field that provides insight into the next step to continue progressing the Opportunity through the Sales Pipeline.
+      - name: auto_renewal_status
+        descripton: Flag with on/off. Indicates whether a current subscription will automatically renew for the same term as their current subscription after the expiration of the current term
+      - name: qsr_notes
+        description: '{{ doc("qsr_notes") }}'
+      - name: qsr_status  
+        description: Quarterly Subscription Reconciliation status (Pending, failed, processed)
+      - name: manager_confidence
+      - name: renewal_risk_category
+        description: Renewal forecasting field indicating whether the customer will renew, churn or contract (actionable or not)
+      - name: renewal_swing_arr
+        description: The revenue the Account team believes can be saved on an at-risk Renewal if action is taken
+      - name: renewal_manager
+        description:  Renewals Manager supporting this Opportunity
+      - name: renewal_forecast_health
+        description: Red, Yellow, Green health rating based on the Net ARR field
+      - name: renewal_ownership
+        description: This field determines Rules of Engagement (ROE) and ownership for the Renewal between the Renewals Manager and the Account Executive
+      - name: ptc_predicted_arr
+        description: This field contains the predicted amount of ARR after renewal, generated by a machine learning model when the subscription is within 6 months of renewal date.
+      - name: ptc_predicted_renewal_risk_category
+        description: This field contains the predicted renewal risk category, generated by a machine learning model when the subscription is within 6 months of renewal date.
 
   - name: fct_charge
     description: '{{ doc("fct_charge") }}'
@@ -5081,6 +5247,18 @@ models:
         tags: [ "tdf", "common", "sales_funnel" ]
       - name: dim_crm_person_id
         description: A surrogate key for use when joining to `dim_crm_person`. Created from the contact_id where there is a contact and a lead_id where there isn't.
+      - name: dim_crm_current_account_set_hierarchy_sk
+        description: '{{ doc("dim_crm_current_account_set_hierarchy_sk") }}'
+      - name: dim_crm_current_account_set_sales_segment_id
+        description: '{{ doc("dim_crm_current_account_set_sales_segment_id") }}'
+      - name: dim_crm_current_account_set_geo_id
+        description: '{{ doc("dim_crm_current_account_set_geo_id") }}'
+      - name: dim_crm_current_account_set_region_id
+        description: '{{ doc("dim_crm_current_account_set_region_id") }}'
+      - name: dim_crm_current_account_set_area_id
+        description: '{{ doc("dim_crm_current_account_set_area_id") }}'
+      - name: dim_crm_current_account_set_business_unit_id
+        description: '{{ doc("dim_crm_current_account_set_business_unit_id") }}'
       - name: sfdc_contact_id
         description: the contact id from the fist contact by opportunity contact role created date for the given opportunity record
       - name: created_date
@@ -5275,6 +5453,13 @@ models:
         description: '{{ doc("override_arr_basis_clari") }}'
       - name: vsa_start_date_net_arr
         description: '{{ doc("vsa_start_date_net_arr") }}'
+      - name: cycle_time_in_days
+        description: '{{ doc("cycle_time_in_days") }}' 
+      - name: ptc_predicted_arr
+        descripion: This field contains the predicted amount of ARR after renewal, generated by a machine learning model when the subscription is within 6 months of renewal date.
+      - name: ptc_predicted_renewal_risk_category
+        description: This field contains the predicted renewal risk category, generated by a machine learning model when the subscription is within 6 months of renewal date.
+      
 
   - name: fct_crm_opportunity_daily_snapshot
     description: '{{ doc("fct_crm_opportunity_daily_snapshot") }}'
@@ -5332,6 +5517,8 @@ models:
         description: The invoice amount excluding tax
       - name: invoice_item_charge_amount
         description: The amount being charged for the invoice item. This amount doesn't include taxes regardless if the charge's tax mode is inclusive or exclusive.
+      - name: annual_billing_invoice_price
+        description: This is a calculated field which takes the invoice_item_unit_price and calculates the yearly price. For example, if it's a monthly charge it will multiply by 12 and a 2 year price will be divided by 2.
       - name: invoice_item_unit_price
         description: The per-unit price of the invoice item. Calculated from multiple fields in Product Rate Plan Charge and Product Rate Plan Charge Tier objects.
 
@@ -5535,6 +5722,53 @@ models:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
+      - name: dim_sales_funnel_kpi_sk
+        description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
+        tests:
+          - not_null
+        tags: ["tdf", "common", "sales_funnel"]
+
+  - name: fct_sales_funnel_partner_alliance_target_daily
+    description: '{{ doc("fct_sales_funnel_partner_alliance_target_daily") }}'
+    columns:
+      - name: kpi_name
+        tests:
+          - not_null
+        tags: ["tdf", "common", "sales_funnel"]
+      - name: sales_funnel_partner_alliance_target_daily_pk
+        tests:
+          - not_null
+          - unique
+        tags: ["tdf", "common", "sales_funnel"]
+      - name: dim_sales_funnel_kpi_sk
+        description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
+        tests:
+          - not_null
+        tags: ["tdf", "common", "sales_funnel"]
+      - name: report_target_date
+        description: '{{ doc("report_target_date") }}'
+      - name: wtd_allocated_target
+        description: '{{ doc("wtd_allocated_target") }}'
+      - name: mtd_allocated_target
+        description: '{{ doc("mtd_allocated_target") }}'
+      - name: qtd_allocated_target
+        description: '{{ doc("qtd_allocated_target") }}'
+      - name: ytd_allocated_target
+        description: '{{ doc("ytd_allocated_target") }}'
+
+  - name: fct_sales_funnel_actual
+    description: '{{ doc("fct_sales_funnel_actual") }}'
+    columns:
+      - name: sales_funnel_actual_sk
+        tests:
+          - not_null
+          - unique
+        tags: ["tdf", "common", "sales_funnel"]
+      - name: dim_sales_funnel_kpi_sk
+        description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
+        tests:
+          - not_null
+        tags: ["tdf", "common", "sales_funnel"]
 
   - name: fct_sales_funnel_target
     description: '{{ doc("fct_sales_funnel_target") }}'
@@ -5548,6 +5782,39 @@ models:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
+      - name: dim_sales_funnel_kpi_sk
+        description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
+        tests:
+          - not_null
+        tags: ["tdf", "common", "sales_funnel"]
+
+  - name: fct_sales_funnel_target_daily
+    description: '{{ doc("fct_sales_funnel_target_daily") }}'
+    columns:
+      - name: kpi_name
+        tests:
+          - not_null
+        tags: ["tdf", "common", "sales_funnel"]
+      - name: sales_funnel_target_daily_pk
+        tests:
+          - not_null
+          - unique
+        tags: ["tdf", "common", "sales_funnel"]
+      - name: dim_sales_funnel_kpi_sk
+        description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
+        tests:
+          - not_null
+        tags: ["tdf", "common", "sales_funnel"]
+      - name: report_target_date
+        description: '{{ doc("report_target_date") }}'
+      - name: wtd_allocated_target
+        description: '{{ doc("wtd_allocated_target") }}'
+      - name: mtd_allocated_target
+        description: '{{ doc("mtd_allocated_target") }}'
+      - name: qtd_allocated_target
+        description: '{{ doc("qtd_allocated_target") }}'
+      - name: ytd_allocated_target
+        description: '{{ doc("ytd_allocated_target") }}'
 
   - name: fct_waterfall_summary
     description: '{{ doc("fct_waterfall_summary") }}'
@@ -5566,6 +5833,180 @@ models:
           combination_of_columns:
             - metrics_path
             - redis_event
+
+  - name: fct_crm_event
+    description: The Events portion of Activities from SFDC. 
+    columns:
+      - name: dim_crm_event_sk
+        description: The utility-generated ID key, from the event_id. 
+        tests:
+          - unique
+          - not_null
+      - name: dim_crm_event_pk
+        description: Utility-generated primary key, from the event_id
+      - name: dim_crm_account_id
+        description: SFDC's Account ID related to the event
+      - name: dim_crm_user_id
+        description: SFDC's User ID related to the event
+      - name: dim_crm_person_id
+        description: Utility-generated string, from the SFDC Person's ID
+      - name: dim_crm_opportunity_id
+        description: SFDC's Opportunity ID related to the event
+      - name: sfdc_record_id
+        description: SFDC's Person ID related to the event
+      - name: event_date_id
+        description: ID of the event_Date field
+      - name: event_date
+        description: Date the event took place. 
+      - name: event_end_date_id
+        description: ID of event's end date field. 
+      - name: event_end_date
+        description: Day of the end of the Event. 
+      - name: reminder_date_id
+        description: ID of the reminder date
+      - name: reminder_date_time
+        description: Date/Time that a reminder was set for this event. 
+      - name: event_recurrence_end_date_id
+        description: ID of the Event's recurrence end date
+      - name: event_recurrence_end_date
+        description: The end date of the recurrence of this event
+      - name: event_recurrence_start_date_id
+        description: ID of the Event's recurrence start date
+      - name: event_recurrence_start_date_time
+        description: The start date/time of the recurrence of this event
+      - name: event_created_by_id
+        description: ID of the event's creator
+      - name: event_created_date_id
+        description: ID of the Event's created date
+      - name: event_created_date
+        description: The day that the Event was created
+      - name: last_modified_id
+        description: ID of the last user to modify the Event
+      - name: last_modified_date_id
+        description: ID of the last modified date
+
+  - name: dim_crm_event
+    description: The Events portion of Activities from SFDC. 
+    columns:
+      - name: dim_crm_event_sk
+        description: The utility-generated ID key, from the event_id. 
+      - name: dim_crm_event_sk
+        description: Utility-generated secondary key, from the event_id
+      - name: event_id
+        description: The SFDC ID for the Event. 
+      - name: event_subject
+        description: The Subject of the Event, from SFDC.
+      - name: event_source
+        description: The Event's Source, from SFDC
+      - name: outreach_meeting_type
+        description: The Outreach Meeting Type for the Event, from Outreach. 
+      - name: event_type
+        description: The Type of the Event, from SFDC
+      - name: event_disposition
+        description: The Disposition of the Event, from SFDC
+      - name: event_description
+        description: The Description of the Event, from SFDC
+      - name: event_subtype
+        description: The Subtype of the Event, from SFDC
+      - name: booked_by_employee_number
+        description: The Employee number of the Employee that booked the event/meeting. 
+      - name: sa_activity_type
+        description: The SA's Activity Type of the Event. 
+      - name: event_show_as
+        description: What the Event shows as in SFDC
+      - name: assigned_to_role
+        description: The SFDC Role, of the user assigned to the Event. 
+      - name: csm_activity_type
+        description: The CSM's Activity Type of the Event. 
+      - name: customer_interaction_sentiment
+        description: The Csutomer's sentiment/feedback on the Event
+      - name: google_doc_link
+        description: The link to a google doc related to the event. 
+      - name: comments
+        description: Comments left by the rep assigned to the event. 
+      - name: qualified_convo_or_meeting
+        description: Whether or not the meeting/event was a qualified conversation. 
+      - name: first_opportunity_event_created_date
+        description: The earliest event completion date, related to an opportunity. 
+      - name: event_start_date_time
+        description: The Start Date/Time of the Event. 
+      - name: reminder_date_time
+        description: The Date/Time of the reminder set for the Event. 
+      - name: event_end_date_time
+        description: The Event's End Date/Time. 
+      - name: event_date
+        description: The Date the Event took place. 
+      - name: event_datetime
+        description: The Date/Time the Event took place. 
+      - name: created_at
+        description: The Date the Event was created. 
+      - name: event_end_date
+        description: The End Date of the Event. 
+      - name: is_all_day_event
+        description: Boolean value - Whether or not the Event is an all day event. 
+      - name: is_archived
+        description: Boolean value -Whether or not the event is now archvied. 
+      - name: is_child_event
+        description: Boolean value - Whether or not the Event is the child of another Event. 
+      - name: is_group_event
+        description: Boolean value - Whether or not the Event was a Group event. 
+      - name: is_private_event
+        description: Boolean value - Whether or not the Event was a private event. 
+      - name: is_recurrence
+        description: Boolean value - Whether or not the Event is a recurring Event.  
+      - name: has_reminder_set
+        description: Boolean value - Whether or not there is a reminder set for this Event. 
+      - name: is_answered
+        description: Boolean value - Whether or not the prospect/customer answered/responded to the Event invite. 
+      - name: is_bad_number
+        description: Boolean value - Whether or not the number dialed was a bad/faulty number. 
+      - name: is_busy
+        description: Boolean value - Whether or not the recipient of the call was busy. 
+      - name: is_correct_contact
+        description: Boolean value - Whether or not the sales rep reached the correct contact.  
+      - name: is_left_message
+        description: Boolean value - Whether or not a VM message was left. 
+      - name: is_not_answered
+        description: Boolean value - Whether or not the recipient did not answer the phone. 
+      - name: is_meeting_canceled
+        description: Boolean value - Whether or not the meeting was cancelled. 
+      - name: is_closed_event
+        description: Boolean value - Whether or not the Event is closed. 
+      - name: is_activity
+        description: Boolean value - Whether or not this Event is tracked as an activity. 
+      - name: event_recurrence_activity_id
+        description: ID of the Event's recurring activity. 
+      - name: event_recurrence_day_of_week
+        description: Day of the week for the recurrence of this event. 
+      - name: event_recurrence_day_of_month
+        description: Day of the month for the recurrence of this event. 
+      - name: event_recurrence_end_date
+        description: The End Date for the recurrence of this event. 
+      - name: event_recurrence_instance
+        description: Whether or not the event is recurring. 
+      - name: event_recurrence_interval
+        description: The interval in which the event reoccurs. 
+      - name: event_recurrence_month_of_year
+        description: Month of the year for the recurrence of this event. 
+      - name: event_recurrence_start_date_time
+        description: The Starting date/time of the recurrence of this event. 
+      - name: event_recurrence_timezone_key
+        description: The Timezone key for the recurrence of this event's date/time fields. 
+      - name: event_recurrence_type
+        description: The type of recurring Event. 
+      - name: is_recurrence_2_exclusion
+        description: Boolean - Whether or not the recurrence is excluded. 
+      - name: is_recurrence_2
+        description: Boolean - Whether or not the recurrence is valid. 
+      - name: is_recurrence_2_exception
+        description: Boolean - Whether or not the recurrence is an exception. 
+      - name: last_modified_id
+        description: The ID of the last modifier of this event. 
+      - name: last_modified_date
+        description: The Date the event was last modified. 
+      - name: systemmodstamp
+        description: The time/date stamp from SFDC when this record was created. 
+
 
   - name: dim_crm_task
     description: '{{ doc("dim_crm_task") }}'
@@ -5592,6 +6033,10 @@ models:
           - unique
           - not_null
         tags: ["tdf", "common"]
+      - name: dim_mapped_opportunity_id
+        description: '{{ doc("dim_mapped_opportunity_id") }}'
+      - name: task_mapped_to
+        description: '{{ doc("task_mapped_to") }}'
 
   - name: dim_behavior_browser
     description: '{{ doc("dim_behavior_browser") }}'
@@ -5713,7 +6158,9 @@ models:
       - name: fct_behavior_website_page_view_sk
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
         description: '{{ doc("fct_behavior_website_page_view_sk") }}'  
       - name: dim_behavior_website_page_sk
         description: '{{ doc("dim_behavior_website_page_sk") }}' 
@@ -5910,6 +6357,10 @@ models:
         description: '{{ doc("has_gitlab_experiment_context") }}'
       - name: has_subscription_auto_renew_context
         description: '{{ doc("has_subscription_auto_renew_context") }}'
+      - name: has_code_suggestions_context
+        description: '{{ doc("has_code_suggestions_context") }}'
+      - name: has_ide_extension_version_context
+        description: '{{ doc("has_ide_extension_version_context") }}'
 
   - name: fct_behavior_structured_event_experiment
     description:  '{{ doc("fct_behavior_structured_event_experiment") }}'
@@ -6015,11 +6466,15 @@ models:
         description: '{{ doc("has_subscription_auto_renew_context") }}'
       - name: experiment_name
         tests:
-          - not_null      
+          - not_null:
+              config:
+                error_if: ">5784"
         description: '{{ doc("experiment_name") }}'        
       - name: experiment_variant
         tests:
-          - not_null      
+          - not_null:
+              config:
+                error_if: ">5784"
         description: '{{ doc("experiment_variant") }}'
       - name: context_key
         description: '{{ doc("context_key") }}'
@@ -6137,7 +6592,9 @@ models:
       - name: behavior_structured_event_pk
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
         description: '{{ doc("behavior_structured_event_pk") }}'
       - name: dim_behavior_browser_sk
         description: '{{ doc("dim_behavior_browser_sk") }}'
@@ -6347,7 +6804,9 @@ models:
       - name: fct_behavior_unstructured_sk
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
         description: '{{ doc("fct_behavior_unstructured_sk") }}'
       - name: app_id
         description: '{{ doc("app_id") }}'
@@ -7229,35 +7688,87 @@ models:
       - name: country
         description: Current/latest country the team member resides in
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: nationality
         description: Masked. Team member nationality.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ethnicity 
         description: Masked. Team member ethnicity.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: gender 
         description: Masked. Team member gender
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: date_of_birth 
         description: Masked. Team member date of birth
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: key_talent_status 
         description: Masked. Team member Key Talent status
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: growth_potential_rating 
         description: Masked. Team member growth potential rating
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: performance_rating 
         description: Masked. Team member performance rating
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
+      - name: employee_type
+        description: The employee type from the following list - Employee (PEO or Entity), Contractor (Independent, customer-to-customer or PEO), Intern, Consultant.
+
+  - name: dim_team
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - team_id
+            - valid_from
+    columns:
+      - name: team_hierarchy_level
+        tests:
+          - accepted_values:
+              values: ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+      - name: dim_team_sk
+        tests:
+          - not_null
+      - name: team_id
+        tests:
+          - not_null
+      - name: team_superior_team_id
+      - name: hierarchy_level_1
+      - name: hierarchy_level_2
+      - name: hierarchy_level_3
+      - name: hierarchy_level_4
+      - name: hierarchy_level_5
+      - name: hierarchy_level_6
+      - name: hierarchy_level_7
+      - name: hierarchy_level_8
+      - name: hierarchy_level_9
+      - name: hierarchy_level_1_name
+      - name: hierarchy_level_2_name
+      - name: hierarchy_level_3_name
+      - name: hierarchy_level_4_name
+      - name: hierarchy_level_5_name
+      - name: hierarchy_level_6_name
+      - name: hierarchy_level_7_name
+      - name: hierarchy_level_8_name
+      - name: hierarchy_level_9_name
+      - name: hierarchy_levels_array
+      - name: team_hierarchy_level
+      - name: is_team_inactivated
+      - name: team_name
+      - name: team_manager_name
+      - name: team_manager_name_id
+      - name: team_inactivated_date
+      - name: team_members_count
+      - name: is_team_manager_inherited
+      - name: is_team_active
+      - name: valid_from
+      - name: valid_to
+      - name: is_current
 
   - name: fct_team_member_status
     description: '{{ doc("fct_team_member_status") }}'
@@ -7279,15 +7790,15 @@ models:
       - name: termination_reason
         description: Categorical variable that indicates the reason why a team member has been terminated
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: termination_type
         description: Categorical variable that indicates whether the termination was voluntary or involuntary.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: exit_impact
         description: Whether the team member's departure has a significant negative impact on the company, its customers, its projects or the team.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: status_effective_date
         description: Effective date of employment status
         tests:
@@ -7300,7 +7811,7 @@ models:
             combination_of_columns:
               - employee_id
               - team_id
-              - effective_date
+              - valid_from
     columns:
       - name: team_member_position_pk
         description: Primary key for the table
@@ -7342,13 +7853,13 @@ models:
       - name: entity
         description: The team member's entity.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: is_position_active
         description: Whether the team member's job position is active.
       - name: is_current
         description: Whether the team member's job position is the most current as of the date the query is run.
-      - name: position_effective_date
-        description: The date when the team member's position update becomes effective
+      - name: valid_from
+      - name: valid_to
 
   - name: fct_team_status
     description: '{{ doc("fct_team_status") }}'
@@ -7389,7 +7900,7 @@ models:
       - name: entity
         description: The team member's entity.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: is_position_active
         description: Whether the team member's job position is active.
       - name: employment_status
@@ -7399,15 +7910,15 @@ models:
       - name: termination_reason
         description: Categorical variable that indicates the reason why a team member has been terminated
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: termination_type
         description: Categorical variable that indicates whether the termination was voluntary or involuntary.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: exit_impact
         description: Whether the team member's departure has a significant negative impact on the company, its customers, its projects or the team.
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: is_current
         description: Whether the team status is the most current as of the date the query is run.
       - name: valid_from
@@ -7469,3 +7980,256 @@ models:
           - not_null
       - name: valid_to
 
+
+  - name: fct_trial
+    description: '{{ doc("fct_trial") }}'
+    columns:
+      - name: trial_pk
+        description: The composite primary key of the model that uniquely represents a row, cannot be used as a join key.
+        tests:
+          - not_null
+          - unique
+      - name: internal_order_id
+        description: The unique ID of a CDot Order. It can only be used as a join key to join to CDot Orders. It cannot be used to join to Zuora Orders as this is a system specific key generated by CDot.
+        tests:
+          - not_null
+      - name: dim_namespace_id
+        description: The id of the namespace related to the order.  
+      - name: product_rate_plan_id
+        description: The unique ID of a product rate plan    
+      - name: internal_customer_id
+        description: The unique ID of a CDot customer. It can be used as a Join key to join to CDot Customers only. It cannot be used to join to Gitlab.com Users as this is a system specific key generated by CDot.
+      - name: user_id
+        description: The unique ID of a gitlab user from gitlab.com
+      - name: is_gitlab_user
+        description: Boolean flag to indicate if the user has an associated user id from gitlab.com
+      - name: user_created_at
+        description: The date when the user was created at gitlab.com portal
+      - name: namespace_created_at
+        description: '{{ doc("namespace_created_at") }}'
+      - name: namespace_type 
+        description: '{{ doc("namespace_type") }}'
+      - name: is_trial_converted
+        description: '{{ doc("is_trial_converted") }}'
+      - name: subscription_name
+        description: The unique name of a subscription from Zuora. It can be used to join back to Zuora Subscriptions.
+      - name: subscription_name_slugify
+        description: The name of the subscription from Zuora
+      - name: subscription_start_date
+        description: The date when the subscription term starts. This date is the same as the start date of the original term, which isn't necessarily the start date of the current or new term.
+      - name: country
+        description: The country selected by the User during registration
+      - name: company_size
+        description: The size of the company as provided by the user during registration
+      - name: order_created_at
+        description: The date when the Order was created
+      - name: order_updated_at
+        description: The date when the Order was updated
+      - name: trial_start_date
+        description: The date when the trial period begins for a product rate plan
+      - name: trial_end_date
+        description: The expiration date of the trial Order, which is usually 30 days from the trial start date
+
+
+  - name: fct_trial_first
+    description: '{{ doc("fct_trial_first") }}'
+    columns:
+      - name: trial_first_pk
+        description: The composite primary key created by hashing `order_id` and `namespace_id` that uniquely represents a row, cannot be used as a join key
+        tests:
+          - not_null
+          - unique
+      - name: internal_order_id
+        description: The unique ID of a CDot Order. It can only be used as a join key to join to CDot Orders. It cannot be used to join to Zuora Orders as this is a system specific key generated by CDot
+        tests:
+          - not_null
+      - name: dim_namespace_id
+        description: The id of the namespace related to the first trial order. 
+      - name: internal_customer_id
+        description: The unique ID of a CDot customer. It can be used as a Join key to join to CDot Customers only. It cannot be used to join to Gitlab.com Users as this is a system specific key generated by CDot
+      - name: user_id
+        description: The unique ID of a gitlab user from gitlab.com associated with the first trial order
+      - name: subscription_name
+        description: The unique name of the first subscription associated with the Order from Zuora. It can be used to join back to Zuora Subscriptions
+      - name: subscription_name_slugify
+        description: The name of the first subscription associated with the Order from Zuora
+      - name: is_gitlab_user
+        description: Boolean flag to indicate if the user has an associated user id from gitlab.com
+      - name: user_created_at
+        description: The date when the user was first created at gitlab.com portal
+      - name: namespace_created_at
+        description: '{{ doc("namespace_created_at") }}'
+      - name: namespace_type 
+        description: '{{ doc("namespace_type") }}'
+      - name: subscription_start_date
+        description: The date when the subscription term starts. This date is the same as the start date of the original term, which isn't necessarily the start date of the current or new term
+      - name: country
+        description: The country selected by the User during registration
+      - name: company_size
+        description: The size of the company as provided by the user during registration
+      - name: is_trial_converted
+        description: '{{ doc("is_trial_converted") }}'
+      - name: order_created_at
+        description: The date when the Order was first created in CDot
+      - name: trial_start_date 
+        description: The date when the trial period begins for a product rate plan
+      - name: trial_end_date
+        description: The expiration date of the trial Order, which is usually 30 days from the trial start date
+
+
+  - name: fct_trial_latest
+    description: '{{ doc("fct_trial_latest") }}'
+    columns:
+      - name: trial_latest_pk
+        description: The primary key created by hashing `order_id` and `namespace_id` that uniquely represents a row, cannot be used as a join key.
+        tests:
+          - not_null
+          - unique
+      - name: internal_order_id
+        description: The unique ID of a CDot Order. It can only be used as a join key to join to CDot Orders. It cannot be used to join to Zuora Orders as this is a system specific key generated by CDot.
+        tests:
+          - not_null
+      - name: dim_namespace_id
+        description: The id of the namespace related to the latest trial order. 
+      - name: internal_customer_id
+        description: The unique ID of a customer. It can be used as a Join key to join to CDot Customers only. It cannot be used to join to Gitlab.com Users as this is a system specific key generated by CDot
+      - name: user_id
+        description: The unique ID of a gitlab user from gitlab.com associated with the latest trial order
+      - name: subscription_name
+        description: The unique name of the first subscription associated with the Order from Zuora. It can be used to join back to Zuora Subscriptions
+      - name: subscription_name_slugify
+        description: The name of the first subscription associated with the Order from Zuora
+      - name: is_gitlab_user
+        description: Boolean flag to indicate if the user has an associated user id
+      - name: user_created_at
+        description: The latest date when the user was created at gitlab.com portal
+      - name: namespace_created_at
+        description: '{{ doc("namespace_created_at") }}'
+      - name: namespace_type 
+        description: '{{ doc("namespace_type") }}'
+      - name: is_trial_converted
+        description: '{{ doc("is_trial_converted") }}'
+      - name: subscription_start_date
+        description: The date when the subscription term starts. This date is the same as the start date of the original term, which isn't necessarily the start date of the current or new term
+      - name: country
+        description: The country selected by the User during registration
+      - name: company_size
+        description: The size of the company as provided by the user during registration
+      - name: order_created_at
+        description: The date when the Order was first created in CDot
+      - name: trial_start_date
+        description: The date when the trial period begins for a product rate plan
+      - name: trial_end_date
+        description: The expiration date of the trial Order, which is usually 30 days from the trial start date
+
+  - name: dim_package
+    description: '{{ doc("dim_package")}}'
+    columns:
+      - name: dim_package_sk
+        description: '{{ ("dim_package_sk") }}'
+        tests:
+          - not_null
+          - unique
+      - name: package_id
+        description: '{{ ("package_id") }}'
+      - name: dim_project_id
+        description: '{{ ("dim_project_id") }}'
+      - name: dim_namespace_id
+        description: '{{ ("dim_namespace_id") }}'
+      - name: ultimate_parent_namespace_id
+        description: '{{ ("dim_ultimate_parent_namespace_id") }}'
+      - name: dim_plan_id
+        description: '{{ ("dim_plan_id") }}'
+      - name: creator_id
+        description: '{{ ("dim_user_id") }}'
+      - name: package_version
+        description: '{{ ("package_version") }}'
+      - name: package_type
+        description: '{{ ("package_type") }}'
+      - name: created_at
+        description: '{{ ("package_created_at") }}'
+      - name: updated_at
+        description: '{{ ("package_updated_at") }}'
+
+  - name: dim_integration
+    description: '{{ ("dim_integration") }}'
+    columns:
+      - name: dim_integration_sk
+        description: '{{ doc("dim_integration_sk") }}'
+        tests:
+          - not_null
+          - unique
+      - name: integration_id
+        description: '{{ doc("integration_id") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id") }}'
+      - name: ultimate_parent_namespace_id
+        description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+      - name: dim_plan_id
+        description: '{{ doc("dim_plan_id") }}'
+      - name: integration_type
+        description: '{{ doc("integration_type") }}'
+      - name: integration_category
+        description: '{{ doc("integration_category") }}'
+      - name: is_active
+        description: '{{ doc("integration_is_active") }}'
+      - name: created_at
+        description: '{{ doc("integration_created_at") }}'
+      - name: updated_at
+        description: '{{ doc("integration_updated_at") }}'
+
+  - name: dim_requirement
+    description: '{{ doc("dim_requirement") }}'
+    columns:
+      - name: dim_requirement_sk
+        description: '{{ doc("dim_requirement_sk") }}'
+        tests:
+          - not_null
+          - unique
+      - name: requirement_id
+        description: '{{ doc("requirement_id") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id") }}'
+      - name: ultimate_parent_namespace_id
+        description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+      - name: dim_plan_id
+        description: '{{ doc("dim_plan_id") }}'
+      - name: author_id
+        description: '{{ doc("dim_user_id") }}'
+      - name: created_date_id
+        description: '{{ doc("created_date_id") }}'
+      - name: requirement_internal_id
+        description: '{{ doc("requirement_internal_id") }}'
+      - name: requirement_state
+        description: '{{ doc("requirement_state") }}'
+      - name: created_at
+        description: '{{ doc("requirement_created_at") }}'
+      - name: updated_at
+        description: '{{ doc("requirement_updated_at") }}'
+
+  - name: dim_snippet
+    description: '{{ doc("dim_snippet") }}'
+    columns:
+      - name: dim_snippet_sk
+        description: '{{ doc("dim_snippet_sk") }}'
+        tests:
+          - not_null
+          - unique
+      - name: snippet_id
+        description: '{{ doc("snippet_id") }}'
+      - name: author_id
+        description: '{{ doc("dim_user_id") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id") }}'
+      - name: ultimate_parent_namespace_id
+        description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+      - name: dim_plan_id
+        description: '{{ doc("dim_plan_id") }}'
+      - name: snippet_type
+        description: '{{ doc("snippet_type") }}'
+      - name: visibility_level
+        description: '{{ doc("visibility_level") }}'
+      - name: created_at
+        description: '{{ doc("snippet_created_at") }}'
+      - name: updated_at
+        description: '{{ doc("snippet_updated_at") }}'

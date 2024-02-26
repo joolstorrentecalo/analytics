@@ -9,6 +9,7 @@ WITH source AS (
     SELECT DISTINCT
       id::NUMBER                                              AS order_id,
       customer_id::NUMBER                                     AS customer_id,
+      billing_account_id::NUMBER                              AS billing_account_id,
       product_rate_plan_id::VARCHAR                           AS product_rate_plan_id,
       subscription_id::VARCHAR                                AS subscription_id,
       subscription_name::VARCHAR                              AS subscription_name,
@@ -25,7 +26,8 @@ WITH source AS (
       last_extra_ci_minutes_sync_at::TIMESTAMP                AS last_extra_ci_minutes_sync_at,
       zuora_account_id::VARCHAR                               AS zuora_account_id,
       increased_billing_rate_notified_at::TIMESTAMP           AS increased_billing_rate_notified_at,
-      source::VARCHAR                                         AS order_source
+      source::VARCHAR                                         AS order_source,
+      _task_instance::VARCHAR                                 AS task_instance
     FROM source
 
 )

@@ -7,8 +7,7 @@ WITH source AS (
 
     SELECT 
       pipeline_id::NUMBER  AS ci_pipeline_id,
-      chat_name_id::NUMBER AS chat_name_id,
-      response_url          AS response_url
+      chat_name_id::NUMBER AS chat_name_id
 
     FROM source
 

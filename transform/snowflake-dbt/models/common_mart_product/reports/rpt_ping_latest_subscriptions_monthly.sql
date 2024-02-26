@@ -4,7 +4,6 @@
 ) }}
 
 {{ simple_cte([
-    ('metric_opt_in', 'rpt_ping_metric_first_last_versions'),
     ('mart_charge', 'mart_charge'),
     ('dim_charge', 'dim_charge'),
     ('fct_charge', 'fct_charge'),
@@ -29,12 +28,14 @@ Determine latest version for each subscription to determine if the potential met
       ping_created_date_month           AS ping_created_date_month,
       dim_installation_id               AS dim_installation_id,
       latest_subscription_id            AS latest_subscription_id,
+      ping_delivery_type                AS ping_delivery_type,
+      ping_deployment_type              AS ping_deployment_type,
       ping_edition                      AS ping_edition,
       version_is_prerelease             AS version_is_prerelease,
       major_minor_version_id            AS major_minor_version_id,
       instance_user_count               AS instance_user_count
   FROM mart_ping_instance_metric_monthly
-      WHERE ping_delivery_type = 'Self-Managed'
+      WHERE ping_deployment_type IN ('Self-Managed', 'Dedicated')
       QUALIFY ROW_NUMBER() OVER (
             PARTITION BY ping_created_date_month, latest_subscription_id, dim_installation_id
               ORDER BY major_minor_version_id DESC) = 1
@@ -49,12 +50,14 @@ Deduping the mart to ensure instance_user_count isn't counted 2+ times
         ping_created_date_month           AS ping_created_date_month,
         dim_installation_id               AS dim_installation_id,
         latest_subscription_id            AS latest_subscription_id,
+        ping_delivery_type                AS ping_delivery_type,
+        ping_deployment_type              AS ping_deployment_type,
         ping_edition                      AS ping_edition,
         version_is_prerelease             AS version_is_prerelease,
         major_minor_version_id            AS major_minor_version_id,
         MAX(instance_user_count)          AS instance_user_count
     FROM subscriptions_w_versions
-      {{ dbt_utils.group_by(n=6)}}
+      {{ dbt_utils.group_by(n=8)}}
 /*
 Get the count of pings each month per subscription_name_slugify
 */
@@ -92,6 +95,10 @@ Aggregate mart_charge information (used as the basis of truth), this gets rid of
   SELECT
        dim_date.date_actual               AS arr_month,
        fct_charge.dim_subscription_id     AS dim_subscription_id,
+       dim_product_detail.product_delivery_type
+                                          AS product_delivery_type,
+       dim_product_detail.product_deployment_type
+                                          AS product_deployment_type,
        SUM(quantity)                      AS licensed_user_count,
        IFF(SUM(arr) > 0, TRUE, FALSE)     AS is_paid_subscription
      FROM fct_charge
@@ -105,11 +112,14 @@ Aggregate mart_charge information (used as the basis of truth), this gets rid of
        ON fct_charge.dim_subscription_id = dim_subscription.dim_subscription_id
      INNER JOIN dim_product_detail
        ON fct_charge.dim_product_detail_id = dim_product_detail.dim_product_detail_id
-      WHERE dim_product_detail.product_delivery_type = 'Self-Managed'
+      WHERE dim_product_detail.product_deployment_type IN ('Self-Managed', 'Dedicated')
         AND subscription_status IN ('Active','Cancelled')
         AND dim_product_detail.product_tier_name != 'Storage'
+        -- filter added to fix https://gitlab.com/gitlab-data/analytics/-/issues/19656
+        AND NOT (dim_product_detail.product_rate_plan_name = 'True-Up (Annual) - Dedicated - Ultimate'
+                AND arr = 0)
         AND DATE_TRUNC('MONTH', CURRENT_DATE) > arr_month
-      {{ dbt_utils.group_by(n=2)}}
+      {{ dbt_utils.group_by(n=4)}}
 
 /*
 Join mart_charge information bringing in mart_charge subscriptions which DO NOT appear in ping fact data
@@ -121,6 +131,8 @@ Join mart_charge information bringing in mart_charge subscriptions which DO NOT 
     mart_charge_cleaned.arr_month                                                                           AS ping_created_date_month,
     joined_subscriptions.dim_installation_id                                                                AS dim_installation_id,
     mart_charge_cleaned.dim_subscription_id                                                                 AS latest_subscription_id,
+    IFNULL(joined_subscriptions.ping_delivery_type, mart_charge_cleaned.product_delivery_type)              AS ping_delivery_type,
+    IFNULL(joined_subscriptions.ping_deployment_type, mart_charge_cleaned.product_deployment_type)          AS ping_deployment_type,
     joined_subscriptions.ping_edition                                                                       AS ping_edition,
     joined_subscriptions.version_is_prerelease                                                              AS version_is_prerelease,
     joined_subscriptions.major_minor_version_id                                                             AS major_minor_version_id,
@@ -133,6 +145,7 @@ Join mart_charge information bringing in mart_charge subscriptions which DO NOT 
     LEFT OUTER JOIN joined_subscriptions
   ON joined_subscriptions.latest_subscription_id = mart_charge_cleaned.dim_subscription_id
       AND joined_subscriptions.ping_created_date_month = mart_charge_cleaned.arr_month
+      AND joined_subscriptions.ping_deployment_type = mart_charge_cleaned.product_deployment_type
 
 /*
 Grab the latest values to join to missing subs
@@ -143,10 +156,11 @@ Grab the latest values to join to missing subs
     SELECT
         dim_subscription_id,
         is_paid_subscription,
+        product_deployment_type,
         licensed_user_count
     FROM mart_charge_cleaned
         QUALIFY ROW_NUMBER() OVER (
-              PARTITION BY dim_subscription_id
+              PARTITION BY dim_subscription_id, product_deployment_type
               ORDER BY arr_month DESC) = 1
 
 /*
@@ -159,6 +173,8 @@ This CTE below grabs the missing installation/subs for each month missing from a
         ping_created_date_month                 AS ping_created_date_month,
         dim_installation_id                     AS dim_installation_id,
         latest_subscription_id                  AS latest_subscription_id,
+        ping_delivery_type                      AS ping_delivery_type,
+        ping_deployment_type                    AS ping_deployment_type,
         ping_edition                            AS ping_edition,
         version_is_prerelease                   AS version_is_prerelease,
         MAX(major_minor_version_id)             AS major_minor_version_id,
@@ -168,7 +184,7 @@ This CTE below grabs the missing installation/subs for each month missing from a
         WHERE is_last_ping_of_month = TRUE
           AND CONCAT(latest_subscription_id, to_varchar(ping_created_date_month)) NOT IN
             (SELECT DISTINCT(CONCAT(latest_subscription_id, to_varchar(ping_created_date_month))) FROM arr_counts_joined)
-          {{ dbt_utils.group_by(n=5)}}
+          {{ dbt_utils.group_by(n=7)}}
 
 /*
 Join to capture missing metrics, uses the last value found for these in fct_charge
@@ -184,6 +200,7 @@ Join to capture missing metrics, uses the last value found for these in fct_char
     FROM missing_subs
         INNER JOIN latest_mart_charge_values
     ON missing_subs.latest_subscription_id = latest_mart_charge_values.dim_subscription_id
+    AND missing_subs.ping_deployment_type = latest_mart_charge_values.product_deployment_type
 
 ), latest_subs_unioned AS (
 
@@ -191,6 +208,8 @@ Join to capture missing metrics, uses the last value found for these in fct_char
         ping_created_date_month,
         dim_installation_id,
         latest_subscription_id,
+        ping_delivery_type,
+        ping_deployment_type,
         ping_edition,
         version_is_prerelease,
         major_minor_version_id,
@@ -207,6 +226,8 @@ Join to capture missing metrics, uses the last value found for these in fct_char
         ping_created_date_month,
         dim_installation_id,
         latest_subscription_id,
+        ping_delivery_type,
+        ping_deployment_type,
         ping_edition,
         version_is_prerelease,
         major_minor_version_id,
@@ -220,10 +241,12 @@ Join to capture missing metrics, uses the last value found for these in fct_char
 ), final AS (
 
     SELECT
-        {{ dbt_utils.surrogate_key(['ping_created_date_month', 'latest_subscription_id', 'dim_installation_id', 'ping_edition', 'version_is_prerelease']) }}                      AS ping_latest_subscriptions_monthly_id,
+        {{ dbt_utils.generate_surrogate_key(['ping_created_date_month', 'latest_subscription_id', 'dim_installation_id', 'ping_edition', 'version_is_prerelease']) }}             AS ping_latest_subscriptions_monthly_id,
         latest_subs_unioned.ping_created_date_month                                                                                                                               AS ping_created_date_month,
         latest_subs_unioned.dim_installation_id                                                                                                                                   AS dim_installation_id,
         latest_subs_unioned.latest_subscription_id                                                                                                                                AS latest_subscription_id,
+        latest_subs_unioned.ping_delivery_type                                                                                                                                    AS ping_delivery_type,
+        latest_subs_unioned.ping_deployment_type                                                                                                                                  AS ping_deployment_type,
         latest_subs_unioned.ping_edition                                                                                                                                          AS ping_edition,
         latest_subs_unioned.version_is_prerelease                                                                                                                                 AS version_is_prerelease,
         latest_subs_unioned.major_minor_version_id                                                                                                                                AS major_minor_version_id,
@@ -241,7 +264,7 @@ Join to capture missing metrics, uses the last value found for these in fct_char
  {{ dbt_audit(
      cte_ref="final",
      created_by="@icooper-acp",
-     updated_by="@jpeguero",
+     updated_by="@chrissharp",
      created_date="2022-05-05",
-     updated_date="2022-12-15"
+     updated_date="2024-02-21"
  ) }}

@@ -120,7 +120,7 @@ WITH dim_crm_account AS (
 ), final AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['retention_subs.dim_parent_crm_account_id', 'product_category', 'retention_month']) }} AS primary_key,
+      {{ dbt_utils.generate_surrogate_key(['retention_subs.dim_parent_crm_account_id', 'product_category', 'retention_month']) }} AS primary_key,
       retention_subs.dim_parent_crm_account_id,
       dim_crm_account.crm_account_name          AS parent_crm_account_name,
       product_category,

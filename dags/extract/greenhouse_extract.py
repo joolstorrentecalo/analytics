@@ -32,7 +32,6 @@ pod_env_vars = {
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -52,7 +51,10 @@ container_cmd = f"""
 
 # Create the DAG
 dag = DAG(
-    "greenhouse_extract", default_args=default_args, schedule_interval="0 22 */1 * *"
+    "greenhouse_extract",
+    default_args=default_args,
+    schedule_interval="0 22 */1 * *",
+    catchup=False,
 )
 
 # Task 1
@@ -71,8 +73,8 @@ greenhouse_run = KubernetesPodOperator(
         SNOWFLAKE_LOAD_PASSWORD,
     ],
     env_vars=pod_env_vars,
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     arguments=[container_cmd],
     dag=dag,
 )

@@ -1,3 +1,8 @@
+{{ config({
+    "tags": ["true_up"]
+    })
+}}
+
 WITH base_all_time AS (
   
   SELECT DISTINCT 

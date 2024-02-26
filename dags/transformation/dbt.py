@@ -41,6 +41,8 @@ from kube_secrets import (
     SNOWFLAKE_STATIC_DATABASE,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -52,7 +54,6 @@ pull_commit_hash = """export GIT_COMMIT="{{ var.value.dbt_hash }}" """
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -94,6 +95,7 @@ dag = DAG(
     description="This DAG is responsible for doing incremental model refresh",
     default_args=default_args,
     schedule_interval="45 8 * * *",
+    catchup=False,
 )
 dag.doc_md = __doc__
 
@@ -142,6 +144,8 @@ dbt_non_product_models_task = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_non_product_models_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -164,6 +168,8 @@ dbt_product_models_task = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_product_models_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -187,6 +193,8 @@ dbt_test = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_test_cmd],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -207,6 +215,8 @@ dbt_results = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_results_cmd],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -228,6 +238,8 @@ dbt_workspaces = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_workspaces_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
@@ -249,10 +261,12 @@ dbt_workspaces_xl = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_workspaces_xl_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 
-# dbt-workspaces
+# dbt-workspaces-test
 dbt_workspaces_test_command = f"""
     {pull_commit_hash} &&
     {dbt_install_deps_cmd} &&
@@ -269,6 +283,8 @@ dbt_workspaces_test = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_workspaces_test_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 

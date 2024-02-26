@@ -7,7 +7,7 @@ WITH source AS (
 ), renamed AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['plan_id'])}} AS dim_plan_sk,
+      {{ dbt_utils.generate_surrogate_key(['plan_id'])}} AS dim_plan_sk,
       plan_id AS dim_plan_id,
       --Create calculated field to conform legacy silver and gold plan ids to premium and ultimate plan ids.
       CASE 

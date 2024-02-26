@@ -9,12 +9,28 @@
 final AS (
 
   SELECT
+    -- Surrogate Key
+    dim_namespace_sk,
+
+    -- Natural Key
+    namespace_id,
+
+    -- Legacy Key
     dim_namespace_id,
+
+    -- Foreign Keys
+    owner_id,
+    creator_id,
+    ultimate_parent_namespace_id,
+    parent_id,
+    dim_product_tier_id,
+
+    -- Attributes
     namespace_is_internal,
     namespace_is_ultimate_parent,
     namespace_name,
+    namespace_name_unmasked,
     namespace_path,
-    owner_id,
     namespace_type,
     has_avatar,
     created_at,
@@ -30,7 +46,6 @@ final AS (
     ldap_sync_last_successful_update_at,
     ldap_sync_last_sync_at,
     lfs_enabled,
-    parent_id,
     shared_runners_enabled,
     shared_runners_minutes_limit,
     extra_shared_runners_minutes_limit,
@@ -39,13 +54,10 @@ final AS (
     two_factor_grace_period,
     project_creation_level,
     push_rule_id,
-    creator_id,
     namespace_creator_is_blocked,
-    ultimate_parent_namespace_id,
     gitlab_plan_id,
     gitlab_plan_title,
     gitlab_plan_is_paid,
-    dim_product_tier_id,
     namespace_member_count  AS current_member_count,
     namespace_project_count AS current_project_count,
     has_code_suggestions_enabled
@@ -57,7 +69,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@snalamaru",
-    updated_by="@cbraza",
+    updated_by="@michellecooper",
     created_date="2020-12-29",
-    updated_date="2023-05-18"
+    updated_date="2024-01-22"
 ) }}

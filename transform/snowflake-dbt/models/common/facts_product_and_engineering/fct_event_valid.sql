@@ -98,6 +98,7 @@ fct_event_w_flags AS (
 
   SELECT 
     fct_event_valid.event_pk,
+    fct_event_valid.event_id,
     fct_event_valid.dim_event_date_id,
     fct_event_valid.dim_ultimate_parent_namespace_id,
     fct_event_valid.dim_project_id,
@@ -141,6 +142,9 @@ gitlab_dotcom_fact AS (
   SELECT
     --Primary Key
     event_pk,
+
+    --Natural Key
+    event_id,
     
     --Foreign Keys
     dim_event_date_id,
@@ -185,5 +189,5 @@ gitlab_dotcom_fact AS (
     created_by="@iweeks",
     updated_by="@michellecooper",
     created_date="2022-04-09",
-    updated_date="2023-05-12"
+    updated_date="2023-07-21"
 ) }}

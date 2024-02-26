@@ -23,7 +23,7 @@ WITH source AS (
         credits_flat.value['name']::VARCHAR     AS credit_description,
         credits_flat.value['amount']::FLOAT * source.occurrence_multiplier AS credit_amount,
         source.uploaded_at                      AS uploaded_at,
-        {{ dbt_utils.surrogate_key([
+        {{ dbt_utils.generate_surrogate_key([
             'source_primary_key',
             'credit_description',
             'credits_flat.value'] ) }}          AS credit_pk

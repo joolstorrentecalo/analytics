@@ -34,7 +34,6 @@ pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -76,6 +75,7 @@ dag = DAG(
     "ds_propensity_to_purchase_free",
     default_args=default_args,
     schedule_interval="0 6 2 * *",
+    catchup=False,
 )
 
 ptpf_scoring_command = f"""

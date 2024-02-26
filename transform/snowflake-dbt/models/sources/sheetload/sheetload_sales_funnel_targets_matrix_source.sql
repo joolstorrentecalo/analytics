@@ -29,3 +29,26 @@ WITH source AS (
 
 SELECT *
 FROM renamed
+
+UNION
+
+-- Added new logo KPI so it is easier to relate fct_sales_funnel_target_daily and fct_sales_funnel_actual
+-- This is because for the actual values there are two flags, one for Deals and another for New Logos
+-- Issue that introduced this methodology: https://gitlab.com/gitlab-data/analytics/-/issues/18838
+SELECT
+    'New Logos' AS kpi_name,
+    month,
+    opportunity_source,
+    order_type,
+    area,
+    allocated_target,
+    user_segment,
+    user_geo,
+    user_region,
+    user_area,
+    user_business_unit,
+    user_role_type,
+    last_updated_at
+FROM renamed
+WHERE kpi_name = 'Deals'
+    AND order_type = '1. New - First Order'

@@ -54,11 +54,11 @@ fct AS (
 
   SELECT 
     -- Primary Key
-    {{ dbt_utils.surrogate_key(['combine.share_id','combine.share_source','valid_from']) }} AS group_share_pk,
+    {{ dbt_utils.generate_surrogate_key(['combine.share_id','combine.share_source','valid_from']) }} AS group_share_pk,
 
     -- Foreign Keys
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['combine.shared_namespace_id'])) }} AS dim_shared_namespace_sk,
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['combine.received_namespace_id'])) }} AS dim_received_namespace_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['combine.shared_namespace_id'])) }} AS dim_shared_namespace_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['combine.received_namespace_id'])) }} AS dim_received_namespace_sk,
 
     -- Legacy Keys
     combine.share_id,

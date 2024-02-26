@@ -15,7 +15,8 @@ LOGIN_NAME = $loginname
 DISPLAY_NAME = $username 
 FIRST_NAME = $firstname
 LAST_NAME = $lastname 
-EMAIL = $email;
+EMAIL = $email
+DEFAULT_WAREHOUSE = 'DEV_XS';
 
 CREATE ROLE identifier($username) ;
 GRANT ROLE identifier($username) TO ROLE "SYSADMIN";

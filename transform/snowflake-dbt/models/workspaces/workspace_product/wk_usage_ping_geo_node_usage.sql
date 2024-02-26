@@ -34,7 +34,7 @@ recursive => true)
 )
 
 SELECT
-  {{ dbt_utils.surrogate_key(['flattened.dim_ping_instance_id', 'flattened.path']) }} AS instance_path_id,
+  {{ dbt_utils.generate_surrogate_key(['flattened.dim_ping_instance_id', 'flattened.path']) }} AS instance_path_id,
   flattened.dim_instance_id AS instance_id,
   flattened.dim_ping_instance_id AS ping_id,
   flattened.original_edition AS edition,

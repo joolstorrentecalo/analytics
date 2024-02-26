@@ -5,15 +5,16 @@
     ('dim_alliance_type', 'dim_alliance_type_scd'),
     ('dim_sales_qualified_source', 'dim_sales_qualified_source'),
     ('dim_channel_type', 'dim_channel_type'),
-    ('dim_partner_category', 'dim_partner_category')
+    ('dim_partner_category', 'dim_partner_category'),
+    ('dim_sales_funnel_kpi', 'dim_sales_funnel_kpi')
 ]) }}
 
 , final AS (
 
     SELECT
       fct_sales_funnel_target.sales_funnel_partner_alliance_target_id,
-      fct_sales_funnel_target.first_day_of_month      AS target_month,
-      fct_sales_funnel_target.kpi_name,
+      fct_sales_funnel_target.first_day_of_month        AS target_month,
+      dim_sales_funnel_kpi.sales_funnel_kpi_name        AS kpi_name,
       dim_crm_user_hierarchy.crm_user_sales_segment,
       dim_crm_user_hierarchy.crm_user_sales_segment_grouped,
       dim_crm_user_hierarchy.crm_user_business_unit,
@@ -43,13 +44,15 @@
       ON fct_sales_funnel_target.dim_crm_user_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_partner_category
       ON fct_sales_funnel_target.dim_partner_category_id = dim_partner_category.dim_partner_category_id
+    LEFT JOIN dim_sales_funnel_kpi
+      ON fct_sales_funnel_target.dim_sales_funnel_kpi_sk = dim_sales_funnel_kpi.dim_sales_funnel_kpi_sk
 
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@jpeguero",
-    updated_by="@michellecooper",
+    updated_by="@jpeguero",
     created_date="2021-04-08",
-    updated_date="2023-03-10",
+    updated_date="2023-10-27",
   ) }}

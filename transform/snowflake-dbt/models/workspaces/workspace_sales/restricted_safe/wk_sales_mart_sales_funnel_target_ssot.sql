@@ -28,38 +28,19 @@
       -- business unit should show up here
       -- Business Unit (X-Ray 1st hierarchy)
       -- will be replaced with the actual field
-      CASE
-        WHEN LOWER(crm_user_sales_segment) IN ('large','pubsec','all')  -- "all" segment is PubSec for ROW
-            THEN 'ENTG'
-        WHEN LOWER(crm_user_region) IN ('latam','meta')
-            OR LOWER(crm_user_geo) IN ('apac')
-            THEN 'ENTG'
-        WHEN LOWER(crm_user_sales_segment) IN ('mid-market','smb')
-            THEN 'COMM'
-        WHEN LOWER(crm_user_sales_segment) = 'jihu' THEN 'JiHu'
-        ELSE 'Other'
-      END                               AS crm_user_business_unit,
+    crm_user_business_unit,
 
     CASE
         WHEN LOWER(crm_user_business_unit) = 'entg'
           THEN crm_user_geo
-        WHEN
-          LOWER(crm_user_business_unit) = 'comm'
-          AND
-            (
-            LOWER(crm_user_sales_segment) = 'smb'
-            AND LOWER(crm_user_geo) = 'amer'
-            AND LOWER(crm_user_area) = 'lowtouch'
-            )
-          THEN 'AMER Low-Touch'
+        -- H2 update
+        WHEN LOWER(crm_user_business_unit) = 'japan'
+          THEN 'Japan'      
         WHEN
           LOWER(crm_user_business_unit) = 'comm'
           AND
             (
             LOWER(crm_user_sales_segment) = 'mid-market'
-            AND (LOWER(crm_user_geo) = 'amer'
-                     OR LOWER(crm_user_geo) = 'emea')
-            AND LOWER(crm_user_area) != 'norben'
             AND LOWER(order_type_name) = '1. new - first order'
             )
           THEN 'MM First Orders'  --mid-market FO(?)
@@ -72,98 +53,47 @@
           AND LOWER(crm_user_geo) = 'amer'
           THEN 'AMER'
         ELSE 'Other'
-      END AS crm_user_sub_business_unit,
+        END AS crm_user_sub_business_unit,
 
       -- Division (X-Ray 3rd hierarchy)
-      CASE
+      CASE 
         WHEN LOWER(crm_user_business_unit) = 'entg'
           THEN crm_user_region
-
-
+        WHEN LOWER(crm_user_business_unit) = 'japan'
+          THEN 'Japan'   
         WHEN
           LOWER(crm_user_business_unit) = 'comm'
-          AND LOWER(crm_user_sales_segment) = 'mid-market'
-          AND LOWER(crm_user_area) != 'norben'
-          AND LOWER(order_type_name) = '1. new - first order'
+          AND LOWER(crm_user_sales_segment) = 'mid-market'         
+          AND LOWER(crm_user_sub_business_unit) = 'mm first orders'
           THEN 'MM First Orders'
-        WHEN
+        WHEN 
           LOWER(crm_user_business_unit) = 'comm'
-          AND (LOWER(crm_user_sub_business_unit) = 'amer'
-                   OR LOWER(crm_user_sub_business_unit) = 'emea')
-          AND (LOWER(order_type_name) != '1. new - first order'
-                    OR LOWER(crm_user_area) = 'norben')
+          AND LOWER(crm_user_sub_business_unit) != 'mm first orders'
           AND LOWER(crm_user_sales_segment) = 'mid-market'
           THEN 'Mid-Market'
         WHEN
           LOWER(crm_user_business_unit) = 'comm'
-          AND (LOWER(crm_user_sub_business_unit) = 'amer'
-                OR LOWER(crm_user_sub_business_unit) = 'emea')
+          AND LOWER(crm_user_sub_business_unit) != 'mm first orders'
           AND LOWER(crm_user_sales_segment) = 'smb'
           THEN 'SMB'
-        WHEN
-          LOWER(crm_user_business_unit) = 'comm'
-            AND LOWER(crm_user_sales_segment) = 'smb'
-          AND LOWER(crm_user_sub_business_unit) = 'amer low-touch'
-          THEN 'AMER Low-Touch'
         ELSE 'Other'
       END AS crm_user_division,
 
-       -- ASM (X-Ray 4th hierarchy): definition pending
+      -- ASM (X-Ray 4th hierarchy): definition pending
       CASE
-        WHEN
+        WHEN LOWER(crm_user_business_unit) = 'japan'
+          THEN crm_user_area 
+        WHEN 
           LOWER(crm_user_business_unit) = 'entg'
-          AND LOWER(crm_user_sub_business_unit) = 'amer'
-          THEN crm_user_area
-        WHEN
-          LOWER(crm_user_business_unit) = 'entg'
-          AND LOWER(crm_user_sub_business_unit) = 'emea'
-          AND (
-              LOWER(crm_user_division) = 'dach'
-                OR LOWER(crm_user_division) = 'neur'
-                OR LOWER(crm_user_division) = 'seur'
-              )
-          THEN crm_user_area
-        WHEN
-          LOWER(crm_user_business_unit) = 'entg'
-          AND LOWER(crm_user_sub_business_unit) = 'emea'
-          AND LOWER(crm_user_division) = 'meta'
-          THEN crm_user_sales_segment
-        WHEN
-          LOWER(crm_user_business_unit) = 'entg'
-          AND LOWER(crm_user_sub_business_unit) = 'apac'
-          THEN crm_user_area
-        WHEN
-          LOWER(crm_user_business_unit) = 'entg'
-          AND LOWER(crm_user_sub_business_unit) = 'pubsec'
-          AND LOWER(crm_user_division) != 'sled'
-          THEN crm_user_area
-        WHEN
-          LOWER(crm_user_business_unit) = 'entg'
-          AND LOWER(crm_user_sub_business_unit) = 'pubsec'
-          AND LOWER(crm_user_division) = 'sled'
-          THEN crm_user_region
-
-        WHEN
+          THEN crm_user_area  
+        WHEN 
           LOWER(crm_user_business_unit) = 'comm'
-          AND (LOWER(crm_user_sub_business_unit) = 'amer'
-                   OR LOWER(crm_user_sub_business_unit) = 'emea')
-          THEN crm_user_area
-        WHEN
-          LOWER(crm_user_business_unit) = 'comm'
-          AND LOWER(crm_user_sub_business_unit) = 'mm first orders'
+          AND LOWER(crm_user_division) = 'mm first orders'
           THEN crm_user_geo
         WHEN
           LOWER(crm_user_business_unit) = 'comm'
-            AND LOWER(crm_user_sales_segment) = 'smb'
-            AND LOWER(crm_user_sub_business_unit) = 'amer low-touch'
-            AND LOWER(order_type_name) = '1. new - first order'
-          THEN 'LowTouch FO'
-        WHEN
-          LOWER(crm_user_business_unit) = 'comm'
-            AND LOWER(crm_user_sales_segment) = 'smb'
-            AND LOWER(crm_user_sub_business_unit) = 'amer low-touch'
-            AND LOWER(order_type_name) != '1. new - first order'
-          THEN 'LowTouch Pool'
+          AND LOWER(crm_user_division) IN ('smb','mid-market')
+          THEN crm_user_area
         ELSE 'Other'
       END AS crm_user_asm,
 
@@ -189,7 +119,7 @@
     -- FROM prod.restricted_safe_common_mart_sales.mart_sales_funnel_target
     GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
 
-  ), mart_sales_funnel_target_expanded AS (
+    ), mart_sales_funnel_target_expanded AS (
 
     SELECT
       funnel_target.*,
@@ -219,7 +149,7 @@
 
     FROM mart_sales_funnel_target_prep AS funnel_target
 
-  ), final AS (
+  ), fy24_targets AS (
 
     SELECT
       funnel_target.*,
@@ -268,6 +198,176 @@
       ON funnel_target.report_bu_subbu_division_asm_user_segment_geo_region_area_sqs_ot = agg_demo_keys.report_bu_subbu_division_asm_user_segment_geo_region_area_sqs_ot
     WHERE LOWER(funnel_target.deal_group) LIKE ANY ('%growth%','%new%')
 
+), fy25_placeholders AS (
+
+      SELECT fy24_targets.sales_funnel_target_id,
+             DATEADD(month,12,fy24_targets.target_month) AS target_month,
+             fy24_targets.kpi_name,
+             fy24_targets.crm_user_business_unit,
+             fy24_targets.crm_user_sub_business_unit,
+             fy24_targets.crm_user_division,
+             fy24_targets.crm_user_asm,
+             fy24_targets.crm_user_sales_segment,
+             fy24_targets.crm_user_sales_segment_grouped,
+             fy24_targets.crm_user_geo,
+             fy24_targets.crm_user_region,
+             fy24_targets.crm_user_area,
+             fy24_targets.crm_user_sales_segment_region_grouped,
+             fy24_targets.order_type_name,
+             fy24_targets.order_type_grouped,
+             fy24_targets.sales_qualified_source_name,
+             fy24_targets.sales_qualified_source_grouped,
+             fy24_targets.created_by,
+             fy24_targets.updated_by,
+             fy24_targets.model_created_date,
+             fy24_targets.model_updated_date,
+             fy24_targets.dbt_updated_at,
+             fy24_targets.dbt_created_at,
+             CASE
+                WHEN LOWER(fy24_targets.crm_user_business_unit) = 'entg'
+                    THEN fy24_targets.allocated_target
+                WHEN LOWER(fy24_targets.crm_user_business_unit) = 'comm'
+                    THEN fy24_targets.allocated_target
+                 ELSE fy24_targets.allocated_target
+             END                                                 AS allocated_target,
+             fy24_targets.deal_group,
+             fy24_targets.sales_qualified_source,
+             fy24_targets.report_bu_subbu_division_asm_user_segment_geo_region_area_sqs_ot,
+
+             fy25_date.fiscal_quarter_name_fy  AS target_fiscal_quarter_name,
+             DATEADD(month,3,fy24_targets.target_fiscal_quarter_date) AS target_fiscal_quarter_date,
+             2025 AS target_fiscal_year,
+
+             -- FY23 keys
+             fy24_targets.key_segment,
+             fy24_targets.key_segment_sqs,
+             fy24_targets.key_segment_ot,
+             fy24_targets.key_segment_geo,
+             fy24_targets.key_segment_geo_sqs,
+             fy24_targets.key_segment_geo_ot,
+             fy24_targets.key_segment_geo_region,
+             fy24_targets.key_segment_geo_region_sqs,
+             fy24_targets.key_segment_geo_region_ot,
+             fy24_targets.key_segment_geo_region_area,
+             fy24_targets.key_segment_geo_region_area_sqs,
+             fy24_targets.key_segment_geo_region_area_ot,
+             fy24_targets.key_segment_geo_area,
+             fy24_targets.sales_team_cro_level,
+             fy24_targets.sales_team_rd_asm_level,
+             fy24_targets.sales_team_vp_level,
+             fy24_targets.sales_team_avp_rd_level,
+             fy24_targets.sales_team_asm_level,
+
+             -- JK 2023-02-06: FY24 keys
+             fy24_targets.key_sqs,
+             fy24_targets.key_ot,
+             fy24_targets.key_bu,
+             fy24_targets.key_bu_ot,
+             fy24_targets.key_bu_sqs,
+             fy24_targets.key_bu_subbu,
+             fy24_targets.key_bu_subbu_ot,
+             fy24_targets.key_bu_subbu_sqs,
+             fy24_targets.key_bu_subbu_division,
+             fy24_targets.key_bu_subbu_division_ot,
+             fy24_targets.key_bu_subbu_division_sqs,
+             fy24_targets.key_bu_subbu_division_asm
+      FROM fy24_targets
+      LEFT JOIN date_details fy25_date
+        ON fy25_date.date_actual = DATEADD(month,12,fy24_targets.target_month)
+      WHERE kpi_name IN ('Net ARR')
+        AND target_fiscal_year = 2024
+
+), fy25_placeholders_company AS (
+
+    SELECT fy24_targets.sales_funnel_target_id,
+             DATEADD(month,12,fy24_targets.target_month) AS target_month,
+             'Net ARR Company' AS kpi_name,
+             fy24_targets.crm_user_business_unit,
+             fy24_targets.crm_user_sub_business_unit,
+             fy24_targets.crm_user_division,
+             fy24_targets.crm_user_asm,
+             fy24_targets.crm_user_sales_segment,
+             fy24_targets.crm_user_sales_segment_grouped,
+             fy24_targets.crm_user_geo,
+             fy24_targets.crm_user_region,
+             fy24_targets.crm_user_area,
+             fy24_targets.crm_user_sales_segment_region_grouped,
+             fy24_targets.order_type_name,
+             fy24_targets.order_type_grouped,
+             fy24_targets.sales_qualified_source_name,
+             fy24_targets.sales_qualified_source_grouped,
+             fy24_targets.created_by,
+             fy24_targets.updated_by,
+             fy24_targets.model_created_date,
+             fy24_targets.model_updated_date,
+             fy24_targets.dbt_updated_at,
+             fy24_targets.dbt_created_at,
+             CASE
+                WHEN LOWER(fy24_targets.crm_user_business_unit) = 'entg'
+                    THEN fy24_targets.allocated_target
+                WHEN LOWER(fy24_targets.crm_user_business_unit) = 'comm'
+                    THEN fy24_targets.allocated_target
+                 ELSE fy24_targets.allocated_target
+             END                                                 AS allocated_target,
+             fy24_targets.deal_group,
+             fy24_targets.sales_qualified_source,
+             fy24_targets.report_bu_subbu_division_asm_user_segment_geo_region_area_sqs_ot,
+
+             fy25_date.fiscal_quarter_name_fy  AS target_fiscal_quarter_name,
+             DATEADD(month,3,fy24_targets.target_fiscal_quarter_date) AS target_fiscal_quarter_date,
+             2025 AS target_fiscal_year,
+
+             -- FY23 keys
+             fy24_targets.key_segment,
+             fy24_targets.key_segment_sqs,
+             fy24_targets.key_segment_ot,
+             fy24_targets.key_segment_geo,
+             fy24_targets.key_segment_geo_sqs,
+             fy24_targets.key_segment_geo_ot,
+             fy24_targets.key_segment_geo_region,
+             fy24_targets.key_segment_geo_region_sqs,
+             fy24_targets.key_segment_geo_region_ot,
+             fy24_targets.key_segment_geo_region_area,
+             fy24_targets.key_segment_geo_region_area_sqs,
+             fy24_targets.key_segment_geo_region_area_ot,
+             fy24_targets.key_segment_geo_area,
+             fy24_targets.sales_team_cro_level,
+             fy24_targets.sales_team_rd_asm_level,
+             fy24_targets.sales_team_vp_level,
+             fy24_targets.sales_team_avp_rd_level,
+             fy24_targets.sales_team_asm_level,
+
+             -- JK 2023-02-06: FY24 keys
+             fy24_targets.key_sqs,
+             fy24_targets.key_ot,
+             fy24_targets.key_bu,
+             fy24_targets.key_bu_ot,
+             fy24_targets.key_bu_sqs,
+             fy24_targets.key_bu_subbu,
+             fy24_targets.key_bu_subbu_ot,
+             fy24_targets.key_bu_subbu_sqs,
+             fy24_targets.key_bu_subbu_division,
+             fy24_targets.key_bu_subbu_division_ot,
+             fy24_targets.key_bu_subbu_division_sqs,
+             fy24_targets.key_bu_subbu_division_asm
+      FROM fy24_targets
+      LEFT JOIN date_details fy25_date
+        ON fy25_date.date_actual = DATEADD(month,12,fy24_targets.target_month)
+      WHERE kpi_name IN ('Net ARR')
+        AND target_fiscal_year = 2024
+)
+
+, final AS (
+
+    SELECT *
+    FROM fy24_targets
+    UNION
+    SELECT *
+    FROM fy25_placeholders
+    UNION
+    SELECT *
+    FROM fy25_placeholders_company
+    
 )
 
 SELECT *

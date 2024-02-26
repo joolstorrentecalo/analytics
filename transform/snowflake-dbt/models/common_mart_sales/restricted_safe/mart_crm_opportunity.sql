@@ -8,7 +8,7 @@
     ('dim_sales_qualified_source','dim_sales_qualified_source'),
     ('dim_order_type','dim_order_type'),
     ('dim_deal_path','dim_deal_path'),
-    ('fct_crm_opportunity','fct_crm_opportunity'),
+    ('fct_crm_opportunity','fct_crm_opportunity'), 
     ('dim_dr_partner_engagement', 'dim_dr_partner_engagement'),
     ('dim_alliance_type', 'dim_alliance_type_scd'),
     ('dim_channel_type', 'dim_channel_type'),
@@ -21,7 +21,7 @@
     SELECT
 
       --primary key
-      fct_crm_opportunity.dim_crm_opportunity_id,
+      fct_crm_opportunity.dim_crm_opportunity_id, 
       
       --surrogate keys
       dim_crm_account.dim_parent_crm_account_id,
@@ -113,6 +113,18 @@
       dim_sales_qualified_source.sales_qualified_source_grouped,
       dim_sales_qualified_source.sqs_bucket_engagement,
       dim_crm_opportunity.record_type_name,
+      dim_crm_opportunity.next_steps,
+      dim_crm_opportunity.auto_renewal_status,
+      dim_crm_opportunity.qsr_notes,
+      dim_crm_opportunity.qsr_status,
+      dim_crm_opportunity.manager_confidence,
+      dim_crm_opportunity.renewal_risk_category,
+      dim_crm_opportunity.renewal_swing_arr,
+      dim_crm_opportunity.renewal_manager, 
+      dim_crm_opportunity.renewal_forecast_health,
+      dim_crm_opportunity.renewal_ownership,
+      dim_crm_opportunity.ptc_predicted_arr,
+      dim_crm_opportunity.ptc_predicted_renewal_risk_category,    
 
        -- Account fields
       dim_crm_account.crm_account_name,
@@ -173,10 +185,10 @@
       fct_crm_opportunity.is_booked_net_arr,
       fct_crm_opportunity.is_downgrade,
       dim_crm_opportunity.critical_deal_flag,
+      fct_crm_opportunity.is_abm_tier_sao,
+      fct_crm_opportunity.is_abm_tier_closed_won,
 
       -- crm opp owner/account owner fields stamped at SAO date (only used for reporting on opps with close date < 2022-02-01)
-      dim_crm_opportunity.sao_crm_opp_owner_stamped_name,
-      dim_crm_opportunity.sao_crm_account_owner_stamped_name,
       dim_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped,
       dim_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped_grouped,
       dim_crm_opportunity.sao_crm_opp_owner_geo_stamped,
@@ -496,7 +508,8 @@
       fct_crm_opportunity.won_arr_basis_for_clari,
       fct_crm_opportunity.arr_basis_for_clari,
       fct_crm_opportunity.forecasted_churn_for_clari,
-      fct_crm_opportunity.override_arr_basis_clari
+      fct_crm_opportunity.override_arr_basis_clari,
+      fct_crm_opportunity.cycle_time_in_days
       
 
     FROM fct_crm_opportunity
@@ -572,9 +585,9 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@lisvinueza",
+    updated_by="@snalamaru",
     created_date="2020-12-07",
-    updated_date="2023-05-21"
+    updated_date="2024-01-24"
   ) }}
 
 

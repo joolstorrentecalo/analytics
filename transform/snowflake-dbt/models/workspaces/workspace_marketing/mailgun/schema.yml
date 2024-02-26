@@ -1,5 +1,0 @@
-version: 2
-
-models:
-  - name: mailgun_events
-    description: Git log of contributors to the Values handbook page.

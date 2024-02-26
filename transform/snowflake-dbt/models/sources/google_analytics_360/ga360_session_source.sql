@@ -16,6 +16,7 @@ WITH source AS (
       date::DATE                                    AS export_date,
       client_id::VARCHAR                            AS client_id,      
       visit_number::FLOAT                           AS visit_number,
+      channel_grouping::VARCHAR                     AS channel_grouping,
       total_visits::FLOAT                           AS total_visits,
       total_pageviews::FLOAT                        AS total_pageviews,
       total_screenviews::FLOAT                      AS total_screenviews,

@@ -1,6 +1,7 @@
 {{ config(
     materialized='incremental',
     unique_key='ping_metric_totals_w_estimates_monthly_snapshot_id',
+    on_schema_change='sync_all_columns',
     tags=["mnpi_exception","edm_snapshot", "product"]
 ) }}
 
@@ -36,7 +37,7 @@ WITH snapshot_dates AS (
 ), final AS (
 
      SELECT
-       {{ dbt_utils.surrogate_key(['snapshot_id', 'ping_metric_totals_w_estimates_monthly_id']) }} AS ping_metric_totals_w_estimates_monthly_snapshot_id,
+       {{ dbt_utils.generate_surrogate_key(['snapshot_id', 'ping_metric_totals_w_estimates_monthly_id']) }} AS ping_metric_totals_w_estimates_monthly_snapshot_id,
        *
      FROM rpt_ping_metric_totals_w_estimates_monthly_spined
 

@@ -21,12 +21,13 @@ from kube_secrets import (
     PERMISSION_BOT_WAREHOUSE,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "on_success_callback": slack_succeeded_task,
@@ -49,6 +50,7 @@ dag = DAG(
     "snowflake_password_reset",
     default_args=default_args,
     schedule_interval="30 5 * */3 6#1",
+    catchup=False,
 )
 
 # Task 1
@@ -66,5 +68,7 @@ snowflake_password = KubernetesPodOperator(
         PERMISSION_BOT_WAREHOUSE,
     ],
     arguments=[container_cmd],
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     dag=dag,
 )

@@ -14,6 +14,14 @@
 , renamed AS (
   
     SELECT
+
+      -- SURROGATE KEY
+      {{ dbt_utils.generate_surrogate_key(['ci_pipeline_id']) }}         AS dim_ci_pipeline_sk,
+
+      -- NATURAL KEY
+      ci_pipeline_id,
+
+      -- LEGACY NATURAL KEY
       ci_pipeline_id                                            AS dim_ci_pipeline_id, 
       
       -- FOREIGN KEYS
@@ -58,7 +66,7 @@
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet_",
-    updated_by="@mpeychet_",
+    updated_by="@michellecooper",
     created_date="2021-06-10",
-    updated_date="2021-06-10"
+    updated_date="2023-10-30"
 ) }}

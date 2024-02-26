@@ -21,3 +21,11 @@ Custom Business Logic:
 2. We started snapshotting the product ranking in August 2022. Therefore, we have to use the live product ranking to backfill the data. In the future, this can be refined to use a dim_product_detail snapshot table when it is built.
 
 {% enddocs %}
+
+
+{% docs rpt_crm_opportunity_renewal %}
+
+This report model focuses exclusively on filtering out Renewal Opportunities from `mart_crm_opportunity`.
+
+{% enddocs %}
+

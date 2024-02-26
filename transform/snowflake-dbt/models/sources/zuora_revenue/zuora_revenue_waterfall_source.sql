@@ -8,7 +8,7 @@ WITH zuora_revenue_waterfall_summary AS (
 
     SELECT 
     
-      {{ dbt_utils.surrogate_key(['as_of_prd_id', 'schd_id', 'acctg_type_id']) }}   AS primary_key,
+      {{ dbt_utils.generate_surrogate_key(['as_of_prd_id', 'schd_id', 'acctg_type_id']) }}   AS primary_key,
       as_of_prd_id::VARCHAR                                                         AS as_of_period_id,
       schd_id::VARCHAR                                                              AS revenue_contract_schedule_id,
       line_id::VARCHAR                                                              AS revenue_contract_line_id,

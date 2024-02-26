@@ -1,3 +1,9 @@
+{% docs prep_charge_mrr %}
+
+Prep model that takes prep_charge and perform the necessary filtering of the model to later be used to derive fct_mrr.
+
+{% enddocs %}
+
 {% docs prep_crm_account %}
 
 Prep model for the live crm account dimension.
@@ -41,5 +47,12 @@ Prep model for the live crm opportunity dimension and fact models. This model is
  - If the subscription is self-service and has an opportunity_id on the subscription object, take the opportunity_id from the subscription object.
  - If the subscription is sales_assisted and there is a quote_number on the subscription, take the opportunity_id from the opportunity associated with this quote_number.
  - If all of the methods for finding an opportunity-subscription mapping match for one record, select this subscription-opportunity pair.
+
+{% enddocs %}
+
+
+{% docs prep_lead %}
+
+This model is used to store hand raise and trial leads sourced from leads table(tap postgres) from customers.gitlab.com.
 
 {% enddocs %}

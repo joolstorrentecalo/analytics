@@ -39,12 +39,12 @@ from kube_secrets import (
     SNOWFLAKE_STATIC_DATABASE,
 )
 
-pod_env_vars = {**gitlab_pod_env_vars, **{}}
+from kubernetes_helpers import get_affinity, get_toleration
 
+pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -86,6 +86,7 @@ dag = DAG(
     description="This DAG is responsible for refreshing models at minute 55 past every 6th hour.",
     default_args=default_args,
     schedule_interval="55 */6 * * 1-6",
+    catchup=False,
 )
 
 
@@ -105,6 +106,8 @@ dbt_six_hourly_models_task = KubernetesPodOperator(
     secrets=secrets_list,
     env_vars=pod_env_vars,
     arguments=[dbt_six_hourly_models_command],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 

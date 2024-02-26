@@ -26,7 +26,7 @@ WITH source AS (
 ), unioned AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['partner_category']) }}  AS dim_partner_category_id,
+      {{ dbt_utils.generate_surrogate_key(['partner_category']) }}  AS dim_partner_category_id,
       partner_category                                     AS partner_category_name
     FROM partner_category
 

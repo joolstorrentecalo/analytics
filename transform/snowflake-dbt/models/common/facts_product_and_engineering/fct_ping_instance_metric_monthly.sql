@@ -71,6 +71,8 @@ final AS (
       time_frame_28_day_metrics.dim_installation_id,
       time_frame_28_day_metrics.dim_license_id,
       time_frame_28_day_metrics.dim_subscription_license_id,
+      time_frame_28_day_metrics.dim_app_release_major_minor_sk,
+      time_frame_28_day_metrics.dim_latest_available_app_release_major_minor_sk,
       time_frame_28_day_metrics.metrics_path,
       time_frame_28_day_metrics.metric_value,
       time_frame_28_day_metrics.monthly_metric_value,
@@ -95,6 +97,8 @@ final AS (
       time_frame_all_time_metrics.dim_installation_id,
       time_frame_all_time_metrics.dim_license_id,
       time_frame_all_time_metrics.dim_subscription_license_id,
+      time_frame_all_time_metrics.dim_app_release_major_minor_sk,
+      time_frame_all_time_metrics.dim_latest_available_app_release_major_minor_sk,
       time_frame_all_time_metrics.metrics_path,
       time_frame_all_time_metrics.metric_value,
       IFF(time_frame_all_time_metrics.monthly_metric_value < 0, 0, time_frame_all_time_metrics.monthly_metric_value) AS monthly_metric_value,
@@ -110,7 +114,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@icooper-acp",
-    updated_by="@iweeks",
+    updated_by="@michellecooper",
     created_date="2022-05-09",
-    updated_date="2022-07-20"
+    updated_date="2023-07-10"
 ) }}

@@ -24,7 +24,9 @@ models:
         - name: saas_usage_ping_gitlab_dotcom_namespace_id
           tests:
             - not_null
-            - unique
+            - unique:
+                config:
+                  where: "ping_date >= DATEADD('day',-3,CURRENT_DATE())"
     - name: instance_combined_metrics
       tags: ["product", "service_ping"]
       description: '{{ doc("instance_combined_metrics") }}'

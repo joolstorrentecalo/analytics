@@ -118,6 +118,7 @@ WITH source AS (
     last_transfer_date_time__c AS last_transfer_date_time,
     time_from_last_transfer_to_sequence__c AS time_from_last_transfer_to_sequence,
     time_from_mql_to_last_transfer__c AS time_from_mql_to_last_transfer,
+    high_priority__c AS is_high_priority,
 
 
     {{ sfdc_source_buckets('leadsource') }}

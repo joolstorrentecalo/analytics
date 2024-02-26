@@ -2,7 +2,7 @@ WITH biz_person AS (
 
     SELECT *
     FROM {{ref('sfdc_bizible_person_source')}}
-    WHERE is_deleted = 'FALSE'
+    WHERE is_deleted = 'FALSE' 
 
 ), biz_touchpoints AS (
 
@@ -10,6 +10,65 @@ WITH biz_person AS (
     FROM {{ref('sfdc_bizible_touchpoint_source')}}
     WHERE bizible_touchpoint_position LIKE '%FT%'
      AND is_deleted = 'FALSE'
+
+), prep_date AS (
+
+    SELECT *
+    FROM {{ ref('prep_date') }}
+
+), prep_location_country AS (
+
+    SELECT *
+    FROM {{ ref('prep_location_country') }}
+
+), crm_tasks AS (
+
+    SELECT 
+      sfdc_record_id,
+      MIN(task_completed_date) AS min_task_completed_date_by_bdr_sdr
+    FROM {{ref('prep_crm_task')}}
+    WHERE is_deleted = 'FALSE'
+    AND task_owner_role LIKE '%BDR%' 
+    OR task_owner_role LIKE '%SDR%'
+    GROUP BY 1
+
+), crm_events AS (
+
+    SELECT 
+      sfdc_record_id,
+      MIN(event_date) AS min_task_completed_date_by_bdr_sdr
+    FROM {{ref('prep_crm_event')}}
+    LEFT JOIN {{ref('dim_crm_user')}} event_user_id 
+    ON prep_crm_event.dim_crm_user_id = event_user_id.dim_crm_user_id 
+    LEFT JOIN {{ref('dim_crm_user')}}  event_booked_by_id
+    ON prep_crm_event.booked_by_employee_number = event_booked_by_id.employee_number
+    WHERE 
+    event_user_id.user_role_name LIKE '%BDR%' 
+    OR event_booked_by_id.user_role_name LIKE '%BDR%' 
+    OR event_user_id.user_role_name LIKE '%SDR%' 
+    OR event_booked_by_id.user_role_name LIKE '%SDR%' 
+    GROUP BY 1
+
+  
+), crm_activity_prep AS (
+  
+    SELECT 
+      sfdc_record_id,
+      min_task_completed_date_by_bdr_sdr
+    FROM crm_tasks
+    UNION
+    SELECT
+      sfdc_record_id,
+      min_task_completed_date_by_bdr_sdr
+    FROM crm_events
+  
+),  crm_activity AS (
+
+    SELECT 
+      sfdc_record_id,
+      MIN(min_task_completed_date_by_bdr_sdr) AS min_task_completed_date_by_bdr_sdr
+    FROM crm_activity_prep
+    GROUP BY 1 
 
 ), biz_person_with_touchpoints AS (
 
@@ -22,6 +81,7 @@ WITH biz_person AS (
     FROM biz_touchpoints
     JOIN biz_person
       ON biz_touchpoints.bizible_person_id = biz_person.person_id
+    QUALIFY ROW_NUMBER() OVER(PARTITION BY bizible_lead_id,bizible_contact_id ORDER BY bizible_touchpoint_date DESC) = 1
 
 ), sfdc_contacts AS (
 
@@ -54,12 +114,13 @@ WITH biz_person AS (
       sfdc_lead_id,
       sfdc_contact_id
     FROM {{ ref('marketo_lead_source') }}
+    QUALIFY ROW_NUMBER() OVER(PARTITION BY sfdc_lead_id,sfdc_contact_id  ORDER BY updated_at DESC) = 1
 
 ),  crm_person_final AS (
 
     SELECT
       --id
-      {{ dbt_utils.surrogate_key(['sfdc_contacts.contact_id']) }} AS dim_crm_person_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_contacts.contact_id']) }} AS dim_crm_person_id,
       sfdc_contacts.contact_id                      AS sfdc_record_id,
       bizible_person_id                             AS bizible_person_id,
       'contact'                                     AS sfdc_record_type,
@@ -112,7 +173,12 @@ WITH biz_person AS (
       sequence_task_due_date,
       sequence_status,
       is_actively_being_sequenced,
-      is_high_priority,
+      high_priority_datetime,
+      CASE
+        WHEN high_priority_datetime IS NOT NULL
+          THEN TRUE
+        ELSE FALSE
+      END AS is_high_priority,
       prospect_share_status,
       partner_prospect_status,
       partner_prospect_id,
@@ -121,11 +187,27 @@ WITH biz_person AS (
       mailing_state                                 AS state,
       last_activity_date,
       NULL                                          AS employee_bucket,
-      account_demographics_sales_segment,
+      CASE
+        WHEN account_demographics_sales_segment IS NULL OR UPPER(account_demographics_sales_segment) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_sales_segment
+      END AS account_demographics_sales_segment,
       account_demographics_sales_segment_grouped,
-      account_demographics_geo,
-      account_demographics_region,
-      account_demographics_area,
+      CASE
+        WHEN account_demographics_geo IS NULL OR UPPER(account_demographics_geo) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_geo
+      END AS account_demographics_geo,
+      CASE
+        WHEN account_demographics_region IS NULL OR UPPER(account_demographics_region) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_region
+      END AS account_demographics_region,
+      CASE
+        WHEN account_demographics_area IS NULL OR UPPER(account_demographics_area) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_area
+      END AS account_demographics_area,
       account_demographics_segment_region_grouped,
       account_demographics_territory,
       account_demographics_employee_count,
@@ -159,11 +241,34 @@ WITH biz_person AS (
       zoominfo_mobile_phone_number,
       zoominfo_do_not_call_direct_phone,
       zoominfo_do_not_call_mobile_phone,
+      traction_first_response_time,
+      traction_first_response_time_seconds,
+      traction_response_time_in_business_hours,
       last_transfer_date_time,
       time_from_last_transfer_to_sequence,
       time_from_mql_to_last_transfer,
+      ptp_score_date                                 AS propensity_to_purchase_score_date,
+      ptp_score_group                                AS propensity_to_purchase_score_group,
+      pql_namespace_creator_job_description,
+      pql_namespace_id,
+      pql_namespace_name,
+      pql_namespace_users,
+      is_product_qualified_lead,
+      ptp_days_since_trial_start                     AS propensity_to_purchase_days_since_trial_start,
+      ptp_insights                                   AS propensity_to_purchase_insights,
+      is_ptp_contact,
+      ptp_namespace_id                               AS propensity_to_purchase_namespace_id,
+      ptp_past_insights                              AS propensity_to_purchase_past_insights,
+      ptp_past_score_group                           AS propensity_to_purchase_past_score_group,
       NULL                                           AS zoominfo_company_employee_count,
-      zoominfo_contact_id
+      zoominfo_contact_id,
+      NULL                                           AS is_partner_recalled,
+      CASE
+        WHEN crm_activity.min_task_completed_date_by_bdr_sdr IS NOT NULL
+          THEN TRUE
+        ELSE FALSE
+      END AS is_bdr_sdr_worked,
+      created_date
 
 
     FROM sfdc_contacts
@@ -173,12 +278,14 @@ WITH biz_person AS (
       ON was_converted_lead.contact_id = sfdc_contacts.contact_id
     LEFT JOIN marketo_persons
       ON sfdc_contacts.contact_id = marketo_persons.sfdc_contact_id and sfdc_type = 'Contact'
+    LEFT JOIN crm_activity
+      ON sfdc_contacts.contact_id=crm_activity.sfdc_record_id
 
     UNION
 
     SELECT
       --id
-      {{ dbt_utils.surrogate_key(['lead_id']) }} AS dim_crm_person_id,
+      {{ dbt_utils.generate_surrogate_key(['lead_id']) }} AS dim_crm_person_id,
       lead_id                                    AS sfdc_record_id,
       bizible_person_id                          AS bizible_person_id,
       'lead'                                     AS sfdc_record_type,
@@ -231,7 +338,12 @@ WITH biz_person AS (
       sequence_task_due_date,
       sequence_status,
       is_actively_being_sequenced,
-      is_high_priority,
+      high_priority_datetime,
+      CASE
+        WHEN high_priority_datetime IS NOT NULL
+          THEN TRUE
+        ELSE FALSE
+      END AS is_high_priority,
       prospect_share_status,
       partner_prospect_status,
       partner_prospect_id,
@@ -240,11 +352,27 @@ WITH biz_person AS (
       state,
       last_activity_date,
       employee_bucket,
-      account_demographics_sales_segment,
+      CASE
+        WHEN account_demographics_sales_segment IS NULL OR UPPER(account_demographics_sales_segment) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_sales_segment
+      END AS account_demographics_sales_segment,
       account_demographics_sales_segment_grouped,
-      account_demographics_geo,
-      account_demographics_region,
-      account_demographics_area,
+      CASE
+        WHEN account_demographics_geo IS NULL OR UPPER(account_demographics_geo) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_geo
+      END AS account_demographics_geo,
+      CASE
+        WHEN account_demographics_region IS NULL OR UPPER(account_demographics_region) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_region
+      END AS account_demographics_region,
+      CASE
+        WHEN account_demographics_area IS NULL OR UPPER(account_demographics_area) LIKE '%NOT FOUND%'
+          THEN 'UNKNOWN'
+        ELSE account_demographics_area
+      END AS account_demographics_area,
       account_demographics_segment_region_grouped,
       account_demographics_territory,
       account_demographics_employee_count,
@@ -278,43 +406,94 @@ WITH biz_person AS (
       zoominfo_mobile_phone_number,
       zoominfo_do_not_call_direct_phone,
       zoominfo_do_not_call_mobile_phone,
+      traction_first_response_time,
+      traction_first_response_time_seconds,
+      traction_response_time_in_business_hours,
       last_transfer_date_time,
       time_from_last_transfer_to_sequence,
       time_from_mql_to_last_transfer,
+      ptp_score_date                                 AS propensity_to_purchase_score_date,
+      ptp_score_group                                AS propensity_to_purchase_score_group,
+      pql_namespace_creator_job_description,
+      pql_namespace_id,
+      pql_namespace_name,
+      pql_namespace_users,
+      is_product_qualified_lead,
+      ptp_days_since_trial_start                     AS propensity_to_purchase_days_since_trial_start,
+      ptp_insights                                   AS propensity_to_purchase_insights,
+      is_ptp_contact,
+      ptp_namespace_id                               AS propensity_to_purchase_namespace_id,
+      ptp_past_insights                              AS propensity_to_purchase_past_insights,
+      ptp_past_score_group                           AS propensity_to_purchase_past_score_group,
       zoominfo_company_employee_count,
-      NULL AS zoominfo_contact_id
+      NULL AS zoominfo_contact_id,
+      is_partner_recalled,
+      CASE
+        WHEN crm_tasks.min_task_completed_date_by_bdr_sdr IS NOT NULL
+          THEN TRUE
+        ELSE FALSE
+      END AS is_bdr_sdr_worked,
+      created_date
 
     FROM sfdc_leads
     LEFT JOIN biz_person_with_touchpoints
       ON sfdc_leads.lead_id = biz_person_with_touchpoints.bizible_lead_id
     LEFT JOIN marketo_persons
       ON sfdc_leads.lead_id = marketo_persons.sfdc_lead_id and sfdc_type = 'Lead'
+    LEFT JOIN crm_tasks
+      ON sfdc_leads.lead_id=crm_tasks.sfdc_record_id
     WHERE is_converted = 'FALSE'
-
-), duplicates AS (
-
-    SELECT
-      dim_crm_person_id
-    FROM crm_person_final
-    GROUP BY 1
-    HAVING COUNT(*) > 1
 
 ), final AS (
 
-    SELECT *
+    SELECT
+      crm_person_final.*,
+      LOWER(COALESCE(
+                     account_demographics_upa_country,
+                     zoominfo_company_country,
+                     country
+                    )
+       ) AS two_letter_person_first_country,
+      CASE
+        -- remove a few case where value is only numbers
+        WHEN (TRY_TO_NUMBER(two_letter_person_first_country)) IS NOT NULL THEN
+             NULL
+        WHEN LEN(two_letter_person_first_country) = 2 AND prep_location_country.country_name IS NOT NULL THEN
+            INITCAP(prep_location_country.country_name)
+        WHEN LEN(two_letter_person_first_country) = 2 THEN
+            -- This condition would be for a country code that isn't on the model
+            UPPER(two_letter_person_first_country)
+        ELSE
+            INITCAP(two_letter_person_first_country)
+      END AS person_first_country,
+      prep_date.fiscal_year  AS created_date_fiscal_year,
+      CONCAT(
+        UPPER(crm_person_final.account_demographics_sales_segment),
+        '-',
+        UPPER(crm_person_final.account_demographics_geo),
+        '-',
+        UPPER(crm_person_final.account_demographics_region),
+        '-',
+        UPPER(crm_person_final.account_demographics_area),
+        '-',
+        prep_date.fiscal_year
+      ) AS dim_account_demographics_hierarchy_sk
+
     FROM crm_person_final
-    WHERE dim_crm_person_id NOT IN (
-                                    SELECT *
-                                    FROM duplicates
-                                      )
-      AND sfdc_record_id != '00Q4M00000kDDKuUAO' --DQ issue: https://gitlab.com/gitlab-data/analytics/-/issues/11559
+    LEFT JOIN prep_date
+      ON prep_date.date_actual = crm_person_final.created_date::DATE
+    LEFT JOIN prep_location_country
+      ON two_letter_person_first_country = LOWER(prep_location_country.iso_2_country_code)
+      -- Only join when the value is 2 letters
+      AND LEN(two_letter_person_first_country) = 2
+    WHERE sfdc_record_id != '00Q4M00000kDDKuUAO' --DQ issue: https://gitlab.com/gitlab-data/analytics/-/issues/11559
 
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mcooperDD",
-    updated_by="@dmicovic",
+    updated_by="@rkohnke",
     created_date="2020-12-08",
-    updated_date="2023-05-30"
+    updated_date="2024-01-19"
 ) }}

@@ -15,6 +15,7 @@ WITH source AS (
       id::NUMBER                                              AS order_id,
       customer_id::NUMBER                                     AS customer_id,
       product_rate_plan_id::VARCHAR                           AS product_rate_plan_id,
+      billing_account_id::VARCHAR                             AS billing_account_id,
       subscription_id::VARCHAR                                AS subscription_id,
       subscription_name::VARCHAR                              AS subscription_name,
       {{zuora_slugify("subscription_name")}}::VARCHAR         AS subscription_name_slugify,

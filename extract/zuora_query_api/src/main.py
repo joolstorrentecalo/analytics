@@ -1,9 +1,7 @@
-from os import environ as env
-from api import ZuoraQueriesAPI
-from typing import Dict
-from fire import Fire
-import logging
-import yaml
+"""
+main function
+"""
+
 import logging
 from os import environ as env
 from typing import Dict
@@ -11,7 +9,7 @@ from typing import Dict
 import yaml
 from api import ZuoraQueriesAPI
 from fire import Fire
-from gitlabdata.orchestration_utils import dataframe_uploader
+from gitlabdata.orchestration_utils import dataframe_uploader, query_executor
 
 
 def manifest_reader(file_path: str) -> Dict[str, Dict]:
@@ -37,7 +35,28 @@ def filter_manifest(manifest_dict: Dict, load_only_table: str = None) -> Dict:
     return manifest_dict
 
 
+def fetch_data_query_upload(
+    zq, table_spec: str, query_string: str, if_exists_parameter: str = "replace"
+):
+    """
+    This function is responsible for executing the passed query_string in data query download the file and upload it to snowflake using dataframe uploader.
+    """
+    job_id = zq.request_data_query_data(query_string)
+    df = zq.get_data_query_file(job_id)
+    dataframe_uploader(
+        df,
+        zq.snowflake_engine,
+        table_spec,
+        schema="ZUORA_QUERY_API",
+        if_exists=if_exists_parameter,
+    )
+    logging.info(f"Processed {table_spec}")
+
+
 def main(file_path: str, load_only_table: str = None) -> None:
+    """
+    main function to iterate over file and range of data
+    """
     config_dict = env.copy()
     zq = ZuoraQueriesAPI(config_dict)
 
@@ -47,20 +66,28 @@ def main(file_path: str, load_only_table: str = None) -> None:
 
     for table_spec in manifest_dict.get("tables", ""):
         logging.info(f"Processing {table_spec}")
-        job_id = zq.request_data_query_data(
-            query_string=manifest_dict.get("tables", {})
-            .get(table_spec, {})
-            .get("query")
-        )
-        df = zq.get_data_query_file(job_id)
-        dataframe_uploader(
-            df,
-            zq.snowflake_engine,
-            table_spec,
-            schema="ZUORA_QUERY_API",
-            if_exists="replace",
-        )
-        logging.info(f"Processed {table_spec}")
+
+        if table_spec == "chargecontractualvalue":
+            date_interval_list = zq.date_range()
+            logging.info(f"The date list : {date_interval_list}")
+            logging.info(" Droping the table to allow full reload")
+            drop_result = query_executor(
+                zq.snowflake_engine,
+                "DROP TABLE IF EXISTS zuora_query_api.chargecontractualvalue;",
+            )
+            logging.info(f"Table delete status: {drop_result}")
+            for start_end_date in date_interval_list:
+                logging.info(
+                    f"The date range for extraction is between start_date= {start_end_date['start_date']} to end_date= {start_end_date['end_date']}"
+                )
+                query_string = f"{manifest_dict.get('tables', {}).get(table_spec, {}).get('query')}  WHERE updatedOn > timestamp '{start_end_date['start_date']}' and updatedOn <= timestamp '{start_end_date['end_date']}'"
+                logging.info(f"Query string prepared : {query_string}")
+                fetch_data_query_upload(zq, table_spec, query_string, "append")
+        else:
+            query_string = (
+                manifest_dict.get("tables", {}).get(table_spec, {}).get("query")
+            )
+            fetch_data_query_upload(zq, table_spec, query_string)
 
 
 if __name__ == "__main__":

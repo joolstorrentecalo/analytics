@@ -61,20 +61,6 @@ sources:
           - name: updated_at
             tests:
               - not_null
-      - name: version_checks
-        freshness:
-          warn_after: {count: 2, period: day}
-          error_after: {count: 4, period: day}
-        columns:
-          - name: id
-            tests:
-              - not_null
-          - name: created_at
-            tests:
-              - not_null
-          - name: updated_at
-            tests:
-              - not_null
       - name: versions
         freshness:
           warn_after: {count: 14, period: day}

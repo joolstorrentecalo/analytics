@@ -15,7 +15,7 @@ WITH issue_assignees AS (
 ), assigend_users AS (
     
     SELECT
-      issue_id                               AS dim_issue_id,
+      issue_id                               AS issue_id,
       LISTAGG(DISTINCT users.username, ', ') AS assigned_usernames
     FROM issue_assignees
     LEFT JOIN users

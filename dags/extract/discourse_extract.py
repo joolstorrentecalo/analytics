@@ -27,7 +27,6 @@ env = os.environ.copy()
 pod_env_vars = {"CI_PROJECT_DIR": "/analytics"}
 
 default_args = {
-    "catchup": True,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -44,11 +43,12 @@ dag = DAG(
     description="Monthly extract of Discourse analytics data",
     default_args=default_args,
     schedule_interval="0 7 1 * *",
+    catchup=False,
 )
 
 # don't add a newline at the end of this because it gets added to in the K8sPodOperator arguments
-extract_command = f"""{clone_and_setup_extraction_cmd} && 
-    cd discourse/ && 
+extract_command = f"""{clone_and_setup_extraction_cmd} &&
+    cd discourse/ &&
     python src/execute.py --reports_yml reports.yml --start_date $START_DATE --end_date $END_DATE --months_ago 1"""
 logging.info(extract_command)
 
@@ -66,12 +66,12 @@ kubernetes_operator = KubernetesPodOperator(
         SNOWFLAKE_LOAD_WAREHOUSE,
         SNOWFLAKE_LOAD_PASSWORD,
     ],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     env_vars={
         **pod_env_vars,
         **{
-            "START_DATE": "{{ execution_date.isoformat() }}",
+            "START_DATE": "{{ logical_date.isoformat() }}",
             "END_DATE": "{{ next_execution_date.isoformat() }}",
         },
     },

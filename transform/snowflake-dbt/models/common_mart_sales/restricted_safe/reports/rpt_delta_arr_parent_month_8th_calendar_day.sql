@@ -25,6 +25,14 @@ WITH dim_product_detail AS (
 
     SELECT *
     FROM {{ ref('rpt_arr_snapshot_combined_8th_calendar_day') }}
+    WHERE is_arr_month_finalized = TRUE
+
+), finalized_arr_month AS (
+
+    SELECT DISTINCT
+      arr_month,
+      is_arr_month_finalized
+    FROM rpt_arr_snapshot
 
 ), mart_arr AS (
 
@@ -170,9 +178,10 @@ WITH dim_product_detail AS (
 ), combined AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.dim_parent_crm_account_id']) }}
+      {{ dbt_utils.generate_surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.dim_parent_crm_account_id']) }}
                                                                     AS primary_key,
       type_of_arr_change.arr_month,
+      finalized_arr_month.is_arr_month_finalized                    AS is_arr_month_finalized,
       type_of_arr_change.parent_crm_account_name,
       type_of_arr_change.dim_parent_crm_account_id,
       type_of_arr_change.product_category,
@@ -210,6 +219,8 @@ WITH dim_product_detail AS (
     LEFT JOIN annual_price_per_seat_change
       ON type_of_arr_change.dim_parent_crm_account_id = annual_price_per_seat_change.dim_parent_crm_account_id
       AND type_of_arr_change.arr_month = annual_price_per_seat_change.arr_month
+    INNER JOIN finalized_arr_month
+      ON finalized_arr_month.arr_month = type_of_arr_change.arr_month
 
 )
 

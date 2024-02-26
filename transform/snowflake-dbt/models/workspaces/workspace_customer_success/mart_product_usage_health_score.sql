@@ -12,7 +12,7 @@
 ])}}
 
 , joined AS (
-    
+
     SELECT
         paid_user_metrics.snapshot_month,
         paid_user_metrics.primary_key,
@@ -28,6 +28,7 @@
         paid_user_metrics.subscription_name,
         paid_user_metrics.dim_subscription_id_original,
         paid_user_metrics.dim_subscription_id,
+        IFF(mart_arr.product_tier_name ILIKE '%Ultimate%', 1, 0)                                                        AS ultimate_subscription_flag,
         paid_user_metrics.delivery_type,
         paid_user_metrics.deployment_type,
         paid_user_metrics.instance_type,
@@ -104,14 +105,14 @@
         CASE WHEN ci_score IS NULL THEN NULL
             WHEN ci_score = 25 THEN 'Red'
             WHEN ci_score = 63 THEN 'Yellow'
-            WHEN ci_score = 88 THEN 'Green' end AS ci_color, 
+            WHEN ci_score = 88 THEN 'Green' end AS ci_color,
 
 -- cd metrics --
         paid_user_metrics.deployments_28_days_user,
         paid_user_metrics.deployments_28_days_event,
         paid_user_metrics.successful_deployments_28_days_event,
         paid_user_metrics.failed_deployments_28_days_event,
-        (paid_user_metrics.successful_deployments_28_days_event + paid_user_metrics.failed_deployments_28_days_event) AS completed_deployments_l28d,    
+        (paid_user_metrics.successful_deployments_28_days_event + paid_user_metrics.failed_deployments_28_days_event) AS completed_deployments_l28d,
         paid_user_metrics.projects_all_time_event,
         paid_user_metrics.environments_all_time_event,
         div0(paid_user_metrics.deployments_28_days_user, paid_user_metrics.billable_user_count) AS deployments_utilization,
@@ -140,7 +141,7 @@
         CASE WHEN successful_deployments_pct_score IS NULL THEN NULL
             WHEN successful_deployments_pct_score = 25 THEN 'Red'
             WHEN successful_deployments_pct_score = 63 THEN 'Yellow'
-            WHEN successful_deployments_pct_score = 88 THEN 'Green' end AS successful_deployments_pct_color,        
+            WHEN successful_deployments_pct_score = 88 THEN 'Green' end AS successful_deployments_pct_color,
         IFF(deployments_utilization_score IS NOT NULL, 1, 0)
             + IFF(deployments_per_user_l28d_score IS NOT NULL, 1, 0)
             + IFF(successful_deployments_pct_score IS NOT NULL, 1, 0) AS cd_measure_count,
@@ -153,46 +154,79 @@
 
 -- security metrics --
         paid_user_metrics.user_unique_users_all_secure_scanners_28_days_user,
-        paid_user_metrics.user_container_scanning_jobs_28_days_user,
-        paid_user_metrics.user_secret_detection_jobs_28_days_user,
-        div0(paid_user_metrics.user_unique_users_all_secure_scanners_28_days_user, paid_user_metrics.billable_user_count) AS secure_scanners_utilization,
+        paid_user_metrics.CI_INTERNAL_PIPELINES_28_DAYS_EVENT,
+        paid_user_metrics.SECRET_DETECTION_SCANS_28_DAYS_EVENT,
+        paid_user_metrics.DEPENDENCY_SCANNING_SCANS_28_DAYS_EVENT,
+        paid_user_metrics.CONTAINER_SCANNING_SCANS_28_DAYS_EVENT,
+        paid_user_metrics.DAST_SCANS_28_DAYS_EVENT,
+        paid_user_metrics.SAST_SCANS_28_DAYS_EVENT,
+        paid_user_metrics.COVERAGE_FUZZING_SCANS_28_DAYS_EVENT,
+        paid_user_metrics.API_FUZZING_SCANS_28_DAYS_EVENT,
+        paid_user_metrics.SECRET_DETECTION_SCANS_28_DAYS_EVENT
+            + paid_user_metrics.DEPENDENCY_SCANNING_SCANS_28_DAYS_EVENT
+            + paid_user_metrics.CONTAINER_SCANNING_SCANS_28_DAYS_EVENT
+            + paid_user_metrics.DAST_SCANS_28_DAYS_EVENT
+            + paid_user_metrics.SAST_SCANS_28_DAYS_EVENT
+            + paid_user_metrics.COVERAGE_FUZZING_SCANS_28_DAYS_EVENT
+            + paid_user_metrics.API_FUZZING_SCANS_28_DAYS_EVENT                                                                                 AS sum_of_all_scans_l28d,
+        div0(paid_user_metrics.SECRET_DETECTION_SCANS_28_DAYS_EVENT,sum_of_all_scans_l28d)                                                      AS secret_detection_scan_percentage,
+        div0(paid_user_metrics.DEPENDENCY_SCANNING_SCANS_28_DAYS_EVENT,sum_of_all_scans_l28d)                                                   AS dependency_scanning_scan_percentage,
+        div0(paid_user_metrics.CONTAINER_SCANNING_SCANS_28_DAYS_EVENT,sum_of_all_scans_l28d)                                                    AS container_scanning_scan_percentage,
+        div0(paid_user_metrics.DAST_SCANS_28_DAYS_EVENT,sum_of_all_scans_l28d)                                                                  AS DAST_scan_percentage,
+        div0(paid_user_metrics.SAST_SCANS_28_DAYS_EVENT,sum_of_all_scans_l28d)                                                                  AS sast_scan_percentage,
+        div0(paid_user_metrics.COVERAGE_FUZZING_SCANS_28_DAYS_EVENT,sum_of_all_scans_l28d)                                                      AS coverage_fuzzing_scan_percentage,
+        div0(paid_user_metrics.API_FUZZING_SCANS_28_DAYS_EVENT,sum_of_all_scans_l28d)                                                           AS api_fuzzing_scan_percentage,
+        div0(paid_user_metrics.user_unique_users_all_secure_scanners_28_days_user, paid_user_metrics.billable_user_count)                       AS secure_scanners_utilization,
         CASE WHEN secure_scanners_utilization IS NULL THEN NULL
             WHEN secure_scanners_utilization <= .05 THEN 25
             WHEN secure_scanners_utilization > .05 and secure_scanners_utilization < .20 THEN 63
-            WHEN secure_scanners_utilization >= .20 THEN 88 end                     AS secure_scanners_utilization_score,
+            WHEN secure_scanners_utilization >= .20 THEN 88 end                                                                                 AS secure_scanners_utilization_score,
         CASE WHEN secure_scanners_utilization_score IS NULL THEN NULL
             WHEN secure_scanners_utilization_score = 25 THEN 'Red'
             WHEN secure_scanners_utilization_score = 63 THEN 'Yellow'
-            WHEN secure_scanners_utilization_score = 88 THEN 'Green' end            AS secure_scanners_utilization_color,
-        div0(paid_user_metrics.user_container_scanning_jobs_28_days_user, paid_user_metrics.billable_user_count)          AS container_scanning_jobs_utilization,
-        CASE WHEN container_scanning_jobs_utilization IS NULL THEN NULL
-            WHEN container_scanning_jobs_utilization <= .03 THEN 25
-            WHEN container_scanning_jobs_utilization > .03 and container_scanning_jobs_utilization < .10 THEN 63
-            WHEN container_scanning_jobs_utilization >= .10 THEN 88 end                     AS container_scanning_jobs_utilization_score,
-        CASE WHEN container_scanning_jobs_utilization_score IS NULL THEN NULL
-            WHEN container_scanning_jobs_utilization_score = 25 THEN 'Red'
-            WHEN container_scanning_jobs_utilization_score = 63 THEN 'Yellow'
-            WHEN container_scanning_jobs_utilization_score = 88 THEN 'Green' end            AS container_scanning_jobs_utilization_color,
-        div0(paid_user_metrics.user_secret_detection_jobs_28_days_user, paid_user_metrics.billable_user_count)            AS secret_detection_jobs_utilization,
-        CASE WHEN secret_detection_jobs_utilization IS NULL THEN NULL
-            WHEN secret_detection_jobs_utilization <= .06 THEN 25
-            WHEN secret_detection_jobs_utilization > .06 and secret_detection_jobs_utilization < .20 THEN 63
-            WHEN secret_detection_jobs_utilization >= .20 THEN 88 end                     AS secret_detection_jobs_utilization_score,
-        CASE WHEN secret_detection_jobs_utilization_score IS NULL THEN NULL
-            WHEN secret_detection_jobs_utilization_score = 25 THEN 'Red'
-            WHEN secret_detection_jobs_utilization_score = 63 THEN 'Yellow'
-            WHEN secret_detection_jobs_utilization_score = 88 THEN 'Green' end            AS secret_detection_jobs_utilization_color,
+            WHEN secure_scanners_utilization_score = 88 THEN 'Green' end                                                                        AS secure_scanners_utilization_color,
+        IFF(CI_INTERNAL_PIPELINES_28_DAYS_EVENT = 0, NULL, div0(sum_of_all_scans_l28d,paid_user_metrics.CI_INTERNAL_PIPELINES_28_DAYS_EVENT))   AS average_scans_per_pipeline,
+        CASE WHEN average_scans_per_pipeline IS NULL THEN NULL
+            WHEN average_scans_per_pipeline < 0.1 THEN 25
+            WHEN average_scans_per_pipeline >= 0.1 AND average_scans_per_pipeline <= 0.5 THEN 63
+            WHEN average_scans_per_pipeline > 0.5 THEN 88 end                                                                                   AS average_scans_per_pipeline_score,
+        CASE WHEN average_scans_per_pipeline_score IS NULL THEN NULL
+            WHEN average_scans_per_pipeline_score = 25 THEN 'Red'
+            WHEN average_scans_per_pipeline_score = 63 THEN 'Yellow'
+            WHEN average_scans_per_pipeline_score = 88 THEN 'Green' end                                                                         AS average_scans_per_pipeline_color,
+        IFF(SECRET_DETECTION_SCANS_28_DAYS_EVENT > 0, 1, 0)                                                                                     AS secret_detection_usage_flag,
+        IFF(DEPENDENCY_SCANNING_SCANS_28_DAYS_EVENT > 0, 1, 0)                                                                                  AS dependency_scanning_usage_flag,
+        IFF(CONTAINER_SCANNING_SCANS_28_DAYS_EVENT > 0, 1, 0)                                                                                   AS container_scanning_usage_flag,
+        IFF(DAST_SCANS_28_DAYS_EVENT > 0, 1, 0)                                                                                                 AS dast_usage_flag,
+        IFF(SAST_SCANS_28_DAYS_EVENT > 0, 1, 0)                                                                                                 AS sast_usage_flag,
+        IFF(COVERAGE_FUZZING_SCANS_28_DAYS_EVENT > 0, 1, 0)                                                                                     AS coverage_fuzzing_usage_flag,
+        IFF(API_FUZZING_SCANS_28_DAYS_EVENT > 0, 1, 0)                                                                                          AS api_fuzzing_usage_flag,
+        secret_detection_usage_flag
+            + dependency_scanning_usage_flag
+            + container_scanning_usage_flag
+            + dast_usage_flag
+            + sast_usage_flag
+            + coverage_fuzzing_usage_flag
+            + api_fuzzing_usage_flag                                                                                                            AS number_of_scanner_types,
+        CASE WHEN number_of_scanner_types IS NULL THEN NULL
+            WHEN number_of_scanner_types <= 1 THEN 25
+            WHEN number_of_scanner_types >= 2 AND number_of_scanner_types <= 2 THEN 63
+            WHEN number_of_scanner_types >=3 THEN 88 end                                                                                        AS number_of_scanner_types_score,
+        CASE WHEN number_of_scanner_types_score IS NULL THEN NULL
+            WHEN number_of_scanner_types_score = 25 THEN 'Red'
+            WHEN number_of_scanner_types_score = 63 THEN 'Yellow'
+            WHEN number_of_scanner_types_score = 88 THEN 'Green' end                                                                            AS number_of_scanner_types_color,
         IFF(secure_scanners_utilization_score IS NOT NULL, 1, 0)
-            + IFF(container_scanning_jobs_utilization_score IS NOT NULL, 1, 0)
-            + IFF(secret_detection_jobs_utilization_score IS NOT NULL, 1, 0)                  AS security_measure_count,
+            + IFF(average_scans_per_pipeline_score IS NOT NULL, 1, 0)
+            + IFF(number_of_scanner_types_score IS NOT NULL, 1, 0)                                                                              AS security_measure_count,
         IFF(security_measure_count = 0, NULL, div0((zeroifnull(secure_scanners_utilization_score)
-               + zeroifnull(container_scanning_jobs_utilization_score)
-               + zeroifnull(secret_detection_jobs_utilization_score)), security_measure_count)) AS security_score,
+            + zeroifnull(average_scans_per_pipeline_score)
+            + zeroifnull(number_of_scanner_types_score)), security_measure_count))                                                              AS security_score,
         IFF(security_measure_count = 0, NULL, CASE WHEN security_score <= 50 THEN 'Red'
-                                                    WHEN security_score > 50 and security_score <= 75 THEN 'Yellow'
-                                                    WHEN security_score > 75 THEN 'Green' end) AS security_color,
-        IFF(mart_arr.product_tier_name like '%Ultimate%', security_score, NULL) AS security_score_ultimate_only,
-        IFF(mart_arr.product_tier_name like '%Ultimate%', security_color, NULL) AS security_color_ultimate_only,
+                                                    WHEN security_score > 50 AND security_score <= 75 THEN 'Yellow'
+                                                    WHEN security_score > 75 THEN 'Green' end)                                                  AS security_color,
+        IFF(ultimate_subscription_flag = 1, security_score, NULL)                                                                               AS security_score_ultimate_only,
+        IFF(ultimate_subscription_flag = 1, security_color, NULL)                                                                               AS security_color_ultimate_only,
 
 -- overall product score --
         IFF(license_utilization_score IS NULL, 0, .30) AS license_utilization_weight,
@@ -239,6 +273,7 @@ LEFT JOIN dim_crm_account
 LEFT JOIN mart_arr
     ON paid_user_metrics.dim_subscription_id_original = mart_arr.dim_subscription_id_original
     AND paid_user_metrics.snapshot_month = mart_arr.arr_month
+    AND paid_user_metrics.delivery_type = mart_arr.product_delivery_type
 WHERE paid_user_metrics.license_user_count != 0
 qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instance_identifier ORDER BY paid_user_metrics.ping_created_at DESC NULLs last) = 1
 
@@ -247,7 +282,7 @@ qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instan
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@jngCES",
-    updated_by="@jpeguero",
+    updated_by="@bbutterfield",
     created_date="2023-03-30",
-    updated_date="2023-06-22"
+    updated_date="2023-08-05"
 ) }}

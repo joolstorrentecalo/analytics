@@ -116,22 +116,22 @@ def test_get_fiscal_quarter():
     """Get fiscal quarter based on env var"""
     config_dict["task_schedule"] = "daily"
 
-    config_dict["execution_date"] = datetime(2020, 2, 1).strftime("%Y-%m-%d %H:%M:%S")
+    config_dict["logical_date"] = datetime(2020, 2, 1).strftime("%Y-%m-%d %H:%M:%S")
     res_q1 = get_fiscal_quarter()
     actual_q1 = "2021_Q1"
     assert res_q1 == actual_q1
 
-    config_dict["execution_date"] = datetime(2020, 5, 1).strftime("%Y-%m-%d %H:%M:%S")
+    config_dict["logical_date"] = datetime(2020, 5, 1).strftime("%Y-%m-%d %H:%M:%S")
     res_q2 = get_fiscal_quarter()
     actual_q2 = "2021_Q2"
     assert res_q2 == actual_q2
 
-    config_dict["execution_date"] = datetime(2020, 8, 1).strftime("%Y-%m-%d %H:%M:%S")
+    config_dict["logical_date"] = datetime(2020, 8, 1).strftime("%Y-%m-%d %H:%M:%S")
     res_q3 = get_fiscal_quarter()
     actual_q3 = "2021_Q3"
     assert res_q3 == actual_q3
 
-    config_dict["execution_date"] = datetime(2020, 11, 1).strftime("%Y-%m-%d %H:%M:%S")
+    config_dict["logical_date"] = datetime(2020, 11, 1).strftime("%Y-%m-%d %H:%M:%S")
     res_q4 = get_fiscal_quarter()
     actual_q4 = "2021_Q4"
     assert res_q4 == actual_q4

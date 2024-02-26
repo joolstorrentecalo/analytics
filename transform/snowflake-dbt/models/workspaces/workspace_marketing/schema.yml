@@ -108,5 +108,5 @@ models:
   - name: marketing_press_sov
     description: A table containing Marketing's FY23 success metric for the Awareness stage of the journey. Derived from data sent by an agency in a google sheet and uploaded using driveload.
 
-  - name: attribution_touchpoint_offer_type
-    description: Mapping by dim_crm_touchpoint_id of attribution touchpoints from common_mart_marketing.mart_crm_attribution_touchpoint table to be used in order to derive from which kind of marketing activity (offer type) a certain touchpoint comes from.
+  - name: ga_session_hit
+    description: Joins Google Analytics 360 Session and Hit tables. Each row is a hit with the session data, which is repeated for each hit. 

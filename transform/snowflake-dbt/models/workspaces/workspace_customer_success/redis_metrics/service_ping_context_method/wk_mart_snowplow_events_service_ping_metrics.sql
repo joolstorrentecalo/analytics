@@ -1,6 +1,7 @@
 {{
   config(
     materialized='incremental',
+    unique_key = "snowplow_events_service_ping_metrics_sk",
     tags=["mnpi_exception"]
   )
 }}
@@ -25,6 +26,7 @@ metric_bridge AS (
 
 joined AS (
   SELECT
+    {{ dbt_utils.generate_surrogate_key(['behavior_structured_event_pk', 'metrics_path']) }} AS snowplow_events_service_ping_metrics_sk,
     service_ping_events.behavior_structured_event_pk,
     service_ping_events.behavior_at,
     service_ping_events.gsc_pseudonymized_user_id,
@@ -37,7 +39,8 @@ joined AS (
     metric_bridge.aggregate_operator,
     metric_bridge.aggregate_attribute,
     metric_bridge.metrics_status,
-    metric_bridge.time_frame
+    metric_bridge.time_frame,
+    metric_bridge.data_source
   FROM service_ping_events
   /* 
     Inner join on redis event name only allows events to come through that have
@@ -53,5 +56,5 @@ joined AS (
     created_by="@mdrussell",
     updated_by="@mdrussell",
     created_date="2022-12-21",
-    updated_date="2023-03-08"
+    updated_date="2023-12-14"
 ) }}

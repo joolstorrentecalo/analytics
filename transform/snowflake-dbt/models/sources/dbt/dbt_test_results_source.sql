@@ -29,7 +29,7 @@ WITH source AS (
       dbt_version,
       schema_version,
       generated_at,
-      {{ dbt_utils.surrogate_key(['test_unique_id', 'generated_at']) }}    AS test_unique_key,
+      {{ dbt_utils.generate_surrogate_key(['test_unique_id', 'generated_at']) }}    AS test_unique_key,
       uploaded_at
     FROM flattened
     WHERE dbt_version IS NOT NULL
@@ -50,7 +50,7 @@ WITH source AS (
       'PRE 0.19.0'                                                         AS dbt_version,
       'https://schemas.getdbt.com/dbt/run-results/v0.json'                 AS schema_version,
       generated_at,
-      {{ dbt_utils.surrogate_key(['test_unique_id', 'generated_at']) }}    AS test_unique_key,
+      {{ dbt_utils.generate_surrogate_key(['test_unique_id', 'generated_at']) }}    AS test_unique_key,
       uploaded_at
     FROM flattened
     WHERE dbt_version IS NULL

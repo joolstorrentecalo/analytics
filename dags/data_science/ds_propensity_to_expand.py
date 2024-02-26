@@ -23,6 +23,7 @@ from kube_secrets import (
     GITLAB_ANALYTICS_PRIVATE_TOKEN,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
 
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
@@ -31,7 +32,6 @@ pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -69,7 +69,10 @@ clone_data_science_pte_repo_cmd = f"""
 # Create the DAG
 # Run on the 9th of every month
 dag = DAG(
-    "ds_propensity_to_expand", default_args=default_args, schedule_interval="0 2 9 * *"
+    "ds_propensity_to_expand",
+    default_args=default_args,
+    schedule_interval="0 2 9 * *",
+    catchup=False,
 )
 
 # Task 1
@@ -93,5 +96,7 @@ KubernetesPodOperator(
     ],
     env_vars=pod_env_vars,
     arguments=[pte_scoring_command],
+    affinity=get_affinity("data_science"),
+    tolerations=get_toleration("data_science"),
     dag=dag,
 )

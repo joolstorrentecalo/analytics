@@ -94,66 +94,6 @@ models:
         description: '{{ doc("model_updated_date") }}'
       - name: dbt_updated_at
       - name: dbt_created_at
-  
-  - name: wk_rpt_namespace_onboarding
-    description: '{{ doc("wk_rpt_namespace_onboarding") }}'
-    columns:
-      - name: ultimate_parent_namespace_id
-        description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
-        tests:
-          - not_null
-          - unique
-      - name: namespace_created_at
-      - name: namespace_created_date
-      - name: namespace_created_month
-      - name: namespace_created_week
-      - name: creator_id
-      - name: sfdc_record_id
-        description: Functional analytics team owner is Marketing Analytics. Is the SFDC ID of namespace creator. This could be either a lead or contact in SFDC. Joined from dim_crm_person 
-      - name: namespace_type
-      - name: setup_for_company
-      - name: visibility_level
-      - name: current_gitlab_plan_id
-      - name: current_gitlab_plan_title
-      - name: current_project_count
-      - name: days_since_namespace_creation
-      - name: handraise_pql_date
-      - name: is_namespace_created_within_2min_of_creator_invite_acceptance
-      - name: trial_start_date
-      - name: days_since_namespace_creation_at_trial
-      - name: first_paid_subscription_start_date
-      - name: days_since_namespace_creation_at_first_paid_subscription
-      - name: first_paid_plan_name
-      - name: is_first_paid_plan_purchased_through_subscription_portal
-      - name: days_since_namespace_creation_at_activation_event 
-      - name: activation_event_array 
-      - name: acitivity_between_d60_d90
-      - name: creator_is_valuable_signup 
-      - name: namespace_contains_valuable_signup
-      - name: has_team_activation
-      - name: namespace_creator_role 
-      - name: namespace_creator_jtbd
-      - name: namespace_creator_is_first_order_person
-        description: Functional analytics team owner is Marketing Analytics. Is First Order field from the lead and contact model in SFDC joined from dim_crm_person through dim_marketing_contact. When this value is true, the creator of the namespace is a first order person in SFDC right now. This join is ultimately is created by matching email addresses.
-      - name: days_since_namespace_creation_at_first_plan_event_date
-      - name: days_since_namespace_creation_at_first_secure_event_date
-      - name: days_since_namespace_creation_at_first_create_event_date 
-      - name: days_since_namespace_creation_at_first_verify_event_date
-      - name: days_since_namespace_creation_at_first_release_event_date
-      - name: days_since_latest_plan_event_date
-      - name: days_since_latest_secure_event_date
-      - name: days_since_latest_create_event_date 
-      - name: days_since_latest_verify_event_date
-      - name: days_since_latest_release_event_date
-      - name: stage_adoption_order
-      - name: total_stages_adopted
-        description: Unique count of product stages adopted all time.
-      - name: current_billable_member_count
-      - name: current_month_storage_gib  
-      - name: first_activity_date  
-      - name: latest_activity_date 
-      - name: dbt_updated_at
-      - name: dbt_created_at
 
   - name: suggested_merge_request_reviewers
     description: Table for exploring the suggested reviewers for a merge request
@@ -167,9 +107,6 @@ models:
   - name: wk_gitlab_dotcom_web_hooks
     description: Workspace table for exposing gitlab_dotcom_web_hooks table to Sisense.
 
-  - name: wk_rpt_product_navigation_base
-    description: Workspace table for tracking Navigation events for easier and faster querying to Sisense.
-
   - name: wk_usage_ping_geo_node_usage
     description: Workspace table for Service ping geo node usage
     columns:
@@ -177,3 +114,86 @@ models:
         description: '{{ doc("wk_usage_ping_geo_node_usage_uploaded_at") }}'
         tests:
           - not_null
+
+  - name: wk_rpt_behavior_code_suggestion_outcome
+    description: '{{ doc("wk_rpt_behavior_code_suggestion_outcome") }}'
+    columns:
+      - name: suggestion_id
+        description: The unique identifier for the code suggestion. Appears as `event_label` on the Snowplow events
+        tests:
+          - not_null
+          - unique
+      - name: language
+        description: '{{ doc("code_suggestions_language") }}'
+      - name: delivery_type
+        description: ' {{ doc("product_delivery_type") }} In the raw Snowplow data, this field comes through as `gitlab_realm`. Appears in the `code_suggestions_context`.'
+        tests:
+            - accepted_values:
+                values: ['Self-Managed', 'SaaS']
+      - name: model_engine
+        description: '{{ doc("code_suggestions_model_engine") }}'
+      - name: model_name
+        description: '{{ doc("code_suggestions_model_name") }}'
+      - name: prefix_length
+        description: '{{ doc("code_suggestions_prefix_length") }}'
+      - name: suffix_length
+        description: '{{ doc("code_suggestions_suffix_length") }}'
+      - name: extension_name
+        description: '{{ doc("ide_extension_name") }}'
+      - name: extension_version
+        description: '{{ doc("ide_extension_version") }}'
+      - name: ide_name
+        description: '{{ doc("ide_extension_ide_name") }}'
+      - name: ide_vendor
+        description: '{{ doc("ide_extension_ide_vendor") }}'
+      - name: ide_version
+        description: '{{ doc("ide_extension_ide_version") }}'
+      - name: language_server_version
+        description: '{{ doc("ide_extension_language_server_version") }}'
+      - name: requested_at
+        description: Timestamp of the `suggestion_requested` event. This event is sent when the IDE extension requests a suggestion from the backend.
+      - name: loaded_at
+        description: Timestamp of the `suggestion_loaded` event. This event is sent when the suggestion request returns without error.
+      - name: shown_at
+        description: Timestamp of the `suggestion_shown` event. This event is sent when the suggestion is shown to the user.
+      - name: accepted_at
+        description: Timestamp of the `suggestion_accepted` event. This event is sent when the suggestion was shown and then accepted by the user.
+      - name: rejected_at
+        description: Timestamp of the `suggestion_rejected` event. This event is sent when the suggestion was shown and then rejected by the user.
+      - name: cancelled_at
+        description: Timestamp of the `suggestion_cancelled` event. This event is sent when the suggestion request was canceled and not shown. For example, the user starts typing again before the suggestion is shown.
+      - name: not_provided_at
+        description: Timestamp of the `suggestion_not_provided` event. This event is sent when no suggestion was provided that could be shown to the user. This can happen if the suggestion does not meet a rule designed to limit poor suggestions from being shown. For example, the suggestion is all whitespace characters.
+      - name: error_at
+        description: Timestamp of the `suggestion_error` event. This event is sent when the suggestion request leads to an error.
+      - name: load_time_in_ms
+        description: The difference (in ms) between the `suggestion_requested` and `suggestion_loaded` events
+      - name: display_time_in_ms
+        description: The difference (in ms) between the `suggestion_shown` and `suggestion_accepted` or `suggestion_rejected` events
+      - name: suggestion_outcome
+        description: The outcome of the suggestion (ex. `suggestion_accepted`, `suggestion_rejected`, `suggestion_cancelled`, `suggestion_error`, etc)
+      - name: was_requested
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_requested` event. This event is sent when the IDE extension requests a suggestion from the backend. This field will always be TRUE.
+      - name: was_loaded
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_loaded` event. This event is sent when the suggestion request returns without error.
+      - name: was_shown
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_shown` event. This event is sent when the suggestion is shown to the user.
+      - name: was_accepted
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_accepted` event. This event is sent when the suggestion was shown and then accepted by the user.
+      - name: was_rejected
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_rejected` event. This event is sent when the suggestion was shown and then rejected by the user.
+      - name: was_cancelled
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_cancelled` event. This event is sent when the suggestion request was canceled and not shown. For example, the user starts typing again before the suggestion is shown.
+      - name: was_not_provided
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_not_provided` event. This event is sent when no suggestion was provided that could be shown to the user. This can happen if the suggestion does not meet a rule designed to limit poor suggestions from being shown. For example, the suggestion is all whitespace characters.
+      - name: was_error
+        description: Boolean flag set to `TRUE` if the suggestion had a `suggestion_error` event. This event is sent when the suggestion request leads to an error.
+      - name: created_by
+        description: '{{ doc("created_by") }}'
+      - name: updated_by
+        description: '{{ doc("updated_by") }}'
+      - name: model_created_date
+        description: '{{ doc("model_created_date") }}'
+      - name: model_updated_date
+        description: '{{ doc("model_updated_date") }}'
+

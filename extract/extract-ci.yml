@@ -1,7 +1,7 @@
 # Job definitions
 #
 .job_template: &extract_definition
-  image: registry.gitlab.com/gitlab-data/data-image/data-image:v0.0.15
+  image: registry.gitlab.com/gitlab-data/data-image/data-image:v1.0.31
   stage: 🚂 Extract
   before_script:
     - export PATH="$CI_PROJECT_DIR/orchestration/:$PATH"
@@ -51,25 +51,24 @@ qualtrics_sheetload:
   only:
     - merge_requests
   when: manual
-    
-
-🛢pgp_test:
-  <<: *extract_definition
-  script:
-    - echo $MANIFEST_NAME
-    - cd extract/postgres_pipeline/postgres_pipeline/
-    - python main.py tap ../manifests_decomposed/${MANIFEST_NAME}_db_manifest.yaml --load_type test
-  only:
-    - merge_requests
-    - $MANIFEST_NAME
-  when: manual
 
 🛢gitlab_ops_pgp_test:
   <<: *extract_definition
   script:
     - echo $MANIFEST_NAME
     - cd orchestration
-    - python ci_helpers.py use_proxy --instance_name ops-db-restore --command "python ../extract/postgres_pipeline/postgres_pipeline/main.py tap ../extract/postgres_pipeline/manifests_decomposed/${MANIFEST_NAME}_db_manifest.yaml --load_type test"
+    - python ci_helpers.py use_proxy --instance_name ops-db-restore --command "python ../extract/gitlab_saas_postgres_pipeline/postgres_pipeline/main.py tap ../extract/gitlab_saas_postgres_pipeline/manifests/${MANIFEST_NAME}_db_manifest.yaml --load_type test"
+  only:
+    - merge_requests
+    - $MANIFEST_NAME
+  when: manual
+
+🛢gitlab_saas_pgp_test:
+  <<: *extract_definition
+  script:
+    - echo $MANIFEST_NAME
+    - cd extract/gitlab_saas_postgres_pipeline/postgres_pipeline/
+    - python main.py tap ../manifests/${MANIFEST_NAME}_db_manifest.yaml --load_type test
   only:
     - merge_requests
     - $MANIFEST_NAME

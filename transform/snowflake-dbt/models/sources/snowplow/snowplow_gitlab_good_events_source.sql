@@ -10,9 +10,5 @@ WITH source as (
 
 )
 
-SELECT *,
-  NULL AS geo_zipcode,
-  NULL AS geo_latitude,
-  NULL AS geo_longitude,
-  NULL AS user_ipaddress
+SELECT *
 FROM source

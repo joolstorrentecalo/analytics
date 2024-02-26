@@ -42,7 +42,7 @@ models:
         tests:
           - unique
           - not_null
-      - name: dim_issue_id
+      - name: dim_issue_sk
         tests:
           - not_null
 

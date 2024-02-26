@@ -25,3 +25,5 @@ macros:
     description: '{{ doc("sales_qualified_source_grouped")}}'
   - name: sqs_bucket_engagement
     description: '{{ doc("sqs_bucket_engagement")}}'
+  - name: integrated_budget_holder
+    description: '{{ doc("integrated_budget_holder")}}'

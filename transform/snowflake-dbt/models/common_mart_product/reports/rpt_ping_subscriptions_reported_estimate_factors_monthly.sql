@@ -17,6 +17,8 @@
 
   SELECT
     mart_ping_instance_metric_monthly.ping_created_date_month                         AS ping_created_date_month,
+    mart_ping_instance_metric_monthly.ping_delivery_type                              AS ping_delivery_type,
+    mart_ping_instance_metric_monthly.ping_deployment_type                            AS ping_deployment_type,
     mart_ping_instance_metric_monthly.metrics_path                                    AS metrics_path,
     mart_ping_instance_metric_monthly.ping_edition                                    AS ping_edition,
     mart_ping_instance_metric_monthly.stage_name                                      AS stage_name,
@@ -32,15 +34,18 @@
     INNER JOIN latest_subscriptions
   ON mart_ping_instance_metric_monthly.latest_subscription_id = latest_subscriptions.latest_subscription_id
       AND mart_ping_instance_metric_monthly.ping_created_date_month = latest_subscriptions.ping_created_date_month
+      AND mart_ping_instance_metric_monthly.ping_deployment_type = latest_subscriptions.ping_deployment_type
     WHERE time_frame IN ('28d', 'all')
-      AND ping_delivery_type = 'Self-Managed'
-    {{ dbt_utils.group_by(n=12)}}
+      AND mart_ping_instance_metric_monthly.ping_deployment_type IN ('Self-Managed', 'Dedicated')
+    {{ dbt_utils.group_by(n=14)}}
 -- Get actual count of subs/users for a given month/metric
 
 ), count_tbl AS (
 
     SELECT
         ping_created_date_month                         AS ping_created_date_month,
+        ping_delivery_type                              AS ping_delivery_type,
+        ping_deployment_type                            AS ping_deployment_type,
         metrics_path                                    AS metrics_path,
         ping_edition                                    AS ping_edition,
         stage_name                                      AS stage_name,
@@ -53,7 +58,7 @@
         COUNT(DISTINCT latest_subscription_id)          AS subscription_count,
         SUM(licensed_user_count)                        AS seat_count
     FROM arr_joined
-    {{ dbt_utils.group_by(n=10)}}
+    {{ dbt_utils.group_by(n=12)}}
 
 -- Join actuals to number of possible subs/users
 
@@ -61,6 +66,8 @@
 
     SELECT
         count_tbl.ping_created_date_month                       AS ping_created_date_month,
+        count_tbl.ping_delivery_type                            AS ping_delivery_type,
+        count_tbl.ping_deployment_type                          AS ping_deployment_type,
         count_tbl.metrics_path                                  AS metrics_path,
         -- count_tbl.ping_edition                                  AS ping_edition,
         sub_combo.ping_edition                                  AS ping_edition, --change to pull from sub_combo, which has both CE and EE records
@@ -81,6 +88,7 @@
     LEFT JOIN sub_combo
       ON count_tbl.ping_created_date_month = sub_combo.ping_created_date_month
       AND count_tbl.metrics_path = sub_combo.metrics_path
+      AND count_tbl.ping_deployment_type = sub_combo.ping_deployment_type
       -- AND count_tbl.ping_edition = sub_combo.ping_edition --don't join on ping_edition because subscriptions will all report on EE
 
 
@@ -90,6 +98,8 @@
 
   SELECT
     ping_created_date_month                                     AS ping_created_date_month,
+    ping_delivery_type                                          AS ping_delivery_type,
+    ping_deployment_type                                        AS ping_deployment_type,
     metrics_path                                                AS metrics_path,
     ping_edition                                                AS ping_edition,
     stage_name                                                  AS stage_name,
@@ -109,6 +119,8 @@
 
   SELECT
     ping_created_date_month                                     AS ping_created_date_month,
+    ping_delivery_type                                          AS ping_delivery_type,
+    ping_deployment_type                                        AS ping_deployment_type,
     metrics_path                                                AS metrics_path,
     ping_edition                                                AS ping_edition,
     stage_name                                                  AS stage_name,
@@ -129,7 +141,7 @@
 ), final AS (
 
 SELECT
-    {{ dbt_utils.surrogate_key(['ping_created_date_month', 'metrics_path', 'ping_edition', 'estimation_grain']) }}         AS ping_subscriptions_reported_estimate_factors_monthly_id,
+    {{ dbt_utils.generate_surrogate_key(['ping_created_date_month', 'metrics_path', 'ping_edition', 'estimation_grain', 'ping_deployment_type']) }}         AS ping_subscriptions_reported_estimate_factors_monthly_id,
     *,
     {{ pct_w_counters('reporting_count', 'not_reporting_count') }}                                                         AS percent_reporting
  FROM unioned_counts
@@ -139,7 +151,7 @@ SELECT
  {{ dbt_audit(
      cte_ref="final",
      created_by="@icooper-acp",
-     updated_by="@iweeks",
+     updated_by="@jpeguero",
      created_date="2022-04-20",
-     updated_date="2022-07-29"
+     updated_date="2023-06-26"
  ) }}

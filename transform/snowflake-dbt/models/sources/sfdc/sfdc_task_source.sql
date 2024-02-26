@@ -6,7 +6,7 @@ WITH source AS (
 ), renamed AS(
 
     SELECT
-      id                                        AS task_id,
+      id                                        AS task_id, 
 
       --keys
       accountid                                 AS account_id,

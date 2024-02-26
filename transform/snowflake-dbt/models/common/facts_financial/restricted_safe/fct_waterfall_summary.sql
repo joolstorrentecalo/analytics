@@ -18,7 +18,7 @@ WITH schedule_source AS (
     SELECT
 
        -- ids
-       {{ dbt_utils.surrogate_key(['schedule_source.revenue_contract_schedule_id', 'schedule_source.revenue_contract_line_id', 
+       {{ dbt_utils.generate_surrogate_key(['schedule_source.revenue_contract_schedule_id', 'schedule_source.revenue_contract_line_id',
                                    'calendar_source.period_id', 'schedule_source.period_id']) }}                                        AS dim_waterfall_summary_id,
        schedule_source.revenue_contract_schedule_id                                                                                     AS dim_revenue_contract_schedule_id,
        schedule_source.revenue_contract_line_id                                                                                         AS dim_revenue_contract_line_id,

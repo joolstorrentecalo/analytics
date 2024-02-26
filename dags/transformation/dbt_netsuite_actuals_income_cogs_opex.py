@@ -15,6 +15,9 @@ from airflow_utils import (
     number_of_dbt_threads_argument,
     slack_failed_task,
 )
+
+from kubernetes_helpers import get_affinity, get_toleration
+
 from kube_secrets import (
     GIT_DATA_TESTS_PRIVATE_KEY,
     GIT_DATA_TESTS_CONFIG,
@@ -49,7 +52,6 @@ pod_env_vars = {**gitlab_pod_env_vars}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -78,6 +80,7 @@ dag = DAG(
     schedule_interval=dag_schedule,
     description="\nThis DAG runs netsuite_actuals_income_cogs_opex model and "
     "all parent models on business days 1-8",
+    catchup=False,
 )
 
 dbt_cmd = f"""
@@ -125,6 +128,8 @@ dbt_poc = KubernetesPodOperator(
     ],
     env_vars=pod_env_vars,
     arguments=[dbt_cmd],
+    affinity=get_affinity("dbt"),
+    tolerations=get_toleration("dbt"),
     dag=dag,
 )
 

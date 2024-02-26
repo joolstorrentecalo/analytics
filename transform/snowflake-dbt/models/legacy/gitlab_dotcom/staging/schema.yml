@@ -22,8 +22,6 @@ models:
         tags: ["tdf","gitlab_dotcom"]
         tests:
           - not_null
-  
-  - name: gitlab_dotcom_namespace_historical_monthly
 
   - name: gitlab_dotcom_namespace_lineage
     description: '{{ doc("gitlab_dotcom_namespace_lineage") }}'
@@ -122,3 +120,67 @@ models:
           - not_null
           - unique
 
+  - name: gitlab_dotcom_namespace_subscription_plan_scd
+    description: >- 
+      A table that combines the namespace, namespace lineage, and subscription histories with the plan data.  
+      The table is at the grain of namespace_id and a valid from `DATE`.  Note that the valid_from and valid_to
+      fields are truncated from `TIMESTAMP` to `DATE`.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - combined_valid_from
+            - dim_namespace_id
+    columns:
+      - name: combined_valid_from
+      - name: combined_valid_to
+      - name: is_current
+      - name: dim_namespace_id
+      - name: namespace_name
+      - name: namespace_path
+      - name: owner_id
+      - name: namespace_type
+      - name: has_avatar
+      - name: namespace_created_at
+      - name: namespace_updated_at
+      - name: is_membership_locked
+      - name: has_request_access_enabled
+      - name: has_share_with_group_locked
+      - name: visibility_level
+      - name: ldap_sync_status
+      - name: ldap_sync_error
+      - name: ldap_sync_last_update_at
+      - name: ldap_sync_last_successful_update_at
+      - name: ldap_sync_last_sync_at
+      - name: lfs_enabled
+      - name: shared_runners_enabled
+      - name: shared_runners_minutes_limit
+      - name: extra_shared_runners_minutes_limit
+      - name: repository_size_limit
+      - name: does_require_two_factor_authentication
+      - name: two_factor_grace_period
+      - name: project_creation_level
+      - name: push_rule_id
+      - name: namespace_lineage_id
+      - name: namespace_id
+      - name: parent_id
+      - name: upstream_lineage
+      - name: ultimate_parent_id
+      - name: lineage_depth
+      - name: gitlab_subscription_id
+      - name: gitlab_subscription_start_date
+      - name: gitlab_subscription_end_date
+      - name: gitlab_subscription_trial_ends_on
+      - name: max_seats_used
+      - name: seats
+      - name: is_trial
+      - name: gitlab_subscription_created_at
+      - name: gitlab_subscription_updated_at
+      - name: seats_in_use
+      - name: seats_owed
+      - name: trial_extension_type
+      - name: ultimate_parent_plan_id
+      - name: plan_title
+      - name: plan_is_paid
+      - name: plan_name
+      - name: plan_name_modified
+      - name: namespace_is_internal

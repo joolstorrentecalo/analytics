@@ -66,6 +66,6 @@ with_plans AS (
 )
 
 SELECT
-  {{ dbt_utils.surrogate_key(['snapshot_day', 'namespace_id'] ) }}                    AS snapshot_day_namespace_id,
+  {{ dbt_utils.generate_surrogate_key(['snapshot_day', 'namespace_id'] ) }}                    AS snapshot_day_namespace_id,
   *
 FROM with_plans

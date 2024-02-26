@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-from airflow.models import Variable
 from kubernetes_helpers import get_affinity, get_toleration
 from airflow_utils import (
     DATA_IMAGE,
@@ -30,7 +29,6 @@ pod_env_vars = gitlab_pod_env_vars
 logging.info(pod_env_vars)
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -38,13 +36,17 @@ default_args = {
     "retry_delay": timedelta(minutes=1),
     "sla": timedelta(hours=12),
     "sla_miss_callback": slack_failed_task,
-    "start_date": datetime(2019, 1, 1),
+    "start_date": datetime(2023, 5, 10),
     "dagrun_timeout": timedelta(hours=6),
 }
 
 # Create the DAG
 dag = DAG(
-    "bamboohr_extract", default_args=default_args, schedule_interval="0 */2 * * *"
+    "bamboohr_extract",
+    default_args=default_args,
+    schedule_interval="0 */2 * * *",
+    concurrency=1,
+    catchup=False,
 )
 
 # BambooHR Extract
@@ -69,8 +71,8 @@ bamboohr_extract = KubernetesPodOperator(
         SNOWFLAKE_LOAD_PASSWORD,
     ],
     env_vars=pod_env_vars,
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     arguments=[bamboohr_extract_cmd],
     do_xcom_push=True,
     dag=dag,

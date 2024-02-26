@@ -164,7 +164,7 @@
 ), combined AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.subscription_id','type_of_arr_change.product_category']) }}
+      {{ dbt_utils.generate_surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.subscription_id','type_of_arr_change.product_category']) }}
                                                                     AS primary_key,
       type_of_arr_change.arr_month,
       type_of_arr_change.parent_crm_account_name,

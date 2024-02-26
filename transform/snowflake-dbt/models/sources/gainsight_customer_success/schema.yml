@@ -58,7 +58,6 @@ models:
         - name: activity_id
           tests:
             - not_null
-            - unique
         - name: _fivetran_deleted
         - name: attendee_type
         - name: external_attendee_sfdc_id

@@ -71,15 +71,15 @@ WITH all_events AS (
       ev.mkt_network,
 
       ev.geo_country,
+      NULL AS geo_zipcode,
+      NULL AS geo_latitude,
+      NULL AS geo_longitude,
       ev.geo_region,
       ev.geo_region_name,
       ev.geo_city,
-      ev.geo_zipcode,
-      ev.geo_latitude,
-      ev.geo_longitude,
       ev.geo_timezone,
 
-      ev.user_ipaddress,
+      NULL AS user_ipaddress,
 
       ev.ip_isp,
       ev.ip_organization,
@@ -106,10 +106,15 @@ WITH all_events AS (
         CASE
           WHEN ev.os_timezone = 'Asia/Calcutt' THEN 'Asia/Calcutta'
           WHEN ev.os_timezone = 'Asia/Rangoo' THEN 'Asia/Rangoon'
+          WHEN ev.os_timezone = 'Asia/Shangh' THEN 'Asia/Shanghai'
           WHEN ev.os_timezone = 'America/Buenos_Airesnos_Aires' THEN 'America/Buenos_Aires'
           WHEN ev.os_timezone = 'Asia/SaigonMinh' THEN 'Asia/Ho_Chi_Minh'
           WHEN ev.os_timezone = 'Etc/Unknown' THEN NULL
           WHEN ev.os_timezone = 'America/A' THEN NULL
+          WHEN ev.os_timezone = 'SystemV/EST5' THEN NULL
+          WHEN ev.os_timezone = 'SystemV/HST10' THEN NULL
+          WHEN ev.os_timezone = 'EuropeALondon' THEN 'Europe/London'
+          WHEN ev.os_timezone = 'SystemV/CST6' THEN NULL
           ELSE ev.os_timezone
         END
         , '%2F', '/') AS os_timezone,

@@ -21,8 +21,6 @@ seeds:
     description: '{{ doc("director_location_factors") }}'
   - name: gitlab_dotcom_access_levels
     description: '{{ doc("gitlab_dotcom_access_levels") }}'
-  - name: gcp_billing_sandbox_projects
-    description: CSV containing the list of Sandbox projects for Internal cost mapping. Src https://docs.google.com/spreadsheets/d/1LhpRF1b7OzCmQpk0p6196UkrQtU5DHa12CdYuP_OfSw/edit#gid=724604829
   - name: gcp_billing_infra_pl_mapping
     description: CSV containing the static allocation % on Free/Paid/Internal P&L mappings for GCP billing - Infra labels version https://docs.google.com/spreadsheets/d/1NqiddQILw-bay__M6GgBobbjFpp15QSjfGiYwucMR4s/edit#gid=1536190575
   - name: gcp_billing_project_pl_mapping
@@ -35,3 +33,5 @@ seeds:
     description: CSV containing the resource names for AI resources in unreview-poc project
   - name: snowflake_non_team_member_user_types
     description: A categorization of non GitLab team member snowflake users
+  - name: test_employee_ids
+    description: Employee IDs that were created as test or duplicate accounts in BambooHR. 

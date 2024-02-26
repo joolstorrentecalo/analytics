@@ -5,12 +5,12 @@
 WITH customers AS (
 
     SELECT *
-    FROM {{ ref('customers_db_customers') }}
+    FROM {{ ref('prep_user_trial') }}
 
 ), trials AS  (
 
     SELECT *
-    FROM {{ ref('customers_db_trials') }}
+    FROM {{ ref('fct_trial_first') }}
 
 ), users AS (
 
@@ -28,17 +28,17 @@ WITH customers AS (
 ),   customers_with_trial AS (
 
     SELECT
-      customers.customer_provider_user_id                         AS user_id,
-      MIN(customers.customer_id)                                  AS first_customer_id,
-      MIN(customers.customer_created_at)                          AS first_customer_created_at,
-      ARRAY_AGG(customers.customer_id)
-          WITHIN GROUP (ORDER  BY customers.customer_id)          AS customer_id_list,
-      MAX(IFF(order_id IS NOT NULL, TRUE, FALSE))                 AS has_started_trial,
-      MIN(trial_start_date)                                       AS has_started_trial_at
+      customers.user_provider_user_id                             AS user_id,
+      MIN(customers.dim_user_id)                                  AS first_customer_id,
+      MIN(customers.user_created_at)                              AS first_customer_created_at,
+      ARRAY_AGG(customers.dim_user_id)
+          WITHIN GROUP (ORDER  BY customers.dim_user_id)          AS customer_id_list,
+      MAX(IFF(trials.internal_order_id IS NOT NULL, TRUE, FALSE)) AS has_started_trial,
+      MIN(trials.trial_start_date)                                AS has_started_trial_at
     FROM customers
       LEFT JOIN trials
-        ON customers.customer_id = trials.customer_id
-    WHERE customers.customer_provider = 'gitlab'
+        ON customers.dim_user_id = trials.internal_customer_id
+    WHERE customers.user_provider = 'gitlab'
     GROUP BY 1
 
 ),   joined AS (

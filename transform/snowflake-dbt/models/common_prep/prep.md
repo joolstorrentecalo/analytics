@@ -10,12 +10,6 @@ Creates base view with generated keys for application releaes.
 
 {% enddocs %}
 
-{% docs prep_audit_event_details_clean %}
-
-All GitLab audit event details, with pii replaced with hashes. Created by a union of audit event keys from `gitlab_dotcom_audit_event_details` and `gitlab_dotcom_audit_event_details_pii`.
-
-{% enddocs %}
-
 {% docs prep_dr_partner_engagement %}
 
 Creates a base view with generated keys for the dr partner engagement shared dimension and references in facts.
@@ -62,21 +56,45 @@ This model assumes that only one priority is placed in a given description or no
 
 {% docs prep_ptp_scores_by_user %}
 
-Takes the scores from prep_ptpt_scores_by_user and prep_ptpf_scores_by_user, and return a single score per user.
+Takes the scores from prep_ptpt_scores_by_user_historical and returns the most recent score for each user.
 
-The rules for de duplication of scores are:
+A user will appear in this table only if:
+
+1. They are in a trial 
+1. They have a score in the "Free" model of 3-stars or higher
+1. They have a score in the "Leads" model of 3-stars or higher.
+
+The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
+
+{% enddocs %}
+
+{% docs prep_ptp_scores_by_user_historical %}
+
+Takes scores from ptpt_scores, ptpf_scores, ptpl_scores and combines using the following logic to construct each user's score over time.
+
+The rules for de-duplication of scores are:
 
 1. If user only has PtP trial score then use that score
 1. If user only has PtP free score then use that score
-1. If user has both PtP trial score and free score:
+1. If user has multiple scores then:
 
-   a. If Trial PTP Score is 4 or 5 stars then use Trial PtP
+   a. If active Trial PTP Score is 4 or 5 stars then use Trial PtP
    
-   b. If Free PtP Score is 4 or 5 stars then use Free Ptp
+   b. If active Free PtP Score is 5 stars then use Free Ptp
 
-   c. Else use Trial PtP Score
+   c. If active Lead PtP Score is 5 stars then use Lead Ptp
 
-The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
+   d. If active Free PtP Score is 4 stars then use Free Ptp
+
+   e. If active Lead PtP Score is 4 stars then use Lead Ptp
+
+   f. Else use Trial, Free or Lead Score, in that order
+
+The resulting table is unique at the dim_marketing_contact_id and valid_from columns. The most recent scores for each user will have a NULL valid_to column
+
+A new row is added for each dim_marketing_contact_id whenever:
+- Their star rating changes
+- Their model source (Trial, Free, Lead) changes
 
 {% enddocs %}
 
@@ -84,15 +102,17 @@ The scores of this model are then used in mart_marketing_contact and the marketi
 
 Takes the scores from ptpt_scores, transforms it to user / email address grain and uses the latest score date available.
 
-The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
-
 {% enddocs %}
 
 {% docs prep_ptpf_scores_by_user %}
 
-Takes the scores from ptpf_scores, transforms it to user / email address grain and uses the latest score date available. It only syncs contacts with a `score_group >= 4`.
+Takes the scores from ptpf_scores, transforms it to user / email address grain and uses the latest score date available. It only syncs contacts with a `score_group >= 3`.
 
-The scores of this model are then used in mart_marketing_contact and the marketing pump to later be synced with Marketo and SFDC.
+{% enddocs %}
+
+{% docs prep_ptpl_scores_by_user %}
+
+Takes the scores from ptpl_scores (Propensity to Purchase: Leads), transforms it to user / email address grain and uses the latest score date available. It only syncs contacts with a `score_group >= 3`.
 
 {% enddocs %}
 
@@ -106,6 +126,12 @@ Cleaning operations vary across columns, depending on the nature of the source d
 {% docs prep_campaign %}
 
 Creates a base view with generated keys for the campaign shared dimension and fact and references in facts.
+
+{% enddocs %}
+
+{% docs prep_crm_person %}
+
+Creates a base table containing contacts and leads from Salesforce joined to bizible and marketo data.
 
 {% enddocs %}
 
@@ -180,6 +206,12 @@ Creates a base view with generated keys for the sales qualified source (source o
 {% docs prep_order_type %}
 
 Creates a base view with generated keys for the order type shared dimension and references in facts.
+
+{% enddocs %}
+
+{% docs prep_sales_funnel_kpi %}
+
+Creates a base view with generated keys for the sales funnel kpi dimension and references in facts.
 
 {% enddocs %}
 
@@ -556,7 +588,7 @@ Prep table for the dim table `dim_release` that is not yet created. It is also u
 
 {% docs prep_requirement %}
 
-Prep table for the dim table `dim_requirement` that is not yet created. It is also used in the `prep_event` table
+Prep table for the dim table `dim_requirement`. It is also used in the `prep_event` table.
 {% enddocs %}
 
 {% docs prep_geozone %}
@@ -797,11 +829,9 @@ A surrogate key that uniquely identifes each row of the User table.  This is bui
 
 {% docs prep_team_member_position %}
 
-This table contains team members' job history, including any changes in their job profile.
+This table contains team members' job history, including any changes in manager, supervisory organization, job family, job specialty, department, division, entity, management level and job grade.
 
-The table joins the staffing_history_approved_source and job_profiles_source.
-
-Only team members who have had a job change, promotion, or hire event are included in the final table. We have also included a filter for edge cases so that whenever a job code for a team member changes, it is captured. 
+This table includes BambooHR and Workday data. There are some fields that don't exist in the BHR data that will show up as NULL prior to 2022-06-16: team_id, suporg, job_code, job_family, is_position_active.
 
 
 {% enddocs %}
@@ -809,5 +839,25 @@ Only team members who have had a job change, promotion, or hire event are includ
 {% docs prep_namespace_order_trial %}
 
 This model contains data for all trial orders for each namespace from CDot trial histories and CDot orders that are being sourced from customers.gitlab.com.
+
+{% enddocs %}
+
+{% docs prep_order %}
+
+This table stores information about the subscription purchased by the customer plus some additional details used for syncing purposes with GitLab.com. The data is sourced from tap-postgres from the orders table from customers.gitlab.com.
+
+{% enddocs %}
+
+{% docs prep_cloud_activation %}
+
+This model contains data for the cloud activations sourced from tap-postgres table from customers.gitlab.com. It stores information about all the activation codes that were generated for Cloud licenses. Customers use this code after the installation of their GitLab instance. 
+
+This model contains other join keys like `billing_account_id`, `subscription_name` etc.. to be able to join back to Salesforce, Zuora, dimdate data respectively.
+
+{% enddocs %}
+
+{% docs prep_license_subscription %}
+
+This model contains the logic for connecting product licenses and subscriptions for use in connecting service ping data to customer accounts.
 
 {% enddocs %}

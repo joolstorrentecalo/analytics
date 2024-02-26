@@ -50,7 +50,7 @@
 ), keyed AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['snapshot_month',
+      {{ dbt_utils.generate_surrogate_key(['snapshot_month',
                                   'application_settings_id']) }}        AS primary_key,
       *
     FROM application_settings_snapshot_monthly

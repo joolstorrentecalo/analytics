@@ -9,6 +9,7 @@ from airflow_utils import (
     clone_repo_cmd,
     gitlab_defaults,
     slack_failed_task,
+    REPO_BASE_PATH,
 )
 from kube_secrets import (
     SNOWFLAKE_ACCOUNT,
@@ -29,7 +30,6 @@ pod_env_vars = {
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -40,11 +40,14 @@ default_args = {
 }
 
 # Create the DAG
-dag = DAG("data_pumps", default_args=default_args, schedule_interval="0 5 * * *")
+dag = DAG(
+    "data_pumps",
+    default_args=default_args,
+    schedule_interval="0 5 * * *",
+    catchup=False,
+)
 
-airflow_home = env["AIRFLOW_HOME"]
-
-with open(f"{airflow_home}/analytics/pump/pumps.yml", "r") as file:
+with open(f"{REPO_BASE_PATH}/pump/pumps.yml", "r") as file:
     try:
         stream = safe_load(file)
     except YAMLError as exc:
@@ -53,8 +56,8 @@ with open(f"{airflow_home}/analytics/pump/pumps.yml", "r") as file:
     pumps = stream["pumps"]
 
 
-execution_date = "{{ execution_date }}"
-next_execution_date = "{{ next_execution_date }}"
+logical_date = "{{ logical_date }}"
+next_logical_date = "{{ next_execution_date }}"
 
 # Loop through pumps to create tasks
 
@@ -68,8 +71,8 @@ for pump_model in pumps:
         --model={pump_model["model"]} \
         --sensitive={pump_model["sensitive"]} \
         --timestamp={pump_model["timestamp_column"]} \
-        --inc_start={execution_date} \
-        --inc_end={next_execution_date} \
+        --inc_start={logical_date} \
+        --inc_end={next_logical_date} \
         --stage={pump_model["stage"]} \
         --single={pump_model["single"]}
         """
@@ -87,8 +90,8 @@ for pump_model in pumps:
             SNOWFLAKE_LOAD_WAREHOUSE,
         ],
         env_vars=pod_env_vars,
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         arguments=[run_pumps_command],
         dag=dag,
     )

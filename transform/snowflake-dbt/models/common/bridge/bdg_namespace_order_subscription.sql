@@ -5,11 +5,11 @@
 {{ simple_cte([
     ('namespaces', 'prep_namespace'),
     ('subscriptions', 'prep_subscription'),
-    ('orders', 'customers_db_orders_source'),
+    ('orders', 'prep_order'),
     ('product_tiers', 'prep_product_tier'),
     ('product_details', 'dim_product_detail'),
     ('fct_mrr_with_zero_dollar_charges', 'fct_mrr_with_zero_dollar_charges'),
-    ('trial_histories', 'customers_db_trial_histories_source'),
+    ('trials', 'prep_namespace_order_trial'),
     ('subscription_delivery_types', 'bdg_subscription_product_rate_plan')
 ]) }}
 
@@ -61,9 +61,9 @@
       namespaces.gitlab_plan_id,
       product_tiers.dim_product_tier_id                                 AS dim_product_tier_id_namespace,
       product_tiers.product_tier_name                                   AS product_tier_name_namespace,
-      trial_histories.start_date                                        AS saas_trial_start_date,
-      trial_histories.expired_on                                        AS saas_trial_expired_on,
-      IFF(trial_histories.gl_namespace_id IS NOT NULL
+      trials.order_start_date                                           AS saas_trial_start_date,
+      trials.order_end_date                                             AS saas_trial_expired_on,
+      IFF(trials.dim_namespace_id IS NOT NULL
             OR (namespaces.dim_namespace_id = ultimate_parent_namespace_id
                 AND product_tier_name_namespace = 'SaaS - Trial: Ultimate'),
           TRUE, FALSE)                                                  AS namespace_was_trial,
@@ -71,8 +71,8 @@
     FROM namespaces
     LEFT JOIN product_tiers
       ON namespaces.dim_product_tier_id = product_tiers.dim_product_tier_id
-    LEFT JOIN trial_histories
-      ON namespaces.dim_namespace_id = trial_histories.gl_namespace_id
+    LEFT JOIN trials
+      ON namespaces.dim_namespace_id = trials.dim_namespace_id
 
 ), subscription_list AS (
   
@@ -103,8 +103,8 @@
 ), order_list AS (
 
     SELECT
-      orders.order_id,
-      orders.customer_id,
+      orders.internal_order_id                                          AS order_id,
+      orders.user_id                                                    AS customer_id,
       COALESCE(trial_tiers.dim_product_tier_id,
                product_rate_plans.dim_product_tier_id)                  AS dim_product_tier_id_with_trial,
       COALESCE(trial_tiers.product_tier_name,
@@ -112,20 +112,20 @@
       product_rate_plans.dim_product_tier_id                            AS dim_product_tier_id_order,
       product_rate_plans.product_rate_plan_id                           AS product_rate_plan_id_order,
       product_rate_plans.product_tier_name                              AS product_tier_name_order,
-      orders.subscription_id                                            AS subscription_id_order,
+      orders.dim_subscription_id                                            AS subscription_id_order,
       orders.subscription_name                                          AS subscription_name_order,
       orders.subscription_name_slugify                                  AS subscription_name_slugify_order,
       orders.order_start_date,
       orders.order_end_date,
-      orders.gitlab_namespace_id                                        AS namespace_id_order,
-      orders.order_is_trial,
+      orders.dim_namespace_id                                           AS namespace_id_order,
+      orders.is_order_trial                                             AS order_is_trial,
       IFF(IFNULL(orders.order_end_date, CURRENT_DATE) >= CURRENT_DATE,
           TRUE, FALSE)                                                  AS is_order_active
     FROM orders
     LEFT JOIN product_rate_plans
       ON orders.product_rate_plan_id = product_rate_plans.product_rate_plan_id
     LEFT JOIN trial_tiers
-      ON orders.order_is_trial = TRUE
+      ON orders.is_order_trial = TRUE
     WHERE orders.order_start_date IS NOT NULL
       AND (product_rate_plans.product_rate_plan_id IS NOT NULL
           OR orders.product_rate_plan_id IN ('premium-saas-trial-plan-id', 'ultimate-saas-trial-plan-id', 'free-plan-id')
@@ -221,7 +221,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@ischweickartDD",
-    updated_by="@jpeguero",
+    updated_by="@snalamaru",
     created_date="2021-01-14",
-    updated_date="2023-06-22"
+    updated_date="2023-09-26"
 ) }}

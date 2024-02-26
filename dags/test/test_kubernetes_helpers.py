@@ -25,14 +25,17 @@ def get_affinity_name_from_value(affinity):
 
 
 def test_affinity():
-    scd_affinity = get_affinity("scd")
-    prod_affinity = get_affinity("production")
+    extraction_highmem_affinity = get_affinity("extraction_highmem")
+    dbt_affinity = get_affinity("dbt")
 
     set_testing_env()
-    test_affinity = get_affinity("production")
+    test_affinity = get_affinity("dbt")
 
-    assert get_affinity_name_from_value(scd_affinity) == "pgp"
-    assert get_affinity_name_from_value(prod_affinity) == "production"
+    assert (
+        get_affinity_name_from_value(extraction_highmem_affinity)
+        == "extraction_highmem"
+    )
+    assert get_affinity_name_from_value(dbt_affinity) == "dbt"
     assert get_affinity_name_from_value(test_affinity) == "test"
 
 
@@ -41,14 +44,17 @@ def get_toleration_name_from_value(toleration):
 
 
 def test_toleration():
-    scd_toleration = get_toleration("scd")
-    prod_toleration = get_toleration("production")
+    extraction_highmem_toleration = get_toleration("extraction_highmem")
+    dbt_toleration = get_toleration("dbt")
     data_science_toleration = get_toleration("data_science")
 
     set_testing_env()
-    test_toleration = get_toleration("production")
+    test_toleration = get_toleration("dbt")
 
-    assert get_toleration_name_from_value(scd_toleration) == "scd"
+    assert (
+        get_toleration_name_from_value(extraction_highmem_toleration)
+        == "extraction_highmem"
+    )
     assert get_toleration_name_from_value(test_toleration) == "test"
-    assert get_toleration_name_from_value(prod_toleration) == "production"
+    assert get_toleration_name_from_value(dbt_toleration) == "dbt"
     assert get_toleration_name_from_value(data_science_toleration) == "data_science"

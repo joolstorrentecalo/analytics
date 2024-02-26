@@ -5,7 +5,7 @@
   )
 }}
 
-WITH events AS (
+WITH events_old AS (
   SELECT *
   FROM {{ ref('wk_fct_snowplow_events_service_ping') }}
   /*
@@ -19,13 +19,40 @@ WITH events AS (
   WHERE key_path IS NOT NULL
 ),
 
+events_new AS (
+  SELECT *
+  FROM {{ ref('wk_mart_snowplow_events_service_ping_metrics') }}
+  /* 
+  Only include redis metrics with all-time time frame, which limits to event-based metrics.
+  More details here: https://gitlab.com/gitlab-org/gitlab/-/issues/411607#note_1392956155
+  */
+  WHERE data_source = 'redis'
+    AND time_frame = 'all'
+),
+
+unioned AS (
+  SELECT
+    DATE_TRUNC('month', events_old.behavior_at) AS month,
+    events_old.ultimate_parent_namespace_id,
+    events_old.key_path                             AS metrics_path
+  FROM events_old
+
+  UNION ALL 
+
+  SELECT
+    DATE_TRUNC('month', events_new.behavior_at) AS month,
+    events_new.ultimate_parent_namespace_id,
+    events_new.metrics_path
+  FROM events_new
+),
+
 agg AS (
   SELECT
-    DATE_TRUNC('month', events.behavior_at) AS month,
-    events.ultimate_parent_namespace_id,
-    events.key_path                         AS metrics_path,
+    unioned.month,
+    unioned.ultimate_parent_namespace_id,
+    unioned.metrics_path,
     COUNT(*)                                AS monthly_value
-  FROM events
+  FROM unioned
   {{ dbt_utils.group_by(n = 3) }}
 ),
 
@@ -51,5 +78,5 @@ final AS (
     created_by="@mdrussell",
     updated_by="@mdrussell",
     created_date="2023-01-30",
-    updated_date="2023-03-08"
+    updated_date="2023-12-14"
 ) }}

@@ -58,8 +58,9 @@ def get_list_of_clones(engine: Engine) -> List[str]:
         logging.info("Getting list of databases...")
         connection = engine.connect()
         databases = [row[0] for row in connection.execute(query).fetchall()]
-    except:
+    except Exception as exc:
         logging.info("Failed to get list of databases...")
+        logging.info(exc)
     finally:
         connection.close()
         engine.dispose()

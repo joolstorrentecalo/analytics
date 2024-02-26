@@ -1,8 +1,10 @@
 WITH issues AS (
   
-    SELECT *
-    FROM {{ ref ('gitlab_dotcom_issues_xf') }}
-    WHERE project_id =16492321 --Recruiting for Open Positions
+    SELECT prep_issue.*
+    FROM {{ ref ('prep_issue') }}
+    LEFT JOIN  {{ ref('prep_project') }}
+      ON prep_issue.dim_project_sk = prep_project.dim_project_sk
+    WHERE prep_project.project_id = 16492321 --Recruiting for Open Positions
 
 ), users AS (
 
@@ -28,13 +30,13 @@ WITH issues AS (
 
     SELECT 
       issues.issue_title,
-      issues.issue_iid,
-      issues.issue_created_at,
+      issues.issue_internal_id,
+      issues.created_at                                                 AS issue_created_at,
       DATE_TRUNC(week,issue_created_at)                                 AS issue_created_week,
       issues.issue_closed_at,
       DATE_TRUNC(week,issues.issue_closed_at)                           AS issue_closed_week,
       IFF(issue_closed_at IS NOT NULL,1,0)                              AS is_issue_closed,
-      issues.state                                                      AS issue_state,
+      issues.issue_state                                                AS issue_state,
       agg_assignee.assignee,
       issues.issue_description,
       SPLIT_PART(issue_description, '**Weekly Check-In Table**',2)      AS issue_description_split,
@@ -79,7 +81,7 @@ WITH issues AS (
 
     SELECT
       issue_title,
-      issue_iid,
+      issue_internal_id AS issue_iid,
       issue_created_at,
       issue_created_week,
       issue_closed_at,

@@ -9,6 +9,7 @@ from airflow_utils import (
     gitlab_defaults,
     slack_failed_task,
     gitlab_pod_env_vars,
+    REPO_BASE_PATH,
 )
 from kube_secrets import (
     GCP_SERVICE_CREDS,
@@ -28,7 +29,6 @@ pod_env_vars = gitlab_pod_env_vars
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -40,8 +40,6 @@ default_args = {
     "dagrun_timeout": timedelta(hours=6),
 }
 
-airflow_home = env["AIRFLOW_HOME"]
-
 
 # Create the DAG
 dag = DAG(
@@ -49,6 +47,7 @@ dag = DAG(
     default_args=default_args,
     schedule_interval="0 3 * * *",
     concurrency=2,
+    catchup=False,
 )
 
 
@@ -58,7 +57,7 @@ def extract_manifest(file_path):
     return manifest_dict
 
 
-manifest = extract_manifest("analytics/extract/zuora_query_api/src/queries.yml")
+manifest = extract_manifest(f"{REPO_BASE_PATH}/extract/zuora_query_api/src/queries.yml")
 tables = manifest.get("tables")
 
 for table_name in tables:
@@ -83,8 +82,8 @@ for table_name in tables:
             ZUORA_API_CLIENT_SECRET,
         ],
         env_vars=pod_env_vars,
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         arguments=[extract_command],
         dag=dag,
     )

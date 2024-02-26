@@ -84,3 +84,9 @@ QUALIFY ROW_NUMBER() OVER (PARTITION BY id ORDER BY updated_at DESC) = 1
 and this is handy as the files for data deduplication as smaller and unified.
 
 {% enddocs %}
+
+{% docs visibility_level_name %}
+
+Maps visibility level ids to their corresponding names (Public, Internal, Private).
+
+{% enddocs %}

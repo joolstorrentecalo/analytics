@@ -119,6 +119,20 @@ renamed AS (
 	  time_from_last_transfer_to_sequence__c AS time_from_last_transfer_to_sequence,
 	  time_from_mql_to_last_transfer__c AS time_from_mql_to_last_transfer,
     high_priority__c AS is_high_priority,
+    high_priority_timestamp__c AS high_priority_datetime,
+    ptp_score_date__c AS ptp_score_date,
+    ptp_score_group__c AS ptp_score_group,
+    pqlnamespacecreatorjobdescription__c AS pql_namespace_creator_job_description,
+    pql_namespace_id__c AS pql_namespace_id,
+    pql_namespace_name__c AS pql_namespace_name,
+    pqlnamespaceusers__c AS pql_namespace_users,
+    pql_product_qualified_lead__c AS is_product_qualified_lead,
+    ptp_days_since_trial_start__c AS ptp_days_since_trial_start,
+    ptp_insights__c AS ptp_insights,
+    ptp_is_ptp_contact__c AS is_ptp_contact,
+    ptp_namespace_id__c AS ptp_namespace_id,
+    ptp_past_insights__c AS ptp_past_insights,
+    ptp_past_score_group__c AS ptp_past_score_group,
     {{ sfdc_source_buckets('leadsource') }}
 
 
@@ -149,6 +163,11 @@ renamed AS (
     pathfactory_content_list__c AS pathfactory_content_list,
     pathfactory_content_journey__c AS pathfactory_content_journey,
     pathfactory_topic_list__c AS pathfactory_topic_list,
+
+    --Traction Fields
+    tracrtc__first_response_time_start__c AS traction_first_response_time,
+    tracrtc__first_response_time_in_seconds__c AS traction_first_response_time_seconds,
+    tracrtc__response_time_within_business_hours__c AS traction_response_time_in_business_hours,
 
     --gl info
     account_owner__c AS account_owner,

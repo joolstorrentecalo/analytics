@@ -43,7 +43,7 @@ if __name__ == "__main__":
     bamboo = BambooAPI(subdomain="gitlab")
 
     config_dict = env.copy()
-    snowflake_load_database = config_dict["SNOWFLAKE_LOAD_DATABASE"]
+    snowflake_load_database = config_dict["SNOWFLAKE_LOAD_DATABASE"].strip()
 
     snowflake_engine = snowflake_engine_factory(config_dict, "LOADER")
 

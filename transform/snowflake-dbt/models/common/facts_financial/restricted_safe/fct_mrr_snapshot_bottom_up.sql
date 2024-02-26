@@ -196,9 +196,9 @@ WITH dim_date AS (
 ), final AS (
 
     SELECT
-        {{ dbt_utils.surrogate_key(['snapshot_id', 'dim_date_id', 'dim_charge_id']) }}
+        {{ dbt_utils.generate_surrogate_key(['snapshot_id', 'dim_date_id', 'dim_charge_id']) }}
                                                             AS mrr_snapshot_id,
-        {{ dbt_utils.surrogate_key(['dim_date_id', 'dim_charge_id']) }}
+        {{ dbt_utils.generate_surrogate_key(['dim_date_id', 'dim_charge_id']) }}
                                                             AS mrr_id,
         snapshot_id,
         dim_date_id,

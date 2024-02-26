@@ -1,3 +1,7 @@
+{{ config(
+    tags=["mnpi_exception"] 
+) }}
+
 WITH campaign_details AS (
 
     SELECT *
@@ -6,14 +10,12 @@ WITH campaign_details AS (
 ), bizible_touchpoints AS (
 
     SELECT *
-    FROM {{ ref('sfdc_bizible_touchpoint_source') }}
-    WHERE is_deleted = 'FALSE'
+    FROM {{ ref('prep_crm_touchpoint') }}
 
 ), bizible_attribution_touchpoints AS (
 
     SELECT *
-    FROM {{ ref('sfdc_bizible_attribution_touchpoint_source') }}
-    WHERE is_deleted = 'FALSE'
+    FROM {{ ref('prep_crm_attribution_touchpoint') }}
 
 ), bizible_touchpoints_with_campaign AS (
 
@@ -40,6 +42,11 @@ WITH campaign_details AS (
     SELECT *
     FROM {{ ref('map_bizible_campaign_grouping') }}
 
+), devrel_influence_campaigns AS (
+
+    SELECT *
+    FROM {{ ref('sheetload_devrel_influenced_campaigns_source') }}
+
 ), combined_touchpoints AS (
 
     SELECT
@@ -53,6 +60,8 @@ WITH campaign_details AS (
       bizible_touchpoint_source,
       bizible_touchpoint_source_type,
       bizible_touchpoint_type,
+      touchpoint_offer_type,
+      touchpoint_offer_type_grouped,
       bizible_ad_campaign_name,
       bizible_ad_content,
       bizible_ad_group_name,
@@ -61,22 +70,37 @@ WITH campaign_details AS (
       bizible_landing_page,
       bizible_landing_page_raw,
 
-      --UTMs not captured by the Bizible
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_content']::VARCHAR       AS bizible_form_page_utm_content,
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_budget']::VARCHAR        AS bizible_form_page_utm_budget,
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_allptnr']::VARCHAR       AS bizible_form_page_utm_allptnr,
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_partnerid']::VARCHAR     AS bizible_form_page_utm_partnerid,
+    --UTMs not captured by the Bizible - Landing Page
+      PARSE_URL(bizible_landing_page_raw)['parameters']['utm_campaign']::VARCHAR  AS bizible_landing_page_utm_campaign,
+      PARSE_URL(bizible_landing_page_raw)['parameters']['utm_medium']::VARCHAR    AS bizible_landing_page_utm_medium,
+      PARSE_URL(bizible_landing_page_raw)['parameters']['utm_source']::VARCHAR    AS bizible_landing_page_utm_source,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_content']::VARCHAR   AS bizible_landing_page_utm_content,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_budget']::VARCHAR    AS bizible_landing_page_utm_budget,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_allptnr']::VARCHAR   AS bizible_landing_page_utm_allptnr,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_partnerid']::VARCHAR AS bizible_landing_page_utm_partnerid,
+    --UTMs not captured by the Bizible - Form Page
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_campaign']::VARCHAR     AS bizible_form_page_utm_campaign,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_medium']::VARCHAR       AS bizible_form_page_utm_medium,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_source']::VARCHAR       AS bizible_form_page_utm_source,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_content']::VARCHAR       AS bizible_form_page_utm_content,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_budget']::VARCHAR        AS bizible_form_page_utm_budget,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_allptnr']::VARCHAR       AS bizible_form_page_utm_allptnr,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_partnerid']::VARCHAR     AS bizible_form_page_utm_partnerid,
+
+    --Final UTM Parameters
+      COALESCE(bizible_landing_page_utm_campaign, bizible_form_page_utm_campaign)   AS utm_campaign,
+      COALESCE(bizible_landing_page_utm_medium, bizible_form_page_utm_medium)       AS utm_medium,
+      COALESCE(bizible_landing_page_utm_source, bizible_form_page_utm_source)       AS utm_source,
+      COALESCE(bizible_landing_page_utm_budget, bizible_form_page_utm_budget)       AS utm_budget,
+      COALESCE(bizible_landing_page_utm_content, bizible_form_page_utm_content)     AS utm_content,
+      COALESCE(bizible_landing_page_utm_allptnr, bizible_form_page_utm_allptnr)     AS utm_allptnr,
+      COALESCE(bizible_landing_page_utm_partnerid, bizible_form_page_utm_partnerid) AS utm_partnerid,
       bizible_marketing_channel,
       bizible_marketing_channel_path,
       bizible_medium,
       bizible_referrer_page,
       bizible_referrer_page_raw,
       bizible_salesforce_campaign,
-      utm_content,
       '0'                           AS is_attribution_touchpoint,
       dim_campaign_id,
       dim_parent_campaign_id,
@@ -97,6 +121,8 @@ WITH campaign_details AS (
       bizible_touchpoint_source,
       bizible_touchpoint_source_type,
       bizible_touchpoint_type,
+      touchpoint_offer_type,
+      touchpoint_offer_type_grouped,
       bizible_ad_campaign_name,
       bizible_ad_content,
       bizible_ad_group_name,
@@ -105,15 +131,31 @@ WITH campaign_details AS (
       bizible_landing_page,
       bizible_landing_page_raw,
 
-    --UTMs not captured by the Bizible
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_content']::VARCHAR       AS bizible_form_page_utm_content,
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_budget']::VARCHAR        AS bizible_form_page_utm_budget,
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_allptnr']::VARCHAR       AS bizible_form_page_utm_allptnr,
-      PARSE_URL(bizible_form_url_raw)['parameters']['utm_partnerid']::VARCHAR     AS bizible_form_page_utm_partnerid,
+    --UTMs not captured by the Bizible - Landing Page
+      PARSE_URL(bizible_landing_page_raw)['parameters']['utm_campaign']::VARCHAR  AS bizible_landing_page_utm_campaign,
+      PARSE_URL(bizible_landing_page_raw)['parameters']['utm_medium']::VARCHAR    AS bizible_landing_page_utm_medium,
+      PARSE_URL(bizible_landing_page_raw)['parameters']['utm_source']::VARCHAR    AS bizible_landing_page_utm_source,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_content']::VARCHAR   AS bizible_landing_page_utm_content,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_budget']::VARCHAR    AS bizible_landing_page_utm_budget,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_allptnr']::VARCHAR   AS bizible_landing_page_utm_allptnr,
       PARSE_URL(bizible_landing_page_raw)['parameters']['utm_partnerid']::VARCHAR AS bizible_landing_page_utm_partnerid,
+    --UTMs not captured by the Bizible - Form Page
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_campaign']::VARCHAR     AS bizible_form_page_utm_campaign,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_medium']::VARCHAR       AS bizible_form_page_utm_medium,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_source']::VARCHAR       AS bizible_form_page_utm_source,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_content']::VARCHAR       AS bizible_form_page_utm_content,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_budget']::VARCHAR        AS bizible_form_page_utm_budget,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_allptnr']::VARCHAR       AS bizible_form_page_utm_allptnr,
+      PARSE_URL(bizible_form_url_raw)['parameters']['utm_partnerid']::VARCHAR     AS bizible_form_page_utm_partnerid,
+
+    --Final UTM Parameters
+      COALESCE(bizible_landing_page_utm_campaign, bizible_form_page_utm_campaign)   AS utm_campaign,
+      COALESCE(bizible_landing_page_utm_medium, bizible_form_page_utm_medium)       AS utm_medium,
+      COALESCE(bizible_landing_page_utm_source, bizible_form_page_utm_source)       AS utm_source,
+      COALESCE(bizible_landing_page_utm_budget, bizible_form_page_utm_budget)       AS utm_budget,
+      COALESCE(bizible_landing_page_utm_content, bizible_form_page_utm_content)     AS utm_content,
+      COALESCE(bizible_landing_page_utm_allptnr, bizible_form_page_utm_allptnr)     AS utm_allptnr,
+      COALESCE(bizible_landing_page_utm_partnerid, bizible_form_page_utm_partnerid) AS utm_partnerid,
 
       bizible_marketing_channel,
       CASE
@@ -125,7 +167,6 @@ WITH campaign_details AS (
       bizible_referrer_page,
       bizible_referrer_page_raw,
       bizible_salesforce_campaign,
-      utm_content,
       '1'                           AS is_attribution_touchpoint,
       dim_campaign_id,
       dim_parent_campaign_id,
@@ -144,6 +185,8 @@ WITH campaign_details AS (
       combined_touchpoints.bizible_touchpoint_source,
       combined_touchpoints.bizible_touchpoint_source_type,
       combined_touchpoints.bizible_touchpoint_type,
+      combined_touchpoints.touchpoint_offer_type,
+      combined_touchpoints.touchpoint_offer_type_grouped,
       combined_touchpoints.bizible_ad_campaign_name,
       combined_touchpoints.bizible_ad_content,
       combined_touchpoints.bizible_ad_group_name,
@@ -151,21 +194,27 @@ WITH campaign_details AS (
       combined_touchpoints.bizible_form_url_raw,
       combined_touchpoints.bizible_landing_page,
       combined_touchpoints.bizible_landing_page_raw,
-      bizible_form_page_utm_content,
-      bizible_form_page_utm_budget,
-      bizible_form_page_utm_allptnr,
-      bizible_form_page_utm_partnerid,
-      bizible_landing_page_utm_content,
-      bizible_landing_page_utm_budget,
-      bizible_landing_page_utm_allptnr,
-      bizible_landing_page_utm_partnerid,
+      combined_touchpoints.bizible_form_page_utm_content,
+      combined_touchpoints.bizible_form_page_utm_budget,
+      combined_touchpoints.bizible_form_page_utm_allptnr,
+      combined_touchpoints.bizible_form_page_utm_partnerid,
+      combined_touchpoints.bizible_landing_page_utm_content,
+      combined_touchpoints.bizible_landing_page_utm_budget,
+      combined_touchpoints.bizible_landing_page_utm_allptnr,
+      combined_touchpoints.bizible_landing_page_utm_partnerid,
+      combined_touchpoints.utm_campaign,
+      combined_touchpoints.utm_medium,
+      combined_touchpoints.utm_source,
+      combined_touchpoints.utm_content,
+      combined_touchpoints.utm_budget,
+      combined_touchpoints.utm_allptnr,
+      combined_touchpoints.utm_partnerid,
       combined_touchpoints.bizible_marketing_channel,
       combined_touchpoints.bizible_marketing_channel_path,
       combined_touchpoints.bizible_medium,
       combined_touchpoints.bizible_referrer_page,
       combined_touchpoints.bizible_referrer_page_raw,
       combined_touchpoints.bizible_salesforce_campaign,
-      combined_touchpoints.utm_content,
       combined_touchpoints.is_attribution_touchpoint,
       bizible_campaign_grouping.integrated_campaign_grouping,
       bizible_campaign_grouping.bizible_integrated_campaign_grouping,
@@ -214,10 +263,20 @@ WITH campaign_details AS (
           THEN 1
         ELSE 0
       END AS is_dg_sourced,
-      combined_touchpoints.bizible_created_date 
+      combined_touchpoints.bizible_created_date,
+      CASE 
+        WHEN devrel_influence_campaigns.campaign_name IS NOT NULL 
+          THEN TRUE 
+          ELSE FALSE 
+      END AS is_devrel_influenced_campaign,
+      devrel_influence_campaigns.campaign_type    AS devrel_campaign_type,
+      devrel_influence_campaigns.description      AS devrel_campaign_description,
+      devrel_influence_campaigns.influence_type   AS devrel_campaign_influence_type
     FROM combined_touchpoints
     LEFT JOIN bizible_campaign_grouping
       ON combined_touchpoints.dim_crm_touchpoint_id = bizible_campaign_grouping.dim_crm_touchpoint_id
+    LEFT JOIN devrel_influence_campaigns
+      ON combined_touchpoints.bizible_ad_campaign_name = devrel_influence_campaigns.campaign_name
 )
 
 {{ dbt_audit(
@@ -225,5 +284,5 @@ WITH campaign_details AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2021-01-21",
-    updated_date="2023-06-01"
+    updated_date="2024-01-31" 
 ) }}

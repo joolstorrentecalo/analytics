@@ -11,7 +11,7 @@ WITH source_data AS (
 ), unioned AS (
 
     SELECT DISTINCT
-      {{ dbt_utils.surrogate_key(['dim_parent_sales_segment_name_source']) }}   AS dim_sales_segment_id,
+      {{ dbt_utils.generate_surrogate_key(['dim_parent_sales_segment_name_source']) }}   AS dim_sales_segment_id,
       dim_parent_sales_segment_name_source                                      AS sales_segment_name,
       dim_parent_sales_segment_grouped_source                                   AS sales_segment_grouped
     FROM source_data

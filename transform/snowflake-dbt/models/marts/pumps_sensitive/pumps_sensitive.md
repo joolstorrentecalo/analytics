@@ -20,5 +20,19 @@ This table pulls data from the employee directory and populated a list of employ
 {% enddocs %}
 
 {% docs pump_daily_data_science_scores %}
-This table contains data science generated scores that will be uploaded to Salesforce.
+
+This table contains PtE & PtC predicted scores that will automatically uploaded to Salesforce via Openprise.
+
+{% enddocs %}
+
+{% docs pump_churn_forecasting_scores %}
+
+This table contains Churn Forecasting predicted scores that will be automatically uploaded to Salesforce via Openprise.
+
+{% enddocs %}
+
+{% docs pump_opportunity_forecasting_scores %}
+
+This table contains Opportunity Forecasting predicted scores that will be automatically uploaded to Salesforce via Openprise.
+
 {% enddocs %}

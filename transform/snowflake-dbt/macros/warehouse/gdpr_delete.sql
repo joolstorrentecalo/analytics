@@ -16,7 +16,7 @@
         WITH email_columns AS (
         
             SELECT 
-                LOWER(table_catalog)||'.'||LOWER(table_schema)||'.'||LOWER(table_name) AS fqd_name,
+                LOWER(table_catalog)||'.'||LOWER(table_schema)||'."'||UPPER(table_name)||'"' AS fqd_name,
                 LISTAGG(column_name,',') AS email_column_names
             FROM "RAW"."INFORMATION_SCHEMA"."COLUMNS"
             WHERE LOWER(column_name) LIKE '%email%'
@@ -69,26 +69,27 @@
         WITH email_columns AS (
         
             SELECT 
-                LOWER(table_catalog)||'.'||LOWER(table_schema)||'.'||LOWER(table_name) AS fqd_name,
+                LOWER(table_catalog)||'.'||LOWER(table_schema)||'."'||UPPER(table_name)||'"' AS fqd_name,
                 LISTAGG(column_name,',') AS email_column_names
             FROM "RAW"."INFORMATION_SCHEMA"."COLUMNS"
             WHERE LOWER(column_name) LIKE '%email%'
                 AND table_schema IN ('SNAPSHOTS')
                 AND data_type NOT IN {{data_types}}
                 AND LOWER(column_name) NOT IN {{exclude_columns}}
+                AND LOWER(column_name) NOT LIKE '%\_at'
             GROUP BY 1
         
         ), non_email_columns AS (
 
             SELECT 
-              LOWER(table_catalog)||'.'||LOWER(table_schema)||'.'||LOWER(table_name) AS fqd_name,
+              LOWER(table_catalog)||'.'||LOWER(table_schema)||'."'||UPPER(table_name)||'"' AS fqd_name,
               LISTAGG(column_name,',') AS non_email_column_names
             FROM "RAW"."INFORMATION_SCHEMA"."COLUMNS" AS a
             WHERE LOWER(column_name) NOT LIKE '%email%'
               AND table_schema IN ('SNAPSHOTS')
               AND data_type NOT IN {{data_types}}
               AND LOWER(column_name) NOT IN {{exclude_columns}}
-              AND LOWER(column_name) NOT LIKE '%id%'
+              AND NOT (LOWER(column_name) LIKE ANY ('%id%', '%\_at'))
               AND LOWER(column_name) NOT IN {{exclude_columns}}
             GROUP BY 1
 
@@ -99,7 +100,8 @@
           a.email_column_names, 
           b.non_email_column_names
         FROM email_columns a
-        LEFT JOIN non_email_columns b ON a.fqd_name = b.fqd_name;
+        LEFT JOIN non_email_columns b ON a.fqd_name = b.fqd_name
+        where b.non_email_column_names is not null;
 
     {%- endcall -%}
 

@@ -1,6 +1,8 @@
 WITH source AS (
   SELECT *
   FROM {{ source('workday','custom_bonus') }}
+  WHERE NOT _fivetran_deleted
+  
 ),
 
 renamed AS (

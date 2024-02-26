@@ -3,6 +3,9 @@
   including changes to dbt models, tests, seeds, and docs.
 --->
 
+
+Please see the new [dbt change workflow](https://about.gitlab.com/handbook/business-technology/data-team/how-we-work/dbt-change-workflow/) handbook page for guidance on submitting a dbt MR. We will update the MR template at a later point in time.
+
 ## Issue
 <!--- Link the Issue this MR closes --->
 Closes #

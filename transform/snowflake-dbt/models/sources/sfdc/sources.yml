@@ -4,7 +4,7 @@ sources:
   - name: salesforce
     tags: ["tdf","sfdc"]
     database: '{{ env_var("SNOWFLAKE_LOAD_DATABASE") }}'
-    schema: salesforce_stitch
+    schema: salesforce_v2_stitch
     loader: Stitch
     loaded_at_field: _sdc_batched_at
 
@@ -99,6 +99,18 @@ sources:
         description: '{{ doc("sfdc_userrole_source") }}'
       - name: user
         description: '{{ doc("sfdc_user_source") }}'
+      - name: zoom_webinar
+        identifier: zoom_app__zoom_webinar__c
+        description: '{{ doc("sfdc_zoom_source") }}'
+      - name: zoom_webinar_attendee
+        identifier: zoom_app__zoom_webinar_attendee__c
+        description: '{{ doc("sfdc_zoom_source") }}'
+      - name: zoom_webinar_history
+        identifier: zoom_app__zoom_webinar_history__c
+        description: '{{ doc("sfdc_zoom_source") }}'
+      - name: zoom_webinar_registrant
+        identifier: zoom_app__zoom_webinar_registrant__c
+        description: '{{ doc("sfdc_zoom_source") }}'
       - name: zqu_quote
         identifier: zqu__quote__c
       - name: zqu_quote_amendment
@@ -109,3 +121,27 @@ sources:
       - name: zqu_quote_rate_plan_charge
         identifier: zqu__quoterateplancharge__c
         description: '{{ doc("sfdc_zqu_quote_rate_plan_charge_source")}}'
+      - name: impartner_mdf_funds_claim
+        identifier: impartnermdf__fundsclaim__c
+        description: '{{ doc("sfdc_impartner_mdf_funds_claim_source") }}'
+      - name: impartner_mdf_funds_request
+        identifier: impartnermdf__fundsrequest__c
+        description: '{{ doc("sfdc_impartner_mdf_funds_request_source") }}'
+      - name: vartopia_drs_registration
+        identifier: vartopiadrs__registration__c
+        description: '{{ doc("sfdc_vartopia_drs_registration_source") }}'
+      - name: permission_set_assignment
+        identifier: permissionsetassignment
+      - name: profile
+        identifier: profile
+      - name: group_member
+        identifier: groupmember
+      - name: group
+        identifier: '"GROUP"'
+      - name: account_share
+        identifier: accountshare
+      - name: opportunity_share
+        identifier: opportunityshare
+      - name: user_territory_association
+        identifier: userterritory2association
+

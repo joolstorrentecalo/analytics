@@ -11,7 +11,9 @@ from airflow_utils import (
     gitlab_defaults,
     slack_failed_task,
     gitlab_pod_env_vars,
+    REPO_BASE_PATH,
 )
+
 from kube_secrets import (
     SNOWFLAKE_ACCOUNT,
     SNOWFLAKE_LOAD_PASSWORD,
@@ -33,7 +35,6 @@ pod_env_vars = gitlab_pod_env_vars
 logging.info(pod_env_vars)
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -41,7 +42,7 @@ default_args = {
     "retry_delay": timedelta(minutes=1),
     "sla": timedelta(hours=12),
     "sla_miss_callback": slack_failed_task,
-    "start_date": datetime(2019, 1, 1),
+    "start_date": datetime(2023, 5, 20),
     "dagrun_timeout": timedelta(hours=6),
 }
 
@@ -51,6 +52,7 @@ dag = DAG(
     default_args=default_args,
     concurrency=2,
     schedule_interval="25 */12 * * *",
+    catchup=False,
 )
 
 
@@ -61,7 +63,7 @@ def extract_manifest(file_path):
 
 
 manifest = extract_manifest(
-    "analytics/extract/bizible/manifests/el_bizible_tables.yaml"
+    f"{REPO_BASE_PATH}/extract/bizible/manifests/el_bizible_tables.yaml"
 )
 tables = manifest.get("tables")
 
@@ -95,10 +97,10 @@ for table_name in tables:
             **pod_env_vars,
             "TASK_INSTANCE": "{{ task_instance_key_str }}",
             "task_id": task_identifier,
-            "START_TIME": "{{ execution_date }}",
+            "START_TIME": "{{ logical_date }}",
         },
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         arguments=[extract_command],
         dag=dag,
     )

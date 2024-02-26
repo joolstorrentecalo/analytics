@@ -23,11 +23,11 @@ models:
       - name: nationality
         description: Team member's nationality
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ethnicity
         description: Team member's ethnicity
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: first_name
         description: Team member's first name
       - name: last_name
@@ -37,21 +37,21 @@ models:
       - name: gender
         description: Team member's gender
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: work_email
         description: Team member's work email
       - name: date_of_birth
         description: Team member's date of birth
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: age
         description: Team member's age
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: age_cohort
         description: Team member's age cohort
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: cost_center
         description: Team member's cost center
       - name: gitlab_username
@@ -59,33 +59,33 @@ models:
       - name: country
         description: Team member's country
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: region
         description: Team member's region
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: region_modified
         description: Region modified for team members from the Americas. Team members are split into LATAM or NORAM
-        meta:
-          masking_policy: analyst_people
       - name: gender_region
         description: Team member's gender and region combined
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ethnicity_region
         description: Team member's ethnicity and region combined
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: urg_group
         description: Team member's URG group
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: urg_region
         description: Team member's URG region
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: hire_date
         description: Team member's hire date
+      - name: employee_type
+        description: The employee type from the following list - Employee (PEO or Entity), Contractor (Independent, customer-to-customer or PEO), Intern, Consultant.
       - name: termination_date
         description: Team member's termination date
       - name: is_current_team_member
@@ -119,7 +119,7 @@ models:
       - name: entity
         description: Team member's entity
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: valid_from
       - name: valid_to
       - name: is_current

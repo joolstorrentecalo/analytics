@@ -33,7 +33,7 @@ WITH source AS (
       data_by_row['package_name']::VARCHAR                            AS package_name,
       data_by_row['tags']::ARRAY                                      AS tags,
       data_by_row['refs']::ARRAY                                      AS references,
-      {{ dbt_utils.surrogate_key(['unique_id', 'generated_at']) }}    AS run_unique_key,
+      {{ dbt_utils.generate_surrogate_key(['unique_id', 'generated_at']) }}    AS run_unique_key,
       dbt_version,
       schema_version,
       generated_at,

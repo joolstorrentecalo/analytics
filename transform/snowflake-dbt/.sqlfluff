@@ -21,33 +21,31 @@ align_within = select_clause
 # configuration.
 align_scope = bracketed
 
-[sqlfluff:rules]
+[sqlfluff:indentation]
 tab_space_size = 2
+allow_implicit_indents = True
 
-[sqlfluff:rules:L003]
-hanging_indents = False
-
-[sqlfluff:rules:L010]
+[sqlfluff:rules:capitalisation.keywords]
 # Keywords Capitalization
 capitalisation_policy = upper
 
-[sqlfluff:rules:L030]
+[sqlfluff:rules:capitalisation.functions]
 # Function Name Capitalization
 extended_capitalisation_policy = upper
 
-[sqlfluff:rules:L040]
+[sqlfluff:rules:capitalisation.literals]
 # Null & Boolean Literals
 capitalisation_policy = upper
 
-[sqlfluff:rules:L057]
+[sqlfluff:rules:references.special_chars]
 # Special Characters in Identifiers
 allow_space_in_identifier = True
 additional_allowed_characters = ['.','(',')','-']
 
-[sqlfluff:rules:L063]
+[sqlfluff:rules:capitalisation.types]
 # Data Type Capitalization
 extended_capitalisation_policy = upper
 
-[sqlfluff:rules:L066]
+[sqlfluff:rules:aliasing.length]
 # Table Alias Lengths
 min_alias_length = 4

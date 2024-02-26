@@ -25,7 +25,7 @@ WITH versions AS (
     SELECT
 
      --surrogate_key
-      {{ dbt_utils.surrogate_key(['application', 'id']) }} AS dim_app_release_sk,
+      {{ dbt_utils.generate_surrogate_key(['application', 'id']) }} AS dim_app_release_sk,
 
       --natural key
       CONCAT(application, '-', id)                         AS app_release_id,
@@ -53,7 +53,7 @@ UNION ALL
 SELECT 
 
      --surrogate_key
-      {{ dbt_utils.surrogate_key(['-1']) }} AS dim_app_release_sk,
+      {{ dbt_utils.generate_surrogate_key(['-1']) }} AS dim_app_release_sk,
 
       --natural key
       '-1'                                  AS dim_app_release_id,

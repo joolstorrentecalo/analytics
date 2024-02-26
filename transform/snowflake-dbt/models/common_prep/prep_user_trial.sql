@@ -1,6 +1,6 @@
 WITH source AS (
 
-    SELECT 
+    SELECT
     ---Other attributes
     {{ hash_sensitive_columns('customers_db_customers_source') }}
     FROM {{ ref('customers_db_customers_source') }}
@@ -8,15 +8,15 @@ WITH source AS (
 )
 
 , final AS (
-    
-    SELECT 
-      --Surrogate Key
-      {{ dbt_utils.surrogate_key(['customer_id'])}}  AS dim_user_sk,
-      
-      --Natural Key
-      customer_id                                    AS dim_user_id, 
 
-      --Other attributes                                  
+    SELECT
+      --Surrogate Key
+      {{ dbt_utils.generate_surrogate_key(['customer_id'])}}  AS dim_user_sk,
+
+      --Natural Key
+      customer_id                                    AS dim_user_id,
+
+      --Other attributes
       customer_first_name_hash                       AS user_first_name,
       customer_last_name_hash                        AS user_last_name,
       customer_email_hash                            AS user_email,
@@ -28,11 +28,8 @@ WITH source AS (
       customer_provider                              AS user_provider,
       customer_provider_user_id                      AS user_provider_user_id,
 
-      ---Join key to Zuora data, this field would be deprecated soon from CDot
-      zuora_account_id,
-
       country,
-      state,                                             
+      state,
       city,
       vat_code,
       company,
@@ -41,7 +38,7 @@ WITH source AS (
       --Join key to CRM data
       sfdc_account_id,
 
-      customer_is_billable                           AS user_is_billable,
+      customer_is_billable                           AS is_user_billable,
       confirmed_at,
       confirmation_sent_at
 

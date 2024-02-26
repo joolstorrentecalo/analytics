@@ -82,7 +82,7 @@ def get_fiscal_quarter() -> str:
 
     That logic though is handled within the daily/quarterly DAG's
     """
-    execution_date = date_parser.parse(config_dict["execution_date"])
+    execution_date = date_parser.parse(config_dict["logical_date"])
     task_schedule = config_dict["task_schedule"]
 
     info(

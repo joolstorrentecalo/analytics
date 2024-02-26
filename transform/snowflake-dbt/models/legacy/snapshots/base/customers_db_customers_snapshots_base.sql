@@ -10,7 +10,7 @@ WITH source AS (
 
 ), renamed AS (
 
-  SELECT 
+  SELECT
     dbt_scd_id::VARCHAR              AS customer_snapshot_id,
     id::NUMBER                       AS customer_id,
     created_at::TIMESTAMP            AS customer_created_at,
@@ -22,7 +22,6 @@ WITH source AS (
     --last_sign_in_ip,
     provider::VARCHAR                AS customer_provider,
     NULLIF(uid, '')::VARCHAR         AS customer_uid,
-    zuora_account_id::VARCHAR        AS zuora_account_id,
     country::VARCHAR                 AS country,
     state::VARCHAR                   AS state,
     city::VARCHAR                    AS city,
@@ -35,7 +34,7 @@ WITH source AS (
     confirmation_sent_at::TIMESTAMP  AS confirmation_sent_at,
     "DBT_VALID_FROM"::TIMESTAMP      AS valid_from,
     "DBT_VALID_TO"::TIMESTAMP        AS valid_to
-  
+
   FROM source
 
 )

@@ -83,7 +83,7 @@
 ), final AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['lower(locality)']) }} AS dim_locality_id,
+      {{ dbt_utils.generate_surrogate_key(['lower(locality)']) }} AS dim_locality_id,
       locality,
       location_factor,
       country                                            AS locality_country,

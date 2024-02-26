@@ -16,7 +16,7 @@ WITH trial_snapshot AS (
     SELECT
 
       --Surrogate Key
-      {{ dbt_utils.surrogate_key(['trial_snapshot.order_snapshot_id'])}}                  AS dim_trial_latest_sk,
+      {{ dbt_utils.generate_surrogate_key(['trial_snapshot.order_snapshot_id'])}}                  AS dim_trial_latest_sk,
 
       --Natural Key
       trial_snapshot.order_snapshot_id                                                    AS dim_trial_snapshot_id,

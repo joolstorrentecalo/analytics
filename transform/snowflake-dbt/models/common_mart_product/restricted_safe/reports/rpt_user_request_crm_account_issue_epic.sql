@@ -6,9 +6,9 @@ WITH mart_user_request AS (
 ), issue_account_summary AS (
     
     SELECT
-        {{ dbt_utils.surrogate_key(['dim_issue_id', 'dim_epic_id', 'dim_crm_account_id']) }} AS primary_key,
-        dim_issue_id,
-        dim_epic_id,
+        {{ dbt_utils.generate_surrogate_key(['issue_id', 'epic_id', 'dim_crm_account_id']) }} AS primary_key,
+        issue_id,
+        epic_id,
         user_request_in,
         dim_crm_account_id,
 
@@ -83,7 +83,7 @@ WITH mart_user_request AS (
 {{ dbt_audit(
     cte_ref="issue_account_summary",
     created_by="@jpeguero",
-    updated_by="@lisvinueza",
+    updated_by="@michellecooper",
     created_date="2021-12-15",
-    updated_date="2023-05-21",
+    updated_date="2023-09-29",
   ) }}

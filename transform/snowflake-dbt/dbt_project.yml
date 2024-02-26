@@ -42,6 +42,7 @@ on-run-start:
 on-run-end:
     - "{{ grant_usage_to_schemas() }}"
     - "{{ suspend_warehouse(var('suspend_warehouse', false), var('warehouse_name')) }}"
+    - "{% if target.name == 'prod' %}{{ dbt_artifacts.upload_results(results) }}{% endif %}"
 
 # ======
 # Seed Configs
@@ -54,10 +55,6 @@ seeds:
   +post-hook:
     - "{{ mask_model() }}"
   +query_tag: dbt
-
-  data_tests:
-    +database: "{{ env_var('SNOWFLAKE_PREP_DATABASE') }}" #PREP
-    +schema: tdf
 
   gitlab_snowflake:
     director_location_factors:
@@ -79,7 +76,7 @@ vars:
   warehouse_name: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"
   valid_at: '{{ run_started_at.strftime("%Y-%m-%d %H:%M:%S%z") }}'
 
-  snowplow:pass_through_columns: ['glm_source','gsc_environment','gsc_extra','gsc_namespace_id','gsc_plan','gsc_google_analytics_client_id','gsc_project_id','gsc_pseudonymized_user_id','gsc_source','cf_formid','cf_elementid','cf_nodename','cf_type','cf_elementclasses','cf_value','sf_formid','sf_formclasses','sf_elements','ff_formid','ff_elementid','ff_nodename','ff_elementtype','ff_elementclasses','ff_value','lc_elementid','lc_elementclasses','lc_elementtarget','lc_targeturl','lc_elementcontent','tt_category','tt_variable','tt_timing','tt_label']
+  snowplow:pass_through_columns: ['glm_source','gsc_environment','gsc_extra','gsc_namespace_id','gsc_plan','gsc_google_analytics_client_id','gsc_project_id','gsc_pseudonymized_user_id','gsc_source','gsc_is_gitlab_team_member','cf_formid','cf_elementid','cf_nodename','cf_type','cf_elementclasses','cf_value','sf_formid','sf_formclasses','sf_elements','ff_formid','ff_elementid','ff_nodename','ff_elementtype','ff_elementclasses','ff_value','lc_elementid','lc_elementclasses','lc_elementtarget','lc_targeturl','lc_elementcontent','tt_category','tt_variable','tt_timing','tt_label']
   snowplow:page_view_lookback_days: 7
 
   snowplow:
@@ -90,7 +87,10 @@ vars:
     'snowplow:context:useragent': false
     'snowplow:timezone': 'America/New_York'
     'snowplow:page_ping_frequency': 30
-    'snowplow:app_ids': ['gitlab', 'about', 'gitlab_customers']
+    'snowplow:app_ids': ['gitlab', 'about', 'gitlab_customers', 'docs', 'gitlab-staging', 'gitlab_customers_stg']
+
+  dbt_utils:
+    surrogate_key_treat_nulls_as_empty_strings: True
 
 # ==================
 # Model Configs
@@ -122,11 +122,33 @@ models:
   snowflake_spend:
     +materialized: table
 
+  # ------------------
+  # dbt Artifacts Package https://hub.getdbt.com/brooklyn-data/dbt_artifacts
+  # ------------------
+  dbt_artifacts:
+    
+    +database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}" # PROD
+    +schema: workspace_data
+    staging:
+      +database: "{{ env_var('SNOWFLAKE_PREP_DATABASE') }}" #PREP
+      +schema: dbt_artifacts
+    sources:
+      +database: "{{ env_var('SNOWFLAKE_LOAD_DATABASE') }}" #RAW
+      +schema: dbt_artifacts
+
   # ==================
   # GitLab Models
   # ==================
   gitlab_snowflake:
     +materialized: view
+
+    # ------------------
+    # entitlement
+    # ------------------
+
+    entitlement:
+      +database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}" # PROD
+      +schema: entitlement
 
     # ------------------
     # Sources
@@ -135,13 +157,13 @@ models:
       +database: "{{ env_var('SNOWFLAKE_PREP_DATABASE') }}" #PREP
       +tags: ["sources"]
 
-      adaptive:
-        +materialized: table
-        +schema: adaptive
-         
       airflow:
         +materialized: table
         +schema: airflow
+
+      aws_billing:
+        +materialized: table
+        +schema: aws_billing
 
       bamboohr:
         +materialized: table
@@ -156,9 +178,6 @@ models:
       clari:
         +materialized: table
         +schema: clari
-
-      container_registry:
-        +schema: container_registry
 
       customers:
         +schema: customers
@@ -193,6 +212,10 @@ models:
         +materialized: table
         +schema: driveload
         +tags: ["driveload"]
+
+      elastic_billing:
+        +materialized: table
+        +schema: elastic_billing
 
       engineering:
         +database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}" # PROD
@@ -253,12 +276,6 @@ models:
       linkedin_ads:
         +schema: linkedin_ads
 
-      mailgun:
-        +schema: mailgun
-        sensitive:
-          +schema: sensitive
-          secure: true
-
       marketo:
         +schema: marketo
         sensitive:
@@ -271,9 +288,16 @@ models:
           +schema: sensitive
           secure: true
 
+      oci_reports:
+        +schema: oci_reports
+
       omamori:
         +materialized: table
         +schema: omamori
+
+      pajamas_adoption_scanner:
+        +materialized: table
+        +schema: pajamas_adoption_scanner
 
       pto:
         +materialized: table
@@ -296,6 +320,9 @@ models:
           +schema: sensitive
           secure: true
 
+      sfdc_sandbox:
+        +schema: sfdc_sandbox
+
       sheetload:
         +schema: sheetload
 
@@ -308,6 +335,9 @@ models:
       snowplow:
         +tags: ["product"]
         +schema: snowplow
+
+      tableau_cloud:
+        +schema: tableau_cloud
 
       thanos:
         +materialized: table
@@ -468,12 +498,6 @@ models:
           +schema: sensitive
           secure: true
 
-      customers:
-        restricted_safe:
-          +schema: restricted_safe_legacy
-          +tags: ["safe"]
-          secure: true
-
       date:
         +materialized: view
 
@@ -545,9 +569,6 @@ models:
           +database: "{{ env_var('SNOWFLAKE_PREP_DATABASE') }}" #PREP
           +schema: "snowplow_{{ var('year', (run_started_at - modules.datetime.timedelta(1)).strftime('%Y')) }}_{{ var('month', (run_started_at - modules.datetime.timedelta(1)).strftime('%m')) }}"
 
-      version:
-        +tags: ["product"]
-
       trusted_data_framework:
         +tags: ["tdf"]
 
@@ -568,9 +589,6 @@ models:
 
       workspace_data:
         +schema: workspace_data
-        tdf:
-          +materialized: table
-
         dbt:
           +tags: ["dbt"]
 
@@ -587,11 +605,6 @@ models:
           restricted_safe:
             +schema: restricted_safe_workspace_marketing
             +tags: ["safe"]
-            secure: true
-        mailgun:
-          restricted_safe:
-            +schema: restricted_safe_workspace_marketing
-            +tags: [ "safe" ]
             secure: true
         marketo:
           restricted_safe:
@@ -639,6 +652,9 @@ models:
       workspace_people:
         +schema: workspace_people
         +tags: ["people"]
+        restricted:
+          +materialized: view
+          +schema: restricted_workspace_people
 
     # ------------------
     # Marts

@@ -24,7 +24,7 @@ WITH source AS (
         system_labels_flat.value['key']::VARCHAR                 AS system_label_key,
         system_labels_flat.value['value']::VARCHAR               AS system_label_value,
         source.uploaded_at                                       AS uploaded_at,
-        {{ dbt_utils.surrogate_key([
+        {{ dbt_utils.generate_surrogate_key([
             'source_primary_key',
             'system_label_key',
             'system_label_value'] ) }}                           AS system_label_pk

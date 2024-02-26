@@ -53,3 +53,8 @@ This macro groups opportunities into partner generated or co-sell based on the s
 This macro applies correct mapping to the deal_path field based on current business terminology.
 * If Channel -> Partner
 {% enddocs %}
+
+
+{% docs integrated_budget_holder %}
+This macro applies correct mapping to the campaign budget_holder field based on current business terminology. See issue https://gitlab.com/gitlab-com/marketing/marketing-strategy-performance/-/issues/1473
+{% enddocs %}

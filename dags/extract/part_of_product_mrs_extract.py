@@ -31,7 +31,6 @@ pod_env_vars = {
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -51,7 +50,10 @@ container_cmd = f"""
 
 # Create the DAG
 dag = DAG(
-    "part_of_product_mrs", default_args=default_args, schedule_interval="0 4 * * *"
+    "part_of_product_mrs",
+    default_args=default_args,
+    schedule_interval="0 4 * * *",
+    catchup=False,
 )
 
 # Task 1
@@ -71,12 +73,12 @@ part_of_product_mrs_run = KubernetesPodOperator(
     env_vars={
         **pod_env_vars,
         **{
-            "START": "{{ execution_date.isoformat() }}",
+            "START": "{{ logical_date.isoformat() }}",
             "END": "{{ next_execution_date.isoformat() }}",
         },
     },  # merge the dictionaries into one
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     arguments=[container_cmd],
     dag=dag,
 )

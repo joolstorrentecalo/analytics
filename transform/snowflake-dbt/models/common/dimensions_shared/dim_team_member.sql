@@ -17,6 +17,7 @@ WITH final AS (
       prep_team_member.country,
       prep_team_member.region,
       prep_team_member.team_id,
+      prep_team_member.employee_type,
       prep_team_member.hire_date,
       prep_team_member.termination_date,
       prep_team_member.is_current_team_member,
@@ -45,6 +46,7 @@ WITH final AS (
       'Missing country'                                               AS country,
       'Missing region'                                                AS region,
       'Missing team_id'                                               AS team_id,
+      'Missing employee_type'                                         AS employee_type,
       '9999-12-31 00:00:00.000 +0000'                                 AS hire_date,
       '9999-12-31 00:00:00.000 +0000'                                 AS termination_date,
       NULL                                                            AS is_current_team_member,
@@ -60,5 +62,5 @@ WITH final AS (
     created_by='@lisvinueza',
     updated_by='@lisvinueza',
     created_date='2023-03-27',
-    updated_date='2023-06-22'
+    updated_date='2023-07-24'
 ) }}

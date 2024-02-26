@@ -205,3 +205,69 @@ Source model for SFDC custom object representing a quote rate plan charge from Z
 Custom source table: This table contains customer subscription data.
 
 {% enddocs %}
+
+{% docs sfdc_zoom_source %}
+
+Source models for salesforce and zoom integrated objects.
+
+{% enddocs %}
+
+{% docs sfdc_permission_set_assignment_source %}
+
+Source model for SFDC Permission Set Assignment object. Represents a group of permission sets and the permissions within them. Use permission set groups to organize permissions based on job functions or tasks. Then, you can package the groups as needed.
+
+{% enddocs %}
+
+{% docs sfdc_profile_source %}
+
+Source model for SFDC Profile object. Represents a profile, which defines a set of permissions to perform different operations. Operations can include creating a custom profile or querying, adding, updating, or deleting information.
+
+{% enddocs %}
+
+{% docs sfdc_group_member_source %}
+
+ Source model for SFDC Group Member object. Represents a User or Group that is a member of a public group.
+
+{% enddocs %}
+
+{% docs sfdc_group_source %}
+
+Source model for SFDC Group object. Group are sets of users. They can contain individual users, other groups, the users in particular role of territory, or the users in a particular role of territory plus all the users below that role or territory in the hierarchy.
+
+{% enddocs %}
+
+{% docs sfdc_account_share_source %}
+
+Source model for SFDC Account Share object. For a given account, the user or group that has access based on the account id.
+  
+{% enddocs %}
+
+{% docs sfdc_opportunity_share_source %}
+
+Source model for SFDC Opportunity Share object. For a given opportunity, the user or group that has access based on the opportunity id.
+
+{% enddocs %}
+
+{% docs sfdc_vartopia_drs_registration_source %}
+
+Source model for SFDC custom object from Vartopia with all Deal Registraitons 
+
+{% enddocs %}
+
+{% docs sfdc_impartner_mdf_funds_claim_source  %}
+
+Source model for SFDC MDF Funds Claims
+
+{% enddocs %}
+
+{% docs sfdc_impartner_mdf_funds_request_source  %}
+
+Source model for SFDC MDF Funds Requests
+
+{% enddocs %}
+
+{% docs sfdc_user_territory_association_source  %}
+
+Source model for SFDC user territory association
+
+{% enddocs %}

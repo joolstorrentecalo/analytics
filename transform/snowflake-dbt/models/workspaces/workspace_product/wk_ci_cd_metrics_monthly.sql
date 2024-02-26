@@ -44,7 +44,7 @@ WITH umau_base AS (
 ), final AS (
 
   SELECT 
-    {{ dbt_utils.surrogate_key(['dim_installation_id', 'reporting_month']) }} AS installation_reporting_month_pk,
+    {{ dbt_utils.generate_surrogate_key(['dim_installation_id', 'reporting_month']) }} AS installation_reporting_month_pk,
     dim_installation_id,
     delivery_type,
     reporting_month,

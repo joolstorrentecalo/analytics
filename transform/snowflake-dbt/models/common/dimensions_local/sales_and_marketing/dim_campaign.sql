@@ -26,7 +26,8 @@ WITH sfdc_campaign_info AS (
       sales_play,
       gtm_motion,
       total_planned_mqls,
-      will_there_be_mdf_funding
+      will_there_be_mdf_funding,
+      campaign_partner_crm_id
     FROM sfdc_campaign_info
 
 )
@@ -34,7 +35,7 @@ WITH sfdc_campaign_info AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@paul_armstrong",
-    updated_by="@rkohnke",
-    created_date="2020-11-13",
-    updated_date="2022-03-01"
+    updated_by="@degan",
+    created_date="2020-1-13",
+    updated_date="2023-12-15"
 ) }}

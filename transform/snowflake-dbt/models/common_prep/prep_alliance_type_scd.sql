@@ -53,7 +53,7 @@ WITH sfdc_opportunity_source AS (
 ), final AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['alliance_type']) }}  AS dim_alliance_type_id,
+      {{ dbt_utils.generate_surrogate_key(['alliance_type']) }}  AS dim_alliance_type_id,
       alliance_type                                     AS alliance_type_name,
       alliance_type_short                               AS alliance_type_short_name,
       valid_from,

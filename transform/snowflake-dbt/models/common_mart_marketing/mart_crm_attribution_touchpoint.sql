@@ -21,7 +21,7 @@
     SELECT
       -- touchpoint info
       dim_crm_touchpoint.dim_crm_touchpoint_id,
-      {{ dbt_utils.surrogate_key(['fct_crm_attribution_touchpoint.dim_crm_person_id','dim_campaign.dim_campaign_id','dim_crm_touchpoint.bizible_touchpoint_date_time']) }} AS touchpoint_person_campaign_date_id,
+      {{ dbt_utils.generate_surrogate_key(['fct_crm_attribution_touchpoint.dim_crm_person_id','dim_campaign.dim_campaign_id','dim_crm_touchpoint.bizible_touchpoint_date_time']) }} AS touchpoint_person_campaign_date_id,
       dim_crm_touchpoint.bizible_touchpoint_date,
       dim_crm_touchpoint.bizible_touchpoint_date_time,
       dim_crm_touchpoint.bizible_touchpoint_month,
@@ -29,6 +29,8 @@
       dim_crm_touchpoint.bizible_touchpoint_source,
       dim_crm_touchpoint.bizible_touchpoint_source_type,
       dim_crm_touchpoint.bizible_touchpoint_type,
+      dim_crm_touchpoint.touchpoint_offer_type,
+      dim_crm_touchpoint.touchpoint_offer_type_grouped,
       dim_crm_touchpoint.bizible_ad_campaign_name,
       dim_crm_touchpoint.bizible_ad_content,
       dim_crm_touchpoint.bizible_ad_group_name,
@@ -49,6 +51,13 @@
       dim_crm_touchpoint.bizible_landing_page_utm_budget,
       dim_crm_touchpoint.bizible_landing_page_utm_allptnr,
       dim_crm_touchpoint.bizible_landing_page_utm_partnerid,
+      dim_crm_touchpoint.utm_campaign,
+      dim_crm_touchpoint.utm_source,
+      dim_crm_touchpoint.utm_medium,
+      dim_crm_touchpoint.utm_content,
+      dim_crm_touchpoint.utm_budget,
+      dim_crm_touchpoint.utm_allptnr,
+      dim_crm_touchpoint.utm_partnerid,
       dim_crm_touchpoint.bizible_salesforce_campaign,
       dim_crm_touchpoint.bizible_integrated_campaign_grouping,
       dim_crm_touchpoint.touchpoint_segment,
@@ -57,6 +66,9 @@
       dim_crm_touchpoint.pipe_name,
       dim_crm_touchpoint.is_dg_influenced,
       dim_crm_touchpoint.is_dg_sourced,
+      dim_crm_touchpoint.devrel_campaign_type,
+      dim_crm_touchpoint.devrel_campaign_description,
+      dim_crm_touchpoint.devrel_campaign_influence_type,
       fct_crm_attribution_touchpoint.opps_per_touchpoint,
       fct_crm_attribution_touchpoint.bizible_count_lead_creation_touch,
       fct_crm_attribution_touchpoint.bizible_count_first_touch,
@@ -64,7 +76,7 @@
       fct_crm_attribution_touchpoint.bizible_count_custom_model,
       fct_crm_attribution_touchpoint.bizible_count_u_shaped,
       fct_crm_attribution_touchpoint.bizible_count_w_shaped,
-	  fct_crm_attribution_touchpoint.bizible_weight_full_path,
+	    fct_crm_attribution_touchpoint.bizible_weight_full_path,
       fct_crm_attribution_touchpoint.bizible_weight_custom_model,
       fct_crm_attribution_touchpoint.bizible_weight_first_touch,
       fct_crm_attribution_touchpoint.bizible_weight_lead_conversion,
@@ -83,6 +95,29 @@
       fct_crm_attribution_touchpoint.bizible_revenue_u_shaped,
       fct_crm_attribution_touchpoint.bizible_revenue_w_shaped,
       dim_crm_touchpoint.bizible_created_date, 
+      CASE
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_0_pending_acceptance_date
+              THEN 'Pre Opp Creation'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_0_pending_acceptance_date AND (dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_1_discovery_date OR fct_crm_opportunity.stage_1_discovery_date IS NULL)
+              THEN 'Stage 0'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_1_discovery_date AND (dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_2_scoping_date OR fct_crm_opportunity.stage_2_scoping_date IS NULL)
+              THEN 'Stage 1'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_2_scoping_date AND (dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_3_technical_evaluation_date OR fct_crm_opportunity.stage_3_technical_evaluation_date IS NULL)
+              THEN 'Stage 2'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_3_technical_evaluation_date AND (dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_4_proposal_date OR fct_crm_opportunity.stage_4_proposal_date IS NULL)
+              THEN 'Stage 3'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_4_proposal_date AND (dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_5_negotiating_date OR fct_crm_opportunity.stage_5_negotiating_date IS NULL)
+              THEN 'Stage 4'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_5_negotiating_date AND (dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_6_awaiting_signature_date OR fct_crm_opportunity.stage_6_awaiting_signature_date IS NULL)
+              THEN 'Stage 5'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_6_awaiting_signature_date AND ((dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_6_closed_won_date OR dim_crm_touchpoint.bizible_touchpoint_date < fct_crm_opportunity.stage_6_closed_lost_date) OR (fct_crm_opportunity.stage_6_closed_won_date IS NULL AND fct_crm_opportunity.stage_6_closed_lost_date IS NULL))
+              THEN 'Stage 6 - Awaiting Signature'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_6_closed_won_date AND fct_crm_opportunity.is_closed_won = TRUE
+              THEN 'Stage 6 - Closed Won'
+            WHEN dim_crm_touchpoint.bizible_touchpoint_date >= fct_crm_opportunity.stage_6_closed_lost_date
+              THEN 'Stage 6 - Closed Lost'
+            ELSE stage_name||'-Mapping Missing'
+          END AS touchpoint_sales_stage,
 
       -- person info
       fct_crm_attribution_touchpoint.dim_crm_person_id,
@@ -121,6 +156,7 @@
       dim_crm_person.account_demographics_geo,
       dim_crm_person.account_demographics_region,
       dim_crm_person.account_demographics_area,
+      dim_crm_person.is_partner_recalled,
 
       -- campaign info
       dim_campaign.dim_campaign_id,
@@ -214,6 +250,7 @@
       dim_crm_account.technical_account_manager,
       dim_crm_account.merged_to_account_id,
       dim_crm_account.is_reseller,
+      dim_crm_account.is_focus_partner,
 
       -- opportunity info
       fct_crm_attribution_touchpoint.dim_crm_opportunity_id,
@@ -263,8 +300,16 @@
           AND is_fmm_influenced = 1 
           THEN 1
         ELSE 0
-      END AS is_fmm_sourced
-
+      END AS is_fmm_sourced,
+    --budget holder
+    {{integrated_budget_holder(
+      'dim_campaign.budget_holder',
+      'dim_crm_touchpoint.utm_budget',
+      'dim_crm_touchpoint.bizible_ad_campaign_name',
+      'dim_crm_touchpoint.utm_medium',
+      'campaign_owner.user_role_name'
+      ) 
+    }}
     FROM fct_crm_attribution_touchpoint
     LEFT JOIN dim_crm_touchpoint
       ON fct_crm_attribution_touchpoint.dim_crm_touchpoint_id = dim_crm_touchpoint.dim_crm_touchpoint_id
@@ -317,5 +362,5 @@
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-02-18",
-    updated_date="2023-05-22"
+    updated_date="2024-01-31"
 ) }}

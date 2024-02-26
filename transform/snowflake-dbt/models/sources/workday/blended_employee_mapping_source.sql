@@ -90,3 +90,4 @@ filtered AS (
 
 SELECT *
 FROM filtered
+WHERE employee_id NOT IN (SELECT employee_id FROM {{ ref('test_employee_ids' )}})

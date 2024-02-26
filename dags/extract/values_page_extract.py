@@ -26,7 +26,6 @@ GIT_BRANCH = env["GIT_BRANCH"]
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -38,14 +37,14 @@ default_args = {
 # Set the command for the container
 container_cmd = f"""
     {clone_and_setup_extraction_cmd} &&
-    cd /usr/local/ && 
-    mkdir -p gitlab && 
-    cd gitlab && 
+    cd /usr/local/ &&
+    mkdir -p gitlab &&
+    cd gitlab &&
     git init &&
-    git remote add origin https://gitlab.com/gitlab-com/www-gitlab-com.git && 
-    git checkout -b master && 
-    git config core.sparsecheckout true && 
-    echo sites/handbook/source/handbook/values/ >> .git/info/sparse-checkout && 
+    git remote add origin https://gitlab.com/gitlab-com/www-gitlab-com.git &&
+    git checkout -b master &&
+    git config core.sparsecheckout true &&
+    echo sites/handbook/source/handbook/values/ >> .git/info/sparse-checkout &&
     echo "      Running git pull origin master commands." &&
     git pull origin master;
     echo "      Running git log command.";
@@ -58,7 +57,10 @@ container_cmd = f"""
 
 # Create the DAG
 dag = DAG(
-    "value_page_extract", default_args=default_args, schedule_interval="0 2 * * */7"
+    "value_page_extract",
+    default_args=default_args,
+    schedule_interval="0 2 * * */7",
+    catchup=False,
 )
 
 # Task 1
@@ -75,8 +77,8 @@ values_run = KubernetesPodOperator(
         SNOWFLAKE_LOAD_WAREHOUSE,
         SNOWFLAKE_LOAD_PASSWORD,
     ],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     env_vars=gitlab_pod_env_vars,
     arguments=[container_cmd],
     dag=dag,

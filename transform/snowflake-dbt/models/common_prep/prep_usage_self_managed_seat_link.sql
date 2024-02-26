@@ -8,6 +8,7 @@ WITH seat_links AS (
       order_id,
       zuora_subscription_id                                                 AS order_subscription_id,
       TRIM(zuora_subscription_id)                                           AS dim_subscription_id,
+      zuora_subscription_name                                               AS subscription_name,
       report_date,
       active_user_count,
       license_user_count,
@@ -25,7 +26,7 @@ WITH seat_links AS (
 ), customers_orders AS (
 
     SELECT *
-    FROM {{ ref('customers_db_orders_source') }}
+    FROM {{ ref('prep_order') }}
 
 ), subscriptions AS (
 
@@ -43,11 +44,12 @@ WITH seat_links AS (
 ), joined AS (
 
     SELECT
-      customers_orders.order_id                                             AS customers_db_order_id,
+      customers_orders.internal_order_id                                    AS customers_db_order_id,
       seat_links.order_subscription_id,
       {{ get_keyed_nulls('subscriptions.dim_subscription_id') }}            AS dim_subscription_id,
       {{ get_keyed_nulls('subscriptions.dim_subscription_id_original') }}   AS dim_subscription_id_original,
       {{ get_keyed_nulls('subscriptions.dim_subscription_id_previous') }}   AS dim_subscription_id_previous,
+      {{ get_keyed_nulls('subscriptions.subscription_name') }}              AS subscription_name,
       {{ get_keyed_nulls('subscriptions.dim_crm_account_id') }}             AS dim_crm_account_id,
       {{ get_keyed_nulls('subscriptions.dim_billing_account_id') }}         AS dim_billing_account_id,
       {{ get_keyed_nulls('product_details.dim_product_tier_id') }}          AS dim_product_tier_id,
@@ -63,7 +65,7 @@ WITH seat_links AS (
       IFF(seat_links.active_user_count IS NOT NULL, TRUE, FALSE)            AS is_active_user_count_available
     FROM seat_links 
     INNER JOIN customers_orders
-      ON seat_links.order_id = customers_orders.order_id
+      ON seat_links.order_id = customers_orders.internal_order_id
     LEFT OUTER JOIN subscriptions
       ON seat_links.dim_subscription_id = subscriptions.dim_subscription_id
     LEFT OUTER JOIN product_details
@@ -74,7 +76,7 @@ WITH seat_links AS (
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@ischweickartDD",
-    updated_by="@jpeguero",
+    updated_by="@snalamaru",
     created_date="2021-02-02",
-    updated_date="2023-06-22"
+    updated_date="2023-12-27"
 ) }}

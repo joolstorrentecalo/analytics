@@ -12,6 +12,7 @@ from airflow_utils import (
     gitlab_defaults,
     slack_failed_task,
     gitlab_pod_env_vars,
+    REPO_BASE_PATH,
 )
 from kube_secrets import (
     SNOWFLAKE_ACCOUNT,
@@ -28,7 +29,6 @@ pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -40,9 +40,7 @@ default_args = {
     "dagrun_timeout": timedelta(hours=6),
 }
 
-airflow_home = env["AIRFLOW_HOME"]
-
-full_path = f"{airflow_home}/analytics/extract/gitlab_deduplication/manifest_deduplication/t_gitlab_com_deduplication_table_manifest.yaml"
+full_path = f"{REPO_BASE_PATH}/extract/gitlab_deduplication/manifest_deduplication/t_gitlab_com_deduplication_table_manifest.yaml"
 task_name = "t_deduplication"
 
 
@@ -70,6 +68,7 @@ dag = DAG(
     default_args=default_args,
     schedule_interval="0 11 * * 0",
     concurrency=3,
+    catchup=False,
 )
 
 start = DummyOperator(task_id="Start", dag=dag)
@@ -97,8 +96,8 @@ for table in table_list:
             SNOWFLAKE_LOAD_PASSWORD,
         ],
         env_vars=pod_env_vars,
-        affinity=get_affinity(False),
-        tolerations=get_toleration(False),
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         arguments=[container_cmd_load],
         dag=dag,
     )

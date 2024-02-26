@@ -25,6 +25,14 @@ WITH dim_crm_account AS (
 
     SELECT *
     FROM {{ ref('rpt_arr_snapshot_combined_8th_calendar_day') }}
+    WHERE is_arr_month_finalized = TRUE
+
+), finalized_arr_month AS (
+
+    SELECT DISTINCT
+      arr_month,
+      is_arr_month_finalized
+    FROM rpt_arr_snapshot
 
 ), mart_arr AS (
 
@@ -167,10 +175,11 @@ WITH dim_crm_account AS (
 ), combined AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.dim_parent_crm_account_id',
+      {{ dbt_utils.generate_surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.dim_parent_crm_account_id',
         'type_of_arr_change.product_tier_name']) }}
                                                                     AS primary_key,
       type_of_arr_change.arr_month,
+      finalized_arr_month.is_arr_month_finalized                    AS is_arr_month_finalized,
       dim_crm_account.parent_crm_account_name,
       type_of_arr_change.dim_parent_crm_account_id,
       type_of_arr_change.product_tier_name,
@@ -211,6 +220,8 @@ WITH dim_crm_account AS (
     /*The snapshotted data includes parent names that werecalculated with a logic we no longer use .
     Join dim_crm_account to get the most recent parent_crm_account_name from the live models in order to avoid having
    different parent_crm_account_names from the snapshotted data. */ 
+    INNER JOIN finalized_arr_month
+      ON finalized_arr_month.arr_month = type_of_arr_change.arr_month
 
 )
 

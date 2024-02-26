@@ -4,7 +4,7 @@
         config(
           unique_key='employee_id',
           strategy='timestamp',
-          updated_at='_fivetran_synced',
+          updated_at='_fivetran_synced'
         )
     }}
     

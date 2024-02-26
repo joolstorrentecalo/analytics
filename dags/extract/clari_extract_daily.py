@@ -46,7 +46,7 @@ dag = DAG(
     f"clari_extract_{TASK_SCHEDULE}",
     default_args=default_args,
     schedule_interval="0 8 * * *",
-    start_date=datetime(2022, 12, 26),
+    start_date=datetime(2023, 6, 3),
     catchup=False,
     max_active_runs=1,
 )
@@ -70,11 +70,11 @@ clari_task = KubernetesPodOperator(
     ],
     env_vars={
         **pod_env_vars,
-        "execution_date": "{{ execution_date }}",  # run yest's quarter
+        "logical_date": "{{ logical_date }}",  # run yest's quarter
         "task_schedule": TASK_SCHEDULE,
     },
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     arguments=[clari_extract_command],
     dag=dag,
 )

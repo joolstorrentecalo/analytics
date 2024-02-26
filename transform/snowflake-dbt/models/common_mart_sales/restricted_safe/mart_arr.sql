@@ -51,7 +51,7 @@ WITH dim_billing_account AS (
 
     SELECT
       --primary_key
-      {{ dbt_utils.surrogate_key(['fct_mrr.dim_date_id', 'dim_subscription.subscription_name', 'fct_mrr.dim_product_detail_id']) }}
+      {{ dbt_utils.generate_surrogate_key(['fct_mrr.dim_date_id', 'dim_subscription.subscription_name', 'fct_mrr.dim_product_detail_id']) }}
                                                                                       AS primary_key,
 
       --date info
@@ -109,18 +109,12 @@ WITH dim_billing_account AS (
       dim_subscription.subscription_lineage                                           AS subscription_lineage,
       dim_subscription.subscription_cohort_month                                      AS subscription_cohort_month,
       dim_subscription.subscription_cohort_quarter                                    AS subscription_cohort_quarter,
-      MIN(dim_date.date_actual) OVER (
-          PARTITION BY dim_billing_account.dim_billing_account_id)                    AS billing_account_cohort_month,
-      MIN(dim_date.first_day_of_fiscal_quarter) OVER (
-          PARTITION BY dim_billing_account.dim_billing_account_id)                    AS billing_account_cohort_quarter,
-      MIN(dim_date.date_actual) OVER (
-          PARTITION BY dim_crm_account.dim_crm_account_id)                            AS crm_account_cohort_month,
-      MIN(dim_date.first_day_of_fiscal_quarter) OVER (
-          PARTITION BY dim_crm_account.dim_crm_account_id)                            AS crm_account_cohort_quarter,
-      MIN(dim_date.date_actual) OVER (
-          PARTITION BY dim_crm_account.dim_parent_crm_account_id)                     AS parent_account_cohort_month,
-      MIN(dim_date.first_day_of_fiscal_quarter) OVER (
-          PARTITION BY dim_crm_account.dim_parent_crm_account_id)                     AS parent_account_cohort_quarter,
+      dim_billing_account.billing_account_arr_cohort_month                            AS billing_account_cohort_month,
+      dim_billing_account.billing_account_arr_cohort_quarter                          AS billing_account_cohort_quarter,
+      dim_crm_account.crm_account_arr_cohort_month                                    AS crm_account_cohort_month,
+      dim_crm_account.crm_account_arr_cohort_quarter                                  AS crm_account_cohort_quarter,
+      dim_crm_account.parent_account_arr_cohort_month                                 AS parent_account_cohort_month,
+      dim_crm_account.parent_account_arr_cohort_quarter                               AS parent_account_cohort_quarter,
       dim_subscription.auto_renew_native_hist,
       dim_subscription.auto_renew_customerdot_hist,
       dim_subscription.turn_on_cloud_licensing,
@@ -213,7 +207,7 @@ WITH dim_billing_account AS (
 {{ dbt_audit(
     cte_ref="final_table",
     created_by="@msendal",
-    updated_by="@lisvinueza",
+    updated_by="@jpeguero",
     created_date="2020-09-04",
-    updated_date="2023-05-21"
+    updated_date="2023-08-16"
 ) }}

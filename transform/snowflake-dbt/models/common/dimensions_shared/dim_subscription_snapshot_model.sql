@@ -37,7 +37,7 @@ WITH snapshot_dates AS (
 ), final AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['snapshot_id', 'dim_subscription_id']) }} AS dim_subscription_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['snapshot_id', 'dim_subscription_id']) }} AS dim_subscription_snapshot_id,
        *
     FROM dim_subscription_spined
 

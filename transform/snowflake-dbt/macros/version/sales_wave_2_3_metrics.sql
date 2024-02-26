@@ -63,6 +63,7 @@
     {{ null_negative_numbers("raw_usage_data_payload['counts']['remote_mirrors']") }}                                                                   AS remote_mirrors_all_time_event,
     {{ null_negative_numbers("raw_usage_data_payload['usage_activity_by_stage_monthly']['create']['projects_enforcing_code_owner_approval']") }}        AS projects_enforcing_code_owner_approval_28_days_user,
     {{ null_negative_numbers("raw_usage_data_payload['usage_activity_by_stage_monthly']['configure']['project_clusters_enabled']") }}                   AS project_clusters_enabled_28_days_user,
+    {{ null_negative_numbers("raw_usage_data_payload['redis_hll_counters']['analytics']['analytics_total_unique_counts_monthly']") }}                   AS analytics_28_days_user,
 
     -- 3.2 metrics
 
@@ -187,6 +188,16 @@
     {{ null_negative_numbers("raw_usage_data_payload['usage_activity_by_stage_monthly']['verify']['ci_pipeline_schedules']") }}                                                         AS pipeline_schedules_28_days_user,
 
     -- 8 metrics
-    {{ null_negative_numbers("raw_usage_data_payload['counts_monthly']['ci_internal_pipelines']") }}    AS ci_internal_pipelines_28_days_event
+    {{ null_negative_numbers("raw_usage_data_payload['counts_monthly']['ci_internal_pipelines']") }}    AS ci_internal_pipelines_28_days_event,
+
+    -- 9 metrics
+    {{ null_negative_numbers("raw_usage_data_payload['counts_monthly']['ci_builds']") }}                                                                                    AS ci_builds_28_days_event,
+    {{ null_negative_numbers("raw_usage_data_payload['counts_monthly']['aggregated_metrics']['compliance_features_track_unique_visits_union']") }}                          AS audit_features_28_days_user,
+    {{ null_negative_numbers("raw_usage_data_payload['counts']['groups']") }}                                                                                               AS groups_all_time_event,
+    {{ null_negative_numbers("raw_usage_data_payload['redis_hll_counters']['pipeline_authoring']['o_pipeline_authoring_unique_users_committing_ciconfigfile_weekly']") }}   AS commit_ci_config_file_7_days_user,
+    {{ null_negative_numbers("raw_usage_data_payload['usage_activity_by_stage']['verify']['ci_pipeline_config_repository']") }}                                             AS ci_pipeline_config_repository_all_time_user,
+    {{ null_negative_numbers("raw_usage_data_payload['counts']['ci_pipeline_config_repository']") }}                                                                        AS ci_pipeline_config_repository_all_time_event,
+    {{ null_negative_numbers("raw_usage_data_payload['counts']['ci_pipeline_schedules']") }}                                                                                 AS pipeline_schedules_all_time_event,
+    {{ null_negative_numbers("raw_usage_data_payload['usage_activity_by_stage']['verify']['ci_pipeline_schedules']") }}                                                     AS pipeline_schedules_all_time_user
 
 {%- endmacro -%}

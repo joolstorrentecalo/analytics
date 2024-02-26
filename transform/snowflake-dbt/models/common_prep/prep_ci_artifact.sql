@@ -29,7 +29,7 @@
     
     SELECT
       ci_job_artifact_id                                    AS dim_ci_job_artifact_id,
-      project_id                                            AS dim_project_id,
+      ci_job_artifacts.project_id                           AS dim_project_id,
       IFNULL(dim_project.ultimate_parent_namespace_id, -1)  AS ultimate_parent_namespace_id,
       IFNULL(dim_namespace_plan_hist.dim_plan_id, 34)       AS dim_plan_id,
       file_type,
@@ -50,7 +50,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@chrissharp",
-    updated_by="@chrissharp",
+    updated_by="@michellecooper",
     created_date="2022-03-24",
-    updated_date="2022-06-01"
+    updated_date="2023-10-02"
 ) }}

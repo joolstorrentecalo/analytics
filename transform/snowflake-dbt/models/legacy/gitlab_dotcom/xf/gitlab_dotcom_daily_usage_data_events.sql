@@ -25,7 +25,7 @@ WITH usage_data AS (
 , aggregated AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['namespace_id', 'user_id', 'event_name', 'TO_DATE(event_created_at)']) }} AS daily_usage_data_event_id,
+      {{ dbt_utils.generate_surrogate_key(['namespace_id', 'user_id', 'event_name', 'TO_DATE(event_created_at)']) }} AS daily_usage_data_event_id,
       namespace_id,
       is_blocked_namespace_last AS is_blocked_namespace,
       namespace_created_at,

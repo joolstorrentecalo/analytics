@@ -45,7 +45,7 @@ WITH prep_user AS (
     
     SELECT
       --surrogate_key
-      {{ dbt_utils.surrogate_key(['-1']) }}                  AS dim_user_sk,
+      {{ dbt_utils.generate_surrogate_key(['-1']) }}                  AS dim_user_sk,
       
       --natural_key
       -1 AS user_id,

@@ -35,15 +35,15 @@ WITH source AS (
       dbt_version,
       schema_version,
       generated_at,
-      {{ dbt_utils.surrogate_key([
+      {{ dbt_utils.generate_surrogate_key([
           'model_unique_id', 
           'compilation_started_at',
           'uploaded_at'
           ]) }}                                       AS run_unique_key
     FROM flattened
     LEFT JOIN LATERAL FLATTEN(INPUT => data_by_row['timing']::ARRAY, outer => true) timing
-    ON IFNULL(timing.value['name'], 'compile') = 'compile'
     WHERE dbt_version is not null
+      AND IFNULL(timing.value['name'], 'compile') = 'compile'
   
 ), v0model_parsed_out AS (
   
@@ -62,15 +62,15 @@ WITH source AS (
       'PRE 0.19.0'                                                   AS dbt_version,
       'https://schemas.getdbt.com/dbt/run-results/v0.json'           AS schema_version,
       generated_at,
-      {{ dbt_utils.surrogate_key([
+      {{ dbt_utils.generate_surrogate_key([
           'model_unique_id', 
           'compilation_started_at',
           'uploaded_at'
           ]) }}                                                      AS run_unique_key
     FROM flattened
     LEFT JOIN LATERAL FLATTEN(INPUT => data_by_row['timing']::ARRAY, outer => true) timing
-    ON IFNULL(timing.value['name'], 'compile') = 'compile'
     WHERE dbt_version is null
+      AND IFNULL(timing.value['name'], 'compile') = 'compile'
 )
 
 SELECT *

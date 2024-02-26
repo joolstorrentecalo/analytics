@@ -45,7 +45,7 @@ WITH dim_billing_account_api_sandbox AS (
 
     SELECT
       --primary_key
-      {{ dbt_utils.surrogate_key(['fct_mrr_api_sandbox.dim_date_id', 'dim_subscription_api_sandbox.subscription_name', 'fct_mrr_api_sandbox.dim_product_detail_id']) }}
+      {{ dbt_utils.generate_surrogate_key(['fct_mrr_api_sandbox.dim_date_id', 'dim_subscription_api_sandbox.subscription_name', 'fct_mrr_api_sandbox.dim_product_detail_id']) }}
                                                                                         AS primary_key,
 
       --date info

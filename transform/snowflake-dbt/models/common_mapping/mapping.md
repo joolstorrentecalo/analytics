@@ -42,12 +42,12 @@ Example:
 
 Then in our mapping table we would have:
 
-| issue_id | dim_issue_id |
-| -- | -- |
-| Issue A | Issue D |
-| Issue B | Issue D |
-| Issue C | Issue D |
-| Issue D | Issue D |
+| issue_id | last_moved_duplicated_issue_id | dim_issue_sk |
+| -- | -- | -- |
+| Issue A | Issue D | Surrogate Key for Issue D |
+| Issue B | Issue D | Surrogate Key for Issue D |
+| Issue C | Issue D | Surrogate Key for Issue D |
+| Issue D | Issue D | Surrogate Key for Issue D |
 
 {% enddocs %}
 

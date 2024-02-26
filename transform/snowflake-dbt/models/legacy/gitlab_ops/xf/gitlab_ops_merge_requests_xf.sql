@@ -37,7 +37,7 @@ WITH merge_requests AS (
 ),  latest_merge_request_metric AS (
 
     SELECT MAX(merge_request_metric_id) AS target_id
-    FROM {{ref('gitlab_dotcom_merge_request_metrics')}}
+    FROM {{ref('gitlab_dotcom_merge_request_metrics_source')}}
     GROUP BY merge_request_id
 
 ),  merge_request_metrics AS (

@@ -28,10 +28,13 @@
       dim_crm_account.account_owner,
       dim_crm_account.proposed_crm_account_owner,
       dim_crm_account.technical_account_manager,
+      dim_crm_account.tam_manager,
       dim_crm_account.owner_role,
       dim_crm_account.user_role_type,
+      dim_crm_account.executive_sponsor,
 
       --crm account owner attributes
+      crm_account_owner.manager_name as crm_account_owner_manager,
       crm_account_owner.crm_user_geo AS crm_account_owner_geo,
       crm_account_owner.crm_user_region AS crm_account_owner_region,
       crm_account_owner.crm_user_area AS crm_account_owner_area,
@@ -122,11 +125,37 @@
       dim_crm_account.gs_health_devsecops,
       dim_crm_account.gs_health_ci,
       dim_crm_account.gs_health_scm,
+      dim_crm_account.gs_health_csm_sentiment,
       dim_crm_account.risk_impact,
       dim_crm_account.risk_reason,
       dim_crm_account.last_timeline_at_risk_update,
       dim_crm_account.last_at_risk_update_comments,
       dim_crm_account.bdr_prospecting_status,
+      dim_crm_account.is_focus_partner,
+
+      --6 sense fields
+
+      dim_crm_account.has_six_sense_6_qa,
+      dim_crm_account.risk_rate_guid,
+      dim_crm_account.six_sense_account_profile_fit,
+      dim_crm_account.six_sense_account_reach_score,
+      dim_crm_account.six_sense_account_profile_score,
+      dim_crm_account.six_sense_account_buying_stage,
+      dim_crm_account.six_sense_account_numerical_reach_score,
+      dim_crm_account.six_sense_account_update_date,
+      dim_crm_account.six_sense_account_6_qa_end_date,
+      dim_crm_account.six_sense_account_6_qa_age_days,
+      dim_crm_account.six_sense_account_6_qa_start_date,
+      dim_crm_account.six_sense_account_intent_score,
+      dim_crm_account.six_sense_segments,
+
+      --ptc & pte fields
+      dim_crm_account.pte_score,
+      dim_crm_account.pte_decile,
+      dim_crm_account.pte_score_group,
+      dim_crm_account.ptc_score,
+      dim_crm_account.ptc_decile,
+      dim_crm_account.ptc_score_group,
 
       --degenerative dimensions
       dim_crm_account.is_sdr_target_account,
@@ -214,7 +243,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@lisvinueza",
+    updated_by="@jonglee1218",
     created_date="2022-08-10",
-    updated_date="2023-05-21"
+    updated_date="2024-02-16"
 ) }}

@@ -47,7 +47,7 @@ WITH RECURSIVE namespaces AS (
 
   SELECT
     *,
-    GET(upstream_lineage, ARRAY_SIZE(upstream_lineage)-1) AS ultimate_parent_id -- Last item is the ultimate parent.
+    GET(upstream_lineage, ARRAY_SIZE(upstream_lineage)-1)::NUMERIC AS ultimate_parent_id -- Last item is the ultimate parent.
   FROM recursive_namespaces
 
   UNION ALL
@@ -59,93 +59,7 @@ WITH RECURSIVE namespaces AS (
     ARRAY_CONSTRUCT() AS upstream_lineage, -- Empty Array.
     0                 AS ultimate_parent_id
   FROM namespaces
-  WHERE parent_id NOT IN (SELECT DISTINCT namespace_id FROM namespaces)
-    OR namespace_id IN (
-                          26631729,
-                          30257602,
-                          30257599,
-                          35511259,
-                          26631727,
-                          35504596,
-                          26631725,
-                          35504660,
-                          35511305,
-                          35510918,
-                          35504841,
-                          35504640,
-                          30257600,
-                          35725380,
-                          35510952,
-                          35511301,
-                          26631730,
-                          35504714,
-                          35504621,
-                          35511308,
-                          35504835,
-                          35504873,
-                          35504813,
-                          35510919,
-                          35504818,
-                          25068282,
-                          35511277,
-                          35937608,
-                          35504834,
-                          30257601,
-                          31405078,
-                          35504721,
-                          35504652,
-                          35511297,
-                          35504636,
-                          30257598,
-                          35504775,
-                          35504795,
-                          35504734,
-                          11967197,
-                          11967195,
-                          11967194,
-                          11967196,
-                          12014338,
-                          12014366,
-                          6713278, 
-                          6142621, 
-                          4159925, 
-                          8370670, 
-                          8370671,
-                          8437164,
-                          8437147,
-                          8437148,
-                          8437172,
-                          8437156,
-                          8437159,
-                          8437146,
-                          8437176,
-                          8437165,
-                          8437179,
-                          8427708,
-                          8437167,
-                          8437110,
-                          8437178,
-                          8437175,
-                          8427717,
-                          8437153,
-                          8437161,
-                          8437169,
-                          8437177,
-                          8437160,
-                          8437157,
-                          8437154,
-                          8437162,
-                          8437150,
-                          8437149,
-                          8427716,
-                          8437142,
-                          8437145,
-                          8437151,
-                          8437171,
-                          8437155,
-                          8437173,
-                          8437170
-                        ) -- Grandparent or older is deleted.
+  WHERE namespace_id NOT IN (SELECT DISTINCT namespace_id FROM recursive_namespaces)
 
 ), with_plans AS (
 
@@ -162,10 +76,20 @@ WITH RECURSIVE namespaces AS (
       ELSE COALESCE(ultimate_parent_plans.plan_title, 'Free')
     END                                                                               AS ultimate_parent_plan_title,
     CASE
+      WHEN ultimate_parent_gitlab_subscriptions.is_trial AND COALESCE(ultimate_parent_gitlab_subscriptions.plan_id, 34) != 34
+        THEN 'ultimate_trial'
+      ELSE COALESCE(ultimate_parent_plans.plan_name, 'free')
+    END                                                                               AS ultimate_parent_plan_name,
+    CASE
     WHEN ultimate_parent_gitlab_subscriptions.is_trial
       THEN FALSE
       ELSE COALESCE(ultimate_parent_plans.plan_is_paid, FALSE) 
-    END                                                                               AS ultimate_parent_plan_is_paid
+    END                                                                               AS ultimate_parent_plan_is_paid,
+    namespace_gitlab_subscriptions.max_seats_used                                     AS max_seats_used,
+    namespace_gitlab_subscriptions.seats_in_use                                       AS seats_in_use,
+    namespace_gitlab_subscriptions.seats                                              AS seats
+
+
   FROM extracted
     -- Get plan information for the namespace.
     LEFT JOIN gitlab_subscriptions AS namespace_gitlab_subscriptions

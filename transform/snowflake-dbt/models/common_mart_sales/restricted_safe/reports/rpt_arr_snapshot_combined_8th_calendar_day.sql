@@ -2,12 +2,116 @@
     ('driveload_financial_metrics_program_phase_1_source','driveload_financial_metrics_program_phase_1_source'),
     ('dim_date','dim_date'),
     ('mart_arr_snapshot_model','mart_arr_snapshot_model'),
-    ('mart_arr','mart_arr_snapshot_bottom_up')
+    ('mart_arr','mart_arr_snapshot_bottom_up'),
+    ('mart_arr_current', 'mart_arr')
 ]) }}
 
-, phase_one AS (
+, dim_date_actual AS (
+  
+    -- This CTE controls which months will be added from `mart_arr_current` to this table
+    -- If the last date in the snapshot table is below 7 we have to add two dates. The max month of the snapshot and the month before it
+    -- Example: if last date snapshot = 2023-08-07, then we need to add 2023-07-01 (as we are not yet on 2023-08-08) and also 2023-08-01 (current_month) to the table
+    SELECT
+      first_day_of_month,
+      snapshot_date_fpa,
+      date_actual,
+      (SELECT MAX(snapshot_date) FROM mart_arr_snapshot_model) AS max_snapshot_date
+    FROM dim_date
+    WHERE CASE
+        WHEN DAY(max_snapshot_date) <= 7
+          THEN date_actual = max_snapshot_date
+            OR date_actual = DATEADD('month', -1, max_snapshot_date)
+        ELSE date_actual = max_snapshot_date
+      END
+
+), mart_arr_snapshot_model_combined AS (
 
     SELECT
+      TRUE AS is_arr_month_finalized,
+      snapshot_date,
+      arr_month,
+      fiscal_quarter_name_fy,
+      fiscal_year,
+      subscription_start_month,
+      subscription_end_month,
+      dim_billing_account_id,
+      sold_to_country,
+      billing_account_name,
+      billing_account_number,
+      dim_crm_account_id,
+      dim_parent_crm_account_id,
+      parent_crm_account_name,
+      parent_crm_account_billing_country,
+      parent_crm_account_sales_segment,
+      parent_crm_account_industry,
+      parent_crm_account_owner_team,
+      parent_crm_account_sales_territory,
+      dim_subscription_id,
+      subscription_name,
+      subscription_status,
+      subscription_sales_type,
+      product_tier_name,
+      product_rate_plan_name,
+      product_delivery_type,
+      product_ranking,
+      service_type,
+      unit_of_measure,
+      mrr,
+      arr,
+      quantity,
+      is_arpu,
+      is_licensed_user,
+      parent_crm_account_employee_count_band,
+      is_jihu_account
+    FROM mart_arr_snapshot_model
+
+    UNION ALL
+
+    SELECT
+      FALSE AS is_arr_month_finalized,
+      dim_date_actual.snapshot_date_fpa                                                         AS snapshot_date,
+      arr_month,
+      fiscal_quarter_name_fy,
+      fiscal_year,
+      subscription_start_month,
+      subscription_end_month,
+      dim_billing_account_id,
+      sold_to_country,
+      billing_account_name,
+      billing_account_number,
+      dim_crm_account_id,
+      dim_parent_crm_account_id,
+      parent_crm_account_name,
+      NULL                                                                                      AS parent_crm_account_billing_country,
+      parent_crm_account_sales_segment,
+      parent_crm_account_industry,
+      NULL                                                                                      AS parent_crm_account_owner_team,
+      NULL                                                                                      AS parent_crm_account_sales_territory,
+      dim_subscription_id,
+      subscription_name,
+      subscription_status,
+      subscription_sales_type,
+      product_tier_name,
+      product_rate_plan_name,
+      product_delivery_type,
+      product_ranking,
+      service_type,
+      unit_of_measure,
+      mrr,
+      arr,
+      quantity,
+      is_arpu,
+      is_licensed_user,
+      NULL                                                                                      AS parent_crm_account_employee_count_band,
+      is_jihu_account
+    FROM mart_arr_current
+    INNER JOIN dim_date_actual
+      ON mart_arr_current.arr_month = dim_date_actual.first_day_of_month
+      
+), phase_one AS (
+
+    SELECT
+      TRUE                                                                                         AS is_arr_month_finalized,
       driveload_financial_metrics_program_phase_1_source.arr_month,
       driveload_financial_metrics_program_phase_1_source.fiscal_quarter_name_fy,
       driveload_financial_metrics_program_phase_1_source.fiscal_year,
@@ -29,6 +133,7 @@
       driveload_financial_metrics_program_phase_1_source.parent_crm_account_industry,
       driveload_financial_metrics_program_phase_1_source.parent_crm_account_owner_team,
       driveload_financial_metrics_program_phase_1_source.parent_crm_account_sales_territory,
+      NULL                                                                                         AS dim_subscription_id,
       driveload_financial_metrics_program_phase_1_source.subscription_name,
       driveload_financial_metrics_program_phase_1_source.subscription_status,
       driveload_financial_metrics_program_phase_1_source.subscription_sales_type,
@@ -74,84 +179,86 @@
     SELECT
       dim_parent_crm_account_id,
       MIN(arr_month)                                                                             AS parent_account_cohort_month
-    FROM mart_arr_snapshot_model
+    FROM mart_arr_snapshot_model_combined
     {{ dbt_utils.group_by(n=1) }}
 
 ), snapshot_model AS (
 
     SELECT
-      mart_arr_snapshot_model.arr_month,
-      mart_arr_snapshot_model.fiscal_quarter_name_fy,
-      mart_arr_snapshot_model.fiscal_year,
-      mart_arr_snapshot_model.subscription_start_month,
-      mart_arr_snapshot_model.subscription_end_month,
-      mart_arr_snapshot_model.dim_billing_account_id,
-      mart_arr_snapshot_model.sold_to_country,
-      mart_arr_snapshot_model.billing_account_name,
-      mart_arr_snapshot_model.billing_account_number,
-      mart_arr_snapshot_model.dim_crm_account_id,
-      mart_arr_snapshot_model.dim_parent_crm_account_id,
-      mart_arr_snapshot_model.parent_crm_account_name,
-      mart_arr_snapshot_model.parent_crm_account_billing_country,
+      mart_arr_snapshot_model_combined.is_arr_month_finalized,
+      mart_arr_snapshot_model_combined.arr_month,
+      mart_arr_snapshot_model_combined.fiscal_quarter_name_fy,
+      mart_arr_snapshot_model_combined.fiscal_year,
+      mart_arr_snapshot_model_combined.subscription_start_month,
+      mart_arr_snapshot_model_combined.subscription_end_month,
+      mart_arr_snapshot_model_combined.dim_billing_account_id,
+      mart_arr_snapshot_model_combined.sold_to_country,
+      mart_arr_snapshot_model_combined.billing_account_name,
+      mart_arr_snapshot_model_combined.billing_account_number,
+      mart_arr_snapshot_model_combined.dim_crm_account_id,
+      mart_arr_snapshot_model_combined.dim_parent_crm_account_id,
+      mart_arr_snapshot_model_combined.parent_crm_account_name,
+      mart_arr_snapshot_model_combined.parent_crm_account_billing_country,
       CASE
-       WHEN mart_arr_snapshot_model.parent_crm_account_sales_segment IS NULL THEN 'SMB'
-       WHEN mart_arr_snapshot_model.parent_crm_account_sales_segment = 'Pubsec' THEN 'PubSec'
-       ELSE mart_arr_snapshot_model.parent_crm_account_sales_segment
+       WHEN mart_arr_snapshot_model_combined.parent_crm_account_sales_segment IS NULL THEN 'SMB'
+       WHEN mart_arr_snapshot_model_combined.parent_crm_account_sales_segment = 'Pubsec' THEN 'PubSec'
+       ELSE mart_arr_snapshot_model_combined.parent_crm_account_sales_segment
       END                                                                                       AS parent_crm_account_sales_segment,
-      mart_arr_snapshot_model.parent_crm_account_industry,
-      mart_arr_snapshot_model.parent_crm_account_owner_team,
-      mart_arr_snapshot_model.parent_crm_account_sales_territory                                      AS parent_crm_account_sales_territory,
-      mart_arr_snapshot_model.subscription_name,
-      mart_arr_snapshot_model.subscription_status,
-      mart_arr_snapshot_model.subscription_sales_type,
+      mart_arr_snapshot_model_combined.parent_crm_account_industry,
+      mart_arr_snapshot_model_combined.parent_crm_account_owner_team,
+      mart_arr_snapshot_model_combined.parent_crm_account_sales_territory                                      AS parent_crm_account_sales_territory,
+      mart_arr_snapshot_model_combined.dim_subscription_id,
+      mart_arr_snapshot_model_combined.subscription_name,
+      mart_arr_snapshot_model_combined.subscription_status,
+      mart_arr_snapshot_model_combined.subscription_sales_type,
       CASE
-        WHEN mart_arr_snapshot_model.product_tier_name = 'Self-Managed - Ultimate' THEN 'Ultimate'
-        WHEN mart_arr_snapshot_model.product_tier_name = 'Dedicated - Ultimate'    THEN 'Ultimate'
-        WHEN mart_arr_snapshot_model.product_tier_name = 'Self-Managed - Premium'  THEN 'Premium'
-        WHEN mart_arr_snapshot_model.product_tier_name = 'Self-Managed - Starter'  THEN 'Bronze/Starter'
-        WHEN mart_arr_snapshot_model.product_tier_name = 'SaaS - Ultimate'         THEN 'Ultimate'
-        WHEN mart_arr_snapshot_model.product_tier_name = 'SaaS - Premium'          THEN 'Premium'
-        WHEN mart_arr_snapshot_model.product_tier_name = 'SaaS - Bronze'           THEN 'Bronze/Starter'
-        ELSE mart_arr_snapshot_model.product_tier_name
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'Self-Managed - Ultimate' THEN 'Ultimate'
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'Dedicated - Ultimate'    THEN 'Ultimate'
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'Self-Managed - Premium'  THEN 'Premium'
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'Self-Managed - Starter'  THEN 'Bronze/Starter'
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'SaaS - Ultimate'         THEN 'Ultimate'
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'SaaS - Premium'          THEN 'Premium'
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'SaaS - Bronze'           THEN 'Bronze/Starter'
+        ELSE mart_arr_snapshot_model_combined.product_tier_name
       END                                                                                       AS product_name,
-      mart_arr_snapshot_model.product_rate_plan_name,
-      mart_arr_snapshot_model.product_tier_name,
+      mart_arr_snapshot_model_combined.product_rate_plan_name,
+      mart_arr_snapshot_model_combined.product_tier_name,
       CASE
-        WHEN  mart_arr_snapshot_model.product_delivery_type = 'Others' THEN 'SaaS'
-        ELSE  mart_arr_snapshot_model.product_delivery_type
+        WHEN  mart_arr_snapshot_model_combined.product_delivery_type = 'Others' THEN 'SaaS'
+        ELSE  mart_arr_snapshot_model_combined.product_delivery_type
       END                                                                                       AS  product_delivery_type,
-      mart_arr_snapshot_model.product_ranking,
-      mart_arr_snapshot_model.service_type,
-      mart_arr_snapshot_model.unit_of_measure,
-      mart_arr_snapshot_model.mrr,
-      mart_arr_snapshot_model.arr,
-      mart_arr_snapshot_model.quantity,
-      mart_arr_snapshot_model.is_arpu,
+      mart_arr_snapshot_model_combined.product_ranking,
+      mart_arr_snapshot_model_combined.service_type,
+      mart_arr_snapshot_model_combined.unit_of_measure,
+      mart_arr_snapshot_model_combined.mrr,
+      mart_arr_snapshot_model_combined.arr,
+      mart_arr_snapshot_model_combined.quantity,
+      mart_arr_snapshot_model_combined.is_arpu,
       /*
-      The is_licensed_user flag was added in 2022-08-01 to the mart_arr and mart_arr_snapshot_model models. There is no historical data for the is_licensed_user
+      The is_licensed_user flag was added in 2022-08-01 to the mart_arr and mart_arr_snapshot_model_combined models. There is no historical data for the is_licensed_user
       flag prior to 2022-08-01. We can use the product_tier_name to fill in the historical data. This is the same logic found in prep_product_detail.
       */
       CASE
-        WHEN mart_arr_snapshot_model.is_licensed_user IS NOT NULL
-          THEN mart_arr_snapshot_model.is_licensed_user
-        WHEN mart_arr_snapshot_model.product_tier_name = 'Storage'
+        WHEN mart_arr_snapshot_model_combined.is_licensed_user IS NOT NULL
+          THEN mart_arr_snapshot_model_combined.is_licensed_user
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'Storage'
           THEN FALSE
-        WHEN mart_arr_snapshot_model.product_tier_name = 'Other'
+        WHEN mart_arr_snapshot_model_combined.product_tier_name = 'Other'
           THEN FALSE
         ELSE TRUE
       END                                                                                       AS is_licensed_user,
       parent_cohort_month_snapshot.parent_account_cohort_month                                  AS parent_account_cohort_month,
       DATEDIFF(month, parent_cohort_month_snapshot.parent_account_cohort_month, arr_month)      AS months_since_parent_account_cohort_start,
-      mart_arr_snapshot_model.parent_crm_account_employee_count_band
-    FROM mart_arr_snapshot_model
+      mart_arr_snapshot_model_combined.parent_crm_account_employee_count_band
+    FROM mart_arr_snapshot_model_combined
     INNER JOIN snapshot_dates
-      ON mart_arr_snapshot_model.arr_month = snapshot_dates.first_day_of_month
-      AND mart_arr_snapshot_model.snapshot_date = snapshot_dates.snapshot_date_fpa
+      ON mart_arr_snapshot_model_combined.arr_month = snapshot_dates.first_day_of_month
+      AND mart_arr_snapshot_model_combined.snapshot_date = snapshot_dates.snapshot_date_fpa
     --calculate parent cohort month based on correct cohort logic
     LEFT JOIN parent_cohort_month_snapshot
-      ON mart_arr_snapshot_model.dim_parent_crm_account_id = parent_cohort_month_snapshot.dim_parent_crm_account_id
-    WHERE mart_arr_snapshot_model.is_jihu_account != 'TRUE'
-      AND mart_arr_snapshot_model.arr_month >= '2021-07-01'
+      ON mart_arr_snapshot_model_combined.dim_parent_crm_account_id = parent_cohort_month_snapshot.dim_parent_crm_account_id
+    WHERE mart_arr_snapshot_model_combined.is_jihu_account != 'TRUE'
+      AND mart_arr_snapshot_model_combined.arr_month >= '2021-07-01'
     ORDER BY 1 DESC
 
 ), combined AS (
@@ -187,7 +294,7 @@
 ), edu_subscriptions AS (
 
     /*
-    The is_arpu flag was added in 2022-08-01 to the mart_arr and mart_arr_snapshot_model models. There is no historical data for the is_arpu
+    The is_arpu flag was added in 2022-08-01 to the mart_arr and mart_arr_snapshot_model_combined models. There is no historical data for the is_arpu
     flag prior to 2022-08-01. Moreover, the required product_rate_plan_name is not in the driveload financial metrics file to build out the flag.
     Therefore, we can search for the subscriptions themselves to flag the EDU subscriptions and use the product_tier_name to flag the storage
     related charges to fill in the historical data.
@@ -199,9 +306,10 @@
       AND arr_month <= '2022-07-01'
 
 ), final AS (
-    --Snap in arr_band_calc based on correct logic. Some historical in mart_arr_snapshot_model do not have the arr_band_calc.
+    --Snap in arr_band_calc based on correct logic. Some historical in mart_arr_snapshot_model_combined do not have the arr_band_calc.
     SELECT
       combined.arr_month,
+      combined.is_arr_month_finalized,
       fiscal_quarter_name_fy,
       fiscal_year,
       subscription_start_month,
@@ -218,10 +326,16 @@
       parent_crm_account_industry,
       parent_crm_account_owner_team,
       parent_crm_account_sales_territory,
+      combined.dim_subscription_id,
       combined.subscription_name,
       subscription_status,
       subscription_sales_type,
       product_name,
+      CASE
+        WHEN product_name NOT IN ('Ultimate', 'Premium', 'Bronze/Starter') 
+          THEN 'All Others'
+        ELSE product_name
+      END                                                                                AS product_name_grouped,
       product_rate_plan_name,
       product_tier_name,
       product_delivery_type,
@@ -246,7 +360,7 @@
       is_licensed_user,
       parent_account_cohort_month,
       months_since_parent_account_cohort_start,
-      COALESCE(parent_arr_band_calc.arr_band_calc, 'Missing crm_account_id')   AS arr_band_calc,
+      COALESCE(parent_arr_band_calc.arr_band_calc, 'Missing crm_account_id')            AS arr_band_calc,
       parent_crm_account_employee_count_band
     FROM combined
     LEFT JOIN parent_arr_band_calc
@@ -260,7 +374,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@chrissharp",
+    updated_by="@jpeguero",
     created_date="2021-08-16",
-    updated_date="2023-01-23"
+    updated_date="2023-09-13"
 ) }}

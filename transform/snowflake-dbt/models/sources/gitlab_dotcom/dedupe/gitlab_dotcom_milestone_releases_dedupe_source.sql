@@ -17,7 +17,7 @@ WITH base AS (
 
 ), renamed AS (
 
-    SELECT {{ dbt_utils.surrogate_key( ['milestone_id', 'release_id'])}} AS primary_key,
+    SELECT {{ dbt_utils.generate_surrogate_key( ['milestone_id', 'release_id'])}} AS primary_key,
            milestone_id::INT                                             AS milestone_id,
            release_id::INT                                               AS release_id,
            _uploaded_at                                                  AS _uploaded_at

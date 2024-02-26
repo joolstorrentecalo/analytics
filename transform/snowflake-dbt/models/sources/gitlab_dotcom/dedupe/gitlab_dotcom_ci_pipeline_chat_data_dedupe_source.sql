@@ -1,6 +1,7 @@
 {{ config({
     "materialized": "incremental",
-    "unique_key": "pipeline_id"
+    "unique_key": "pipeline_id",
+    "on_schema_change": "sync_all_columns"
     })
 }}
 

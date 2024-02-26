@@ -10,7 +10,7 @@
     ('product_tiers', 'prep_product_tier'),
     ('product_details', 'dim_product_detail'),
     ('fct_mrr_with_zero_dollar_charges', 'fct_mrr_with_zero_dollar_charges'),
-    ('trial_histories', 'customers_db_trial_histories_source'),
+    ('trials', 'prep_namespace_order_trial'),
     ('subscription_delivery_types', 'bdg_subscription_product_rate_plan')
 ]) }}
 
@@ -59,9 +59,9 @@
       namespaces.ultimate_parent_namespace_id,
       namespaces.gitlab_plan_id,
       dates.first_day_of_month                                          AS namespace_snapshot_month,
-      trial_histories.start_date                                        AS saas_trial_start_date,
-      trial_histories.expired_on                                        AS saas_trial_expired_on,
-      IFF(trial_histories.gl_namespace_id IS NOT NULL
+      trials.order_start_date                                           AS saas_trial_start_date,
+      trials.order_end_date                                             AS saas_trial_expired_on,
+      IFF(trials.dim_namespace_id IS NOT NULL
             OR (namespaces.dim_namespace_id = ultimate_parent_namespace_id
                 AND namespaces.gitlab_plan_title = 'Ultimate Trial'),
           TRUE, FALSE)                                                  AS namespace_was_trial,
@@ -69,8 +69,8 @@
     FROM namespaces
     INNER JOIN dates
       ON dates.date_actual BETWEEN namespaces.created_at AND CURRENT_DATE
-    LEFT JOIN trial_histories
-      ON namespaces.dim_namespace_id = trial_histories.gl_namespace_id
+    LEFT JOIN trials
+      ON namespaces.dim_namespace_id = trials.dim_namespace_id
 
 ), subscription_list AS (
   
@@ -269,7 +269,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@ischweickartDD",
-    updated_by="@jpeguero",
+    updated_by="@snalamaru",
     created_date="2021-06-02",
-    updated_date="2022-06-22"
+    updated_date="2023-09-27"
 ) }}

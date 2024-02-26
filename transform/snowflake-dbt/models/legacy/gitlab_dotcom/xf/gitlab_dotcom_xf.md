@@ -40,22 +40,9 @@ What you can't do with it ?
 
 {% enddocs %}
 
-{% docs gitlab_dotcom_elasticsearch_indexed_namespaces_current %}
-
-Only the most recent gitlab_dotcom elasticsearch_indexed_namespaces data.  
-Records that have been deleted in the source database have been filtered out.
-
-{% enddocs %}
-
 {% docs gitlab_dotcom_environments_xf %}
 
 This model anonymizes three fields: `environment_name`, `slug`, `external_url` based on the visibility of the projects the environments are associated to 
-
-{% enddocs %}
-
-{% docs gitlab_dotcom_gitlab_emails %}
-
-This model limits the gitlab dotcom emails table to only have records for emails ending with `gitlab.com`.
 
 {% enddocs %}
 
@@ -96,19 +83,6 @@ It adds a few columns to the base `gitlab_dotcom_notes` model:
 * `namespace_id`
 * `namespace_name`
 * `namespace_type`
-
-{% enddocs %}
-
-
-{% docs gitlab_dotcom_issues_xf %}
-
-Adds associated labels for issues when these exist.
-
-In order to achieve that we first join issues to the `label links` relation table, and then use that to join to the labels table.
-
-This transformation also masks title/description based on privacy of the project that it is on and the confidentiality setting on the issue.  
-
-A CTE will find projects that don't have visibility set to public and then joined to the issues in order to build a CASE statement to mask the content.
 
 {% enddocs %}
 
@@ -157,6 +131,7 @@ WHERE is_billable = TRUE
 
 {% enddocs %}
 
+
 {% docs gitlab_dotcom_monthly_stage_active_users %}
 
 For each month, this model shows for each event, the users and namespaces who perform this specific event, with 2 additional measures: the number of times this event is performed by a specific user in a specific namespace, and the number of days this event is performed (for example a specific user A has opened in a namespace 1, 15 issues in 10 days)
@@ -168,39 +143,16 @@ We don't use calendar month for this calculation but the last 28 days of the mon
 
 {% docs gitlab_dotcom_events_monthly_active_users%}
 
-For each day, this model counts the number of active users from the previous 28 days. The definiton of an active user is completing one or more audit events within the timeframe. This model includes the referenced date as part of the 28-day window. So for example, the window on January 31th would be from the start of January 4th to the end of January 31 (inclusive).  
+For each day, this model counts the number of active users from the previous 28 days. The definiton of an active user is completing one or more audit events within the timeframe. This model includes the referenced date as part of the 28-day window. So for example, the window on January 31th would be from the start of January 4th to the end of January 31 (inclusive).
 
 This model includes one row for every day, but MAU for a given month will typically be reported as the MAU on the **last day of the month**.
 
 {% enddocs %}
 
+
 {% docs gitlab_dotcom_merge_request_assignment_events %}
 
 This model contains the history of assignments, unassignments, and reassignments for merge requests within internal namespaces. From `gitlab_dotcom_internal_notes_xf`, notes of type `MergeRequest` are queried. Notes are stemmed down to referenced usernames, tokenized, and flattened so that for each event (assign, unassign, reassign) a row is created for each referenced username in the order it appears in the note. Finally, usernames are replaced with user id's by joining to `gitlab_dotcom_users`. Usernames that do not have an associated user_id (if the user was deleted or changed usernames) are not included in this model so as to not misattribute assignee changes.
-
-{% enddocs %}
-
-
-{% docs gitlab_dotcom_merge_requests_xf%}
-
-Adds associated labels for Merge Requests when these exist.
-
-In order to achieve that we first join issues to the `label links` relation table, and then use that to join to the labels
-table.
-
-The labels are filtered in a CTE to only include `target_type = MergeRequest` as the labels table contains both Issue and Merge Request information and misattribution can happen.
-
-In order to also add Metrics data for a Merge Request, we want to get only the last available record from the `gitlab_dotcom_merge_request_metrics` table.   
-First a CTE will get the ID of the latest Merge Request Metrics snapshot, then in the following CTE we inner join to that in order to ensure we only get the latest data.
-
-We also need to know if a MR is related to our community contributor project, there are two conditions to know if this is true:
-
-* The label for the MR needs to be set to `community contribution`
-* the namespace for the target project of the MR needs to be Gitlab.org (namespace_id = 9970)
-
-In order to achieve this we will build a CTE from the project table that contains only project from the Gitlab.org space, then we will use this as a logical condition in a case statement.
-
-Information about the merge request's namespace (`namespace_id`) and ultimate parent namespace (`ultimate_parent_id`, `namespace_is_internal`) is found through the **project** that the merge request is associated with. 
 
 {% enddocs %}
 
@@ -221,17 +173,6 @@ Includes all columns from the projects base model.
 Adds the count of members associated with the project.
 Adds a boolean column, `namespaces_plan_is_paid`, to provide extra context.
 Adds additional information about the associated namespace (name and path).
-
-{% enddocs %}
-
-
-{% docs gitlab_dotcom_retention_cohorts%}
-
-This table produces monthly retention rates by monthly signup cohort.
-
-The `cohorting` CTE establishes how long the user was active by comparing `created_at` with `last_activity_on` and marking this length of activity in months.
-
-The final result is determined by merging the `cohorting` table to itself when activity length = 0 so that we have the based size of the cohort, then take the rate from members active in each period of activity.
 
 {% enddocs %}
 

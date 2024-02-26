@@ -12,19 +12,12 @@ WITH dates AS (
       }}
   FROM {{ ref('prep_date') }}
 
-), final AS (
-
-  SELECT
-    {{ get_date_id('date_actual') }}                                AS date_id,
-    *
-  FROM dates
-
 )
 
 {{ dbt_audit(
-    cte_ref="final",
+    cte_ref="dates",
     created_by="@msendal",
-    updated_by="@pempey",
+    updated_by="@jpeguero",
     created_date="2020-06-01",
-    updated_date="2023-01-09"
+    updated_date="2023-08-14"
 ) }}

@@ -51,7 +51,7 @@
       ON fct_mrr.dim_product_detail_id = dim_product_detail.dim_product_detail_id
     LEFT JOIN dim_license
       ON dim_subscription.dim_subscription_id = dim_license.dim_subscription_id
-    WHERE dim_product_detail.product_delivery_type = 'Self-Managed'
+    WHERE dim_product_detail.product_deployment_type IN ('Self-Managed', 'Dedicated')
       AND dim_subscription.subscription_start_date <= CURRENT_DATE
   
 ), expired_licenses_with_subs AS (
@@ -166,7 +166,7 @@
 
     SELECT
       --primary_key
-      {{ dbt_utils.surrogate_key(['rule_run_date.rule_run_date', 'processed_passed_failed_record_count.rule_id']) }} AS primary_key,
+      {{ dbt_utils.generate_surrogate_key(['rule_run_date.rule_run_date', 'processed_passed_failed_record_count.rule_id']) }} AS primary_key,
 
       --Detection Rule record counts
       rule_id,

@@ -1,6 +1,8 @@
 WITH source AS (
   SELECT *
   FROM {{ source('workday','employment_status') }}
+  WHERE NOT _fivetran_deleted
+  
 ),
 
 renamed AS (

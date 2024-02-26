@@ -14,7 +14,7 @@ from airflow_utils import (
     gitlab_pod_env_vars,
     run_command_test_exclude,
 )
-from kubernetes_helpers import get_affinity, get_toleration
+
 from kube_secrets import (
     GIT_DATA_TESTS_CONFIG,
     GIT_DATA_TESTS_PRIVATE_KEY,
@@ -37,6 +37,8 @@ from kube_secrets import (
     MCD_DEFAULT_API_TOKEN,
     SNOWFLAKE_STATIC_DATABASE,
 )
+
+from kubernetes_helpers import get_affinity, get_toleration
 
 # Load the env vars into a dict and set env vars
 env = os.environ.copy()
@@ -98,7 +100,6 @@ config_dict = {
 
 # DAG argument for scheduling the DAG
 dbt_dag_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -126,8 +127,8 @@ def dbt_tasks(dbt_module_name, dbt_task_name):
         secrets=dbt_secrets,
         env_vars=gitlab_pod_env_vars,
         arguments=[snapshot_cmd],
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("dbt"),
+        tolerations=get_toleration("dbt"),
     )
 
     # Run de dupe / rename /scd model
@@ -147,8 +148,8 @@ def dbt_tasks(dbt_module_name, dbt_task_name):
         secrets=dbt_secrets,
         env_vars=gitlab_pod_env_vars,
         arguments=[model_run_cmd],
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("dbt"),
+        tolerations=get_toleration("dbt"),
     )
 
     # Test all source models
@@ -167,8 +168,8 @@ def dbt_tasks(dbt_module_name, dbt_task_name):
         secrets=dbt_secrets,
         env_vars=gitlab_pod_env_vars,
         arguments=[model_test_cmd],
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("dbt"),
+        tolerations=get_toleration("dbt"),
     )
 
     return snapshot_task, dedupe_dbt_model_task, source_schema_model_test
@@ -183,6 +184,7 @@ for source_name, config in config_dict.items():
         default_args=dbt_dag_args,
         schedule_interval=config["dbt_schedule_interval"],
         description=config["description"],
+        catchup=False,
     )
 
     with dbt_transform_dag:

@@ -42,12 +42,18 @@ WITH prep_ci_runner AS (
       --- SaaS Linux Runners
       WHEN ci_runner_description LIKE '%.shared.runners-manager.%'
         THEN 'SaaS Runner Linux - Small'
+      WHEN ci_runner_description LIKE '%.saas-linux-small-amd64.runners-manager.gitlab.com%'
+        THEN 'SaaS Runner Linux - Small'
       WHEN ci_runner_description LIKE '%saas-linux-medium-amd64%'
         THEN 'SaaS Runner Linux - Medium'
       WHEN ci_runner_description LIKE '%saas-linux-large-amd64%'
         THEN 'SaaS Runner Linux - Large'
+      WHEN ci_runner_description LIKE '%saas-linux-xlarge-amd64%'
+        THEN 'SaaS Runner Linux - XLarge'
+      WHEN ci_runner_description LIKE '%saas-linux-2xlarge-amd64%'
+        THEN 'SaaS Runner Linux - 2XLarge'
       --- MacOS Runners
-      WHEN ci_runner_description LIKE '%macOS%'
+      WHEN ci_runner_description LIKE '%macos%'
         THEN 'SaaS Runners macOS - Medium - amd64'
       --- Window Runners 
       WHEN ci_runner_description LIKE 'windows-shared-runners-manager%'
@@ -59,7 +65,6 @@ WITH prep_ci_runner AS (
     ci_runner_version,
     revision,
     platform,
-    architecture,
     is_untagged,
     is_locked,
     access_level,
@@ -82,5 +87,5 @@ WITH prep_ci_runner AS (
     created_by="@snalamaru",
     updated_by="@nhervas",
     created_date="2021-06-23",
-    updated_date="2023-04-13"
+    updated_date="2024-01-30"
 ) }}

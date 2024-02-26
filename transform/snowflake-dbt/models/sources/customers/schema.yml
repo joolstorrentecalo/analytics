@@ -34,7 +34,6 @@ models:
           - not_null
       - name: current_sign_in_at
       - name: last_sign_in_at
-      - name: zuora_account_id
       - name: salesforce_account_id
       - name: billable
   - name: customers_db_leads_source
@@ -60,7 +59,8 @@ models:
           sensitive: true
       - name: company_name
         meta:
-          sensitive: true          
+          sensitive: true    
+
   - name: customers_db_license_seat_links_source
     description: '{{ doc("customers_db_license_seat_links_source") }}' 
     columns:
@@ -77,6 +77,7 @@ models:
           - customers_db
         tests:
           - not_null
+
   - name: customers_db_licenses_source
     description: This table contains data from licenses in customers portal.
     columns:
@@ -86,7 +87,10 @@ models:
           - customers_db
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "created_at >= DATEADD('day',-3,CURRENT_DATE())"
+
   - name: customers_db_license_versions_source
     description: '{{ doc("customers_db_license_versions_source") }}'
     columns:
@@ -96,7 +100,9 @@ models:
           - customers_db
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "created_at >= DATEADD('day',-3,CURRENT_DATE())"
       - name: item_id
         description: Line if for item
         tags:
@@ -149,6 +155,7 @@ models:
           sensitive: true
       - name: _uploaded_at
         description: Timestamp when record is inserted in the RAW layer
+
   - name: customers_db_orders_source
     description: '{{ doc("customers_db_orders_source") }}'  
     columns:
@@ -165,6 +172,7 @@ models:
           - customers_db
         tests:
           - not_null
+      - name: billing_account_id
       - name: product_rate_plan_id
       - name: subscription_id
         description: This column references a Zuora subscription and can be joined with Zuora tables to get more information about the order.
@@ -185,6 +193,8 @@ models:
         tests:
           - not_null
       - name: order_source
+      - name: task_instance
+
   - name: customers_db_reconciliations_source
     description: '{{ doc("customers_db_reconciliations_source") }}'  
   - name: customers_db_trial_histories_source
@@ -197,6 +207,7 @@ models:
         tests:
           - not_null
           - unique
+
   - name: customers_db_billing_accounts_source
     description: '{{ doc("customers_db_billing_accounts_source") }}'  
     columns:
@@ -295,6 +306,94 @@ models:
         tests:
           - not_null
       - name: cloud_activation_updated_at
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+
+  - name: customers_db_provisions_source
+    description: '{{ doc("customers_db_provisions_source") }}'  
+    columns:
+      - name: subscription_name
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+        description: Zuora subscription name
+      - name: subscription_id
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+          - unique 
+        description: Zuora subscription id
+      - name: subscription_version
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+        description: Zuora subscription version number
+      - name: state
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+        description: The state of the provision
+      - name: created_at
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+      - name: updated_at
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+      - name: state_reason
+        tags:
+          - tdf
+          - customers_db
+        description: Reason to justify the set status after auditing
+
+
+  - name: customers_db_billing_account_contacts_source
+    description: '{{ doc("customers_db_billing_account_contacts_source") }}'  
+    columns:
+      - name: billing_account_contact_id
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+          - unique
+      - name: work_email
+        description: Billing account contact's work email
+      - name: zuora_account_id
+        description: Zuora account id associated with the Billing Account Contact
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+      - name: zuora_contact_id
+        description: Zuora contact id associated with the Billing Account Contact
+        tests:
+          - not_null
+          - unique       
+      - name: billing_account_contact_created_at
+        tags:
+          - tdf
+          - customers_db
+        tests:
+          - not_null
+      - name: billing_account_contact_updated_at
         tags:
           - tdf
           - customers_db

@@ -44,7 +44,7 @@ final AS (
 , transformed AS (
 
     SELECT DISTINCT
-      {{ dbt_utils.surrogate_key(['metrics_path', 'ping_edition', 'version_is_prerelease']) }} AS ping_metric_first_last_versions_id,
+      {{ dbt_utils.generate_surrogate_key(['metrics_path', 'ping_edition', 'version_is_prerelease']) }} AS ping_metric_first_last_versions_id,
       metrics_path                                                                                                                               AS metrics_path,
       ping_edition                                                                                                                               AS ping_edition,
       version_is_prerelease                                                                                                                      AS version_is_prerelease,

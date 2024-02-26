@@ -88,7 +88,7 @@ WITH employee_directory_intermediate AS (
 ), final AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['date_actual', 'breakout_type', 'division', 'department']) }} AS unique_key,
+      {{ dbt_utils.generate_surrogate_key(['date_actual', 'breakout_type', 'division', 'department']) }} AS unique_key,
       unioned.*
     FROM unioned
     INNER JOIN date_details

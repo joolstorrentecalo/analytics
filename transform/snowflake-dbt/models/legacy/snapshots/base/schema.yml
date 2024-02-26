@@ -2,9 +2,9 @@ version: 2
 
 models:
   - name: bizible_attribution_touchpoint_snapshots_source
-    description: Attibtution touchpoints from Bizible loaded into Salesforce.
+    description: Attribution touchpoints from Bizible loaded into Salesforce.
   - name: bizible_touchpoint_snapshots_source
-    description: Attibtution touchpoints from Bizible loaded into Salesforce.
+    description: Attribution touchpoints from Bizible loaded into Salesforce.
   - name: comp_band_loc_factor_base
     description: This model captures percent over comp band data from the sheetload_employee_location_factor snapshotted model. This sheetload is active between 2019.10  - 2020.05.20.
   - name: customers_db_customers_snapshots_base
@@ -146,7 +146,7 @@ models:
       - name: zoom_info_company_employee_count
         description: The number of employees of the company matched by the Zoom Info enrichment process.
       - name: zoom_info_company_industry
-        description: The the primary industry of the company matched by the Zoom Info enrichment process.
+        description: The primary industry of the company matched by the Zoom Info enrichment process.
       - name: zoom_info_company_city
         description: The city of the company matched by the Zoom Info enrichment process.
       - name: zoom_info_company_state_province
@@ -157,10 +157,42 @@ models:
         description: A flag to indicate if the account should be included in the Zoom Info enrichment process.
       - name: bdr_prospecting_status
         description: Indicates whether the account is actively being prospected by a BDR.
+      - name: has_six_sense_6_qa
+        description: The 6QA status of the account for the product.
+      - name: risk_rate_guid
+        description: The globally unique ID (GUID) for the third party record in NavEx RiskRate.
+      - name: six_sense_account_profile_fit
+        description: A measure of how similar a company is to the ideal customer profile.
+      - name: six_sense_account_reach_score
+        description: A measure of current outreach activities against optimal quality.
+      - name: six_sense_account_profile_score
+        description: A measure of how similar a company is to the ideal customer profile.
+      - name: six_sense_account_buying_stage
+        description: The 6QA buting stage of the account
+      - name: six_sense_account_numerical_reach_score
+        description:  measure of current outreach activities against optimal quality.
+      - name: six_sense_account_update_date
+        description: The latest update date and time when 6sense Scores were updated.
+      - name: six_sense_account_6_qa_end_date
+        description: The date the account was disqualified from 6QA status 
+      - name: six_sense_account_6_qa_age_days
+        description: The age of the Account's 6QA data, in days. 
+      - name: six_sense_account_6_qa_start_date
+        description: The date the account qualified for 6QA status 
+      - name: six_sense_account_intent_score
+        description: A measure, between 0 and 100, of how much an account is behaving like accounts with which there is a history of previously opened opportunities.
+      - name: six_sense_segments
+        description: The Account's 6QA segment. 
+      - name: gs_health_csm_sentiment
+        description: This is what the TAM thinks the health of this account should be - Formerly was just Health Score - Gainsight is the SSOT for this field and its value can only be updated in Gainsight.
+      - name: executive_sponsor_id
+        description: sfdc_user_id of an executive sponsor for this account
+
+
   - name: sfdc_bizible_attribution_touchpoint_snapshots_source
-    description: Attibtution touchpoints from Bizible loaded into Salesforce.
+    description: Attribution touchpoints from Bizible loaded into Salesforce.
   - name: sfdc_bizible_touchpoint_snapshots_source
-    description: Attibtution touchpoints from Bizible loaded into Salesforce.
+    description: Attribution touchpoints from Bizible loaded into Salesforce.
   - name: sfdc_opportunity_snapshots_base
     description: This is the base model for snapshots of the salesforce opportunity table for 2019-10-01 and forward.
     columns:
@@ -234,6 +266,8 @@ models:
   - name: zuora_subscription_snapshots_source
     description: Source layer for Zuora Subscriptions
 
+  - name: sfdc_sandbox_user_snapshots_source
+
   - name: customers_db_billing_accounts_snapshots_base
     description: This is the base model for snapshotted billing accounts data from the customers.gitlab.com database.
     columns:
@@ -260,6 +294,73 @@ models:
         tests:
           - not_null
       - name: valid_to
+
+  - name: customers_db_billing_account_contacts_snapshots_base
+    description: This is the base model for snapshotted billing account contacts data from the customers.gitlab.com database.
+    columns:
+      - name: billing_account_contact_snapshot_id
+        description: Auto-generated primary key when building the snapshot with dbt
+        tests:
+          - not_null
+          - unique
+      - name: work_email
+        description: Billing account contact's work email
+      - name: zuora_account_id
+        description: Zuora account id associated with the Billing Account Contact
+        tests:
+          - not_null
+      - name: zuora_contact_id
+        description: Zuora contact id associated with the Billing Account Contact
+        tests:
+          - not_null       
+      - name: billing_account_contact_created_at
+        description: The date the billing account contact was created
+      - name: billing_account_contact_updated_at
+        description: The date the billing account contact was updated
+        tests:
+          - not_null
+      - name: valid_from
+        tests:
+          - not_null
+      - name: valid_to
+
+
+  - name: customers_db_cloud_activations_snapshots_base
+    description: This is the base model for snapshotted cloud activations data from the customers.gitlab.com database. 
+    columns:
+      - name: cloud_activation_snapshot_id
+        description: Auto-generated primary key when building the snapshot with dbt
+        tests:
+          - not_null
+          - unique
+      - name: cloud_activation_id
+        description: A system-generated unique ID for Cloud activations in CDot
+        tests:
+          - not_null
+      - name: customer_id
+        description: Membership Customer ID
+        tests:
+          - not_null
+      - name: billing_account_id
+        description: Membership Account ID. Join key between Customers and billings_accounts.
+      - name: subscription_name
+        description: Zuora Subscription name
+      - name: is_super_sonics_aware_subscription
+        description: Identifies Super Sonics subscriptions.
+      - name: seat_utilization_reminder_sent_at
+        description: Timestamp when reminder email to submit seat utilization data was sent.
+      - name: cloud_activation_created_at
+        tests:
+          - not_null
+      - name: cloud_activation_updated_at
+        tests:
+          - not_null
+      - name: valid_from
+        tests:
+          - not_null
+      - name: valid_to
+
+
 
 
 

@@ -1,5 +1,5 @@
 .snowflake_dbt_jobs: &snowflake_dbt_jobs
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
   stage: ⚙️ dbt Run
   before_script:
     - cd transform/snowflake-dbt/
@@ -18,6 +18,10 @@
     - echo $ENVIRONMENT
     - export CI_PROFILE_TARGET="--profiles-dir profile --target ci"
     - echo $CI_PROFILE_TARGET
+    - export DBT_RUNNER="${GITLAB_USER_ID}-${CI_MERGE_REQUEST_ID}-${CI_JOB_ID}"
+    - echo $DBT_RUNNER
+    - mkdir -p $CI_PROJECT_DIR/transform/snowflake-dbt/reference_state/
+    - curl -o $CI_PROJECT_DIR/transform/snowflake-dbt/reference_state/manifest.json https://dbt.gitlabdata.com/manifest.json
     - mkdir -p ~/.ssh
     - touch ~/.ssh/id_rsa
     - chmod 700 ~/.ssh
@@ -34,9 +38,10 @@
     - merge_requests
   when: manual
   artifacts:
-    name: "dbt Compiled Files"
+    name: "dbt Compiled Files and logs"  
     paths:
       - public
+      - transform/snowflake-dbt/logs
     expire_in: 1 week
     when: always
 
@@ -201,6 +206,61 @@ specify_dbt_parameters:
     - dbt build $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --selector $DBT_SELECTOR || FAILED=true
     - if [ $FAILED ]; then exit 1; fi
 
+
+🏗️🏭build_changes:
+  <<: *snowflake_dbt_jobs
+  script:
+    - set +e
+    - export SNOWFLAKE_TRANSFORM_WAREHOUSE=${WAREHOUSE:-$SNOWFLAKE_MR_XL_WAREHOUSE}
+    - echo $SNOWFLAKE_TRANSFORM_WAREHOUSE
+    - export SNOWFLAKE_SNAPSHOT_DATABASE="${CI_COMMIT_REF_NAME^^}_RAW" # Build can execute snapshots
+    - echo $SNOWFLAKE_SNAPSHOT_DATABASE
+    - export DBT_CI_STATE="--state reference_state"
+    - echo $DBT_CI_STATE
+    - DBT_CI_CHANGES=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD | xargs -n1 basename | grep '\.sql\|\.csv'  | sed -E "s/(.sql|.csv)/$DOWNSTREAM/g" )
+    # Getting the most current reference state from the main branch will include any changes from other merged branches
+    # If we can get the reference from the HEAD of the branch this could be solved.
+    # - export DBT_CI_SELECTION="state:modified."${STATE_MODIFIED:-"body"}${DOWNSTREAM:-""}
+    - export DBT_CI_SELECTION=""
+    - if [ -z $SELECTION ]; then DBT_CI_SELECTION=$DBT_CI_CHANGES; else DBT_CI_SELECTION=$SELECTION; fi
+    - echo $DBT_CI_SELECTION
+    - if [ -z $DBT_CI_SELECTION ]; then echo "No models selected." && exit 3; fi 
+    - export DBT_CI_FAIL_FAST=""
+    - if [ -z $FAIL_FAST ]; then DBT_CI_FAIL_FAST="--fail-fast"; fi
+    - echo $DBT_CI_FAIL_FAST
+    - export DBT_CI_EXCLUDE=""
+    - if [ ! -z $EXCLUDE ]; then DBT_CI_EXCLUDE="--exclude $EXCLUDE"; fi
+    - echo $DBT_CI_EXCLUDE
+    - export DBT_CI_FULL_REFRESH=""
+    - if [ ! -z $FULL_REFRESH ]; then DBT_CI_FULL_REFRESH="--full-refresh"; fi
+    - echo $DBT_CI_FULL_REFRESH
+    # VARS format "key":"value","key":"value"
+    - export DBT_CI_VARS=""
+    - if [ ! -z "$VARS" ]; then DBT_CI_VARS="--vars {$VARS}"; fi
+    - echo $DBT_CI_VARS
+    - dbt deps $CI_PROFILE_TARGET
+    - dbt $DBT_CI_FAIL_FAST clone --select $DBT_CI_SELECTION $DBT_CI_EXCLUDE $CI_PROFILE_TARGET $DBT_CI_FULL_REFRESH $DBT_CI_STATE || FAILED=true
+    - if [ $FAILED ]; then echo "Cloning process failed" && exit 4; fi
+    - dbt $DBT_CI_FAIL_FAST build --select $DBT_CI_SELECTION $DBT_CI_EXCLUDE $CI_PROFILE_TARGET $DBT_CI_FULL_REFRESH --defer $DBT_CI_STATE  $DBT_CI_VARS || FAILED=true
+    - if [ $FAILED ]; then echo "Build process failed" && exit 5; fi
+
+🎛️custom_invocation:
+  <<: *snowflake_dbt_jobs
+  script:
+    - set +e
+    - export SNOWFLAKE_SNAPSHOT_DATABASE="${CI_COMMIT_REF_NAME^^}_RAW" # Snapshot should never run in RAW
+    - if [ -z $WAREHOUSE ]; then echo "No Warehouse selected." && exit 7; else SNOWFLAKE_TRANSFORM_WAREHOUSE=$WAREHOUSE; fi
+    - echo $SNOWFLAKE_TRANSFORM_WAREHOUSE
+    - export DBT_CI_STATEMENT=""
+    - if [ -z "$STATEMENT" ]; then echo "No models selected." && exit 3; else DBT_CI_STATEMENT=$STATEMENT; fi
+    - echo $DBT_CI_STATEMENT
+    - echo $SNOWFLAKE_SNAPSHOT_DATABASE
+    - dbt deps $CI_PROFILE_TARGET
+    - dbt $DBT_CI_STATEMENT $CI_PROFILE_TARGET || FAILED=true
+    - if [ $FAILED ]; then echo "Invocation process failed" && exit 5; fi
+  
+
+
 # ======
 # DBT cloning
 # ======
@@ -234,7 +294,7 @@ specify_dbt_parameters:
     - ../../orchestration/clone_dbt_models_select.py $INPUT
 
 📚✏️generate_dbt_docs:
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
   stage: ⚙️ dbt Run
   before_script:
     - cd transform/snowflake-dbt/
@@ -249,6 +309,8 @@ specify_dbt_parameters:
     - echo $SNOWFLAKE_SNAPSHOT_DATABASE
     - export ENVIRONMENT="CI"
     - echo $ENVIRONMENT
+    - export DBT_RUNNER="${GITLAB_USER_ID}-${CI_MERGE_REQUEST_ID}"
+    - echo $DBT_RUNNER
     - export CI_PROFILE_TARGET="--profiles-dir profile --target ci"
     - echo $CI_PROFILE_TARGET
     - mkdir -p ~/.ssh
@@ -335,7 +397,7 @@ specify_dbt_parameters:
 
 .safe_models_check: &safe_models_check
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
   before_script:
     - cd transform/snowflake-dbt/
     - echo $BRANCH_NAME
@@ -351,6 +413,8 @@ specify_dbt_parameters:
     - echo $SNOWFLAKE_SNAPSHOT_DATABASE
     - export CI_PROFILE_TARGET="--profiles-dir profile --target ci"
     - echo $CI_PROFILE_TARGET
+    - export DBT_RUNNER="${GITLAB_USER_ID}-${CI_MERGE_REQUEST_ID}"
+    - echo $DBT_RUNNER
     - mkdir -p ~/.ssh
     - touch ~/.ssh/id_rsa
     - chmod 700 ~/.ssh
@@ -394,7 +458,7 @@ specify_dbt_parameters:
 
 .dbt_macro_check: &dbt_macro_check
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
   before_script:
     - cd transform/snowflake-dbt/
   tags:
@@ -442,7 +506,7 @@ specify_dbt_parameters:
 # ======
 .dbt_sql_lint: &dbt_sql_lint
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.1
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
   before_script:
     - cd transform/snowflake-dbt/
     - echo $BRANCH_NAME
@@ -458,6 +522,8 @@ specify_dbt_parameters:
     - echo $SNOWFLAKE_SNAPSHOT_DATABASE
     - export CI_PROFILE_TARGET="--profiles-dir profile --target ci"
     - echo $CI_PROFILE_TARGET
+    - export DBT_RUNNER="${GITLAB_USER_ID}-${CI_MERGE_REQUEST_ID}"
+    - echo $DBT_RUNNER
     - mkdir -p ~/.ssh
     - touch ~/.ssh/id_rsa
     - chmod 700 ~/.ssh

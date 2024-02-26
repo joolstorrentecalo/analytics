@@ -23,6 +23,7 @@
       dim_behavior_event_sk,
       platform,
       gsc_pseudonymized_user_id,
+      gsc_is_gitlab_team_member,
       user_snowplow_domain_id,
       clean_url_path,
       page_url_host,
@@ -56,7 +57,7 @@
     SELECT
 
       -- Primary Key
-      {{ dbt_utils.surrogate_key(['event_id','behavior_at']) }} AS fct_behavior_unstructured_sk,
+      {{ dbt_utils.generate_surrogate_key(['event_id','behavior_at']) }} AS fct_behavior_unstructured_sk,
 
       -- Natural Key
       unstruct_event.app_id,
@@ -85,7 +86,8 @@
       change_form_type,
       change_form_element_id,
       focus_form_element_id,
-      focus_form_node_name
+      focus_form_node_name,
+      gsc_is_gitlab_team_member
     FROM unstruct_event
       
 )
@@ -93,7 +95,7 @@
 {{ dbt_audit(
     cte_ref="unstruct_event_with_dims",
     created_by="@chrissharp",
-    updated_by="@pempey",
+    updated_by="@utkarsh060",
     created_date="2022-09-27",
-    updated_date="2023-04-24"
+    updated_date="2024-01-25"
 ) }}

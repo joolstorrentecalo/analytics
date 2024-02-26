@@ -1,8 +1,6 @@
 {{ config(alias='report_metrics_summary_account_year') }}
 
--- TODO: 20221208 TAM fields need to refactored as they are not called TAM anymore
-
-WITH date_details AS (
+WITH RECURSIVE date_details AS (
 
     SELECT *
     --FROM  prod.workspace_sales.date_details
@@ -37,11 +35,11 @@ WITH date_details AS (
         renew_date.first_day_of_fiscal_quarter  AS renew_fiscal_quarter_date,
         renew_date.fiscal_quarter_name_fy       AS renew_fiscal_quarter_name,
         renew_date.fiscal_quarter               AS renew_fiscal_quarter_number
-    FROM {{ref('mart_available_to_renew')}} renew
-    --FROM prod.restricted_safe_common_mart_finance.mart_available_to_renew
+    --FROM {{ref('mart_available_to_renew')}} renew
+    FROM prod.restricted_safe_common_mart_finance.mart_available_to_renew renew
     LEFT JOIN date_details renew_date
         ON renew_date.date_actual = renew.renewal_month
-    
+
  ), dim_subscription AS (
 
     SELECT
@@ -54,59 +52,44 @@ WITH date_details AS (
     --FROM prod.common.dim_subscription
     FROM {{ ref('dim_subscription') }}
 
- ), mart_arr AS (
+ ---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+---------- Base Account
+ ),  sfdc_users_xf AS (
 
-    SELECT *
-    --FROM prod.restricted_safe_common_mart_sales.mart_arr
-    FROM {{ref('mart_arr')}}   
-
-  ), raw_account AS (
-  
-    SELECT *
-    FROM {{ source('salesforce', 'account') }}
-    --FROM raw.salesforce_stitch.account 
-
-  -- missing fields in mart crm account so adding dim_crm_account cte here on top of the mart below
-  ), dim_crm_account AS (
-
-    SELECT *
-    --FROM prod.restricted_safe_common.dim_crm_account
-    FROM {{ref('dim_crm_account')}}
-
-    -- missing fields in dim_crm_account so adding raw account here
-  -- has_tam__c
-  -- PUBLIC_SECTOR_ACCOUNT__C,
-  -- PUBSEC_TYPE__C,
-  -- POTENTIAL_ARR_LAM__C
-  -- BILLINGSTATE
-  -- customer_score__c
-  ), mart_crm_account AS (
-
-    SELECT acc.*,
-        raw.has_tam__c                              AS has_tam_flag,
-        raw.public_sector_account__c                AS public_sector_account_flag,
-        raw.pubsec_type__c                          AS pubsec_type,
-        raw.lam_tier__c                             AS potential_lam_arr,
-        raw.billingstatecode                        AS account_billing_state,
-        raw.customer_score__c                       AS customer_score,
-        raw.account_demographics_territory__c       AS account_demographics_territory,
-        raw.account_demographics_upa_state__c       AS account_demographics_upa_state_code,
-        raw.account_demographics_upa_state_name__c  AS account_demographics_upa_state_name
-    --FROM prod.restricted_safe_common_mart_sales.mart_crm_account acc
-    FROM {{ref('mart_crm_account')}} acc
-    LEFT JOIN raw_account raw
-      ON raw.id = acc.dim_crm_account_id
-    
-  ), sfdc_accounts_xf AS (
-
-    SELECT *
-    --FROM prod.restricted_safe_legacy.sfdc_accounts_xf
-    FROM {{ref('sfdc_accounts_xf')}}
-
-  ), sfdc_users_xf AS (
-
-    SELECT *,
-       CASE
+    SELECT user_id,
+           name,
+           department,
+           title,
+           team,
+           user_email,
+           manager_name,
+           manager_id,
+           user_geo,
+           user_region,
+           user_segment,
+           raw_user_segment,
+           adjusted_user_segment,
+           user_area,
+           role_name,
+           role_type,
+           start_date,
+           is_active,
+           is_hybrid_flag,
+           employee_number,
+           crm_user_business_unit,
+           is_rep_flag,
+           business_unit,
+           sub_business_unit,
+           division,
+           asm,
+           key_bu,
+           key_bu_subbu,
+           key_bu_subbu_division,
+           key_bu_subbu_division_asm,
+           key_sal_heatmap,
+           CASE
             WHEN lower(title) like '%strategic account%'
                 OR lower(title) like '%account executive%'
                 OR lower(title) like '%country manager%'
@@ -116,15 +99,209 @@ WITH date_details AS (
                 THEN 'ASM'
             ELSE 'Other'
       END                                       AS title_category
-    --FROM prod.workspace_sales.sfdc_users_xf
+    --FROM prod.workspace_sales.sfdc_users_xf sfdc_user
     FROM {{ref('wk_sales_sfdc_users_xf')}}
+
+), raw_account AS (
+
+    SELECT *
+    FROM {{ source('salesforce', 'account') }}
+    --FROM raw.salesforce_v2_stitch.account
+
+ ), mart_crm_account AS (
+
+    SELECT acc.*
+
+    --FROM prod.restricted_safe_common_mart_sales.mart_crm_account acc
+    FROM {{ref('mart_crm_account')}} acc
+
+ ), mart_arr AS (
+
+    SELECT *
+    --FROM prod.restricted_safe_common_mart_sales.mart_arr
+    FROM {{ref('mart_arr')}}
+
+), arr_report_month AS (
+
+    SELECT DISTINCT
+        fiscal_year        AS report_fiscal_year,
+        first_day_of_month AS report_month_date
+    FROM date_details
+    CROSS JOIN (SELECT DATEADD(MONTH, -1, DATEADD(day, -2, CURRENT_DATE)) AS today_date)
+    WHERE date_actual = today_date
+
+),last_arr_report AS (
+
+    SELECT
+        dim_crm_account_id AS account_id,
+        report_month_date  AS arr_report_month,
+        SUM(arr)           AS arr,
+        SUM(quantity)      AS seats
+    FROM mart_arr
+    CROSS JOIN arr_report_month
+    WHERE mart_arr.arr_month = arr_report_month.report_month_date
+    GROUP BY 1, 2
+
+
+),
+
+base_account AS (
+
+   SELECT
+
+        raw_acc.has_tam__c                              AS has_tam_flag,
+        raw_acc.public_sector_account__c                AS public_sector_account_flag,
+        raw_acc.pubsec_type__c                          AS pubsec_type,
+        -- For segment calculation we leverage the upa logic
+        raw_upa.pubsec_type__c                          AS upa_pubsec_type,
+        raw_acc.lam_tier__c                             AS lam_arr,
+        raw_acc.lam_dev_count__c                        AS lam_dev_count,
+        raw_upa.lam_tier__c                             AS upa_lam_arr,
+        raw_upa.lam_dev_count__c                        AS upa_lam_dev_count,
+
+        -- hierarchy industry is used as it identifies the most common industry in a hierarchy and it is used for routing
+        -- of accounts
+        raw_acc.parent_lam_industry_acct_heirarchy__c   AS account_industry,
+        raw_upa.parent_lam_industry_acct_heirarchy__c   AS upa_industry,
+        acc.dim_parent_crm_account_id                  AS upa_id,
+        acc.dim_crm_account_id                         AS account_id,
+        acc.crm_account_name                           AS account_name,
+
+        upa_owner.user_id                              AS upa_owner_id,
+        upa_owner.name                                 AS upa_owner_name,
+        raw_upa.name                                   AS upa_name,
+        UPPER(upa_owner.user_geo)                      AS upa_owner_geo,
+        upa_owner.business_unit                        AS upa_owner_business_unit,
+
+        upa_owner.sub_business_unit                    AS upa_owner_sub_bu,
+        upa_owner.division                             AS upa_owner_division,
+        upa_owner.asm                                  AS upa_owner_asm,
+
+        upa_owner.user_region                          AS upa_owner_region,
+        upa_owner.user_area                            AS upa_owner_area,
+        upa_owner.user_segment                         AS upa_owner_segment,
+
+        acc_owner.user_id                              AS account_owner_id,
+        acc_owner.name                                 AS account_owner_name,
+        UPPER(acc_owner.user_geo)                      AS account_owner_geo,
+        acc_owner.business_unit                        AS account_owner_business_unit,
+
+        acc_owner.sub_business_unit                    AS account_owner_sub_bu,
+        acc_owner.division                             AS account_owner_division,
+        acc_owner.asm                                  AS account_owner_asm,
+
+        acc_owner.user_region                          AS account_owner_region,
+        acc_owner.user_area                            AS account_owner_area,
+        acc_owner.user_segment                         AS account_owner_segment,
+
+        raw_acc.billingstate                            AS account_billing_state_name,
+        raw_acc.billingstatecode                        AS account_billing_state_code,
+        raw_acc.billingcountry                          AS account_billing_country_name,
+        raw_acc.billingcountrycode                      AS account_billing_country_code,
+        raw_acc.billingcity                             AS account_billing_city,
+        raw_acc.billingpostalcode                       AS account_billing_postal_code,
+        raw_acc.parent_lam_industry_acct_heirarchy__c   AS hierarcy_industry,
+
+        account_arr.arr_report_month,
+        account_arr.arr,
+
+        NULL                                            AS is_key_account,
+        acc.abm_tier,
+        acc.health_score_color                          AS account_health_score_color,
+        acc.health_number                               AS account_health_number,
+        raw_acc.parentid                               AS parent_id,
+
+        -- this fields might not be upa level
+        raw_acc.account_demographics_business_unit__c       AS account_demographics_business_unit,
+        UPPER(raw_acc.account_demographics_geo__c)          AS account_demographics_geo,
+        raw_acc.account_demographics_region__c              AS account_demographics_region,
+        raw_acc.account_demographics_area__c                AS account_demographics_area,
+        UPPER(raw_acc.account_demographics_sales_segment__c) AS account_demographics_sales_segment,
+        raw_acc.account_demographics_territory__c           AS account_demographics_territory,
+
+        raw_upa.account_demographics_business_unit__c       AS account_demographics_upa_business_unit,
+        UPPER(raw_upa.account_demographics_geo__c)          AS account_demographics_upa_geo,
+        raw_upa.account_demographics_region__c              AS account_demographics_upa_region,
+        raw_upa.account_demographics_area__c                AS account_demographics_upa_area,
+        UPPER(raw_upa.account_demographics_sales_segment__c) AS account_demographics_upa_sales_segment,
+        raw_upa.account_demographics_territory__c           AS account_demographics_upa_territory,
+
+        raw_upa.account_demographics_upa_state__c           AS account_demographics_upa_state_code,
+        raw_upa.account_demographics_upa_state_name__c      AS account_demographics_upa_state_name,
+        raw_upa.account_demographics_upa_country_name__c    AS account_demographics_upa_country_name,
+        raw_upa.account_demographics_upa_country__c         AS account_demographics_upa_country_code,
+        raw_upa.account_demographics_upa_city__c            AS account_demographics_upa_city,
+        raw_upa.account_demographics_upa_postal_code__c     AS account_demographics_upa_postal_code,
+        raw_upa.account_demographic_max_family_employees__c AS account_demographics_upa_max_family_employees,
+
+
+        -- fields from mart account
+        --mart_crm_account.public_sector_account_flag,
+        raw_acc.customer_score__c                    AS customer_score,
+
+
+    COALESCE(raw_acc.potential_users__c,0)                      AS potential_users,
+    COALESCE(raw_acc.number_of_licenses_this_account__c,0)      AS licenses,
+    COALESCE(raw_acc.decision_maker_count_linkedin__c,0)        AS linkedin_developer,
+    COALESCE(raw_acc.zi_number_of_developers__c,0)              AS zi_developers,
+    COALESCE(raw_acc.zi_revenue__c,0)                           AS zi_revenue,
+    COALESCE(raw_acc.account_demographics_employee_count__c,0)  AS employees,
+    COALESCE(raw_acc.carr_acct_family__c,0)                     AS account_family_arr,
+    LEAST(50000,GREATEST(COALESCE(raw_acc.number_of_licenses_this_account__c,0),COALESCE(raw_acc.potential_users__c, raw_acc.decision_maker_count_linkedin__c , raw_acc.zi_number_of_developers__c, 0)))           AS calculated_developer_count
+
+    FROM mart_crm_account AS acc
+    INNER JOIN raw_account AS raw_acc
+        ON raw_acc.id = acc.dim_crm_account_id
+    -- upa account demographics fields
+    LEFT JOIN raw_account AS raw_upa
+        ON raw_upa.id = acc.dim_parent_crm_account_id
+    LEFT JOIN sfdc_users_xf AS acc_owner
+        ON raw_acc.ownerid = acc_owner.user_id
+    -- upa owner id doesn't seem to be on mart crm
+    LEFT JOIN sfdc_users_xf AS upa_owner
+        ON raw_upa.ownerid = upa_owner.user_id
+    -- arr
+    LEFT JOIN last_arr_report AS account_arr
+        ON acc.dim_crm_account_id = account_arr.account_id
+    -- NF: 20231102 - Remove disqualified accounts for FY24 - Brought up by Melia
+    -- Excluding territories that are null
+    WHERE COALESCE(raw_acc.account_demographics_territory__c,'')   NOT IN ('xDISQUALIFIED ACCOUNTS_','xDO NOT DO BUSINESS_',
+                                                              'xCHANNEL','xUNKNOWN','xJIHU', 'JIHU',
+                                                             'JIHU_JIHU_JIHU_JIHU_JIHU_JIHU_JIHU',
+                                                             'UNKNOWN_UNKNOWN_UNKNOWN_UNKNOWN_UNKNOWN_UNKNOWN_UNKNOWN',
+                                                              ''
+                                                             )
+    -- NF: Exclude partner accounts
+        AND LOWER(raw_acc.type) != 'partner'
+    -- NF: Remove duplicates, we are workign directly with source SFDC
+        AND raw_acc.isdeleted = 0
+     -- NF: 20231122 Remove PubSec
+        AND COALESCE(lower(raw_acc.pubsec_type__c),'') !='us-pubsec'
+-----------------------
+-- Adjust for hierarchies split between different geos
+-- Some of this accounts might have different owners
+--   e.g 0014M00001gWR5vQAG
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+), wk_sales_report_bob_virtual_hierarchy AS (
+
+    SELECT *
+    --FROM {{ref('wk_sales_report_bob_virtual_hierarchy')}}
+    FROM prod.restricted_safe_workspace_sales.report_bob_virtual_hierarchy
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
   ), report_dates AS (
 
     SELECT DISTINCT fiscal_year         AS report_fiscal_year,
                     first_day_of_month  AS report_month_date
     FROM prod.workspace_sales.date_details
-    CROSS JOIN (SELECT current_date AS today_date)
+    CROSS JOIN (SELECT  DATEADD(day, -2, CURRENT_DATE) AS today_date)
     WHERE fiscal_year > 2021
         AND month_actual = MONTH(today_date)
         AND date_actual < today_date
@@ -132,15 +309,15 @@ WITH date_details AS (
   ), account_year_key AS (
 
     SELECT DISTINCT
-      a.dim_crm_account_id AS account_id,
+      a.account_id,
       d.report_fiscal_year,
       d.report_month_date
-  FROM dim_crm_account AS a
+  FROM base_account AS a
   CROSS JOIN report_dates AS d
 
   ), nfy_atr_base AS (
 
-    SELECT 
+    SELECT
         dim_crm_account_id      AS account_id,
         report_dates.report_fiscal_year,
         SUM(arr)                AS nfy_atr,
@@ -169,13 +346,13 @@ WITH date_details AS (
     WHERE is_available_to_renew = 1
     AND atr.fiscal_year = report_dates.report_fiscal_year + 1
     GROUP BY 1,2
-    
+
 ), last_12m_atr_base AS (
 
     SELECT dim_crm_account_id   AS account_id,
         report_dates.report_fiscal_year,
         COUNT(DISTINCT atr.renewal_month) AS count_unique_months,
-    
+
         SUM(arr)                AS last_12m_atr
     FROM mart_available_to_renew atr
     CROSS JOIN report_dates
@@ -184,7 +361,7 @@ WITH date_details AS (
     AND atr.renewal_month < report_dates.report_month_date
     AND atr.renewal_month >= DATEADD(month,-12,report_dates.report_month_date)
     GROUP BY 1,2
-    
+
 ), fy_atr_base AS (
 
     SELECT dim_crm_account_id   AS account_id,
@@ -230,7 +407,7 @@ WITH date_details AS (
             ELSE 0 END) AS last_12m_booked_ae_sourced_net_arr,  -- ttm_ae_sourced_net_arr
       SUM(CASE
             WHEN o.is_eligible_churn_contraction_flag = 1
-               THEN o.net_arr
+               THEN o.booked_churned_contraction_net_arr
             ELSE 0 END) AS last_12m_booked_churn_contraction_net_arr,  -- ttm_churn_contraction_net_arr
 
        -- FO year
@@ -328,7 +505,7 @@ WITH date_details AS (
     WHERE o.close_date BETWEEN DATEADD(month, -12,DATE_TRUNC('month',d.report_month_date)) and DATE_TRUNC('month',d.report_month_date)
         AND o.booked_net_arr <> 0
     GROUP BY 1, 2
-    
+
   -- total booked net arr in fy
   ), fy_net_arr AS (
 
@@ -359,7 +536,7 @@ WITH date_details AS (
             ELSE 0 END) AS fy_booked_ae_sourced_net_arr,
       SUM(CASE
             WHEN o.is_eligible_churn_contraction_flag = 1
-            THEN o.booked_net_arr
+            THEN o.booked_churned_contraction_net_arr
             ELSE 0 END) AS fy_booked_churn_contraction_net_arr,
 
         -- First Order year
@@ -418,30 +595,30 @@ WITH date_details AS (
       h.snapshot_fiscal_year        AS report_fiscal_year,
       -- net arr pipeline
       SUM(h.net_arr)                AS total_open_pipe,
-      SUM(CASE 
+      SUM(CASE
               WHEN h.close_fiscal_year = h.snapshot_fiscal_year + 1
                   THEN h.net_arr
               ELSE 0
           END)                      AS nfy_open_pipeline,
-      SUM(CASE 
+      SUM(CASE
               WHEN h.close_fiscal_year = h.snapshot_fiscal_year
                   THEN h.net_arr
               ELSE 0
           END)                       AS fy_open_pipeline,
-      
+
       -- deal count pipeline
       SUM(h.calculated_deal_count)   AS total_count_open_deals,
-      SUM(CASE 
+      SUM(CASE
               WHEN h.close_fiscal_year = h.snapshot_fiscal_year + 1
                   THEN h.net_arr
               ELSE 0
           END)                      AS nfy_count_open_deals,
-      SUM(CASE 
+      SUM(CASE
               WHEN h.close_fiscal_year = h.snapshot_fiscal_year
                   THEN h.net_arr
               ELSE 0
           END)                       AS fy_count_open_deals
-      
+
     FROM sfdc_opportunity_snapshot_xf AS h
     WHERE h.close_date > h.snapshot_date
       AND h.forecast_category_name NOT IN  ('Omitted','Closed')
@@ -552,14 +729,12 @@ WITH date_details AS (
               ELSE 0
           END)          AS direct_arr,
 
-
       SUM(CASE
               WHEN  (mrr.product_tier_name LIKE '%Starter%'
                       OR mrr.product_tier_name LIKE '%Bronze%')
                   THEN mrr.arr
               ELSE 0
           END)          AS product_starter_arr,
-
 
       SUM(CASE
               WHEN  mrr.product_tier_name LIKE '%Premium%'
@@ -590,18 +765,18 @@ WITH date_details AS (
       ON sub.dim_subscription_id = mrr.dim_subscription_id
     WHERE mrr_date.month_actual =  (SELECT DISTINCT month_actual
                                       FROM date_details
-                                      WHERE date_actual = DATE_TRUNC('month', DATEADD(month, -1, CURRENT_DATE)))
+                                      WHERE date_actual = DATE_TRUNC('month', DATEADD(month, -1, DATEADD(day, -2, CURRENT_DATE))))
     GROUP BY 1,2
 
 ), sao_last_12_month AS (
-   
-  SELECT 
+
+  SELECT
         h.sales_accepted_fiscal_year   AS report_fiscal_year,
         h.account_id,
         SUM(h.calculated_deal_count)    AS last_12m_sao_deal_count,
         SUM(h.net_arr)                  AS last_12m_sao_net_arr,
-        SUM(h.booked_net_arr)           AS last_12m_sao_booked_net_arr       
-        
+        SUM(h.booked_net_arr)           AS last_12m_sao_booked_net_arr
+
   FROM sfdc_opportunity_snapshot_xf AS h
     WHERE
         h.sales_accepted_date > dateadd(month,-12,h.snapshot_date)
@@ -610,16 +785,16 @@ WITH date_details AS (
       AND h.is_eligible_sao_flag = 1
       AND h.is_renewal = 0
     GROUP BY 1,2
-    
-), sao_fy AS (      
 
-  SELECT 
+), sao_fy AS (
+
+  SELECT
         h.sales_accepted_fiscal_year   AS report_fiscal_year,
         h.account_id,
         SUM(h.calculated_deal_count)    AS fy_sao_deal_count,
         SUM(h.net_arr)                  AS fy_sao_net_arr,
-        SUM(h.booked_net_arr)           AS fy_sao_booked_net_arr       
-        
+        SUM(h.booked_net_arr)           AS fy_sao_booked_net_arr
+
   FROM sfdc_opportunity_snapshot_xf AS h
     WHERE
        h.snapshot_fiscal_year = h.sales_accepted_fiscal_year
@@ -628,90 +803,85 @@ WITH date_details AS (
       AND h.is_eligible_sao_flag = 1
       AND h.is_renewal = 0
     GROUP BY 1,2
-    
+
 ), consolidated_accounts AS (
 
   SELECT
     ak.report_fiscal_year,
-    a.account_id                      AS account_id,
-    a.account_name                    AS account_name,
-    a.ultimate_parent_account_id      AS upa_id,
-    a.ultimate_parent_account_name    AS upa_name,
-    a.is_key_account,
-    a.abm_tier,
-    a.ultimate_parent_account_id,
+    raw_acc.account_id                      AS account_id,
+    raw_acc.account_name                    AS account_name,
+    raw_acc.upa_id,
+    raw_acc.upa_name,
+    raw_acc.is_key_account,
+    raw_acc.abm_tier,
+    raw_acc.upa_id                      AS ultimate_parent_account_id,
     u.name                              AS account_owner_name,
-    a.owner_id                          AS account_owner_id,
+    raw_acc.account_owner_id,
     trim(u.employee_number)             AS account_owner_employee_number,
     upa_owner.name                      AS upa_owner_name,
     upa_owner.user_id                   AS upa_owner_id,
     upa_owner.title_category            AS upa_owner_title_category,
     trim(upa_owner.employee_number)     AS upa_owner_employee_number,
-    a.billing_country                   AS account_country,
-    a.billing_postal_code               AS account_zip_code,
-    mart_crm_account.account_billing_state AS account_state,
 
-    
-    -- Account demographics fields
-    upa_account.parent_crm_account_sales_segment                    AS parent_crm_account_sales_segment,
-    upa_account.parent_crm_account_geo                              AS parent_crm_account_geo,
-    upa_account.parent_crm_account_region                           AS parent_crm_account_region,
-    upa_account.parent_crm_account_area                             AS parent_crm_account_area,
-    upa_account.crm_account_billing_country                         AS crm_account_billing_country,  
-    upa_account.parent_crm_account_upa_state                        AS parent_crm_account_upa_state,
-    upa_account.parent_crm_account_upa_city                         AS parent_crm_account_upa_city,
-    upa_account.parent_crm_account_upa_postal_code                  AS parent_crm_account_upa_postal_code,
-    upa_account.parent_crm_account_territory                        AS parent_crm_account_territory,
+    -- for planning we need a local address for the target account
+    raw_acc.account_billing_country_name,
+    raw_acc.account_billing_country_code,
+    raw_acc.account_billing_state_name,
+    raw_acc.account_billing_state_code,
+    raw_acc.account_billing_city,
+    raw_acc.account_billing_postal_code,
 
-    
+    raw_acc.account_demographics_upa_territory,
+    raw_acc.account_demographics_upa_state_code,
+    raw_acc.account_demographics_upa_state_name,
+    raw_acc.account_demographics_upa_country_code,
+    raw_acc.account_demographics_upa_country_name,
+    raw_acc.account_demographics_upa_city,
+    raw_acc.account_demographics_upa_postal_code,
+    raw_acc.account_demographics_upa_business_unit,
+    raw_acc.account_demographics_upa_geo,
+    raw_acc.account_demographics_upa_region,
+    raw_acc.account_demographics_upa_area,
+    raw_acc.account_demographics_upa_sales_segment,
+    raw_acc.pubsec_type,
+    --raw_acc.public_sector_account_flag,
+    raw_acc.lam_arr,
+    raw_acc.customer_score,
+
     -- substitute this by key segment
+    u.business_unit                               AS account_user_business_unit,
     u.user_geo                                    AS account_user_geo,
     u.user_region                                 AS account_user_region,
     u.user_segment                                AS account_user_segment,
     u.user_area                                   AS account_user_area,
     u.role_name                                   AS account_owner_role,
     u.title_category                              AS account_owner_title_category,
-    a.industry                                    AS account_industry,
+    raw_acc.account_industry,
+    raw_acc.account_demographics_territory,
+
     upa_owner.user_geo                            AS upa_user_geo,
     upa_owner.user_region                         AS upa_user_region,
     upa_owner.user_segment                        AS upa_user_segment,
     upa_owner.user_area                           AS upa_user_area,
     upa_owner.role_name                           AS upa_user_role,
-    upa.industry                                  AS upa_industry,
-    
-    -- NF: These fields are only useful to calculate LAM Dev Count which is already calculated
-    coalesce(mart_crm_account.potential_users, 0)                               AS potential_users,
-    coalesce(mart_crm_account.number_of_licenses_this_account, 0)               AS licenses,
-    coalesce(mart_crm_account.decision_maker_count_linkedin, 0)                 AS linkedin_developer,
-    coalesce(mart_crm_account.crm_account_zoom_info_number_of_developers, 0)    AS zi_developers,
-    coalesce(mart_crm_account.zoom_info_company_revenue, 0)                     AS zi_revenue,
+    raw_acc.upa_industry                          AS upa_industry,
 
+    -- NF: These fields are only useful to calculate LAM Dev Count which is already calculated
+    raw_acc.potential_users,
+    raw_acc.licenses,
+    raw_acc.linkedin_developer,
+    raw_acc.zi_developers,
+    raw_acc.zi_revenue,
+    raw_acc.employees,
+    raw_acc.account_family_arr,
+    raw_acc.calculated_developer_count,
 
     -- LAM Dev count calculated at the UPA level
-    upa_account.parent_crm_account_lam_dev_count                       AS upa_lam_dev_count,
-    mart_crm_account.public_sector_account_flag,
-    mart_crm_account.pubsec_type,
-    mart_crm_account.potential_lam_arr,
-    coalesce(mart_crm_account.crm_account_employee_count, 0)   AS employees,
-    
-    COALESCE(mart_crm_account.carr_account_family, 0)                       AS account_family_arr,
-    LEAST(50000,GREATEST(coalesce(mart_crm_account.number_of_licenses_this_account,0),COALESCE(mart_crm_account.potential_users, mart_crm_account.decision_maker_count_linkedin, mart_crm_account.crm_account_zoom_info_number_of_developers, 0)))           AS calculated_developer_count,
-
-    -- Account score used to balance patches in maps
-    mart_crm_account.customer_score,
-
-
-    -- TODO: 20221208 They are not called TAMs anymore, this part needs to be refactored
-    a.technical_account_manager_date,
-    a.technical_account_manager                                             AS technical_account_manager_name,
-    CASE
-      WHEN mart_crm_account.has_tam_flag
-          THEN 1
-      ELSE 0
-    END                                           AS has_technical_account_manager_flag,
-
-    a.health_score_color                          AS account_health_score_color,
-    a.health_number                               AS account_health_number,
+    raw_acc.upa_lam_dev_count,
+    raw_acc.account_health_score_color,
+    raw_acc.account_health_number,
+    --raw_acc.account_demographics_upa_max_family_employees,
+    --raw_acc.upa_pubsec_type,
 
     -- atr for current fy
     COALESCE(fy_atr_base.fy_atr,0)           AS fy_atr,
@@ -870,93 +1040,131 @@ WITH date_details AS (
     COALESCE(pg_last_12m_channel_sourced_deal_count,0)        AS pg_last_12m_channel_sourced_deal_count,
     COALESCE(pg_last_12m_sdr_sourced_deal_count,0)            AS pg_last_12m_sdr_sourced_deal_count,
     COALESCE(pg_last_12m_ae_sourced_deal_count,0)             AS pg_last_12m_ae_sourced_deal_count,
-    
+
     -- SAO metrics
     COALESCE(sao_last_12_month.last_12m_sao_deal_count,0)       AS last_12m_sao_deal_count,
     COALESCE(sao_last_12_month.last_12m_sao_net_arr,0)          AS last_12m_sao_net_arr,
-    COALESCE(sao_last_12_month.last_12m_sao_booked_net_arr,0)   AS last_12m_sao_booked_net_arr, 
+    COALESCE(sao_last_12_month.last_12m_sao_booked_net_arr,0)   AS last_12m_sao_booked_net_arr,
     COALESCE(sao_fy.fy_sao_deal_count,0)                        AS fy_sao_deal_count,
     COALESCE(sao_fy.fy_sao_net_arr,0)                           AS fy_sao_net_arr,
     COALESCE(sao_fy.fy_sao_booked_net_arr,0)                    AS fy_sao_booked_net_arr,
-    
+
      -- LAM Dev Count Category
-    CASE 
-        WHEN upa_account.parent_crm_account_lam_dev_count < 100
-            THEN '0. <100'    
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 100
-            AND upa_account.parent_crm_account_lam_dev_count < 250
+    CASE
+        WHEN raw_acc.upa_lam_dev_count < 100
+            THEN '0. <100'
+        WHEN raw_acc.upa_lam_dev_count >= 100
+            AND raw_acc.upa_lam_dev_count < 250
             THEN '1. [100-250)'
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 250
-            AND upa_account.parent_crm_account_lam_dev_count < 500
+        WHEN raw_acc.upa_lam_dev_count >= 250
+            AND raw_acc.upa_lam_dev_count < 500
             THEN '2. [250-500)'
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 500
-            AND upa_account.parent_crm_account_lam_dev_count < 1500
+        WHEN raw_acc.upa_lam_dev_count >= 500
+            AND raw_acc.upa_lam_dev_count < 1500
             THEN '3. [500-1500)'
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 1500
-            AND upa_account.parent_crm_account_lam_dev_count < 2500
+        WHEN raw_acc.upa_lam_dev_count >= 1500
+            AND raw_acc.upa_lam_dev_count < 2500
             THEN '4. [1500-2500)'
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 2500
-            AND upa_account.parent_crm_account_lam_dev_count < 3500
+        WHEN raw_acc.upa_lam_dev_count >= 2500
+            AND raw_acc.upa_lam_dev_count < 3500
             THEN '5. [2500-3500)'
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 3500
-            AND upa_account.parent_crm_account_lam_dev_count < 5000
+        WHEN raw_acc.upa_lam_dev_count >= 3500
+            AND raw_acc.upa_lam_dev_count < 5000
             THEN '6. [3500-5000)'
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 5000
+        WHEN raw_acc.upa_lam_dev_count >= 5000
             THEN '7. >5000'
     END AS lam_dev_count_bin_name,
-    
-    CASE 
-        WHEN upa_account.parent_crm_account_lam_dev_count < 100
+
+    CASE
+        WHEN raw_acc.upa_lam_dev_count < 100
             THEN 0
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 100
-            AND upa_account.parent_crm_account_lam_dev_count < 250
+        WHEN raw_acc.upa_lam_dev_count >= 100
+            AND raw_acc.upa_lam_dev_count < 250
             THEN 100
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 250
-            AND upa_account.parent_crm_account_lam_dev_count < 500
+        WHEN raw_acc.upa_lam_dev_count >= 250
+            AND raw_acc.upa_lam_dev_count < 500
             THEN 250
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 500
-            AND upa_account.parent_crm_account_lam_dev_count < 1500
+        WHEN raw_acc.upa_lam_dev_count >= 500
+            AND raw_acc.upa_lam_dev_count < 1500
             THEN 500
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 1500
-            AND upa_account.parent_crm_account_lam_dev_count < 2500
+        WHEN raw_acc.upa_lam_dev_count >= 1500
+            AND raw_acc.upa_lam_dev_count < 2500
             THEN 1500
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 2500
-            AND upa_account.parent_crm_account_lam_dev_count < 3500
+        WHEN raw_acc.upa_lam_dev_count >= 2500
+            AND raw_acc.upa_lam_dev_count < 3500
             THEN 2500
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 3500
-            AND upa_account.parent_crm_account_lam_dev_count < 5000
+        WHEN raw_acc.upa_lam_dev_count >= 3500
+            AND raw_acc.upa_lam_dev_count < 5000
             THEN 3500
-        WHEN upa_account.parent_crm_account_lam_dev_count >= 5000
+        WHEN raw_acc.upa_lam_dev_count >= 5000
             THEN 5000
-    END AS lam_dev_count_bin_rank,      
-    
+    END AS lam_dev_count_bin_rank,
+
     -- Public Sector
     CASE
-        WHEN mart_crm_account.pubsec_type ='ROW-PubSec'
+        WHEN lower(raw_acc.pubsec_type) ='row-pubsec'
             THEN 'Public'
         ELSE 'Private'
     END                     AS sector_type,
     CASE
-        WHEN mart_crm_account.pubsec_type ='ROW-PubSec'
+        WHEN lower(raw_acc.pubsec_type) ='row-pubsec'
             THEN 1
         ELSE 0
-    END                     AS is_public_sector_flag
+    END                     AS is_public_sector_flag,
 
+    ------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------
+    -- Virtual UPA fields
+    virtual_upa.virtual_upa_id,
+    virtual_upa.virtual_upa_name,
+
+    virtual_upa.virtual_upa_business_unit,
+    virtual_upa.virtual_upa_owner_geo           AS virtual_upa_geo,
+    virtual_upa.virtual_upa_owner_region        AS virtual_upa_region,
+    virtual_upa.virtual_upa_owner_area          AS virtual_upa_area,
+    virtual_upa.virtual_upa_segment             AS virtual_upa_segment,
+
+    virtual_upa.virtual_upa_ad_business_unit,
+    virtual_upa.virtual_upa_ad_geo,
+    virtual_upa.virtual_upa_ad_region,
+    virtual_upa.virtual_upa_ad_area,
+    virtual_upa.virtual_upa_ad_segment,
+
+    virtual_upa.virtual_upa_ad_country,
+    virtual_upa.virtual_upa_ad_state_name,
+    virtual_upa.virtual_upa_ad_state_code,
+    virtual_upa.virtual_upa_ad_zip_code,
+
+    virtual_upa.virtual_upa_industry,
+
+    virtual_upa.virtual_upa_owner_name,
+    virtual_upa.virtual_upa_owner_id,
+
+    virtual_upa.virtual_upa_sub_business_unit,
+    virtual_upa.virtual_upa_division,
+    virtual_upa.virtual_upa_asm,
+
+    virtual_upa.virtual_upa_country_name,
+    virtual_upa.virtual_upa_state_name,
+    virtual_upa.virtual_upa_state_code,
+    virtual_upa.virtual_upa_zip_code,
+    virtual_upa.upa_type                            AS virtual_upa_type
+
+
+    ------------------------------------------------------------------------------------------
   FROM account_year_key AS ak
-  INNER JOIN sfdc_accounts_xf AS a
-    ON ak.account_id = a.account_id
-  LEFT JOIN mart_crm_account AS upa_account
-    ON a.ultimate_parent_account_id = upa_account.dim_crm_account_id
-  LEFT JOIN sfdc_accounts_xf AS upa
-    ON a.ultimate_parent_account_id = upa.account_id
-  LEFT JOIN dim_crm_account AS dim_account
-    ON ak.account_id = dim_account.dim_crm_account_id
-  LEFT JOIN mart_crm_account
-    ON ak.account_id = mart_crm_account.dim_crm_account_id
+  INNER JOIN wk_sales_report_bob_virtual_hierarchy virtual_upa
+      ON virtual_upa.account_id = ak.account_id
+ -----
+  INNER JOIN base_account AS raw_acc
+      ON ak.account_id = raw_acc.account_id
+-----
   LEFT JOIN sfdc_users_xf AS u
-    ON a.owner_id = u.user_id
+    ON raw_acc.account_owner_id = u.user_id
   LEFT JOIN sfdc_users_xf AS upa_owner
-    ON upa.owner_id = upa_owner.user_id
+    ON raw_acc.upa_owner_id = upa_owner.user_id
+-----
   LEFT JOIN fy_atr_base
     ON fy_atr_base.account_id = ak.account_id
     AND fy_atr_base.report_fiscal_year = ak.report_fiscal_year
@@ -985,301 +1193,66 @@ WITH date_details AS (
     ON net_arr_fiscal.account_id = ak.account_id
     AND net_arr_fiscal.report_fiscal_year = ak.report_fiscal_year
   -- SAOs
-  LEFT JOIN sao_last_12_month 
+  LEFT JOIN sao_last_12_month
     ON sao_last_12_month.account_id = ak.account_id
     AND sao_last_12_month.report_fiscal_year = ak.report_fiscal_year
   LEFT JOIN sao_fy
     ON sao_fy.account_id = ak.account_id
     AND sao_fy.report_fiscal_year = ak.report_fiscal_year
 
-    -----------------------
+    ------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------
+    -- CONSOLIDATED UPA CODE
+
 -- Adjust for hierarchies split between different geos
-), upa_virtual_cte AS (
-
-SELECT 
-    report_fiscal_year,
-    upa_id,
-    upa_name,
-    upa_user_geo,
-    account_id                                AS virtual_upa_id,
-    account_name                              AS virtual_upa_name,
-    parent_crm_account_sales_segment          AS virtual_upa_segment,
-    parent_crm_account_geo                    AS virtual_upa_geo,
-    parent_crm_account_region                 AS virtual_upa_region,
-    parent_crm_account_area                   AS virtual_upa_area,
-    crm_account_billing_country               AS virtual_upa_country,
-    parent_crm_account_upa_postal_code        AS virtual_upa_zip_code,
-    account_industry                          AS virtual_upa_industry,
-    parent_crm_account_upa_state              AS virtual_upa_state,
-    account_owner_name                        AS virtual_upa_owner_name,
-    account_owner_title_category              AS virtual_upa_owner_title_category,
-    account_owner_id                          AS virtual_upa_owner_id,
-    account_id,
-    account_name,
-    account_owner_name,
-    arr AS account_arr,
-    1 AS level
-FROM consolidated_accounts
-WHERE upa_user_geo != account_user_geo
-    AND arr > 5000
-   -- AND upa_user_geo = 'EMEA'
-UNION ALL 
-SELECT 
-    upa.report_fiscal_year,
-    upa.upa_id,
-    upa.upa_name,
-    upa.upa_user_geo,
-    upa.virtual_upa_id,
-    upa.virtual_upa_name,
-    upa.virtual_upa_segment,
-    upa.virtual_upa_geo,
-    upa.virtual_upa_region,
-    upa.virtual_upa_area,
-    upa.virtual_upa_country,
-    upa.virtual_upa_zip_code,
-    upa.virtual_upa_industry,
-    upa.virtual_upa_state,
-    upa.virtual_upa_owner_name,
-    upa.virtual_upa_owner_title_category,
-    upa.virtual_upa_owner_id,
-    child.account_id,
-    child.account_name,
-    child.account_owner_name,
-    child.arr AS account_arr,
-    level + 1 AS level
-FROM consolidated_accounts child
-INNER JOIN upa_virtual_cte upa
-    ON child.ultimate_parent_account_id = upa.account_id
-    AND child.report_fiscal_year = upa.report_fiscal_year
-
-), max_virtual_upa_depth AS (
-
-    SELECT 
-        report_fiscal_year,
-        upa_id,
-        upa_name,
-        virtual_upa_segment,
-        virtual_upa_geo,
-        virtual_upa_id, 
-        virtual_upa_name, 
-        MAX(level) AS max_depth
-    FROM upa_virtual_cte
-    GROUP BY 1,2,3,4,5,6,7
-    
-), selected_virtual_upa_head AS (
-
-SELECT 
-    report_fiscal_year,
-    upa_id,
-    upa_name,
-    virtual_upa_segment,
-    virtual_upa_geo,
-    virtual_upa_id,
-    virtual_upa_name,
-    max_depth,
-    ROW_NUMBER() OVER (PARTITION BY upa_id, report_fiscal_year ORDER BY max_depth DESC) AS level
-FROM max_virtual_upa_depth
-QUALIFY level = 1
-
-        
--- selects the longest hierarchy from the virtual UPAs options
-), selected_hierarchy_virtual_upa AS (
-
-    
-    SELECT total.*
-    FROM upa_virtual_cte total
-    INNER JOIN selected_virtual_upa_head selected
-        ON total.virtual_upa_id = selected.virtual_upa_id
-        AND total.report_fiscal_year = selected.report_fiscal_year
-
-
--- identify unique virtual upas
-), select_unique_virtual_upa AS (
-
-SELECT 
-    final.report_fiscal_year,
-    final.upa_id,
-    final.upa_name,
-    final.upa_user_geo,
-    final.virtual_upa_id,
-    final.virtual_upa_name,
-    final.virtual_upa_segment,
-    final.virtual_upa_geo,
-    final.virtual_upa_region,
-    final.virtual_upa_area,
-    final.virtual_upa_country,
-    final.virtual_upa_zip_code,
-    final.virtual_upa_industry,
-    final.virtual_upa_state,
-    final.virtual_upa_owner_name,
-    final.virtual_upa_owner_title_category,
-    final.virtual_upa_owner_id
-FROM selected_hierarchy_virtual_upa final
-    
-
--- identify accounts that belong to the same owner of a virtual upa within the hierarchy
-), final_virtual_upa AS (
-    
-SELECT 
-    final.report_fiscal_year,
-    final.upa_id,
-    final.upa_name,
-    final.upa_user_geo,
-    extra.virtual_upa_id,
-    extra.virtual_upa_name,
-    extra.virtual_upa_segment,
-    extra.virtual_upa_geo,
-    extra.virtual_upa_region,
-    extra.virtual_upa_area,
-    extra.virtual_upa_country,
-    extra.virtual_upa_zip_code,
-    extra.virtual_upa_industry,
-    extra.virtual_upa_state,
-    extra.virtual_upa_owner_name,
-    extra.virtual_upa_owner_title_category,
-    extra.virtual_upa_owner_id,
-    final.account_id,
-    final.account_name,
-    final.account_owner_name,
-    final.arr AS account_arr,
-    -1 AS level
-FROM consolidated_accounts final
-    INNER JOIN select_unique_virtual_upa extra
-        ON final.upa_id = extra.upa_id
-        AND final.account_owner_name = extra.virtual_upa_owner_name
-        AND final.report_fiscal_year = extra.report_fiscal_year
--- Exclude accounts already in the hierarchy table
-WHERE final.account_id NOT IN (SELECT DISTINCT account_id FROM selected_hierarchy_virtual_upa)
-UNION
-  SELECT 
-    final.report_fiscal_year,
-    final.upa_id,
-    final.upa_name,
-    final.upa_user_geo,
-    final.virtual_upa_id,
-    final.virtual_upa_name,
-    final.virtual_upa_segment,
-    final.virtual_upa_geo,
-    final.virtual_upa_region,
-    final.virtual_upa_area,
-    final.virtual_upa_country,
-    final.virtual_upa_zip_code,
-    final.virtual_upa_industry,
-    final.virtual_upa_state,
-    final.virtual_upa_owner_name,
-    final.virtual_upa_owner_title_category,
-    final.virtual_upa_owner_id,
-    final.account_id,
-    final.account_name,
-    final.account_owner_name,
-    final.account_arr,
-    final.level
-FROM selected_hierarchy_virtual_upa final
-------------------------
-
 ), consolidated_upa AS (
 
-  SELECT
+  SELECT DISTINCT
     acc.report_fiscal_year,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN 'Virtual'
-        ELSE 'Real'
-    END                                     AS upa_type,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_id 
-        ELSE acc.upa_id
-    END                                     AS upa_id,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_name
-        ELSE acc.upa_name
-    END                                     AS upa_name,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_owner_name
-        ELSE acc.upa_owner_name
-    END                                     AS upa_owner_name,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_owner_id 
-        ELSE acc.upa_owner_id
-    END                                     AS upa_owner_id,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_owner_title_category
-        ELSE acc.upa_owner_title_category
-    END                                     AS upa_owner_title_category,
-    
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_industry 
-        ELSE acc.upa_industry
-    END                                     AS upa_industry,
-    
+    acc.virtual_upa_type            AS upa_type,
+    acc.virtual_upa_id              AS upa_id,
+    acc.virtual_upa_name            AS upa_name,
+    acc.virtual_upa_owner_name      AS upa_owner_name,
+    acc.virtual_upa_owner_id         AS upa_owner_id,
+    ''                              AS upa_owner_title_category,
+    acc.virtual_upa_industry        AS upa_industry,
+
     -- Account Demographics
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_segment
-        ELSE acc.parent_crm_account_sales_segment
-    END                                     AS upa_ad_segment,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_geo
-        ELSE acc.parent_crm_account_geo
-    END                                     AS upa_ad_geo,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_region 
-        ELSE acc.parent_crm_account_region
-    END                                     AS upa_ad_region,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_area
-        ELSE acc.parent_crm_account_area
-    END                                     AS upa_ad_area,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_country 
-        ELSE acc.crm_account_billing_country
-    END                                     AS upa_ad_country,
+    -- 20231025 as FY24, starting FY25 planning, this fields include the FY25 target
 
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_state 
-        ELSE acc.parent_crm_account_upa_state
-    END                                     AS upa_ad_state,
+    acc.virtual_upa_ad_business_unit    AS upa_ad_business_unit,
 
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_zip_code 
-        ELSE acc.parent_crm_account_upa_postal_code
-    END                                     AS upa_ad_zip_code,
+    acc.virtual_upa_ad_segment          AS upa_ad_segment,
+    acc.virtual_upa_ad_geo              AS upa_ad_geo,
+    acc.virtual_upa_ad_region           AS upa_ad_region,
+    acc.virtual_upa_ad_area             AS upa_ad_area,
+    acc.virtual_upa_ad_country          AS upa_ad_country,
+    acc.virtual_upa_ad_state_name       AS upa_ad_state_name,
+    acc.virtual_upa_ad_state_code       AS upa_ad_state_code,
+    acc.virtual_upa_ad_zip_code         AS upa_ad_zip_code,
 
     -- Account User Owner fields
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_segment
-        ELSE acc.upa_user_segment
-    END                                     AS upa_user_segment,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_geo
-        ELSE acc.upa_user_geo
-    END                                     AS upa_user_geo,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_region 
-        ELSE acc.upa_user_region
-    END                                     AS upa_user_region,
-    CASE 
-        WHEN new_upa.upa_id IS NOT NULL 
-            THEN new_upa.virtual_upa_area
-        ELSE acc.upa_user_area
-    END                                     AS upa_user_area,
-    
-    
+
+    -- TODO add business unit and roletype
+    -- this is wrong as this field should be taken from the account owner and not the
+    -- account demographics field
+
+    acc.virtual_upa_sub_business_unit   AS upa_user_business_unit,
+    acc.virtual_upa_sub_business_unit   AS upa_user_sub_business_unit,
+    acc.virtual_upa_division            AS upa_user_division,
+    acc.virtual_upa_asm                 AS upa_user_asm,
+
+    acc.virtual_upa_segment             AS upa_user_segment,
+    acc.virtual_upa_geo                 AS upa_user_geo,
+    acc.virtual_upa_region              AS upa_user_region,
+    acc.virtual_upa_area                AS upa_user_area,
+
+    acc.virtual_upa_country_name        AS upa_country,
+    acc.virtual_upa_state_name          AS upa_state_name,
+    acc.virtual_upa_state_code          AS upa_state_code,
+    acc.virtual_upa_zip_code            AS upa_zip_code,
+
     acc.lam_dev_count_bin_rank,
     acc.lam_dev_count_bin_name,
 
@@ -1289,13 +1262,13 @@ FROM selected_hierarchy_virtual_upa final
             THEN 'Public'
         ELSE 'Private'
     END                             AS sector_type,
-    
+
     -- Customer score used in maps for account visualization
     MAX(acc.customer_score) AS customer_score,
-    
+
     MAX(acc.is_public_sector_flag)      AS is_public_sector_flag,
-    
-    
+
+
     -- SUM(CASE WHEN acc.account_forbes_rank IS NOT NULL THEN 1 ELSE 0 END)   AS count_forbes_accounts,
     -- MIN(account_forbes_rank)      AS forbes_rank,
     MAX(acc.potential_users)          AS potential_users,
@@ -1306,8 +1279,6 @@ FROM selected_hierarchy_virtual_upa final
     MAX(acc.employees)                AS employees,
     MAX(acc.upa_lam_dev_count)        AS upa_lam_dev_count,
 
-    SUM(acc.has_technical_account_manager_flag) AS count_technical_account_managers,
-
     -- atr for current fy
     SUM(acc.fy_atr)  AS fy_atr,
     -- next fiscal year atr base reported at fy
@@ -1316,7 +1287,7 @@ FROM selected_hierarchy_virtual_upa final
     -- arr by fy
     SUM(acc.arr) AS arr,
 
-    CASE 
+    CASE
         WHEN  MAX(acc.is_customer_flag) = 1
         THEN 0
     ELSE 1
@@ -1344,7 +1315,7 @@ FROM selected_hierarchy_virtual_upa final
 
 
     -- rolling last 12 months bokked net arr
-    SUM(last_12m_booked_net_arr)                      AS last_12m_booked_net_arr,
+    SUM(acc.last_12m_booked_net_arr)                      AS last_12m_booked_net_arr,
     SUM(acc.last_12m_booked_non_web_net_arr)              AS last_12m_booked_non_web_net_arr,
     SUM(acc.last_12m_booked_web_direct_sourced_net_arr)   AS last_12m_booked_web_direct_sourced_net_arr,
     SUM(acc.last_12m_booked_channel_sourced_net_arr)      AS last_12m_booked_channel_sourced_net_arr,
@@ -1393,28 +1364,26 @@ FROM selected_hierarchy_virtual_upa final
     SUM(acc.pg_last_12m_channel_sourced_net_arr)      AS pg_last_12m_channel_sourced_net_arr,
     SUM(acc.pg_last_12m_sdr_sourced_net_arr)          AS pg_last_12m_sdr_sourced_net_arr,
     SUM(acc.pg_last_12m_ae_sourced_net_arr)           AS pg_last_12m_ae_sourced_net_arr,
-    
+
     SUM(acc.last_12m_sao_deal_count)                    AS last_12m_sao_deal_count,
     SUM(acc.last_12m_sao_net_arr)                       AS last_12m_sao_net_arr,
-    SUM(acc.last_12m_sao_booked_net_arr)                AS last_12m_sao_booked_net_arr, 
+    SUM(acc.last_12m_sao_booked_net_arr)                AS last_12m_sao_booked_net_arr,
     SUM(acc.fy_sao_deal_count)                          AS fy_sao_deal_count,
     SUM(acc.fy_sao_net_arr)                             AS fy_sao_net_arr,
     SUM(acc.fy_sao_booked_net_arr)                      AS fy_sao_booked_net_arr
-    
+
   FROM consolidated_accounts acc
-    LEFT JOIN final_virtual_upa new_upa
-        ON new_upa.account_id = acc.account_id
-        AND new_upa.report_fiscal_year = acc.report_fiscal_year
-  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21
+
+  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31
 
 )
 , final AS (
 
   SELECT
-      
-    acc.*, 
-    
-    CASE 
+
+    acc.*,
+
+    CASE
       WHEN upa.arr > 0 AND upa.arr < 5000
         THEN '1. 0-5k ARR'
       WHEN upa.arr >= 5000 AND upa.arr < 10000
@@ -1426,12 +1395,12 @@ FROM selected_hierarchy_virtual_upa final
       WHEN upa.arr >= 100000 AND upa.arr < 500000
         THEN '5. 100k-500k ARR'
       WHEN upa.arr >= 500000 AND upa.arr < 1000000
-        THEN '6. 500k-1M ARR'     
+        THEN '6. 500k-1M ARR'
       WHEN upa.arr >= 500000 AND upa.arr < 1000000
-        THEN '7. >=1M ARR' 
+        THEN '7. >=1M ARR'
       ELSE 'n/a'
     END    AS account_family_arr_bin_name,
-    
+
     COALESCE(upa.potential_users,0)                 AS upa_potential_users,
     COALESCE(upa.licenses,0)                        AS upa_licenses,
     COALESCE(upa.linkedin_developer,0)              AS upa_linkedin_developer,
@@ -1439,6 +1408,7 @@ FROM selected_hierarchy_virtual_upa final
     COALESCE(upa.zi_revenue,0)                      AS upa_zi_revenue,
     COALESCE(upa.employees,0)                       AS upa_employees,
     COALESCE(upa.count_of_customers,0)              AS upa_count_of_customers,
+    COALESCE(upa.arr,0)                             AS upa_arr,
 
     CASE
         WHEN upa.upa_id = acc.account_id
@@ -1447,35 +1417,28 @@ FROM selected_hierarchy_virtual_upa final
     END                                     AS is_upa_flag,
 
     upa.is_customer_flag                    AS hierarchy_is_customer_flag,
-    
-    COALESCE(virtual.virtual_upa_id,acc.upa_id)                             AS virtual_upa_id,
-    COALESCE(virtual.virtual_upa_name,acc.upa_name)                         AS virtual_upa_name,
-    COALESCE(virtual.virtual_upa_segment,acc.parent_crm_account_sales_segment)                AS virtual_upa_ad_segment,
-    COALESCE(virtual.virtual_upa_geo,acc.upa_user_geo)                      AS virtual_upa_geo,
-    COALESCE(virtual.virtual_upa_region,acc.upa_user_region)                AS virtual_upa_region,
-    COALESCE(virtual.virtual_upa_area,acc.upa_user_area)                    AS virtual_upa_area,
-    COALESCE(virtual.virtual_upa_country,acc.crm_account_billing_country)   AS virtual_upa_ad_country,
-    COALESCE(virtual.virtual_upa_state,acc.parent_crm_account_upa_state)    AS virtual_upa_ad_state,
-    COALESCE(virtual.virtual_upa_zip_code,acc.parent_crm_account_upa_postal_code) AS virtual_upa_ad_zip_code,
-    COALESCE(virtual.virtual_upa_industry,acc.upa_industry)                 AS virtual_upa_industry,
-    COALESCE(virtual.virtual_upa_owner_name,acc.upa_owner_name)             AS virtual_upa_owner_name,
-    COALESCE(virtual.virtual_upa_owner_title_category,acc.upa_owner_title_category)   AS virtual_upa_owner_title_category,
-    COALESCE(virtual.virtual_upa_owner_id,acc.upa_owner_id)                 AS virtual_upa_owner_id, 
-    CASE 
-        WHEN virtual.upa_id IS NOT NULL 
-            THEN 'Virtual'
-        ELSE 'Real'
-    END                                                                     AS virtual_upa_type
+
+    -- FY25 GTM logic for segment migration
+    CASE
+        WHEN lower(acc.pubsec_type) ='row-pubsec'
+            THEN 'ROW-PubSec'
+         WHEN lower(acc.pubsec_type) ='us-pubsec'
+            THEN 'PubSec'
+        WHEN upa_employees > 4000
+                THEN 'Large'
+        WHEN upa_employees BETWEEN 101 AND 4000
+                 OR upa.product_ultimate_arr > 1
+                 OR upa.arr > 30000
+                THEN 'Mid-Market'
+        ELSE 'SMB'
+    END                                     AS fy25_segment_calc
 
   FROM consolidated_accounts acc
     LEFT JOIN consolidated_upa upa
-        ON upa.upa_id = acc.upa_id
+        ON upa.upa_id = acc.virtual_upa_id
         AND upa.report_fiscal_year = acc.report_fiscal_year
-    LEFT JOIN final_virtual_upa virtual
-        ON virtual.account_id = acc.account_id
-        AND virtual.report_fiscal_year = acc.report_fiscal_year
 
 )
 
-SELECT *
+SELECT * 
 FROM final

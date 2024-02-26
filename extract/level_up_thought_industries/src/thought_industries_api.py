@@ -31,7 +31,7 @@ config_dict = os.environ.copy()
 class ThoughtIndustries(ABC):
     """Base abstract class that contains the main endpoint logic"""
 
-    BASE_URL = "https://levelup.gitlab.com/"
+    BASE_URL = "https://university.gitlab.com/"
     HEADERS = {
         "Authorization": f'Bearer {config_dict["LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY"]}'
     }

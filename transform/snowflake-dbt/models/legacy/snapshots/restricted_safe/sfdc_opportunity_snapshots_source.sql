@@ -164,8 +164,6 @@ WITH source AS (
         stamped_opp_owner_user_business_unit__c                                             AS user_business_unit_stamped,
         stamped_opportunity_owner__c                                                        AS crm_opp_owner_stamped_name,
         stamped_account_owner__c                                                            AS crm_account_owner_stamped_name,
-        sao_opportunity_owner__c                                                            AS sao_crm_opp_owner_stamped_name,
-        sao_account_owner__c                                                                AS sao_crm_account_owner_stamped_name,
         sao_user_segment__c                                                                 AS sao_crm_opp_owner_sales_segment_stamped,
         sao_opp_owner_segment_geo_region_area__c                                            AS sao_crm_opp_owner_sales_segment_geo_region_area_stamped,
         CASE
@@ -199,6 +197,16 @@ WITH source AS (
         comp_y2_iacv__c                                                                     AS comp_y2_iacv,
         comp_new_logo_override__c                                                           AS comp_new_logo_override,
         is_pipeline_created_eligible_flag__c                                                AS is_pipeline_created_eligible,
+        next_steps__c                                                                       AS next_steps,
+        auto_renewal_status__c                                                              AS auto_renewal_status,
+        qsr_notes__c                                                                        AS qsr_notes,
+        qsr_status__c                                                                       AS qsr_status,
+        manager_forecast_confidence__c                                                      AS manager_confidence,
+        renewal_risk_forecast__c                                                            AS renewal_risk_category,
+        renewal_swing_arr__c                                                                AS renewal_swing_arr,
+        isr__c                                                                              AS renewal_manager, 
+        renewal_forecast_category__c                                                        AS renewal_forecast_health,
+        isr_priority__c                                                                     AS renewal_ownership,
 
       -- ************************************
       -- sales segmentation deprecated fields - 2020-09-03
@@ -308,6 +316,10 @@ WITH source AS (
         -- ps fields - original issue: https://gitlab.com/gitlab-com/sales-team/field-operations/customer-success-operations/-/issues/2723
         intended_product_tier__c                        AS intended_product_tier,
         parent_opportunity__c                           AS parent_opportunity_id,
+
+        -- ptc fields - issue: https://gitlab.com/gitlab-data/analytics/-/issues/19440
+        PTC_Predicted_ARR__c                            AS ptc_predicted_arr,
+        PTC_Predicted_Renewal_Risk_Category__c          AS ptc_predicted_renewal_risk_category,
 
         -- metadata
         convert_timezone('America/Los_Angeles',convert_timezone('UTC',

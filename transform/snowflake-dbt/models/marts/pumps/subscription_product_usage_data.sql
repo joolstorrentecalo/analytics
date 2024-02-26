@@ -1,17 +1,19 @@
-{{config({
-    "schema": "legacy"
-  })
+{{
+  config(
+    tags=["product", "mnpi_exception"],
+    schema="legacy"
+  )
 }}
 
 WITH customers_db_license_seat_links AS (
 
     SELECT *
-    FROM {{ ref('customers_db_license_seat_links') }}
+    FROM {{ ref('prep_usage_self_managed_seat_link') }}
 
 ), customers_db_orders AS (
 
     SELECT *
-    FROM {{ ref('customers_db_orders') }}
+    FROM {{ ref('prep_order') }}
 
 ), gitlab_dotcom_gitlab_subscriptions AS (
 
@@ -78,7 +80,7 @@ WITH customers_db_license_seat_links AS (
   
     SELECT *
     FROM customers_db_license_seat_links
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY zuora_subscription_name ORDER BY report_date DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY subscription_name ORDER BY report_date DESC) = 1
   
 ), self_managed AS (
   
@@ -93,22 +95,22 @@ WITH customers_db_license_seat_links AS (
       seat_link.license_user_count
     FROM zuora_minus_exceptions
     LEFT JOIN seat_link
-      ON zuora_minus_exceptions.subscription_name = seat_link.zuora_subscription_name
+      ON zuora_minus_exceptions.subscription_name = seat_link.subscription_name
     WHERE zuora_minus_exceptions.delivery_group = 'Self-Managed'
   
 ), orders AS (
   
     SELECT
       subscription_name,
-      subscription_id,
+      dim_subscription_id,
       product_rate_plan_id,
-      gitlab_namespace_id,
+      dim_namespace_id,
       order_start_date,
       order_end_date,
       order_updated_at
     FROM customers_db_orders
-    WHERE gitlab_namespace_id IS NOT NULL
-      AND order_is_trial = FALSE
+    WHERE dim_namespace_id IS NOT NULL
+      AND is_order_trial = FALSE
       AND order_end_date > CURRENT_DATE
   
 ), latest_order_per_subscription_name AS (
@@ -124,7 +126,7 @@ WITH customers_db_license_seat_links AS (
   
     SELECT 
       zuora_minus_exceptions.*,
-      latest_order_per_subscription_name.gitlab_namespace_id
+      latest_order_per_subscription_name.dim_namespace_id
     FROM zuora_minus_exceptions
     LEFT JOIN latest_order_per_subscription_name
       ON zuora_minus_exceptions.subscription_name = latest_order_per_subscription_name.subscription_name
@@ -177,7 +179,7 @@ WITH customers_db_license_seat_links AS (
       saas_seats.license_user_count
     FROM customers_minus_exceptions
     LEFT JOIN saas_seats
-      ON customers_minus_exceptions.gitlab_namespace_id = saas_seats.namespace_id
+      ON customers_minus_exceptions.dim_namespace_id = saas_seats.namespace_id
   
 ), final AS (
   

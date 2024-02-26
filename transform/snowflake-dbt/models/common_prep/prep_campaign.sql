@@ -34,6 +34,7 @@ WITH sfdc_campaign_info AS (
       gtm_motion,
       total_planned_mqls,
       will_there_be_mdf_funding,
+      campaign_partner_crm_id,
 
       -- user ids
       campaign_owner_id,
@@ -69,7 +70,7 @@ WITH sfdc_campaign_info AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mcooperDD",
-    updated_by="@rkohnke",
+    updated_by="@degan",
     created_date="2021-03-01",
-    updated_date="2022-03-01"
+    updated_date="2023-12-15"
 ) }}

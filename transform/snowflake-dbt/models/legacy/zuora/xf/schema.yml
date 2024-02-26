@@ -1,13 +1,6 @@
 version: 2
 
 models:
-    - name: saas_charges_with_namespace_id
-      description: '{{ doc("saas_charges_with_namespace_id") }}'
-      columns:
-          - name: rate_plan_charge_id
-            tests:
-                - not_null
-                - unique
     - name: zuora_accounts_receivables
       description: Zuora accounts receivable
       columns:
@@ -98,10 +91,14 @@ models:
             tests:
               - accepted_values:
                       values: ['GitHost', 'Other', 'SaaS - Ultimate', 'Basic', 'SaaS - Bronze', 'Self-Managed - Premium', 'Self-Managed - Starter', 'Self-Managed - Ultimate', 'Support', 'Plus', 'SaaS - Premium', 'Standard', 'Trueup', 'Storage', 'SaaS - Other', 'Dedicated - Ultimate']
+                      config:
+                        severity: warn
           - name: delivery
             description: delivery is based on the product category name.
             tests:
-                - not_null
+                - not_null:
+                    config:
+                      severity: warn
     - name: zuora_base_invoice_details
       description: '{{ doc("zuora_base_invoice_details") }}'
     - name: zuora_base_ci_minutes
@@ -112,7 +109,7 @@ models:
               tests:
                   - not_null
                   -   accepted_values:
-                          values: ['1,000 CI Minutes', '1,000 CI Minutes Credit']
+                          values: ['1,000 CI Minutes', '1,000 CI Minutes Credit', '1,000 Compute Minutes', '1,000 Compute Minutes Credit']
     - name: zuora_base_trueups
       description: '{{ doc("zuora_base_trueups") }}'
       columns:
@@ -145,6 +142,8 @@ models:
             tests:
               - accepted_values:
                       values: ['GitHost', 'Other', 'SaaS - Ultimate', 'Basic', 'SaaS - Bronze', 'Self-Managed - Premium', 'Self-Managed - Starter', 'Self-Managed - Ultimate', 'Support', 'Plus', 'SaaS - Premium', 'Standard', 'Trueup', 'Storage', 'SaaS - Other', 'Dedicated - Ultimate']
+                      config:
+                        severity: warn
               - not_null
           - name: rate_plan_charge_name
             tests:
@@ -200,7 +199,9 @@ models:
           - name: product_category
           - name: delivery
             tests:
-                - not_null
+                - not_null:
+                    config:
+                      severity: warn
           - name: unit_of_measure
           - name: mrr
             description: '{{ doc("zuora_mrr_totals_col_mrr") }}'

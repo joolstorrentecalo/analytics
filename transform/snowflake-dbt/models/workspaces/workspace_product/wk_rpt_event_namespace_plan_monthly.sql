@@ -71,7 +71,7 @@ rpt_event_xmau_metric_monthly and rpt_event_plan_monthly.
 final AS (
 
   SELECT
-    {{ dbt_utils.surrogate_key(['event_calendar_month', 'dim_ultimate_parent_namespace_id']) }}         AS namespace_monthly_pk,
+    {{ dbt_utils.generate_surrogate_key(['event_calendar_month', 'dim_ultimate_parent_namespace_id']) }}         AS namespace_monthly_pk,
     event_calendar_month                                                                                AS event_calendar_month,
     dim_ultimate_parent_namespace_id                                                                    AS dim_ultimate_parent_namespace_id,
     plan_id_at_event_date                                                                               AS plan_id_at_event_month,

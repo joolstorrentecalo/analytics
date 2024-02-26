@@ -67,7 +67,7 @@ models:
       - name: compensation_value
         description: '{{ doc("workday_compensation_value") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: compensation_currency
         description: '{{ doc("workday_compensation_currency") }}'
       - name: conversion_rate_local_to_usd
@@ -79,13 +79,13 @@ models:
         tests:
           - not_null
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: pay_frequency
         description: '{{ doc("workday_pay_frequency") }}'
       - name: per_pay_period_amount
         description: '{{ doc("workday_per_pay_period_amount") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: initiated_at
         description: '{{ doc("workday_initiated_at") }}'
       - name: uploaded_at
@@ -128,19 +128,19 @@ models:
       - name: full_name
         description: '{{ doc("workday_full_name") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: home_phone
         description: '{{ doc("workday_home_phone") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: mobile_phone
         description: '{{ doc("workday_mobile_phone") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: work_phone
         description: '{{ doc("workday_work_phone") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: uploaded_at
         description: '{{ doc("workday_uploaded_at") }}'
       - name: initiated_at
@@ -175,23 +175,23 @@ models:
       - name: country
         description: '{{ doc("workday_country") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: greenhouse_candidate_id
         description: '{{ doc("workday_greenhouse_candidate_id") }}'
       - name: gender
         description: '{{ doc("workday_gender") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: job_role
         description: '{{ doc("workday_job_role") }}'
       - name: gender_dropdown
         description: '{{ doc("workday_gender_dropdown") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: date_of_birth
         description: '{{ doc("workday_date_of_birth") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: job_grade
         description: '{{ doc("workday_job_grade") }}'
       - name: pay_frequency
@@ -199,13 +199,13 @@ models:
       - name: age
         description: '{{ doc("workday_age") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: jobtitle_speciality_single_select
         description: '{{ doc("workday_jobtitle_speciality_single_select") }}'
       - name: ethnicity
         description: '{{ doc("workday_ethnicity") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: jobtitle_speciality_multi_select
         description: '{{ doc("workday_jobtitle_speciality_multi_select") }}'
       - name: gitlab_username
@@ -219,7 +219,7 @@ models:
       - name: nationality
         description: '{{ doc("workday_nationality") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: uploaded_at
         description: '{{ doc("workday_uploaded_at") }}'
       - name: valid_from
@@ -246,7 +246,7 @@ models:
       - name: termination_type
         description: '{{ doc("workday_termination_type") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: uploaded_at
         description: '{{ doc("workday_uploaded_at") }}'
       - name: initiated_at
@@ -298,13 +298,13 @@ models:
       - name: annual_amount_local
         description: '{{ doc("workday_annual_amount_local") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: annual_amount_local_currency_code
         description: '{{ doc("workday_annual_amount_local_currency_code") }}'
       - name: annual_amount_usd_value
         description: '{{ doc("workday_annual_amount_usd_value") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: effective_date
         description: '{{ doc("workday_effective_date") }}'
         tests:
@@ -312,7 +312,7 @@ models:
       - name: ote_local
         description: '{{ doc("workday_ote_local") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_local_currency_code
         description: '{{ doc("workday_ote_local_currency_code") }}'
       - name: ote_type
@@ -320,7 +320,7 @@ models:
       - name: ote_usd
         description: '{{ doc("workday_ote_usd") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: uploaded_at
         description: '{{ doc("workday_uploaded_at") }}'
       - name: initiated_at
@@ -346,19 +346,19 @@ models:
       - name: full_name
         description: '{{ doc("workday_full_name") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: home_phone
         description: '{{ doc("workday_home_phone") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: mobile_phone
         description: '{{ doc("workday_mobile_phone") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: work_phone
         description: '{{ doc("workday_work_phone") }}'
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
 
   - name: blended_employee_mapping_source
     columns:
@@ -380,30 +380,30 @@ models:
       - name: locality
       - name: nationality
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: gender_dropdown
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: region
       - name: job_role
       - name: sales_geo_differential
       - name: date_of_birth
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: employee_status_date
       - name: employment_history_status
       - name: ethnicity
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: gender
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: country
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: age
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: job_grade
       - name: pay_frequency
       - name: uploaded_at
@@ -418,7 +418,7 @@ models:
           - unique
       - name: termination_type
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
 
 
   - name: blended_job_info_source
@@ -434,28 +434,28 @@ models:
           - unique
       - name: variable_pay
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: annual_amount_local
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: annual_amount_usd_value
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_local
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_usd
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_type
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: annual_amount_local_currency_code
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_local_currency_code
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
 
   - name: blended_compensation_source
     columns:
@@ -464,13 +464,13 @@ models:
           - unique
       - name: compensation_type 
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: compensation_change_reason 
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: compensation_value 
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
 
   - name: blended_currency_conversion_source
     columns:
@@ -505,3 +505,62 @@ models:
       - name: uploaded_at
       - name: valid_from
       - name: valid_to
+  
+  - name: job_profiles_snapshots_source
+    description: '{{ doc("job_profiles") }}'
+    columns:
+      - name: job_code
+        description: The unique identification for each role at GitLab. A job code is different for each role and each seniority level (example - IT Security Analyst and Senior IT Security Analyst would have a different job_code)
+        tests: 
+          - not_null
+      - name: job_profile 
+        description: The role or position associated with the job code 
+        tests: 
+          - not_null 
+      - name: job_family  
+        description: Job family the code belongs to
+      - name: management_level
+        description: One of the following management levels- Individual Contributor, Manager, Director, Leader, Chief Executive Officer, Vice President
+      - name: job_level
+        description: Job grades. GitLab job grades aid in mapping a role for internal equity with respect to cash and equity.
+      - name: is_job_profile_active
+        description: Flag indicating whether the job profile is currently active.
+
+  - name: staffing_history_approved_source
+    columns:
+      - name: employee_id
+        description: The unique organization identifier
+        tests:
+          - not_null
+      - name: workday_id
+      - name: business_process_type
+      - name: business_process_category
+      - name: business_process_reason
+      - name: hire_date
+      - name: termination_date
+      - name: country_past
+      - name: country_current
+      - name: region_past
+      - name: region_current
+      - name: department_past
+      - name: department_current
+      - name: employee_type_past
+      - name: employee_type_current
+      - name: entity_past
+      - name: entity_current
+      - name: job_code_past
+      - name: job_code_current
+      - name: job_specialty_multi_past
+      - name: job_specialty_multi_current
+      - name: job_specialty_single_past
+      - name: job_specialty_single_current
+      - name: locality_past
+      - name: locality_current
+      - name: manager_past
+      - name: manager_current
+      - name: suporg_past
+      - name: suporg_current
+      - name: team_id_past
+      - name: team_id_current
+      - name: date_time_initiated
+      - name: effective_date

@@ -21,7 +21,7 @@ WITH notes AS (
 , epics AS (
 
   SELECT *
-  FROM {{ ref('gitlab_dotcom_epics_xf') }}
+  FROM {{ ref('prep_epic') }}
 
 )
 
@@ -49,7 +49,7 @@ WITH notes AS (
     ON notes.noteable_type = 'Epic'
     AND notes.noteable_id = epics.epic_id
   INNER JOIN internal_namespaces
-    ON COALESCE(projects.ultimate_parent_id, epics.ultimate_parent_id) = internal_namespaces.namespace_id
+    ON COALESCE(projects.ultimate_parent_id, epics.ultimate_parent_namespace_id) = internal_namespaces.namespace_id
 
 )
 

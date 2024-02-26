@@ -33,7 +33,6 @@ pod_env_vars = {
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -54,6 +53,7 @@ dag = DAG(
     "snowflake_roles_snapshot",
     default_args=default_args,
     schedule_interval="0 1 */1 * *",
+    catchup=False,
 )
 
 # Task 1
@@ -72,8 +72,8 @@ snowflake_roles_snapshot = KubernetesPodOperator(
         SNOWFLAKE_LOAD_USER,
         SNOWFLAKE_LOAD_WAREHOUSE,
     ],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     env_vars=pod_env_vars,
     arguments=[container_cmd],
     dag=dag,

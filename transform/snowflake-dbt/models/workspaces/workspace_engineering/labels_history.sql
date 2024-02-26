@@ -31,7 +31,7 @@ workflow_labels AS (
 ),  base_labels AS (
 
     SELECT
-      label_links.target_id                                                                                           AS dim_issue_id,
+      label_links.target_id                                                                                               AS issue_id,
       label_type.label_title,
       label_type.label_type,
       IFF(label_type.label_type='severity','S' || RIGHT(label_title, 1),NULL) AS severity,

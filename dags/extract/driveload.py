@@ -10,6 +10,7 @@ from airflow_utils import (
     gitlab_defaults,
     gitlab_pod_env_vars,
     slack_failed_task,
+    REPO_BASE_PATH,
 )
 from kube_secrets import (
     GCP_SERVICE_CREDS,
@@ -29,19 +30,17 @@ pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
-    "retries": 1,
+    "retries": 0,
     "retry_delay": timedelta(minutes=1),
     "start_date": datetime(2019, 1, 1),
     "dagrun_timeout": timedelta(hours=2),
 }
 
-airflow_home = env["AIRFLOW_HOME"]
 
-with open(f"{airflow_home}/analytics/extract/sheetload/drives.yml", "r") as file:
+with open(f"{REPO_BASE_PATH}/extract/sheetload/drives.yml", "r") as file:
     try:
         stream = safe_load(file)
     except YAMLError as exc:
@@ -55,6 +54,7 @@ dag = DAG(
     default_args=default_args,
     schedule_interval="0 2 * * *",
     concurrency=1,
+    catchup=False,
 )
 
 for folder in folders:
@@ -85,8 +85,8 @@ for folder in folders:
             SNOWFLAKE_LOAD_PASSWORD,
         ],
         env_vars=pod_env_vars,
-        affinity=get_affinity("production"),
-        tolerations=get_toleration("production"),
+        affinity=get_affinity("extraction"),
+        tolerations=get_toleration("extraction"),
         arguments=[container_cmd],
         dag=dag,
     )

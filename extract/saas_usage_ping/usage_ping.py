@@ -3,7 +3,6 @@ Automated Service Ping main unit
 
 usage_ping.py is responsible for uploading the following into Snowflake:
 - usage ping combined metrics (sql + redis)
-- usage ping namespace
 """
 import datetime
 import json
@@ -20,25 +19,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from utils import EngineFactory, Utils
 
 
-def get_backfill_filter(filter_list: list):
-    """
-    Define backfill filter for
-    processing a namespace metrics load
-    """
-
-    return (
-        lambda namespace: namespace.get("time_window_query")
-        and namespace.get("counter_name") in filter_list
-    )
-
-
 class UsagePing:
     """
     Usage ping class represent as an umbrella
     to sort out service ping data import
     """
 
-    def __init__(self, ping_date=None, namespace_metrics_filter=None):
+    def __init__(self, ping_date=None):
         self.engine_factory = EngineFactory()
         self.utils = Utils()
 
@@ -47,12 +34,6 @@ class UsagePing:
         else:
             self.end_date = datetime.datetime.now().date()
 
-        if namespace_metrics_filter is not None:
-            self.metrics_backfill = namespace_metrics_filter
-        else:
-            self.metrics_backfill = []
-
-        self.start_date_28 = self.end_date - datetime.timedelta(28)
         self.dataframe_api_columns = self.utils.META_API_COLUMNS
         self.missing_definitions = {self.utils.SQL_KEY: [], self.utils.REDIS_KEY: []}
         self.duplicate_keys = []
@@ -72,18 +53,6 @@ class UsagePing:
             metric_dict["key_path"]: metric_dict for metric_dict in metric_definitions
         }
         return metric_definitions_dict
-
-    def set_metrics_filter(self, metrics: list):
-        """
-        setter for metrics filter
-        """
-        self.metrics_backfill = metrics
-
-    def get_metrics_filter(self) -> list:
-        """
-        getter for metrics filter
-        """
-        return self.metrics_backfill
 
     def _get_instance_sql_metrics_queries(self) -> Dict:
         """
@@ -513,126 +482,6 @@ class UsagePing:
             self.upload_instance_sql_metrics_errors(sql_metric_errors=sql_metric_errors)
 
         # self.run_metric_checks()
-
-    def replace_placeholders(self, sql: str) -> str:
-        """
-        Replace dates placeholders with proper dates:
-        Usage:
-        Input: "SELECT 1 FROM TABLE WHERE created_at BETWEEN between_start_date AND between_end_date"
-        Output: "SELECT 1 FROM TABLE WHERE created_at BETWEEN '2022-01-01' AND '2022-01-28'"
-        """
-
-        base_query = sql
-        base_query = base_query.replace("between_end_date", f"'{str(self.end_date)}'")
-        base_query = base_query.replace(
-            "between_start_date", f"'{str(self.start_date_28)}'"
-        )
-
-        return base_query
-
-    def get_prepared_values(self, query: dict) -> tuple:
-        """
-        Prepare variables for query
-        """
-
-        name = query.get("counter_name", "Missing Name")
-
-        sql_raw = str(query.get("counter_query"))
-        prepared_sql = self.replace_placeholders(sql_raw)
-
-        level = query.get("level")
-
-        return name, prepared_sql, level
-
-    def get_result(self, query_dict: dict, conn) -> pd.DataFrame:
-        """
-        Try to execute query and return results
-        """
-        name, sql, level = self.get_prepared_values(query=query_dict)
-
-        try:
-            res = pd.read_sql(sql=sql, con=conn)
-            error = "Success"
-        except SQLAlchemyError as e:
-            error = str(e.__dict__["orig"])
-            res = pd.DataFrame(
-                columns=["id", "namespace_ultimate_parent_id", "counter_value"]
-            )
-            res.loc[0] = [None, None, None]
-
-        res["ping_name"] = name
-        res["level"] = level
-        res["query_ran"] = sql
-        res["error"] = error
-        res["ping_date"] = self.end_date
-
-        return res
-
-    def process_namespace_ping(self, query_dict, connection) -> None:
-        """
-        Upload result of namespace ping to Snowflake
-        """
-
-        metric_name, metric_query, _ = self.get_prepared_values(query=query_dict)
-
-        if "namespace_ultimate_parent_id" not in metric_query:
-            logging.info(
-                f"Skipping ping {metric_name} due to no namespace information."
-            )
-            return
-
-        results = self.get_result(query_dict=query_dict, conn=connection)
-
-        self.engine_factory.upload_to_snowflake(
-            table_name="gitlab_dotcom_namespace", data=results
-        )
-
-        logging.info(f"metric_name loaded: {metric_name}")
-
-    def saas_namespace_ping(self, metrics_filter=lambda _: True):
-        """
-        Take a dictionary of the following type and run each
-        query to then upload to a table in raw.
-        {
-            ping_name:
-            {
-              query_base: sql_query,
-              level: namespace,
-              between: true
-            }
-        }
-        """
-        connection = self.engine_factory.connect()
-
-        namespace_queries = self._get_meta_data_from_file(
-            file_name=self.utils.NAMESPACE_FILE
-        )
-
-        for namespace_query in namespace_queries:
-            if metrics_filter(namespace_query):
-                logging.info(
-                    f"Start loading metrics: {namespace_query.get('counter_name')}"
-                )
-                self.process_namespace_ping(
-                    query_dict=namespace_query, connection=connection
-                )
-
-        connection.close()
-        self.engine_factory.dispose()
-
-    def backfill(self):
-        """
-        Routine to back-filling
-        data for namespace ping
-        """
-
-        # pick up metrics from the parameter list
-        # and only if time_window_query == False
-        namespace_filter_list = self.get_metrics_filter()
-
-        namespace_filter = get_backfill_filter(filter_list=namespace_filter_list)
-
-        self.saas_namespace_ping(metrics_filter=namespace_filter)
 
 
 if __name__ == "__main__":

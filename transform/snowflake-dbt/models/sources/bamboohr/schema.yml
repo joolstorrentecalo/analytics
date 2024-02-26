@@ -26,7 +26,7 @@ models:
         tests:
           - not_null
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: compensation_currency
       - name: uploaded_at    
 
@@ -77,16 +77,16 @@ models:
       - name: employee_id
       - name: full_name
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: home_phone
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: mobile_phone
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: work_phone
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
 
   - name: bamboohr_employment_status_source
     description: This model shows changes in employment status (active, terminated, on leave, etc). Updates are captured in log-style.
@@ -103,7 +103,7 @@ models:
           - accepted_values:
               values: ['Termination (Involuntary)', 'Resignation (Voluntary)', 'Death']
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: employment_status
             
   - name: bamboohr_id_employee_number_mapping_source
@@ -124,25 +124,25 @@ models:
         description: Started capturing on 2020-05-07
       - name: nationality
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: gender_dropdown
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: locality
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: age
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: country
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ethnicity
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: gender
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
           
   - name: bamboohr_job_info_source
     description: This model shows the details (manager, department, and division) that an employee is in at a given point in time. This includes historical information.
@@ -184,20 +184,20 @@ models:
       - name: effective_date
       - name: variable_pay
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: annual_amount_local
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: annual_amount_usd_value
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_local
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_usd
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
       - name: ote_type
         meta:
-          masking_policy: analyst_people
+          masking_policy: analyst_people_sensitive
  

@@ -12,16 +12,6 @@ WITH gitlab_dotcom_members AS (
       {{include_gitlab_email(column_name)}} AS include_notification_email
     FROM {{ref('gitlab_dotcom_users')}} 
 
-), gitlab_dotcom_gitlab_emails_cleaned AS (
-
-    SELECT DISTINCT 
-      user_id, 
-      email_address, 
-      email_handle
-    FROM {{ref('gitlab_dotcom_gitlab_emails')}} 
-    WHERE LENGTH (email_handle) > 1
-      AND include_email_flg = 'Include'
-
 ), sheetload_infrastructure_gitlab_employee AS (
 
     SELECT * 
@@ -61,11 +51,8 @@ WITH gitlab_dotcom_members AS (
       notification_email.gitlab_dotcom_user_id, 
       user_name                                                         AS gitlab_dotcom_user_name,
       COALESCE(notification_email.notification_email,
-               gitlab_dotcom_gitlab_emails_cleaned.email_address,
                sheetload_infrastructure_gitlab_employee.work_email)     AS gitlab_dotcom_email_address
     FROM notification_email
-    LEFT JOIN gitlab_dotcom_gitlab_emails_cleaned 
-      ON notification_email.gitlab_dotcom_user_id = gitlab_dotcom_gitlab_emails_cleaned.user_id 
     LEFT JOIN sheetload_infrastructure_gitlab_employee
       ON notification_email.gitlab_dotcom_user_id = sheetload_infrastructure_gitlab_employee.gitlab_dotcom_user_id
 

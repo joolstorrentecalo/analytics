@@ -5,7 +5,7 @@
         tags=['product']
 ) }}
 
-{{ 
+{{
     simple_cte([
     ('page_views', 'prep_snowplow_page_views_all'),
     ])
@@ -18,8 +18,8 @@
       page_url_path,
       app_id,
       page_url_host,
-      REGEXP_SUBSTR(page_url_path, 'namespace(\\d+)', 1, 1, 'e', 1)                 AS dim_namespace_id,
-      REGEXP_SUBSTR(page_url_path, 'project(\\d+)', 1, 1, 'e', 1)                   AS dim_project_id,
+      gsc_namespace_id                                                              AS dim_namespace_id,
+      gsc_project_id                                                                AS dim_project_id,
       session_id,
       user_snowplow_domain_id,
       page_view_id                                                                  AS event_id,
@@ -32,6 +32,7 @@
       gsc_project_id,
       gsc_pseudonymized_user_id,
       gsc_source,
+      gsc_is_gitlab_team_member,
       min_tstamp                                                                    AS page_view_start_at,
       max_tstamp                                                                    AS page_view_end_at,
       time_engaged_in_s                                                             AS engaged_seconds,
@@ -55,18 +56,18 @@
 
     SELECT
       -- Primary Key
-      {{ dbt_utils.surrogate_key(['event_id','page_view_end_at']) }}                AS fct_behavior_website_page_view_sk,
+      {{ dbt_utils.generate_surrogate_key(['event_id','page_view_end_at']) }}                    AS fct_behavior_website_page_view_sk,
 
       -- Foreign Keys
-      {{ dbt_utils.surrogate_key(['page_url', 'app_id', 'page_url_scheme']) }}      AS dim_behavior_website_page_sk,
-      {{ dbt_utils.surrogate_key(['referer_url', 'app_id', 'referer_url_scheme']) }}  AS dim_behavior_referrer_page_sk,
-      page_views_w_clean_url.gsc_project_id                                         AS dim_namespace_id,
-      page_views_w_clean_url.gsc_project_id                                         AS dim_project_id,
+      {{ dbt_utils.generate_surrogate_key(['page_url', 'app_id', 'page_url_scheme']) }}          AS dim_behavior_website_page_sk,
+      {{ dbt_utils.generate_surrogate_key(['referer_url', 'app_id', 'referer_url_scheme']) }}    AS dim_behavior_referrer_page_sk,
+      page_views_w_clean_url.dim_namespace_id,
+      page_views_w_clean_url.dim_project_id,
 
       --Time Attributes
       page_views_w_clean_url.page_view_start_at,
       page_views_w_clean_url.page_view_end_at,
-      page_views_w_clean_url.page_view_start_at                                     AS behavior_at,
+      page_views_w_clean_url.page_view_start_at                                         AS behavior_at,
 
       -- Natural Keys
       page_views_w_clean_url.session_id,
@@ -80,6 +81,9 @@
       page_views_w_clean_url.gsc_plan,
       page_views_w_clean_url.gsc_pseudonymized_user_id,
       page_views_w_clean_url.gsc_source,
+      page_views_w_clean_url.gsc_is_gitlab_team_member,
+      page_views_w_clean_url.gsc_namespace_id,
+      page_views_w_clean_url.gsc_project_id,
 
       -- Attributes
       page_views_w_clean_url.page_url_path,
@@ -97,7 +101,7 @@
 {{ dbt_audit(
     cte_ref="page_views_w_dim",
     created_by="@chrissharp",
-    updated_by="@chrissharp",
+    updated_by="@utkarsh060",
     created_date="2022-07-22",
-    updated_date="2022-12-20"
+    updated_date="2024-01-25"
 ) }}

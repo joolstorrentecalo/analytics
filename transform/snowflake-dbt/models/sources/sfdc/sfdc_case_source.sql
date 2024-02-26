@@ -37,6 +37,7 @@ renamed AS (
     suppliedname AS supplied_name,
     suppliedphone AS supplied_phone,
     type AS case_type,
+    opportunity__c AS opportunity_id,
 
     -- metadata
     createdbyid AS created_by_id,

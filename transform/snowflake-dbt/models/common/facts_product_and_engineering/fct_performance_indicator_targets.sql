@@ -87,7 +87,7 @@ monthly_targets_with_intervals AS (
 final_targets AS (
 
   SELECT
-    {{ dbt_utils.surrogate_key(['reporting_month', 'pi_metric_name']) }} AS performance_indicator_targets_pk,
+    {{ dbt_utils.generate_surrogate_key(['reporting_month', 'pi_metric_name']) }} AS performance_indicator_targets_pk,
     reporting_month                                                      AS reporting_month,
     pi_metric_name                                                       AS pi_metric_name,
     value                                                                AS target_value

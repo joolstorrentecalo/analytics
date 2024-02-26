@@ -164,8 +164,8 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('sfdc_account')
-              field: account_id
+              to: ref('dim_crm_account')
+              field: dim_crm_account_id
       - name: opportunity_id
         tests:
           - relationships:

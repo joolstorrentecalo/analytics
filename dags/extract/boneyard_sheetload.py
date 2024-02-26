@@ -27,7 +27,6 @@ pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -37,7 +36,6 @@ default_args = {
     "dagrun_timeout": timedelta(hours=2),
 }
 
-# Set the command for the container
 container_cmd = f"""
     {clone_and_setup_extraction_cmd} &&
     cd sheetload/ &&
@@ -46,7 +44,10 @@ container_cmd = f"""
 
 # Create the DAG
 dag = DAG(
-    "boneyard_sheetload", default_args=default_args, schedule_interval="30 */6 */1 * *"
+    "boneyard_sheetload",
+    default_args=default_args,
+    schedule_interval="30 */6 */1 * *",
+    catchup=False,
 )
 
 # Task 1
@@ -63,8 +64,8 @@ sheetload_run = KubernetesPodOperator(
         SNOWFLAKE_LOAD_WAREHOUSE,
         SNOWFLAKE_LOAD_PASSWORD,
     ],
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     env_vars=pod_env_vars,
     arguments=[container_cmd],
     dag=dag,

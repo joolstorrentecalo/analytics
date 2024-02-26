@@ -22,7 +22,7 @@ class EngineFactory:
         self.connected = False
         self.config_vars = env.copy()
         self.loader_engine = None
-        self.processing_warehouse = "LOADER"
+        self.processing_role = "LOADER"
         self.schema_name = "saas_usage_ping"
 
     def connect(self):
@@ -30,7 +30,7 @@ class EngineFactory:
         Connect to engine factory, return connection object
         """
         self.loader_engine = snowflake_engine_factory(
-            self.config_vars, self.processing_warehouse
+            self.config_vars, self.processing_role
         )
         self.connected = True
 
@@ -86,11 +86,20 @@ class Utils:
     METRICS_EXCEPTION_INSTANCE_SQL = (
         "counts.clusters_platforms_eks",
         "counts.clusters_platforms_gke",
+        "counts.issues_created_from_alerts",
+        "counts.requirement_test_reports_manual",
+        "counts.requirement_test_reports_ci",
+        "counts.requirements_with_test_report",
+        "counts_weekly.batched_background_migration_count_failed_jobs_metric",
         "usage_activity_by_stage.configure.clusters_platforms_gke",
         "usage_activity_by_stage.configure.clusters_platforms_eks",
         "usage_activity_by_stage_monthly.configure.clusters_platforms_gke",
         "usage_activity_by_stage_monthly.configure.clusters_platforms_eks",
     )
+
+    # Map table which are renamed on the source side
+
+    RENAMED_TABLE_MAPPING = {"p_ci_builds": "ci_builds"}
 
     def __init__(self):
         config_dict = env.copy()
@@ -189,3 +198,10 @@ class Utils:
         timestamp_encoded = str(input_timestamp).encode(encoding=self.ENCODING)
 
         return md5(timestamp_encoded).hexdigest()
+
+    def get_metric_table_name(self, table_name: str) -> str:
+        """
+        Return table name from dict.
+        If table name is not in dict, return the original name
+        """
+        return self.RENAMED_TABLE_MAPPING.get(table_name, table_name)

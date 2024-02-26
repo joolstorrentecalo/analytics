@@ -76,7 +76,7 @@
 
     SELECT 
       --surrogate key
-      {{ dbt_utils.surrogate_key(['COALESCE(zuora_billing_account.dim_billing_account_id, cdot_billing_account.zuora_account_id)']) }}  AS dim_billing_account_sk,
+      {{ dbt_utils.generate_surrogate_key(['COALESCE(zuora_billing_account.dim_billing_account_id, cdot_billing_account.zuora_account_id)']) }}  AS dim_billing_account_sk,
 
       --natural key
       COALESCE(zuora_billing_account.dim_billing_account_id, cdot_billing_account.zuora_account_id)                                     AS dim_billing_account_id,

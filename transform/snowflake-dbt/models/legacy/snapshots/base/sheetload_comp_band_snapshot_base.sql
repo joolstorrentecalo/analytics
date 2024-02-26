@@ -13,13 +13,15 @@ WITH source AS (
     SELECT
       employee_number,
       percent_over_top_end_of_band,
-      CASE 
+      CASE
+        WHEN percent_over_top_end_of_band = '#N/A'
+          THEN NULL
         WHEN NULLIF(LOWER(percent_over_top_end_of_band), '') IN ('exec','intern')    
           THEN 0.00
         WHEN NULLIF(percent_over_top_end_of_band, '') ='#DIV/0!' 
           THEN NULL
         WHEN percent_over_top_end_of_band LIKE '%'               
-          THEN NULLIF(REPLACE(percent_over_top_end_of_band,'%',''),'') 
+          THEN NULLIF(REPLACE(percent_over_top_end_of_band,'%',''),'')
         ELSE NULLIF(percent_over_top_end_of_band, '') END                       AS percent_over_top_end_of_band_cleaned,
       dbt_valid_from::date                                                      AS valid_from,
       dbt_valid_to::DATE                               AS valid_to

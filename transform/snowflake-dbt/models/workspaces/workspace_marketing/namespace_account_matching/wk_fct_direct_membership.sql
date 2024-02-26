@@ -70,11 +70,11 @@ fct AS (
 
   SELECT
     -- Primary Key
-    {{ dbt_utils.surrogate_key(['combine.member_id','combine.valid_from']) }} AS direct_member_pk,
+    {{ dbt_utils.generate_surrogate_key(['combine.member_id','combine.valid_from']) }} AS direct_member_pk,
 
     -- Foreign Keys
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['combine.user_id'])) }} AS dim_user_sk,
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['combine.member_namespace_id'])) }} AS dim_namespace_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['combine.user_id'])) }} AS dim_user_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['combine.member_namespace_id'])) }} AS dim_namespace_sk,
 
     -- Legacy Keys
     combine.member_id,

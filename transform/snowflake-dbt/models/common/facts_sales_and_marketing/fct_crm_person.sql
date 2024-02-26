@@ -26,14 +26,45 @@ WITH account_dims_mapping AS (
       name_of_active_sequence,
       sequence_task_due_date,
       sequence_status,
+      traction_first_response_time,
+      traction_first_response_time_seconds,
+      traction_response_time_in_business_hours,
       last_activity_date,
       last_transfer_date_time,
       time_from_last_transfer_to_sequence,
       time_from_mql_to_last_transfer,
-      zoominfo_contact_id
-      
+      zoominfo_contact_id,
+      is_bdr_sdr_worked,
+      is_partner_recalled,
+      is_high_priority,
+      high_priority_datetime,
+      propensity_to_purchase_days_since_trial_start,
+      propensity_to_purchase_score_date,
+      email_hash,
+      CASE
+        WHEN LOWER(lead_source) LIKE '%trial - gitlab.com%' THEN TRUE
+        WHEN LOWER(lead_source) LIKE '%trial - enterprise%' THEN TRUE
+        ELSE FALSE
+      END                                                        AS is_lead_source_trial,
+      dim_account_demographics_hierarchy_sk
 
     FROM {{ref('prep_crm_person')}}
+
+), account_history_final AS (
+ 
+  SELECT
+    account_id_18 AS dim_crm_account_id,
+    owner_id AS dim_crm_user_id,
+    ultimate_parent_id AS dim_crm_parent_account_id,
+    abm_tier_1_date,
+    abm_tier_2_date,
+    abm_tier,
+    MIN(dbt_valid_from)::DATE AS valid_from,
+    MAX(dbt_valid_to)::DATE AS valid_to
+  FROM {{ref('sfdc_account_snapshots_source')}}
+  WHERE abm_tier_1_date >= '2022-02-01'
+    OR abm_tier_2_date >= '2022-02-01'
+  {{dbt_utils.group_by(n=6)}}
 
 ), industry AS (
 
@@ -79,18 +110,24 @@ WITH account_dims_mapping AS (
     WHERE is_converted
     QUALIFY ROW_NUMBER() OVER(PARTITION BY converted_contact_id ORDER BY converted_date DESC) = 1
 
-) , marketing_qualified_leads AS(
+), prep_crm_user_hierarchy AS (
+
+    SELECT *
+    FROM {{ ref('prep_crm_user_hierarchy') }}
+
+), marketing_qualified_leads AS(
 
     SELECT
 
-      {{ dbt_utils.surrogate_key(['COALESCE(converted_contact_id, lead_id)','marketo_qualified_lead_datetime::timestamp']) }} AS mql_event_id,
+      {{ dbt_utils.generate_surrogate_key(['COALESCE(converted_contact_id, lead_id)','marketo_qualified_lead_datetime::timestamp']) }} AS mql_event_id,
 
       marketo_qualified_lead_datetime::timestamp                                                                          AS mql_event_timestamp,
       initial_marketo_mql_date_time::timestamp                                                                            AS initial_mql_event_timestamp,
       true_mql_date::timestamp                                                                                            AS legacy_mql_event_timestamp,
+      mql_datetime_inferred::timestamp                                                                                    AS inferred_mql_event_timestamp,
       lead_id                                                                                                             AS sfdc_record_id,
       'lead'                                                                                                              AS sfdc_record,
-      {{ dbt_utils.surrogate_key(['COALESCE(converted_contact_id, lead_id)']) }}                                          AS crm_person_id,
+      {{ dbt_utils.generate_surrogate_key(['COALESCE(converted_contact_id, lead_id)']) }}                                          AS crm_person_id,
       converted_contact_id                                                                                                AS contact_id,
       converted_account_id                                                                                                AS account_id,
       owner_id                                                                                                            AS crm_user_id,
@@ -98,18 +135,20 @@ WITH account_dims_mapping AS (
 
     FROM sfdc_leads
     WHERE marketo_qualified_lead_datetime IS NOT NULL
+      OR mql_datetime_inferred IS NOT NULL
 
 ), marketing_qualified_contacts AS(
 
     SELECT
 
-      {{ dbt_utils.surrogate_key(['contact_id','marketo_qualified_lead_datetime::timestamp']) }}                          AS mql_event_id,
+      {{ dbt_utils.generate_surrogate_key(['contact_id','marketo_qualified_lead_datetime::timestamp']) }}                          AS mql_event_id,
       marketo_qualified_lead_datetime::timestamp                                                                          AS mql_event_timestamp,
       initial_marketo_mql_date_time::timestamp                                                                            AS initial_mql_event_timestamp,
       true_mql_date::timestamp                                                                                            AS legacy_mql_event_timestamp,
+      mql_datetime_inferred::timestamp                                                                                    AS inferred_mql_event_timestamp,
       contact_id                                                                                                          AS sfdc_record_id,
       'contact'                                                                                                           AS sfdc_record,
-      {{ dbt_utils.surrogate_key(['contact_id']) }}                                                                       AS crm_person_id,
+      {{ dbt_utils.generate_surrogate_key(['contact_id']) }}                                                                       AS crm_person_id,
       contact_id                                                                                                          AS contact_id,
       account_id                                                                                                          AS account_id,
       owner_id                                                                                                            AS crm_user_id,
@@ -117,6 +156,7 @@ WITH account_dims_mapping AS (
 
     FROM sfdc_contacts
     WHERE marketo_qualified_lead_datetime IS NOT NULL
+      OR mql_datetime_inferred IS NOT NULL
     HAVING mql_event_id NOT IN (
                          SELECT mql_event_id
                          FROM marketing_qualified_leads
@@ -137,17 +177,19 @@ WITH account_dims_mapping AS (
     SELECT
 
       crm_person_id,
-      MIN(mql_event_timestamp)         AS first_mql_date,
-      MAX(mql_event_timestamp)         AS last_mql_date,
-      MIN(initial_mql_event_timestamp) AS first_initial_mql_date,
-      MIN(legacy_mql_event_timestamp)  AS first_legacy_mql_date,
-      MAX(legacy_mql_event_timestamp)  AS last_legacy_mql_date,
-      COUNT(*)                         AS mql_count
+      MIN(mql_event_timestamp)          AS first_mql_date,
+      MAX(mql_event_timestamp)          AS last_mql_date,
+      MIN(initial_mql_event_timestamp)  AS first_initial_mql_date,
+      MIN(legacy_mql_event_timestamp)   AS first_legacy_mql_date,
+      MAX(legacy_mql_event_timestamp)   AS last_legacy_mql_date,
+      MIN(inferred_mql_event_timestamp) AS first_inferred_mql_date,
+      MAX(inferred_mql_event_timestamp) AS last_inferred_mql_date,
+      COUNT(*)                          AS mql_count
 
     FROM mqls_unioned
     GROUP BY 1
 
-), final AS (
+), person_final AS (
 
     SELECT
     -- ids
@@ -170,6 +212,12 @@ WITH account_dims_mapping AS (
       account_dims_mapping.dim_parent_sales_territory_id,                                                      -- dim_parent_sales_territory_id
       account_dims_mapping.dim_parent_industry_id,                                                             -- dim_parent_industry_id
       {{ get_keyed_nulls('bizible_marketing_channel_path.dim_bizible_marketing_channel_path_id') }}            AS dim_bizible_marketing_channel_path_id,
+      {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_hierarchy_id') }}                               AS dim_account_demographics_hierarchy_id,
+      crm_person.dim_account_demographics_hierarchy_sk,
+      {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_sales_segment_id') }}                           AS dim_account_demographics_sales_segment_id,
+      {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_geo_id') }}                                     AS dim_account_demographics_geo_id,
+      {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_region_id') }}                                  AS dim_account_demographics_region_id,
+      {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_area_id') }}                                    AS dim_account_demographics_area_id,
 
      -- important person dates
       COALESCE(sfdc_leads.created_date, sfdc_lead_converted.created_date, sfdc_contacts.created_date)::DATE
@@ -222,6 +270,17 @@ WITH account_dims_mapping AS (
       {{ get_date_id('last_legacy_mql_date') }}                                                                 AS legacy_mql_date_latest_id,
       {{ get_date_pt_id('last_legacy_mql_date') }}                                                              AS legacy_mql_date_latest_pt_id,
 
+      mqls.first_inferred_mql_date::DATE                                                                        AS inferred_mql_date_first,
+      mqls.first_inferred_mql_date                                                                              AS inferred_mql_datetime_first,
+      CONVERT_TIMEZONE('America/Los_Angeles', mqls.first_inferred_mql_date)                                     AS inferred_mql_datetime_first_pt,
+      {{ get_date_id('first_inferred_mql_date') }}                                                              AS inferred_mql_date_first_id,
+      {{ get_date_pt_id('first_inferred_mql_date') }}                                                           AS inferred_mql_date_first_pt_id,
+      mqls.last_inferred_mql_date::DATE                                                                         AS inferred_mql_date_latest,
+      mqls.last_inferred_mql_date                                                                               AS inferred_mql_datetime_latest,
+      CONVERT_TIMEZONE('America/Los_Angeles', mqls.last_inferred_mql_date)                                      AS inferred_mql_datetime_latest_pt,
+      {{ get_date_id('last_inferred_mql_date') }}                                                               AS inferred_mql_date_latest_id,
+      {{ get_date_pt_id('last_inferred_mql_date') }}                                                            AS inferred_mql_date_latest_pt_id,
+
       COALESCE(sfdc_contacts.marketo_qualified_lead_datetime, sfdc_leads.marketo_qualified_lead_datetime)::DATE 
                                                                                                                 AS mql_sfdc_date,
       COALESCE(sfdc_contacts.marketo_qualified_lead_datetime, sfdc_leads.marketo_qualified_lead_datetime)       AS mql_sfdc_datetime,
@@ -249,7 +308,7 @@ WITH account_dims_mapping AS (
       COALESCE(sfdc_contacts.worked_datetime, sfdc_leads.worked_datetime)::DATE                                 AS worked_date,
       {{ get_date_id('worked_date') }}                                                                          AS worked_date_id,
       {{ get_date_pt_id('worked_date') }}                                                                       AS worked_date_pt_id,
-
+      crm_person.high_priority_datetime,
      -- flags
       CASE
           WHEN mqls.first_mql_date IS NOT NULL THEN 1
@@ -259,7 +318,10 @@ WITH account_dims_mapping AS (
         WHEN true_inquiry_date IS NOT NULL THEN 1
         ELSE 0
       END                                                                                                                 AS is_inquiry,
-
+      crm_person.is_bdr_sdr_worked,
+      crm_person.is_partner_recalled,
+      crm_person.is_lead_source_trial,
+      crm_person.is_high_priority,
 
      -- information fields
       crm_person.name_of_active_sequence,
@@ -271,6 +333,12 @@ WITH account_dims_mapping AS (
       crm_person.last_transfer_date_time,
       crm_person.time_from_last_transfer_to_sequence,
       crm_person.time_from_mql_to_last_transfer,
+      crm_person.traction_first_response_time,
+      crm_person.traction_first_response_time_seconds,
+      crm_person.traction_response_time_in_business_hours,
+      crm_person.propensity_to_purchase_score_date,
+      crm_person.propensity_to_purchase_days_since_trial_start,
+      crm_person.email_hash,
 
      -- additive fields
 
@@ -299,13 +367,108 @@ WITH account_dims_mapping AS (
       ON crm_person.bizible_marketing_channel_path = bizible_marketing_channel_path_mapping.bizible_marketing_channel_path
     LEFT JOIN bizible_marketing_channel_path
       ON bizible_marketing_channel_path_mapping.bizible_marketing_channel_path_name_grouped = bizible_marketing_channel_path.bizible_marketing_channel_path_name
+    LEFT JOIN prep_crm_user_hierarchy
+      ON prep_crm_user_hierarchy.dim_crm_user_hierarchy_sk = crm_person.dim_account_demographics_hierarchy_sk
+
+), inquiry_base AS (
+  
+  SELECT
+  --IDs
+    person_final.dim_crm_person_id,
+
+  --Person Data
+    person_final.true_inquiry_date,
+    -- account_history_final.abm_tier_1_date,
+    -- account_history_final.abm_tier_2_date,
+    -- account_history_final.abm_tier,
+    CASE 
+      WHEN true_inquiry_date IS NOT NULL
+        AND true_inquiry_date BETWEEN valid_from AND valid_to
+        THEN TRUE
+      ELSE FALSE
+    END AS is_abm_tier_inquiry
+  FROM person_final
+  LEFT JOIN account_history_final
+    ON person_final.dim_crm_account_id=account_history_final.dim_crm_account_id
+  WHERE abm_tier IS NOT NULL
+  AND true_inquiry_date IS NOT NULL
+  AND true_inquiry_date >= '2022-02-01'
+  AND (abm_tier_1_date IS NOT NULL
+    OR abm_tier_2_date IS NOT NULL)
+  AND is_abm_tier_inquiry = TRUE
+  
+), mql_base AS (
+  
+  SELECT
+  --IDs
+    person_final.dim_crm_person_id,
+  
+  --Person Data
+    person_final.mql_datetime_latest_pt,
+    -- account_history_final.abm_tier_1_date,
+    -- account_history_final.abm_tier_2_date,
+    -- account_history_final.abm_tier,
+    CASE 
+      WHEN mql_datetime_latest_pt IS NOT NULL
+        AND mql_datetime_latest_pt BETWEEN valid_from AND valid_to
+        THEN TRUE
+      ELSE FALSE
+    END AS is_abm_tier_mql  
+  FROM person_final
+  LEFT JOIN account_history_final
+    ON person_final.dim_crm_account_id=account_history_final.dim_crm_account_id
+  WHERE abm_tier IS NOT NULL
+  AND mql_datetime_latest_pt IS NOT NULL
+  AND mql_datetime_latest_pt >= '2022-02-01'
+  AND (abm_tier_1_date IS NOT NULL
+    OR abm_tier_2_date IS NOT NULL)
+  AND is_abm_tier_mql = TRUE
+
+), abm_tier_id AS (
+
+    SELECT
+        dim_crm_person_id
+    FROM inquiry_base
+    UNION ALL
+    SELECT
+        dim_crm_person_id
+    FROM mql_base
+
+), abm_tier_id_final AS (
+
+    SELECT DISTINCT
+        dim_crm_person_id
+    FROM abm_tier_id
+
+), abm_tier_final AS (
+  
+  SELECT DISTINCT
+    abm_tier_id_final.dim_crm_person_id,
+    inquiry_base.is_abm_tier_inquiry,
+    mql_base.is_abm_tier_mql
+  FROM abm_tier_id_final
+  LEFT JOIN inquiry_base
+      ON abm_tier_id_final.dim_crm_person_id=inquiry_base.dim_crm_person_id
+  LEFT JOIN mql_base
+    ON abm_tier_id_final.dim_crm_person_id=mql_base.dim_crm_person_id
+
+), final AS (
+
+  SELECT
+    person_final.*,
+    abm_tier_final.is_abm_tier_inquiry,
+    abm_tier_final.is_abm_tier_mql
+  FROM person_final
+  LEFT JOIN abm_tier_final
+    ON person_final.dim_crm_person_id=abm_tier_final.dim_crm_person_id
+  
 
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mcooperDD",
-    updated_by="@lisvinueza",
+    updated_by="@rkohnke",
     created_date="2020-12-01",
-    updated_date="2023-05-21"
+    updated_date="2024-01-19"
 ) }}

@@ -158,6 +158,12 @@ WITH edm_opty AS (
     edm_opty.other_non_recurring_amount,
     edm_opty.arr_basis,
     edm_opty.arr,
+    
+    -- ATR for Booked Churned / Contraction metrics
+    edm_opty.atr,
+    edm_opty.won_atr,
+    edm_opty.churned_contraction_net_arr,
+    edm_opty.booked_churned_contraction_net_arr,
 
     edm_opty.competitors,
     edm_opty.fpa_master_bookings_flag,
@@ -421,8 +427,6 @@ WITH edm_opty AS (
     edm_opty.open_3plus_net_arr,
     edm_opty.open_4plus_net_arr,
     edm_opty.booked_net_arr,
-    edm_opty.booked_churned_contraction_net_arr,
-    edm_opty.churned_contraction_net_arr,
    
     edm_opty.deal_size,
     edm_opty.calculated_deal_size,
@@ -502,7 +506,20 @@ WITH edm_opty AS (
             THEN '3. Late'
         ELSE '4. Closed'
     END                     AS pipeline_category,
-   
+
+    CASE
+        WHEN DATEDIFF(MONTH, edm_opty.pipeline_created_fiscal_quarter_date, edm_opty.close_fiscal_quarter_date) < 3
+            THEN 'CQ'
+        WHEN DATEDIFF(MONTH, edm_opty.pipeline_created_fiscal_quarter_date, edm_opty.close_fiscal_quarter_date) < 6
+            THEN 'CQ+1'
+        WHEN DATEDIFF(MONTH, edm_opty.pipeline_created_fiscal_quarter_date, edm_opty.close_fiscal_quarter_date) < 9
+            THEN 'CQ+2'
+        WHEN DATEDIFF(MONTH, edm_opty.pipeline_created_fiscal_quarter_date, edm_opty.close_fiscal_quarter_date) < 12
+            THEN 'CQ+3'
+        WHEN DATEDIFF(MONTH, edm_opty.pipeline_created_fiscal_quarter_date, edm_opty.close_fiscal_quarter_date) >= 12
+            THEN 'CQ+4 >'
+    END                                         AS pipeline_landing_quarter,
+
     ---------------------------------------------
     ---------------------------------------------
 
@@ -551,6 +568,67 @@ WITH edm_opty AS (
         ELSE 'Other'
     END AS  product_category_deployment,
 
+    -- 
+    CASE
+        WHEN cycle_time_in_days BETWEEN 0 AND 29
+            THEN '[0,30)'
+        WHEN cycle_time_in_days BETWEEN 30 AND 179
+            THEN '[30,180)'
+        WHEN cycle_time_in_days BETWEEN 180 AND 364
+            THEN '[180,365)'
+        WHEN cycle_time_in_days > 364
+            THEN '[365+)'
+        ELSE 'N/A'
+    END                  AS age_bin,
+
+    -- age in stage
+    CASE
+        WHEN edm_opty.stage_name = '0-Pending Acceptance'
+            THEN edm_opty.created_date
+        WHEN edm_opty.stage_name = '1-Discovery'
+            THEN edm_opty.stage_1_discovery_date
+        WHEN edm_opty.stage_name = '2-Scoping'
+            THEN edm_opty.stage_2_scoping_date
+        WHEN edm_opty.stage_name = '3-Technical Evaluation'
+            THEN edm_opty.stage_3_technical_evaluation_date
+        WHEN edm_opty.stage_name = '4-Proposal'
+            THEN edm_opty.stage_4_proposal_date
+        WHEN edm_opty.stage_name = '5-Negotiating'
+            THEN edm_opty.stage_5_negotiating_date
+        WHEN edm_opty.stage_name = '6-Awaiting Signature'
+            THEN edm_opty.stage_6_awaiting_signature_date_date
+        WHEN edm_opty.stage_name = '7-Closing'
+            THEN edm_opty.close_date
+        WHEN edm_opty.stage_name = '8-Closed Lost'
+            THEN edm_opty.close_date
+        WHEN edm_opty.stage_name = '9-Unqualified'
+            THEN edm_opty.close_date
+        WHEN edm_opty.stage_name = '10-Duplicate'
+            THEN edm_opty.close_date
+        WHEN edm_opty.stage_name = 'Closed Won'
+            THEN edm_opty.close_date
+    END                                 AS current_stage_start_date,
+
+    CASE 
+        WHEN is_open = 1 AND current_stage_start_date < CURRENT_DATE()
+            THEN DATEDIFF(DAY,current_stage_start_date,CURRENT_DATE())
+        WHEN current_stage_start_date < close_date
+            THEN DATEDIFF(DAY,current_stage_start_date,close_date)
+        ELSE NULL
+    END                                 AS current_stage_age,
+
+    CASE
+        WHEN current_stage_age BETWEEN 0 AND 29
+            THEN '[0,30)'
+        WHEN current_stage_age BETWEEN 30 AND 179
+            THEN '[30,180)'
+        WHEN current_stage_age BETWEEN 180 AND 364
+            THEN '[180,365)'
+        WHEN current_stage_age > 364
+            THEN '[365+)'
+        ELSE 'N/A'
+    END                  AS current_stage_age_bin,
+
     -- demographics fields
     edm_opty.parent_crm_account_upa_country,
     edm_opty.parent_crm_account_upa_state,
@@ -558,7 +636,11 @@ WITH edm_opty AS (
     edm_opty.parent_crm_account_upa_street,
     edm_opty.parent_crm_account_upa_postal_code,
     account.parent_crm_account_upa_country_name,
-    edm_opty.parent_crm_account_business_unit
+    account.industry,
+    edm_opty.parent_crm_account_business_unit,
+
+    -- account driven fields
+    account.lam_dev_count_bin
     
     FROM edm_opty
     -- Date helpers
@@ -685,8 +767,8 @@ WITH edm_opty AS (
 
       -- JK 2023-02-06: FY24 keys
       LOWER(agg_demo_keys_base.key_bu)                      AS key_bu,
-      LOWER(key_bu_ot)                                      AS key_bu_ot,
-      LOWER(key_bu_sqs)                                     AS key_bu_sqs,
+      LOWER(agg_demo_keys_base.key_bu_ot)                   AS key_bu_ot,
+      LOWER(agg_demo_keys_base.key_bu_sqs)                  AS key_bu_sqs,
       LOWER(agg_demo_keys_base.key_bu_subbu)                AS key_bu_subbu,
       LOWER(agg_demo_keys_base.key_bu_subbu_ot)             AS key_bu_subbu_ot,
       LOWER(agg_demo_keys_base.key_bu_subbu_sqs)            AS key_bu_subbu_sqs,
@@ -694,6 +776,25 @@ WITH edm_opty AS (
       LOWER(agg_demo_keys_base.key_bu_subbu_division_ot)    AS key_bu_subbu_division_ot,
       LOWER(agg_demo_keys_base.key_bu_subbu_division_sqs)   AS key_bu_subbu_division_sqs,
       LOWER(agg_demo_keys_base.key_bu_subbu_division_asm)   AS key_bu_subbu_division_asm,
+
+
+        --NF 2024-01-31: FY25 keys
+        agg_demo_keys_base.key_geo,
+
+        agg_demo_keys_base.key_geo_ot,
+        agg_demo_keys_base.key_geo_sqs,
+            
+        agg_demo_keys_base.key_geo_bu,
+        agg_demo_keys_base.key_geo_bu_ot,
+        agg_demo_keys_base.key_geo_bu_sqs,
+
+        agg_demo_keys_base.key_geo_bu_region,
+        agg_demo_keys_base.key_geo_bu_region_ot,
+        agg_demo_keys_base.key_geo_bu_region_sqs,
+
+        agg_demo_keys_base.key_geo_bu_region_area,
+        agg_demo_keys_base.key_geo_bu_region_area_segment,
+
 
       -- Created pipeline eligibility definition
       -- https://gitlab.com/gitlab-com/sales-team/field-operations/systems/-/issues/2389

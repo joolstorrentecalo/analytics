@@ -18,7 +18,7 @@ WITH source AS (
 ), renamed AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['item_id', 'item_id','created_at','item_type',
+      {{ dbt_utils.generate_surrogate_key(['item_id', 'item_id','created_at','item_type',
                                   'event','whodunnit','object','object_changes'])}}
                                                           AS id,
       item_id::NUMBER                                     AS item_id,

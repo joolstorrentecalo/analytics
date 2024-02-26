@@ -197,23 +197,6 @@ models:
         tests:
           - not_null
 
-  - name: gitlab_dotcom_ci_editor_ai_conversation_messages_source
-    description: Base model for Gitlab.com ci_editor_ai_conversation_messages
-    columns:
-      - name: ci_editor_ai_conversation_messages_id
-        tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - not_null
-          - unique
-      - name: created_at
-        tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - not_null
-      - name: updated_at
-        tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - not_null
-
   - name: gitlab_dotcom_ci_group_variables_source
     description: Base model for Gitlab.com ci_group_variables
     columns:
@@ -257,6 +240,23 @@ models:
           - not_null
           - unique
       - name: created_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+
+  - name: gitlab_dotcom_ci_pipeline_artifacts_source
+    description: Base model for Gitlab.com ci_pipeline_artifacts
+    columns:
+      - name: ci_pipeline_artifact_id
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+      - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
         tests:
           - not_null
@@ -691,7 +691,7 @@ models:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests: 
+        tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
@@ -866,23 +866,6 @@ models:
       - name: created_at
       - name: updated_at
 
-  - name: gitlab_dotcom_in_product_marketing_emails_source
-    description: >-
-      Base model for Gitlab.com in_product_marketing emails table
-    columns:
-      - name: created_at
-      - name: cta_clicked_at
-      - name: in_product_marketing_email_id
-        tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - not_null
-          - unique
-      - name: series
-      - name: track
-      - name: updated_at
-        tests:
-          - not_null
-      - name: user_id
   - name: gitlab_dotcom_issuable_severities_source
     description: Base model for Gitlab.com Incident Issue Severities
     columns:
@@ -898,7 +881,7 @@ models:
       - name: severity
         tags: ["tdf","gitlab_dotcom"]
         tests:
-          - not_null 
+          - not_null
   - name: gitlab_dotcom_issue_assignees_source
     description: >-
       Base model for Gitlab.com issue assignees, duplicate rows have not been included.
@@ -969,12 +952,6 @@ models:
           - accepted_values:
               values: [1, 2, 3, 4]
       - name: duplicated_to_id
-        tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - relationships:
-              to: ref('gitlab_dotcom_issues')
-              field: issue_id
-              severity: warn
       - name: promoted_to_epic_id
       - name: issue_title
         description: '{{ doc("visibility_documentation") }}'
@@ -1071,7 +1048,7 @@ models:
 
   - name: gitlab_dotcom_merge_request_blocks_source
     description: Base model for GitLab.com merge request blocks table
-    columns: 
+    columns:
       - name: merge_request_blocks_id
         tags: ["tdf", "gitlab_dotcom"]
         tests:
@@ -1260,7 +1237,7 @@ models:
         description: '{{ doc("visibility_documentation") }}'
       - name: visbility_level
         description: '{{ doc("visibility_documentation") }}'
-      - name: shared_runners_enabled 
+      - name: shared_runners_enabled
         description: Indicates whether or not a namespace has shared_runners_enabled
 
   - name: gitlab_dotcom_notes_source
@@ -1414,7 +1391,7 @@ models:
         tests:
           - not_null
           - unique
-  
+
   - name: gitlab_dotcom_project_features_source
     description: Base model for Gitlab.com project features
     columns:
@@ -1511,12 +1488,8 @@ models:
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
-          - not_null
       - name: has_avatar
         description: >-
           This field will try to find an avatar file, if none is available will
@@ -1596,7 +1569,7 @@ models:
         tests:
           - not_null
           - unique
-  
+
   - name: gitlab_dotcom_protected_branch_push_access_levels_source
     description: A base model for Gitlab.com Gitlab.com protected_branch_push_access_levels.
     columns:
@@ -1673,7 +1646,7 @@ models:
         tags: ["tdf","gitlab_dotcom"]
         tests:
           - not_null
-  
+
   - name: gitlab_dotcom_resource_milestone_events_source
     columns:
       - name: resource_milestone_event_id
@@ -1724,7 +1697,7 @@ models:
   - name: gitlab_dotcom_integrations_source
     description: Base model for Gitlab.com integrations
     columns:
-      - name: service_id
+      - name: integration_id
         tags: ["tdf","gitlab_dotcom"]
         tests:
           - not_null
@@ -1805,6 +1778,57 @@ models:
     description: Base model for Gitlab.com subscriptions
     columns:
       - name: subscription_id
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+      - name: updated_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+
+  - name: gitlab_dotcom_subscription_add_ons_source
+    description: Base model for Gitlab.com subscriptions_add_ons
+    columns:
+      - name: id
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+      - name: updated_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+
+  - name: gitlab_dotcom_subscription_add_on_purchases_source
+    description: Base model for Gitlab.com subscriptions_add_ons_purchases
+    columns:
+      - name: id
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+          - unique
+      - name: created_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+      - name: updated_at
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+        
+  - name: gitlab_dotcom_subscription_user_add_on_assignments_source
+    description: Base model for Gitlab.com subscriptions_add_ons_user_add_on_assignments
+    columns:
+      - name: id
         tags: ["tdf","gitlab_dotcom"]
         tests:
           - not_null
@@ -1951,11 +1975,11 @@ models:
         tests:
           - accepted_values:
               values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 99]
-              
+
   - name: gitlab_dotcom_vulnerabilities_source
     description: >-
       Base model for Gitlab.com vulnerabilities.
-    columns: 
+    columns:
       - name: vulnerability_id
         tags: ["tdf","gitlab_dotcom"]
         tests:
@@ -1981,6 +2005,23 @@ models:
       - name: vulnerability_name
       - name: vulnerability_report_type
       - name: vulnerability_severity
+
+  - name: gitlab_dotcom_vulnerability_reads_source
+    description: A base model for Gitlab.com vulnerability_reads.
+    columns:
+      - name: id
+        tests:
+          - not_null
+          - unique
+
+  - name: gitlab_dotcom_vulnerability_state_transitions_source
+    description: A base model for Gitlab.com vulnerability_state_transitions.
+    columns:
+      - name: id
+        tags: ["tdf","gitlab_dotcom"]
+        tests:
+          - not_null
+          - unique
 
   - name: gitlab_dotcom_security_scans_source
     description: >-

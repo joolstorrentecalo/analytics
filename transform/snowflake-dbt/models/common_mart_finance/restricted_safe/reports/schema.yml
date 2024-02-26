@@ -28,3 +28,42 @@ models:
       - name: subscription_start_month
       - name: subscription_end_month
       - name: multi_year_booking_subscription_end_month
+
+  - name: rpt_retention_future_parent_account 
+    description: Report table to support Net Dollar Retention analysis at the ultimate_parent_account level using the following year's parent account. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
+    columns:
+      - name: primary_key
+        tests:
+          - not_null
+          - unique
+
+  - name: rpt_retention_parent_account
+    description: Report table to support retention analysis at the ultimate_parent_account. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
+    columns:
+      - name: primary_key
+        tests:
+          - not_null
+          - unique
+
+  - name: rpt_retention_parent_account_product
+    description: Report table to support retention analysis at the ultimate_parent_account || product level. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
+    columns:
+      - name: primary_key
+        tests:
+          - not_null
+          - unique
+
+  - name: rpt_retention_parent_account_delivery_type
+    description: Report table to support retention analysis at the ultimate_parent_account || delivery_type. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
+    columns:
+      - name: primary_key
+        tests:
+          - not_null
+          - unique
+
+  - name: rpt_retention_parent_account_combined
+    columns:
+      - name: primary_key
+        tests:
+          - not_null
+          - unique

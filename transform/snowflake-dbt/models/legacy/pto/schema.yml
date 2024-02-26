@@ -37,3 +37,15 @@ models:
           description: '{{ doc("gitlab_pto_pto_starts_at") }}'
         - name: total_hours
           description: '{{ doc("gitlab_pto_total_hours") }}'
+        - name: pto_group_type
+          meta:
+            masking_policy: analyst_people_sensitive
+        - name: is_pto
+          meta:
+            masking_policy: analyst_people_sensitive
+        - name: pto_type_name
+          meta:
+            masking_policy: analyst_people_sensitive
+        - name: pto_type_uuid
+          meta:
+            masking_policy: analyst_people_sensitive

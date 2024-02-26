@@ -2,6 +2,7 @@ WITH source AS (
 
   SELECT *
   FROM {{ source('workday','performance_growth_potential') }}
+  WHERE NOT _fivetran_deleted
 
 ), 
 

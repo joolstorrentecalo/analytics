@@ -46,7 +46,7 @@ news AS (
         COUNT(DISTINCT mr.session_id) AS sessions,
         COUNT(*) AS total_occurences
     FROM
-        {{ ref('wk_rpt_product_navigation_base') }} AS mr
+        {{ ref('rpt_product_navigation_base') }} AS mr
     WHERE
         mr.behavior_at
         > DATEADD(DAY, 1, LAST_DAY(DATEADD(WEEK, -19, CURRENT_DATE())))

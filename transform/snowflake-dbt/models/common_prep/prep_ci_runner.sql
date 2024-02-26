@@ -36,11 +36,9 @@
       gitlab_dotcom_ci_runners_source.description                 AS ci_runner_description,
       gitlab_dotcom_ci_runners_source.contacted_at,
       gitlab_dotcom_ci_runners_source.is_active,
-      gitlab_dotcom_ci_runners_source.runner_name,
       gitlab_dotcom_ci_runners_source.version                     AS ci_runner_version,
       gitlab_dotcom_ci_runners_source.revision,
       gitlab_dotcom_ci_runners_source.platform,
-      gitlab_dotcom_ci_runners_source.architecture,
       gitlab_dotcom_ci_runners_source.is_untagged,
       gitlab_dotcom_ci_runners_source.is_locked,
       gitlab_dotcom_ci_runners_source.access_level,
@@ -58,7 +56,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@snalamaru",
-    updated_by="@snalamaru",
+    updated_by="@jpeguero",
     created_date="2021-06-23",
-    updated_date="2021-06-23"
+    updated_date="2023-07-21"
 ) }}

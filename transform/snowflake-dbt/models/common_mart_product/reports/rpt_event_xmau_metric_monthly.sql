@@ -235,7 +235,7 @@ results_wo_pk AS (
 results AS (
 
   SELECT
-    {{ dbt_utils.surrogate_key(['event_calendar_month', 'user_group', 'event_name_array']) }} AS xmau_metric_monthly_id,
+    {{ dbt_utils.generate_surrogate_key(['event_calendar_month', 'user_group', 'event_name_array']) }} AS xmau_metric_monthly_id,
     results_wo_pk.*
   FROM results_wo_pk
   WHERE event_calendar_month < DATE_TRUNC('month', CURRENT_DATE)

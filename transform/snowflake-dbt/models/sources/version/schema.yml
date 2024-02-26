@@ -62,23 +62,6 @@ models:
           tests:
             - not_null
 
-    - name: version_version_checks_source
-      description: Version check data from self-managed instances.
-      columns:
-        - name: id
-          tags:
-            - tdf
-            - version_db
-          tests:
-            - not_null
-            - unique
-        - name: host_id
-          tags:
-            - tdf
-            - version_db
-          tests:
-            - not_null
-
     - name: version_versions_source
       description: Vulnerability information by version number.
       columns:

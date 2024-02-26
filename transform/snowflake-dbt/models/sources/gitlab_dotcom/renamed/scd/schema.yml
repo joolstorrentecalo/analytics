@@ -177,3 +177,15 @@ models:
         tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
+
+  - name: gitlab_dotcom_merge_request_diff_commit_users_source
+    description: 'Base model for Gitlab.com group links. {{ doc("scd_type_two_documentation") }}'
+    columns:
+      - name: id
+        tags: ["gitlab_dotcom"]
+        tests:
+          - not_null
+      - name: name
+        tags: ["gitlab_dotcom"]
+      - name: email
+        tags: ["gitlab_dotcom"]

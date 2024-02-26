@@ -14,12 +14,9 @@ WITH source AS (
         ended_at::TIMESTAMP       AS ended_at,
         events::NUMBER            AS alert_management_alert_events,
         iid::NUMBER               AS alert_management_alert_iid,
-        severity::NUMBER          AS severity_id,
         status::NUMBER            AS status_id,
         issue_id::NUMBER          AS issue_id,
-        project_id::NUMBER        AS project_id,
-        service::VARCHAR          AS alert_management_alert_service,
-        monitoring_tool::VARCHAR  AS monitoring_tool
+        project_id::NUMBER        AS project_id
 
     FROM source
 

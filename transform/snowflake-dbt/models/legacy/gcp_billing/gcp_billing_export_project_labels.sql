@@ -23,7 +23,7 @@ WITH source AS (
         project_labels_flat.value['key']::VARCHAR                AS project_label_key,
         project_labels_flat.value['value']::VARCHAR              AS project_label_value,
         source.uploaded_at                                       AS uploaded_at,
-        {{ dbt_utils.surrogate_key([
+        {{ dbt_utils.generate_surrogate_key([
             'source_primary_key',
             'project_label_key',
             'project_label_value'] ) }}                          AS project_label_pk

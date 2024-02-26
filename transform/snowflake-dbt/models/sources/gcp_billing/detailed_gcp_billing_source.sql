@@ -10,17 +10,23 @@ WITH
 source AS (
 
   SELECT
-    OBJECT_DELETE(PARSE_JSON(value), 'gcs_export_time') AS value,
+    OBJECT_DELETE(PARSE_JSON(value), 'gcs_export_time') AS modified_value,
+    OBJECT_INSERT(modified_value,'credits', ARRAY_SORT(value['credits']::VARIANT),TRUE) AS sorted_credits,
+    OBJECT_INSERT(sorted_credits, 'labels',  ARRAY_SORT(value['labels']::VARIANT), TRUE) AS sorted_labels,
+    OBJECT_INSERT(sorted_labels, 'project::ancestors', ARRAY_SORT(value['project']['ancestors']::VARIANT), TRUE) AS sorted_project_ancestors,
+    OBJECT_INSERT(sorted_project_ancestors, 'project::labels', ARRAY_SORT(value['project']['labels']::VARIANT), TRUE) AS sorted_project_labels,
+    OBJECT_INSERT(sorted_project_labels, 'system_labels',  ARRAY_SORT(value['system_labels']::VARIANT), TRUE) AS sorted_system_labels,
     TO_TIMESTAMP(value['gcs_export_time']::INT, 6) AS gcs_export_time
   FROM {{ source('gcp_billing','detail_gcp_billing') }}
   {% if is_incremental() %}
 
-  WHERE gcs_export_time > (SELECT MAX({{ var('incremental_backfill_date', 'uploaded_at') }}) FROM {{ this }})
-    AND gcs_export_time <= (SELECT DATEADD(MONTH, 1, MAX({{ var('incremental_backfill_date', 'uploaded_at') }})) FROM {{ this }})
+  WHERE date_part > (SELECT MAX({{ var('incremental_backfill_date', 'partition_date') }}) FROM {{ this }})
+    AND date_part <= (SELECT DATEADD(MONTH, 1, MAX({{ var('incremental_backfill_date', 'partition_date') }})) FROM {{ this }})
+    AND gcs_export_time > (SELECT MAX(uploaded_at) FROM {{ this }})
 
   {% else %}
   -- This will cover the first creation of the table or a full refresh and requires that the table be backfilled
-  WHERE gcs_export_time > DATEADD('day', -30 ,CURRENT_DATE())
+  WHERE date_part > DATEADD('day', -30 ,CURRENT_DATE())
 
   {% endif %}
 
@@ -29,7 +35,7 @@ source AS (
 grouped AS (
   
   SELECT
-    value,
+    sorted_system_labels AS value,
     gcs_export_time,
     count(*) AS occurrence_multiplier
   FROM source
@@ -40,7 +46,7 @@ grouped AS (
 renamed AS (
   
   SELECT
-    {{ dbt_utils.surrogate_key(['value']) }} as primary_key,
+    {{ dbt_utils.generate_surrogate_key(['value']) }} as primary_key,
     value['billing_account_id']::VARCHAR AS billing_account_id,
     value['cost']::FLOAT * occurrence_multiplier AS cost,
     value['cost_type']::VARCHAR AS cost_type,

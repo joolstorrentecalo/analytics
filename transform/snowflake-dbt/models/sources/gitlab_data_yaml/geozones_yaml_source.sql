@@ -46,6 +46,6 @@ WITH source AS (
 )
 
 SELECT 
-  {{ dbt_utils.surrogate_key(['geozone_title', 'geozone_factor', 'country', 'state_or_province','geozone_factor']) }}        AS unique_key,
+  {{ dbt_utils.generate_surrogate_key(['geozone_title', 'geozone_factor', 'country', 'state_or_province','geozone_factor']) }}        AS unique_key,
   unioned.*
 FROM unioned

@@ -29,13 +29,24 @@ WITH dim_billing_account AS (
     FROM {{ ref('fct_mrr') }}
     WHERE subscription_status IN ('Active', 'Cancelled')
 
+), parent_account_name AS (
+
+    -- This CTE gets the parent account name. It uses a qualify statement to remove duplicates as there are cases when the 
+    -- parent account name associate with an account hasn't been updated yet and two accounts end up with different names
+    -- this can add duplicates later on in the model
+    SELECT DISTINCT
+      dim_parent_crm_account_id,
+      parent_crm_account_name
+    FROM dim_crm_account
+    QUALIFY ROW_NUMBER() OVER(PARTITION BY dim_parent_crm_account_id ORDER BY last_modified_date DESC) = 1
+  
 ), mart_arr AS (
 
     SELECT
       dim_date.date_actual                                                            AS arr_month,
       IFF(is_first_day_of_last_month_of_fiscal_quarter, fiscal_quarter_name_fy, NULL) AS fiscal_quarter_name_fy,
       IFF(is_first_day_of_last_month_of_fiscal_year, fiscal_year, NULL)               AS fiscal_year,
-      dim_crm_account.parent_crm_account_name                                         AS parent_crm_account_name,
+      parent_account_name.parent_crm_account_name                                     AS parent_crm_account_name,
       dim_crm_account.dim_parent_crm_account_id                                       AS dim_parent_crm_account_id,
       dim_product_detail.product_tier_name                                            AS product_tier_name,
       dim_product_detail.product_delivery_type                                        AS product_delivery_type,
@@ -53,6 +64,8 @@ WITH dim_billing_account AS (
       ON dim_date.date_id = fct_mrr.dim_date_id
     LEFT JOIN dim_crm_account
       ON dim_billing_account.dim_crm_account_id = dim_crm_account.dim_crm_account_id
+    LEFT JOIN parent_account_name
+      ON parent_account_name.dim_parent_crm_account_id = dim_crm_account.dim_parent_crm_account_id
     WHERE dim_crm_account.is_jihu_account != 'TRUE'
 
 ), max_min_month AS (
@@ -173,7 +186,7 @@ WITH dim_billing_account AS (
 ), combined AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.dim_parent_crm_account_id',
+      {{ dbt_utils.generate_surrogate_key(['type_of_arr_change.arr_month', 'type_of_arr_change.dim_parent_crm_account_id',
         'type_of_arr_change.product_tier_name']) }}
                                                                     AS primary_key,
       type_of_arr_change.arr_month,

@@ -33,7 +33,7 @@
   },
   {
     "event_name": "issues",
-    "source_table_name": "gitlab_dotcom_issues",
+    "source_table_name": "gitlab_dotcom_issues_source",
     "user_column_name": "author_id",
     "key_to_parent_project": "project_id",
     "primary_key": "issue_id",
@@ -94,9 +94,8 @@
 , incident_labeled_issues_source AS (
 
     SELECT
-      *,
-      issue_created_at AS created_at
-    FROM {{ ref('gitlab_dotcom_issues_xf') }}
+      *
+    FROM {{ ref('prep_issue') }}
     WHERE ARRAY_CONTAINS('incident'::variant, labels)
 
 ), issue_resource_label_events_source AS (
@@ -225,8 +224,8 @@ joins AS (
 
       LEFT JOIN gitlab_subscriptions
         ON ultimate_namespace.namespace_id = gitlab_subscriptions.namespace_id
-        AND data.event_created_at >= TO_DATE(gitlab_subscriptions.valid_from)
-        AND data.event_created_at < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
+        AND TO_DATE(data.event_created_at) >= TO_DATE(gitlab_subscriptions.valid_from)
+        AND TO_DATE(data.event_created_at) < {{ coalesce_to_infinity("TO_DATE(gitlab_subscriptions.valid_to)") }}
       LEFT JOIN plans
         ON gitlab_subscriptions.plan_id = plans.plan_id
       LEFT JOIN blocked_users

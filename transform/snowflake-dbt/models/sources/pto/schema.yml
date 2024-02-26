@@ -58,3 +58,12 @@ models:
           description: '{{ doc("gitlab_pto_total_hours") }}'
           tests:
             - not_null
+        - name: pto_group_type
+          description: '{{ doc("gitlab_pto_pto_group_type") }}'
+        - name: is_pto
+          description: '{{ doc("gitlab_pto_is_pto") }}'  
+        - name: pto_type_name
+          description: '{{ doc("gitlab_pto_pto_type_name") }}'
+        - name: pto_type_uuid
+          description: '{{ doc("gitlab_pto_pto_type_uuid") }}'
+        

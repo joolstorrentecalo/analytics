@@ -3,31 +3,34 @@ WITH internal_projects AS (
     SELECT
       ultimate_parent_namespace_id,
       dim_namespace_id              AS namespace_id,
-      dim_project_id                AS project_id
+      project_id,
+      dim_project_sk
     FROM {{ ref('dim_project') }}
     WHERE namespace_is_internal = TRUE
 
 ), merge_requests AS (
 
     SELECT
-      dim_merge_request.dim_merge_request_id          AS merge_request_id,
-      dim_merge_request.dim_project_id                AS project_id,
+      dim_merge_request.merge_request_id              AS merge_request_id,
+      dim_project.project_id                          AS project_id,
       internal_projects.ultimate_parent_namespace_id,
       internal_projects.namespace_id
     FROM {{ ref('dim_merge_request') }}
+    LEFT JOIN {{ ref('dim_project') }}
+      ON dim_merge_request.dim_project_sk = dim_project.dim_project_sk
     INNER JOIN internal_projects
-      ON internal_projects.project_id = dim_merge_request.dim_project_id
+      ON internal_projects.project_id = dim_project.project_id
 
 ), issues AS (
 
     SELECT
-      dim_issue.dim_issue_id                          AS issue_id,
-      dim_issue.dim_project_id                        AS project_id,
+      dim_issue.issue_id                              AS issue_id,
+      internal_projects.project_id                    AS project_id,
       internal_projects.ultimate_parent_namespace_id,
       internal_projects.namespace_id
     FROM {{ ref('dim_issue') }}
     INNER JOIN internal_projects
-      ON internal_projects.project_id = dim_issue.dim_project_id
+      ON internal_projects.dim_project_sk = dim_issue.dim_project_sk
 
 ), notes AS (
 

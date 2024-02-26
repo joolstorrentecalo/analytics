@@ -41,7 +41,7 @@ gitlab_subscriptions AS (
 active_services AS (
 
     SELECT *
-    FROM {{ref('gitlab_dotcom_integrations')}}
+    FROM {{ref('gitlab_dotcom_integrations_source')}}
     WHERE is_active = True
 
 ),
@@ -136,7 +136,7 @@ joined AS (
         WHEN import_type IS NOT NULL AND import_type != 'gitlab_project' AND project_import_url IS NOT NULL
           THEN 'other_source_project_import'
       END                                                          AS project_template,
-      ARRAYAGG(active_services.service_type)                       AS active_service_types,
+      ARRAYAGG(active_services.integration_type)                   AS active_service_types,
       COALESCE(COUNT(DISTINCT members.member_id), 0)               AS member_count
     FROM projects
       LEFT JOIN members

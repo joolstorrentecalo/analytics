@@ -178,7 +178,7 @@ WITH sfdc_account_xf AS (
         report_opportunity_user_business_unit || '_' || report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region || '_' || report_opportunity_user_area || '_' ||  sales_qualified_source   AS key_bu_segment_geo_region_area_sqs,
         report_opportunity_user_business_unit || '_' || report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region || '_' || report_opportunity_user_area || '_' ||  deal_group  || '_' ||  sales_qualified_source   AS key_bu_segment_geo_region_area_ot_sqs,
 
-        -- FY24 structure keys (pending)
+        -- FY24 structure keys
         report_opportunity_user_business_unit AS key_bu,
         report_opportunity_user_business_unit || '_' || deal_group                 AS key_bu_ot,
         report_opportunity_user_business_unit || '_' || sales_qualified_source     AS key_bu_sqs,
@@ -190,56 +190,36 @@ WITH sfdc_account_xf AS (
         report_opportunity_user_business_unit || '_' || report_opportunity_user_sub_business_unit || '_' || report_opportunity_user_division                                    AS key_bu_subbu_division,
         report_opportunity_user_business_unit || '_' || report_opportunity_user_sub_business_unit || '_' || report_opportunity_user_division || '_' ||  deal_group              AS key_bu_subbu_division_ot,
         report_opportunity_user_business_unit || '_' || report_opportunity_user_sub_business_unit || '_' || report_opportunity_user_division || '_' ||  sales_qualified_source  AS key_bu_subbu_division_sqs,
-   
+        
+        report_opportunity_user_business_unit || '_' || report_opportunity_user_sub_business_unit || '_' || report_opportunity_user_division || '_' || report_opportunity_user_asm AS key_bu_subbu_division_asm,
+
+        -- FY25 structure keys (pending)
+        LOWER(report_opportunity_user_geo)                                      AS key_geo,
+
+        LOWER(report_opportunity_user_geo || '_' || deal_group)                 AS key_geo_ot,
+        LOWER(report_opportunity_user_geo || '_' || sales_qualified_source)     AS key_geo_sqs,
+        
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit)                                       AS key_geo_bu,
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit || '_' ||  deal_group)                 AS key_geo_bu_ot,
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit || '_' ||  sales_qualified_source)     AS key_geo_bu_sqs,
+
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit || '_' || report_opportunity_user_region)                                    AS key_geo_bu_region,
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit || '_' || report_opportunity_user_region || '_' ||  deal_group)              AS key_geo_bu_region_ot,
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit || '_' || report_opportunity_user_region || '_' ||  sales_qualified_source)  AS key_geo_bu_region_sqs,
+
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit || '_' || report_opportunity_user_region || '_' || report_opportunity_user_area) AS key_geo_bu_region_area,
+        LOWER(report_opportunity_user_geo || '_' || report_opportunity_user_business_unit || '_' || report_opportunity_user_region || '_' || report_opportunity_user_area || '_' || report_opportunity_user_segment) AS key_geo_bu_region_area_segment,
  
- 
-        report_opportunity_user_business_unit || '_' || report_opportunity_user_sub_business_unit || '_' || report_opportunity_user_division || '_' || report_opportunity_user_asm  AS key_bu_subbu_division_asm,
+        ---------------------------------
+  
+       -- To delete
+       '' AS sales_team_cro_level,
+       '' AS sales_team_rd_asm_level,
+       '' AS sales_team_vp_level,
+       '' AS sales_team_avp_rd_level,
+       '' AS sales_team_asm_level
 
 
-        -- FY22 keys
-        COALESCE(report_opportunity_user_segment ,'other')                                    AS sales_team_cro_level,
-
-        -- NF: This code replicates the reporting structured of FY22, to keep current tools working
-        CASE
-          WHEN report_opportunity_user_segment = 'large'
-            AND report_opportunity_user_geo = 'emea'
-              THEN 'large_emea'
-          WHEN report_opportunity_user_segment = 'mid-market'
-            AND report_opportunity_user_region = 'amer'
-            AND lower(report_opportunity_user_area) LIKE '%west%'
-              THEN 'mid-market_west'
-          WHEN report_opportunity_user_segment = 'mid-market'
-            AND report_opportunity_user_region = 'amer'
-            AND lower(report_opportunity_user_area) NOT LIKE '%west%'
-              THEN 'mid-market_east'
-          WHEN report_opportunity_user_segment = 'smb'
-            AND report_opportunity_user_region = 'amer'
-            AND lower(report_opportunity_user_area) LIKE '%west%'
-              THEN 'smb_west'
-          WHEN report_opportunity_user_segment = 'smb'
-            AND report_opportunity_user_region = 'amer'
-            AND lower(report_opportunity_user_area) NOT LIKE '%west%'
-              THEN 'smb_east'
-          WHEN report_opportunity_user_segment = 'smb'
-            AND report_opportunity_user_region = 'latam'
-              THEN 'smb_east'
-          WHEN (report_opportunity_user_segment IS NULL
-                OR report_opportunity_user_region IS NULL)
-              THEN 'other'
-          WHEN CONCAT(report_opportunity_user_segment,'_',report_opportunity_user_region) like '%other%'
-            THEN 'other'
-          ELSE CONCAT(report_opportunity_user_segment,'_',report_opportunity_user_region)
-        END                                                    AS sales_team_rd_asm_level,
-
-        COALESCE(CONCAT(report_opportunity_user_segment,'_',
-            report_opportunity_user_geo),'other')               AS sales_team_vp_level,
-        COALESCE(CONCAT(report_opportunity_user_segment,'_',
-            report_opportunity_user_geo,'_',
-            report_opportunity_user_region),'other')            AS sales_team_avp_rd_level,
-        COALESCE(CONCAT(report_opportunity_user_segment,'_',
-            report_opportunity_user_geo,'_',
-            report_opportunity_user_region,'_',
-            report_opportunity_user_area),'other')              AS sales_team_asm_level
 
   FROM eligible
 

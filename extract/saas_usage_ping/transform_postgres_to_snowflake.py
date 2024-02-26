@@ -9,7 +9,6 @@ from sqlparse.sql import Token, TokenList
 from sqlparse.tokens import Whitespace
 from utils import Utils
 
-
 utils = Utils()
 
 
@@ -196,7 +195,9 @@ def get_snowflake_query(
 
     tokenized.insert(
         select_index + 1,
-        " '" + metrics_name + "' AS counter_name, ",
+        " '"
+        + utils.get_metric_table_name(table_name=metrics_name)
+        + "' AS counter_name, ",
     )
 
     return tokenized
@@ -291,9 +292,11 @@ def get_renamed_table_name(
         next_token = str(tokenized_list[index + i])
 
         if is_for_renaming(current_token=token, next_token=next_token):
+            metric_table_name = utils.get_metric_table_name(next_token)
+
             token_list[index + i] = (
                 f"prep.gitlab_dotcom.gitlab_dotcom_"
-                f"{next_token}"
+                f"{metric_table_name}"
                 f"_dedupe_source AS "
                 f"{next_token}"
             )

@@ -8,14 +8,14 @@ WITH gitlab_dotcom_resource_milestone_events AS (
 , issues AS (
 
     SELECT *
-    FROM {{ ref('gitlab_dotcom_issues') }} 
+    FROM {{ ref('gitlab_dotcom_issues_source') }}
 
 )
 
 , mrs AS (
 
     SELECT *
-    FROM {{ ref('gitlab_dotcom_merge_requests') }} 
+    FROM {{ ref('gitlab_dotcom_merge_requests_source') }}
 
 )
 

@@ -33,8 +33,8 @@ users AS (
 map AS (
 
   SELECT
-    {{ dbt_utils.surrogate_key(['employees.employee_id']) }} AS dim_team_member_sk,
-    {{ dbt_utils.surrogate_key(['users.user_id']) }} AS dim_user_sk,
+    {{ dbt_utils.generate_surrogate_key(['employees.employee_id']) }} AS dim_team_member_sk,
+    {{ dbt_utils.generate_surrogate_key(['users.user_id']) }} AS dim_user_sk,
     employees.employee_id,
     users.user_id,
     users.user_name AS gitlab_username,

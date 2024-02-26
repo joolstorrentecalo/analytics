@@ -1,7 +1,7 @@
 WITH clusters AS (
 
       SELECT *
-      FROM {{ ref('gitlab_dotcom_clusters') }}
+      FROM {{ ref('gitlab_dotcom_clusters_source') }}
 
   ),
 

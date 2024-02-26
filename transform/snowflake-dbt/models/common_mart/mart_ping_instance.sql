@@ -183,7 +183,8 @@ joined AS (
     fct_ping_instance_metric.dim_location_country_id                                                        AS dim_location_country_id,
     dim_location.country_name                                                                               AS country_name,
     dim_location.iso_2_country_code                                                                         AS iso_2_country_code,
-    dim_ping_instance.collected_data_categories                                                             AS collected_data_categories
+    dim_ping_instance.collected_data_categories                                                             AS collected_data_categories,
+    dim_ping_instance.installation_type                                                                     AS installation_type
   FROM fct_ping_instance_metric
   INNER JOIN dim_date
     ON fct_ping_instance_metric.dim_ping_date_id = dim_date.date_id
@@ -255,6 +256,7 @@ sorted AS (
     collected_data_categories,
     country_name,
     iso_2_country_code,
+    installation_type,
 
     --subscription metadata
     original_subscription_name_slugify,
@@ -285,7 +287,7 @@ sorted AS (
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@jpeguero",
+    updated_by="@cbraza",
     created_date="2022-03-11",
-    updated_date="2023-06-14"
+    updated_date="2023-08-30"
 ) }}

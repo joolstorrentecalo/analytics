@@ -20,16 +20,16 @@ namespace_companies_accounts AS (
 
   SELECT
     -- Primary Key
-    {{ dbt_utils.surrogate_key(['memberships.user_id',
+    {{ dbt_utils.generate_surrogate_key(['memberships.user_id',
       'namespace.dim_namespace_id',
       'company_bridge.company_id',
       'marketing_contact.dim_crm_account_id']) }} AS user_namespace_account_company_pk,
 
     -- Foreign Keys
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['memberships.user_id'])) }} AS dim_user_sk,
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['namespace.dim_namespace_id'])) }} AS dim_namespace_sk,
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['company_bridge.company_id'])) }} AS dim_company_sk,
-    {{ get_keyed_nulls(dbt_utils.surrogate_key(['marketing_contact.dim_crm_account_id'])) }} AS dim_crm_account_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['memberships.user_id'])) }} AS dim_user_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['namespace.dim_namespace_id'])) }} AS dim_namespace_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['company_bridge.company_id'])) }} AS dim_company_sk,
+    {{ get_keyed_nulls(dbt_utils.generate_surrogate_key(['marketing_contact.dim_crm_account_id'])) }} AS dim_crm_account_sk,
 
     -- Legacy Keys
     memberships.user_id,

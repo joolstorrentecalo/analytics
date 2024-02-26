@@ -12,6 +12,8 @@ from kube_secrets import (
     SNOWFLAKE_USER,
 )
 
+from kubernetes_helpers import get_affinity, get_toleration
+
 # Load the env vars into a dict and set Secrets
 env = os.environ.copy()
 pod_env_vars = {
@@ -21,7 +23,6 @@ pod_env_vars = {
 
 # Default arguments for the DAG
 default_args = {
-    "catchup": False,
     "depends_on_past": False,
     "on_failure_callback": slack_failed_task,
     "owner": "airflow",
@@ -32,7 +33,12 @@ default_args = {
 }
 
 # Create the DAG
-dag = DAG("snowflake_cleanup", default_args=default_args, schedule_interval="0 5 * * 0")
+dag = DAG(
+    "snowflake_cleanup",
+    default_args=default_args,
+    schedule_interval="0 5 * * 0",
+    catchup=False,
+)
 
 # Task 1
 drop_clones_cmd = f"""
@@ -53,6 +59,8 @@ purge_clones = KubernetesPodOperator(
     ],
     env_vars=pod_env_vars,
     arguments=[drop_clones_cmd],
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     dag=dag,
 )
 
@@ -75,5 +83,7 @@ purge_dev_schemas = KubernetesPodOperator(
     ],
     env_vars=pod_env_vars,
     arguments=[drop_dev_cmd],
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     dag=dag,
 )

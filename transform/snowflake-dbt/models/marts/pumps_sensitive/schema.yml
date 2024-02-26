@@ -147,3 +147,9 @@ models:
         description: A field indicating if the employee is the be added or removed representing Hires and Terminations.
       - name: report_date
         description: The date the report table was created
+  - name: pump_daily_data_science_scores
+    description: '{{ doc("pump_daily_data_science_scores") }}'
+  - name: pump_churn_forecasting_scores
+    description: '{{ doc("pump_churn_forecasting_scores") }}'
+  - name: pump_opportunity_forecasting_scores
+    description: '{{ doc("pump_opportunity_forecasting_scores") }}'

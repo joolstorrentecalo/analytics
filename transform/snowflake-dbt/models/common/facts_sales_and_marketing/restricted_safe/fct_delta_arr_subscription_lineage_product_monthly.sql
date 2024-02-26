@@ -151,7 +151,7 @@
 , type_of_arr_change_cte AS (
 
     SELECT DISTINCT
-      {{ dbt_utils.surrogate_key(['arr_month', 'dim_oldest_subscription_in_cohort_id']) }}
+      {{ dbt_utils.generate_surrogate_key(['arr_month', 'dim_oldest_subscription_in_cohort_id']) }}
                                                                     AS delta_arr_subscription_lineage_product_monthly_pk,
       prior_month.*,
       {{ type_of_arr_change('arr','previous_arr','row_number') }},

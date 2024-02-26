@@ -4,7 +4,8 @@
 
 {{ config({
     "materialized": "incremental",
-    "unique_key": "dim_requirement_id"
+    "unique_key": "dim_requirement_sk",
+    "on_schema_change": "sync_all_columns"
     })
 }}
 
@@ -29,14 +30,19 @@
 ), joined AS (
 
     SELECT 
-      gitlab_dotcom_requirements_dedupe_source.id::NUMBER                                  AS dim_requirement_id,
+      {{ dbt_utils.generate_surrogate_key(['gitlab_dotcom_requirements_dedupe_source.id']) }}       AS dim_requirement_sk,
+      gitlab_dotcom_requirements_dedupe_source.id::NUMBER                                  AS requirement_id,
       gitlab_dotcom_requirements_dedupe_source.project_id::NUMBER                          AS dim_project_id,
       prep_project.ultimate_parent_namespace_id::NUMBER                                    AS ultimate_parent_namespace_id,
       dim_date.date_id::NUMBER                                                             AS created_date_id,
       IFNULL(prep_namespace_plan_hist.dim_plan_id, 34)::NUMBER                             AS dim_plan_id,
       gitlab_dotcom_requirements_dedupe_source.author_id::NUMBER                           AS author_id,
       iid::NUMBER                                                                          AS requirement_internal_id,
-      state::VARCHAR                                                                       AS requirement_state_id,
+      CASE
+        WHEN state::VARCHAR = '1' THEN 'opened'
+        WHEN state::VARCHAR = '2' THEN 'archived'
+        ELSE state::VARCHAR
+      END                                                                                  AS requirement_state,
       gitlab_dotcom_requirements_dedupe_source.created_at::TIMESTAMP                       AS created_at,
       gitlab_dotcom_requirements_dedupe_source.updated_at::TIMESTAMP                       AS updated_at
     FROM gitlab_dotcom_requirements_dedupe_source
@@ -53,7 +59,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@mpeychet_",
-    updated_by="@chrissharp",
+    updated_by="@michellecooper",
     created_date="2021-08-10",
-    updated_date="2022-05-30"
+    updated_date="2023-08-10"
 ) }}

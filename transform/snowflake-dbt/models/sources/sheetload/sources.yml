@@ -58,14 +58,13 @@ sources:
       - name: event_dictionary_simplified
       - name: fmm_kpi_targets
       - name: fy23_quota
+      - name: fy25_account_geo_map
       - name: ga360_customdimensions
       - name: gcp_active_cud
       - name: gitlab_contributing_organizations
       - name: gitlab_certification_tracking_dashboard
       - name: gitlab_roulette_capacity_history
       - name: gitlab_slack_stats
-      - name: google_user_ip_ranges
-      - name: google_cloud_ip_ranges
       - name: google_referrals
       - name: headcount
       - name: hire_forecast
@@ -125,3 +124,8 @@ sources:
       - name: values_certificate
       - name: yc_companies
       - name: xactly_credit_sheetload
+      - name: partner_discount_summary
+      - name: sales_targets
+      - name: devrel_influenced_campaigns
+      - name: youtube_views_gitlab
+      - name: devrel_blog_posts_views

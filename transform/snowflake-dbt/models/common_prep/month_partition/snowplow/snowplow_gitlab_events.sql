@@ -1,5 +1,7 @@
-{% set year_value = var('year', (run_started_at - modules.datetime.timedelta(1)).strftime('%Y')) %}
-{% set month_value = var('month', (run_started_at - modules.datetime.timedelta(1)).strftime('%m')) %}
+{% set year_value = var('year', (run_started_at - modules.datetime.timedelta(1)).strftime('%Y')) | int %}
+{% set month_value = var('month', (run_started_at - modules.datetime.timedelta(1)).strftime('%m')) | int %}
+{% set start_date = modules.datetime.datetime(year_value, month_value, 1) %}
+{% set end_date = (start_date + modules.datetime.timedelta(days=31)).strftime('%Y-%m-01') %}
 
 {{config({
     "unique_key":"event_id"
@@ -67,12 +69,9 @@ WITH filtered_source as (
       event_version,
       geo_city,
       geo_country,
-      geo_latitude,
-      geo_longitude,
       geo_region,
       geo_region_name,
       geo_timezone,
-      geo_zipcode,
       ip_domain,
       ip_isp,
       ip_netspeed,
@@ -145,7 +144,6 @@ WITH filtered_source as (
       unstruct_event,
       user_fingerprint,
       user_id,
-      user_ipaddress,
       useragent,
       v_collector,
       v_etl,
@@ -163,16 +161,15 @@ WITH filtered_source as (
     {%- endif %}
 
     WHERE app_id IS NOT NULL
-      AND DATE_PART(month, TRY_TO_TIMESTAMP(derived_tstamp)) = '{{ month_value }}'
-      AND DATE_PART(year, TRY_TO_TIMESTAMP(derived_tstamp)) = '{{ year_value }}'
+      AND TRY_TO_TIMESTAMP(derived_tstamp) IS NOT NULL
+      AND derived_tstamp >= '{{ start_date }}'
+      AND derived_tstamp < '{{ end_date }}'
       AND 
         (
           (
             -- js backend tracker
             v_tracker LIKE 'js%'
-            AND lower(page_url) NOT LIKE 'https://staging.gitlab.com/%'
-            AND lower(page_url) NOT LIKE 'https://customers.stg.gitlab.com/%'
-            AND lower(page_url) NOT LIKE 'http://localhost:%'
+            AND COALESCE(lower(page_url), '') NOT LIKE 'http://localhost:%'
           )
           
           OR
@@ -180,6 +177,20 @@ WITH filtered_source as (
           (
             -- ruby backend tracker
             v_tracker LIKE 'rb%'
+          )
+
+          OR 
+
+          (
+            -- code suggestions events
+            v_tracker LIKE 'py%'
+          )
+
+          OR
+
+          (
+            -- jetbrains plugin events
+            v_tracker LIKE 'java%'
           )
         )
         -- removing it after approval from @rparker2 in this issue: https://gitlab.com/gitlab-data/analytics/-/issues/9112
@@ -192,7 +203,9 @@ WITH filtered_source as (
 
 , base AS (
   
-    SELECT * 
+    SELECT 
+      *,
+      derived_tstamp::DATE AS derived_tstamp_date 
     FROM filtered_source fe1
     WHERE NOT EXISTS (
       SELECT 1
@@ -202,15 +215,11 @@ WITH filtered_source as (
       HAVING COUNT(*) > 1
     )
 
-), events_with_web_page_id AS (
+), events_with_flattened_context AS (
 
     SELECT *
-    FROM {{ ref('snowplow_gitlab_events_web_page_id') }}
+    FROM {{ ref('snowplow_gitlab_events_context_flattened') }}
 
-),events_with_standard_context AS (
-
-    SELECT *
-    FROM {{ ref('snowplow_gitlab_events_standard_context') }}
 
 ), base_with_sorted_columns AS (
   
@@ -258,26 +267,14 @@ WITH filtered_source as (
       base.event_fingerprint,
       base.event_format,
       base.event_id,
-      events_with_web_page_id.web_page_id,
-      events_with_standard_context.environment AS gsc_environment,
-      events_with_standard_context.extra AS gsc_extra,
-      events_with_standard_context.namespace_id AS gsc_namespace_id,
-      events_with_standard_context.plan AS gsc_plan,
-      events_with_standard_context.google_analytics_client_id AS gsc_google_analytics_client_id,
-      events_with_standard_context.project_id AS gsc_project_id,
-      events_with_standard_context.pseudonymized_user_id AS gsc_pseudonymized_user_id,
-      events_with_standard_context.source AS gsc_source,
       base.event_name,
       base.event_vendor,
       base.event_version,
       base.geo_city,
       base.geo_country,
-      base.geo_latitude,
-      base.geo_longitude,
       base.geo_region,
       base.geo_region_name,
       base.geo_timezone,
-      base.geo_zipcode,
       base.ip_domain,
       base.ip_isp,
       base.ip_netspeed,
@@ -350,22 +347,97 @@ WITH filtered_source as (
       base.unstruct_event,
       base.user_fingerprint,
       base.user_id,
-      base.user_ipaddress,
       base.useragent,
       base.v_collector,
       base.v_etl,
       base.v_tracker,
       base.uploaded_at,
-      base.infra_source
+      base.infra_source,
+      CASE
+        WHEN LOWER(page_url) LIKE 'https://staging.gitlab.com/%' THEN TRUE
+        WHEN LOWER(page_url) LIKE 'https://customers.stg.gitlab.com/%' THEN TRUE
+        ELSE FALSE
+      END AS is_staging_url,
+      events_with_flattened_context.web_page_context,
+      events_with_flattened_context.has_web_page_context,
+      events_with_flattened_context.web_page_id,
+      events_with_flattened_context.gitlab_standard_context,
+      events_with_flattened_context.has_gitlab_standard_context,
+      events_with_flattened_context.environment                AS gsc_environment,
+      events_with_flattened_context.extra                      AS gsc_extra,
+      events_with_flattened_context.namespace_id               AS gsc_namespace_id,
+      events_with_flattened_context.plan                       AS gsc_plan,
+      events_with_flattened_context.google_analytics_client_id AS gsc_google_analytics_client_id,
+      events_with_flattened_context.project_id                 AS gsc_project_id,
+      events_with_flattened_context.pseudonymized_user_id      AS gsc_pseudonymized_user_id,
+      events_with_flattened_context.source                     AS gsc_source,
+      events_with_flattened_context.is_gitlab_team_member      AS gsc_is_gitlab_team_member,
+      events_with_flattened_context.gitlab_experiment_context,
+      events_with_flattened_context.has_gitlab_experiment_context,
+      events_with_flattened_context.experiment_name,
+      events_with_flattened_context.experiment_context_key,
+      events_with_flattened_context.experiment_variant,
+      events_with_flattened_context.experiment_migration_keys,
+      events_with_flattened_context.ide_extension_version_context,
+      events_with_flattened_context.has_ide_extension_version_context,
+      events_with_flattened_context.extension_name,
+      events_with_flattened_context.extension_version,
+      events_with_flattened_context.ide_name,
+      events_with_flattened_context.ide_vendor,
+      events_with_flattened_context.ide_version,
+      events_with_flattened_context.language_server_version,
+      events_with_flattened_context.code_suggestions_context,
+      events_with_flattened_context.has_code_suggestions_context,
+      events_with_flattened_context.model_engine,
+      events_with_flattened_context.model_name,
+      events_with_flattened_context.prefix_length,
+      events_with_flattened_context.suffix_length,
+      events_with_flattened_context.language,
+      events_with_flattened_context.user_agent,
+      events_with_flattened_context.delivery_type,
+      events_with_flattened_context.api_status_code,
+      events_with_flattened_context.namespace_ids,
+      events_with_flattened_context.instance_id,
+      events_with_flattened_context.host_name,
+      events_with_flattened_context.gitlab_service_ping_context,
+      events_with_flattened_context.has_gitlab_service_ping_context,
+      events_with_flattened_context.redis_event_name,
+      events_with_flattened_context.key_path,
+      events_with_flattened_context.data_source,
+      events_with_flattened_context.performance_timing_context,
+      events_with_flattened_context.performance_timing_context_schema,
+      events_with_flattened_context.has_performance_timing_context,
+      events_with_flattened_context.connect_end,
+      events_with_flattened_context.connect_start,
+      events_with_flattened_context.dom_complete,
+      events_with_flattened_context.dom_content_loaded_event_end,
+      events_with_flattened_context.dom_content_loaded_event_start,
+      events_with_flattened_context.dom_interactive,
+      events_with_flattened_context.dom_loading,
+      events_with_flattened_context.domain_lookup_end,
+      events_with_flattened_context.domain_lookup_start,
+      events_with_flattened_context.fetch_start,
+      events_with_flattened_context.load_event_end,
+      events_with_flattened_context.load_event_start,
+      events_with_flattened_context.navigation_start,
+      events_with_flattened_context.redirect_end,
+      events_with_flattened_context.redirect_start,
+      events_with_flattened_context.request_start,
+      events_with_flattened_context.response_end,
+      events_with_flattened_context.response_start,
+      events_with_flattened_context.secure_connection_start,
+      events_with_flattened_context.unload_event_end,
+      events_with_flattened_context.unload_event_start
+
     FROM base
-    LEFT JOIN events_with_web_page_id
-      ON base.event_id = events_with_web_page_id.event_id
-    LEFT JOIN events_with_standard_context
-      ON base.event_id = events_with_standard_context.event_id
+    LEFT JOIN events_with_flattened_context
+      ON base.derived_tstamp_date = events_with_flattened_context.derived_tstamp_date
+        AND base.event_id = events_with_flattened_context.event_id
     WHERE NOT EXISTS (
       SELECT event_id
-      FROM events_with_web_page_id web_page_events
-      WHERE events_with_web_page_id.event_id = web_page_events.event_id
+      FROM events_with_flattened_context web_page_events
+      WHERE events_with_flattened_context.web_page_id IS NOT NULL
+        AND events_with_flattened_context.event_id = web_page_events.event_id
       GROUP BY event_id HAVING COUNT(1) > 1
 
     )

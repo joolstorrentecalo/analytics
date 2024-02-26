@@ -47,7 +47,7 @@ dag = DAG(
     default_args=default_args,
     # At 8:05 on day-of-month 1 in February, May, August, and November
     schedule_interval="5 8 1 2,5,8,11 *",
-    start_date=datetime(2022, 10, 1),  # first quarter will be FY2023-Q4
+    start_date=datetime(2023, 5, 1),  # first quarter will be FY2023-Q4
     catchup=False,  # don't enable backfill functionality, API not idempotent
     max_active_runs=1,
 )
@@ -71,11 +71,11 @@ clari_task_previous_quarter = KubernetesPodOperator(
     ],
     env_vars={
         **pod_env_vars,
-        "execution_date": "{{ execution_date }}",  # Run previous quarter
+        "logical_date": "{{ logical_date }}",  # Run previous quarter
         "task_schedule": TASK_SCHEDULE,
     },
-    affinity=get_affinity(False),
-    tolerations=get_toleration(False),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     arguments=[clari_extract_command],
     dag=dag,
 )
@@ -96,11 +96,11 @@ clari_task_new_quarter = KubernetesPodOperator(
     env_vars={
         **pod_env_vars,
         # Run today's quarter
-        "execution_date": "{{ next_execution_date }}",
+        "logical_date": "{{ next_execution_date }}",
         "task_schedule": TASK_SCHEDULE,
     },
-    affinity=get_affinity("production"),
-    tolerations=get_toleration("production"),
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
     arguments=[clari_extract_command],
     dag=dag,
 )

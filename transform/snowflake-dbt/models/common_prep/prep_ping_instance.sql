@@ -46,7 +46,7 @@
       dim_ping_instance_id                                                                                                                        AS dim_ping_instance_id,
       dim_host_id                                                                                                                                 AS dim_host_id,
       usage_data.dim_instance_id                                                                                                                  AS dim_instance_id,
-      {{ dbt_utils.surrogate_key(['dim_host_id', 'dim_instance_id'])}}                                                                            AS dim_installation_id,
+      {{ dbt_utils.generate_surrogate_key(['dim_host_id', 'dim_instance_id'])}}                                                                            AS dim_installation_id,
       ping_created_at                                                                                                                             AS ping_created_at,
       usage_data.uploaded_at                                                                                                                      AS uploaded_at,
       ip_address_hash                                                                                                                             AS ip_address_hash,
@@ -78,8 +78,7 @@
       -- END                                                                                                                                         AS is_saas_dedicated,
       CASE
         WHEN uuid = 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f' THEN 'SaaS'
-        WHEN is_saas_dedicated = TRUE THEN 'Self-Managed' -- Will be change to SaaS once all downstream models that filter delivery_type = Self-Managed are changed to 
-                                                          -- ping_deploymen_type in ('Dedicated', 'Self-managed') to avoid Dedicated data to stop flowing
+        WHEN is_saas_dedicated = TRUE THEN 'SaaS' 
         ELSE 'Self-Managed'
       END                                                                                                                                         AS ping_delivery_type,
       CASE
@@ -101,7 +100,7 @@
       id                                                AS dim_ping_instance_id,
       host_id                                           AS dim_host_id,
       uuid                                              AS dim_instance_id,
-      {{ dbt_utils.surrogate_key(['host_id', 'uuid'])}} AS dim_installation_id,
+      {{ dbt_utils.generate_surrogate_key(['host_id', 'uuid'])}} AS dim_installation_id,
       created_at                                        AS ping_created_at,
       created_at                                        AS uploaded_at,
       NULL                                              AS ip_address_hash,
@@ -196,5 +195,5 @@
     created_by="@icooper-acp",
     updated_by="@jpeguero",
     created_date="2022-03-17",
-    updated_date="2023-06-12"
+    updated_date="2023-07-04"
 ) }}

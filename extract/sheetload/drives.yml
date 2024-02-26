@@ -89,3 +89,8 @@ folders:
     folder_name: booking_to_billing_monthly_reconciliation
     table_name: booking_to_billing_monthly_reconciliation
     table_replace_append: 1
+  - name: zuora_revenue_valid_reports_lists
+    owner: '@vedprakash2021'
+    folder_name: zuora_revenue_valid_reports_lists
+    table_name: zuora_revenue_valid_reports_lists
+    table_replace_append: 1

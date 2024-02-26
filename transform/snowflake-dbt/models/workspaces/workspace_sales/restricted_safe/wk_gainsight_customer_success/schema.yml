@@ -70,7 +70,6 @@ models:
         - name: modified_by_user_id
         - name: modified_date
         - name: _fivetran_synced
-
     - name: wk_gs_activity_timeline
       description: '{{ doc("wk_gainsight_activity_timeline") }}'
       columns:
@@ -198,6 +197,7 @@ models:
         - name: ip_address
         - name: address_type
         - name: _fivetran_synced
+
     - name: wk_gs_advanced_outreach_participant_activity
       description: '{{ doc("wk_gainsight_advanced_outreach_participant_activity") }}'
       columns:
@@ -1058,3 +1058,19 @@ models:
           meta:
             sensitive: true
         - name: _fivetran_synced
+        
+    - name: wk_gs_persona_healthy_activity
+      description: '{{ doc("wk_gs_persona_healthy_activity") }}'
+      columns:
+        - name: sfdc_account_id
+        - name: gs_company_id
+        - name: most_recent_exec_activity
+        - name: last_workshop_delivered_date
+        - name: exec_persona_cnt
+        - name: champion_persona_cnt
+        - name: buyer_persona_cnt
+        - name: security_lead_persona_cnt
+        - name: dev_lead_persona_cnt
+        - name: decision_maker_persona_cnt
+        - name: admin_persona_cnt
+        - name: healthy_personas_cnt

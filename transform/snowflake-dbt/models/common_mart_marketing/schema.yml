@@ -35,6 +35,8 @@ models:
           description: Flag indicating a touchpoint is influenced by Demand Gen based on its segment being Demand Gen.
         - name: is_dg_sourced
           description: Flag indicating a touchpoint is sourced from Demand Gen based on its segment being Demand Gen as well as its position being first touch.
+        - name: integrated_budget_holder
+          description: Categorisation field used to group campaigns by the team that is responsible for its budget. It considers `budget_holder` field from the campaigns object, `utm_budget` from the landing page/form URL, `bizible_ad_campaign_name` and `campaign_rep_user_role_name` to derive the accurate budget holder.     
         - name: opps_per_touchpoint
           description: Count of opportunities associated with a touchpoint.
         - name: bizible_count_first_touch
@@ -66,6 +68,20 @@ models:
           description: Net ARR associated with touchpoint under [Bizible custom attribution model](https://about.gitlab.com/handbook/marketing/marketing-operations/bizible/#custom-attribution-based-on-bizible-machine-learning-algorithm).
         - name: net_arr_per_campaign
           description: Average net ARR associated with a campaign based on the number of campaigns connected to an opportunity that is tied to the touchpoint.
+        - name: is_partner_recalled
+          description: A boolean field from Salesforce on the lead and contact, these are persons taken back by GitLab when the person was previously passed to partners. The partner had exceeded the time period in which they were supposed to qualify the lead, so they return to GitLab’s possession
+        - name: devrel_campaign_type
+          description: A field explaining if the campaign was in SFDC or UTMs.
+        - name: devrel_campaign_description
+          description: A short description of the work the devrel team did on the campaign.
+        - name: devrel_campaign_influence_type
+          description: The output the devrel team created to contribute to the campaign.
+        - name: touchpoint_sales_stage
+          description: The Salesforce Opportunity stage at which the Bizible touchpoint occurred.
+        - name: touchpoint_offer_type
+          description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
+        - name: touchpoint_offer_type_grouped
+          description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
 
     - name: mart_crm_touchpoint
       description: Model containing Bizible touchpoints (non-attribution) along with contact, lead, account, and campaign details.
@@ -111,6 +127,18 @@ models:
           description: Count of touchpoints that occured on or before the `mql_date` that are also Lead Created.
         - name: count_net_new_accepted
           description: Count of touchpoints that occured on or before the `accepted_date` that are also Lead Created.
+        - name: is_partner_recalled
+          description: A boolean field from Salesforce on the lead and contact, these are persons taken back by GitLab when the person was previously passed to partners. The partner had exceeded the time period in which they were supposed to qualify the lead, so they return to GitLab’s possession
+        - name: devrel_campaign_type
+          description: A field explaining if the campaign was in SFDC or UTMs.
+        - name: devrel_campaign_description
+          description: A short description of the work the devrel team did on the campaign.
+        - name: devrel_campaign_influence_type
+          description: The output the devrel team created to contribute to the campaign.
+        - name: touchpoint_offer_type
+          description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
+        - name: touchpoint_offer_type_grouped
+          description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
 
     - name: mart_crm_person
       description: Model with person and MQL business logic.
@@ -126,54 +154,75 @@ models:
           description: Region of the SDR maintained in a [sheetload](https://docs.google.com/spreadsheets/d/17Uhk8yan3C93eKDSznXOEUCYTX9cTbLwWD2klRVykHI/edit#gid=0)
         - name: bdr_prospecting_status
           description: Indicates whether the account is actively being prospected by a BDR.
+        - name: inferred_mql_date_first
+          description: The SFDC Salesforce MQL Date - first occurrence in date format.
+        - name: inferred_mql_datetime_first_pt
+          description: The SFDC Salesforce MQL Date - first occurrence in datetime format, Pacific Timezone. 
+        - name: inferred_mql_datetime_first
+          description: The SFDC Salesforce MQL Date - first occurrence in datetime format.
+        - name: inferred_mql_date_latest
+          description: The SFDC Salesforce MQL Date - last occurrence in date format.
+        - name: inferred_mql_datetime_latest_pt
+          description: The SFDC Salesforce MQL Date - last occurrence in datetime format, Pacific Timezone. 
+        - name: inferred_mql_datetime_latest
+          description: The SFDC Salesforce MQL Date - last occurrence in datetime format.
+        - name: is_bdr_sdr_worked_inferred_mql
+          description: Custom flag that indicates if a lead/contact skipped the MQL Status and was worked by a SDR/BDR afterwards. 
+        - name: traction_first_response_time
+          description: The response time from Traction. 
+        - name: traction_first_response_time_seconds
+          description: The response time from Traction in seconds. 
+        - name: traction_response_time_in_business_hours
+          description: The response time from Traction, based only in working hours for the user/rep. 
+        - name: propensity_to_purchase_score_date
+          description: This field indicates the date when most recent probability to purchase score was calculated.
+        - name: propensity_to_purchase_score_group
+          description: This field indicates the propensity to purchase score, 5 being the highest probability to purchase.
+        - name: pql_namespace_creator_job_description
+          description: namespace creator self-described job description
+        - name: pql_namespace_id
+          description: ID of the PQL's namespace, from SFDC. 
+        - name: pql_namespace_name
+          description: Name of the PQL's namespace, from SFDC. 
+        - name: pql_namespace_users
+          description: number of namespace users
+        - name: is_product_qualified_lead
+          description: Whether or not the lead is a PQL. 
+        - name: propensity_to_purchase_insights
+          description: This field provides insights into the probability score of a record to purchase.
+        - name: is_ptp_contact
+          description: This field indicates if the record has a calculated propensity to purchase score.
+        - name: propensity_to_purchase_namespace_id
+          description: This field indicates the namespace ID that has been scored for propensity to purchase.
+        - name: propensity_to_purchase_past_insights
+          description: This field provides insights into the previous probability score of a record to purchase.
+        - name: propensity_to_purchase_past_score_group
+          description: This field indicates the previous propensity to purchase score a user had.
+        - name: propensity_to_purchase_days_since_trial_start
+          description: This field indicates the number of days that passed since this user started a trial.
+        - name: is_partner_recalled
+          description: A boolean field from Salesforce on the lead and contact, these are persons taken back by GitLab when the person was previously passed to partners. The partner had exceeded the time period in which they were supposed to qualify the lead, so they return to GitLab’s possession
+        - name: is_abm_tier_inquiry
+          description: A flag that indicates whether or not the person's account was in an ABM Tier at the time of Inquiry
+        - name: is_abm_tier_mql
+          description: A flag that indicates whether or not the person's account was in an ABM Tier at the time of MQL
+        - name: sfdc_record_type
+          description: Shows if the person record is a lead or contact in SFDC.
+        - name: is_high_priority
+          description: A person-level flag to indicate if the person is a high prioirty person, according to Salesforce field logic. 
 
     - name: mart_marketing_contact_no_pii
       description: Non sensitive version of the mart_marketing_contact model.
 
-    - name: rpt_crm_touchpoint_combined
-      description: Model containing both Bizible attribution touchpoints and non-attribution touchpoints along with contact, lead, account, and campaign details.
-      columns:
-        - name: dim_crm_touchpoint_id
-          tests:
-              - not_null
-              - unique
     - name: rpt_l2r_leading_indicators
       description: Tableau-specific table that is used to aggregate top KPIS; Inquiries, MQLs, and SAOs, by date and a few dimensions from Lead to Revenue
       columns:
-        - name: dim_crm_person_id
-          description: A dbt generated surrogate key combining the lead id and contact id.
-        - name: dim_crm_opportunity_id
-          description: Unique identifier of a crm opportunity from Salesforce.
-        - name: email_hash
-          description: A dbt generated hash of the lead/contact email address from Salesforce.
-        - name: email_domain_type
-          description: The bucketed type of domain of the lead/contact email from Salesforce.
-        - name: person_order_type
-          description: The Order Type, applied to the Person (Lead/Contact), through custom logic that looks up Order Type from related opps.
-        - name: account_demographics_sales_segment
-          description: The Sales Segment of the matched Ultimate Parent Account, from the lead/contact in Salesforce.
-        - name: account_demographics_geo
-          description: The Geo of the matched Ultimate Parent Account, from the lead/contact in Salesforce.
-        - name: lead_source
-          description: The Lead Source field from the lead/contact in Salesforce. 
-        - name: inquiry_sum
-          description: The sum of inquiries, by Bizible Touchpoint, in Salesforce. 
-        - name: mql_sum
-          description: The sum of mqls, by Bizible Touchpoint, in Salesforce. 
-        - name: true_inquiry_date
-          description: The SoT field for Inquiry date on a lead/contact, taken from the Inquiry DateTime field in Salesforce.
-        - name: mql_date_first_pt
-          description: The SoT field for MQL date on a lead/contact, taken from the Marketo MQL Date field in Salesforce.
-        - name: opp_order_type
-          description: The Order Type from the opportunity object in Salesforce. 
-        - name: crm_opp_owner_sales_segment_stamped
-          description: The Sales Segment of the Parent Account of the Opportunity, taking into account historical changes in Salesforce. 
-        - name: crm_opp_owner_geo_stamped
-          description: The Geo of the Parent Account of the Opportunity, taking into account historical changes in Salesforce. 
-        - name: sales_qualified_source_name
-          description: The Sales Qualified Source field on the Opportunity object in Salesforce. 
-        - name: sales_accepted_date
-          description: The SoT date for Sales Acceptance on the Opportunity object in Salesforce. 
+        - name: order_type
+          description: The Order Type, applied to the Person (Lead/Contact), through custom logic that looks up Order Type from related opps, and/or Opportunity based on Order Type from that object.
+        - name: sales_segment
+          description: The Sales Segment of the matched Ultimate Parent Account, from the lead/contact/opportunity in Salesforce.
+        - name: geo
+          description: The Geo of the matched Ultimate Parent Account, from the lead/contact/opportunity in Salesforce.
         - name: parent_crm_account_lam
           description: The LAM of the ultimate parent account in Salesforce. 
         - name: parent_crm_account_lam_dev_count
@@ -184,34 +233,24 @@ models:
           description: The Touchpoint Marketing Channel Path of the Bizible Touchpoint in Salesforce. 
         - name: bizible_medium
           description: The Touchpoint Medium of the Bizible Touchpoint in Salesforce. 
-        - name: is_mql
-          description: A calculated flag to determine if a lead/contact is currently an MQL. 
-        - name: is_sao
-          description: The Is SAO flag on the Opportunity object in Salesforce. 
-        - name: inquiry_date_range_week
-          description: The week of the True Inquiry Date. 
-        - name: inquiry_date_range_month
-          description: The month of the True Inquiry Date. 
-        - name: inquiry_date_range_quarter
-          description: The quarter of the True Inquiry Date. 
-        - name: inquiry_date_range_year
-          description: The year of the True Inquiry Date. 
-        - name: mql_date_range_week
-          description: The week of the MQL Date. 
-        - name: mql_date_range_month
-          description: The month of the MQL Date. 
-        - name: mql_date_range_quarter
-          description: The quarter of the MQLDate. 
-        - name: mql_date_range_year
-          description: The year of the MQL Date. 
-        - name: sao_date_range_week
-          description: The week of the Sales Accepted Date. 
-        - name: sao_date_range_month
-          description: The month of the Sales Accepted Date. 
-        - name: sao_date_range_quarter
-          description: The quarter of the Sales Accepted Date. 
-        - name: sao_date_range_year
-          description: The year of the Sales Accepted Date. 
+        - name: date_day
+          description: The day of the metric's Date. 
+        - name: date_range_week
+          description: The week of the metric's Date. 
+        - name: date_range_month
+          description: The month of the metric's Date. 
+        - name: date_range_quarter
+          description: The quarter of the metric's Date. 
+        - name: date_range_year
+          description: The year of the metric's Date. 
+        - name: inquiries
+          description: The sum of Inquiries by the various dimensions. 
+        - name: mqls
+          description: The sum of MQLs by the various dimensions. 
+        - name: saos
+          description: The sum of SAOs by the various dimensions.
+        - name: touchpoint_sales_stage
+          description: The Salesforce Opportunity stage at which the Bizible touchpoint occurred.
 
 
     - name: rpt_lead_to_revenue
@@ -231,6 +270,10 @@ models:
           description: Unique identifier of a bizible attribution touchpoint from Salesforce.
         - name: dim_crm_opportunity_id
           description: Unique identifier of a crm opportunity from Salesforce.
+        - name: dim_crm_user_id
+          description: Unique identifier for the lead/contact owner from Salesforce. 
+        - name: opp_dim_crm_user_id
+          description: Unique identifier for the opportunity owner from Salesforce. 
         - name: dim_campaign_id
           description: Unique identifier of a crm campaign from Salesforce.
         - name: email_hash
@@ -242,6 +285,8 @@ models:
         - name: true_inquiry_date
           description: The SoT field for Inquiry date on a lead/contact, taken from the Inquiry DateTime field in Salesforce.
         - name: mql_date_first_pt
+          description: The first instance of a MQL date on a lead/contact, from Salesforce. 
+        - name: mql_date_lastest_pt
           description: The SoT field for MQL date on a lead/contact, taken from the Marketo MQL Date field in Salesforce.
         - name: accepted_date
           description: The SoT field for Accepted date on a lead/contact, taken from the Accepted DateTime field in Salesforce.
@@ -281,6 +326,12 @@ models:
           description: A case statement assigning geo according the [FY23 Territories Mapping File - SSoT](https://docs.google.com/spreadsheets/d/1gElhORjqraKDMQnWzApPelyP_vVa24tAOA85vb5f3Uc/edit#gid=1236326957) using first_country from dim_crm_person.
         - name: inferred_geo
           description: The Uppsercase version of geo_custom.
+        - name: traction_first_response_time
+          description: The response time from Traction. 
+        - name: traction_first_response_time_seconds
+          description: The response time from Traction in seconds. 
+        - name: traction_response_time_in_business_hours
+          description: The response time from Traction, based only in working hours for the user/rep. 
         - name: opp_order_type
           description: The Order Type from the opportunity object in Salesforce. 
         - name: sales_qualified_source_name
@@ -555,3 +606,170 @@ models:
           description: The dim_date date_range_week, when joined to the bizible_touchpoint_date.           
         - name: touchpoint_date_range_id
           description: The dim_date date_range_id when joined to the bizible_touchpoint_date. 
+        - name: is_bdr_sdr_worked
+          description: A flag that shows whether or not a person was worked after MQLing. 
+        - name: touchpoint_offer_type_grouped
+          description: A custom grouping of TP Offers
+        - name: touchpoint_offer_type
+          description: A custom subset of TP Offers
+        - name: is_eligible_age_analysis
+          description: A flag that indicates if an Opp is eligible for date-based comaprisons. 
+        - name: opp_lead_source
+          description: The Opp's Lead Source from SFDC
+        - name: opp_source_buckets
+          description: The custom bucketing of the Opps' Lead Source
+        - name: touchpoint_sales_stage
+          description: The Salesforce Opportunity stage at which the Bizible touchpoint occurred.
+        - name: touchpoint_offer_type
+          description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
+        - name: touchpoint_offer_type_grouped
+          description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
+
+    - name: rpt_l2r_campaign_interactions
+      description: Tableau-specific table that unions `mart_crm_touchpoint` with person, campaign data joined on and `mart_crm_attribution_touchpoint` with person, campaign and oppunitiy data 
+      columns:
+        - name: influenced_opportunity_id
+          description: The Salesforce Opportunity ID, where there is a related Bizible Touchpoint, in Salesforce.
+        - name: custom_sao
+          description: The sum of SAOs created, by Bizible Touchpoint, weighted according to the Custom attribution model, in Salesforce. 
+        - name: pipeline_custom_net_arr
+          description: The sum of Pipeline Net ARR, by Bizible Touchpoint, weighted according to the Custom attribution model, in Salesforce. 
+        - name: won_custom
+          description: The sum of Closed Won Opportunities closed, by Bizible Touchpoint, weighted according to the Custom attribution model, in Salesforce. 
+        - name: won_custom_net_arr
+          description: The sum of Won Net ARR, by Bizible Touchpoint, weighted according to the Custom attribution model, in Salesforce. 
+        - name: integrated_budget_holder
+          description: A case statement to categorize the budget (and usually owner) of online and offline campaigns. Uses utm_content, campaign owner role from SFDC, budget holder from SFDC, and utm_budget.
+        - name: is_sales_dev_owned_record
+          description: A flag that is true when the person (lead or contact) is owned by a member of the Sales Dev team.
+        - name: partner_prospect_status
+          description: The status of the lead in impartner
+        - name: prospect_share_status
+          description: A field stating the status of person with the partner assigned to lead
+        - name: partner_account_name
+          description: The name of the opportunity's related partner account, from SFDC. 
+        - name: is_created_through_deal_registration
+          description: Boolean value for being created through the deal reg process. 
+        - name: is_mdf_campaign
+          description: Boolean value for whether or not this is from a channel partner effort.
+        - name: sfdc_record_id
+          description: The SFDC ID of the person record
+        - name: opp_partner_dim_crm_account_id
+          description: The partner account id of the Opportunity attached to the touchpoin
+        - name: report_opportunity_user_business_unit
+          description: A case statement comparsing the closed date to today, when the closed date is before today the field passes the account owner bussiness unit, else the opp owner.
+        - name: report_opportunity_user_sub_business_unit
+          description: A case statement comparsing the closed date to today, when the closed date is before today the field passes the account owner sub bussiness unit, else the opp owner.
+        - name: report_opportunity_user_asm
+          description: Reports the Opportunities Users's ASM accounting for hybrid accounts.
+        - name: person_status_change
+          description: Tracks the change in status for the person record after the touchpoint date. 
+        - name: person_status_update
+          description: A non-null field of `person_status_change`
+        - name: devrel_campaign_type
+          description: A field explaining if the campaign was in SFDC or UTMs.
+        - name: devrel_campaign_description
+          description: A short description of the work the devrel team did on the campaign.
+        - name: devrel_campaign_influence_type
+          description: The output the devrel team created to contribute to the campaign.
+        - name: sfdc_record_type
+          description: Shows if the person record is a lead or contact in SFDC.
+        - name: touchpoint_sales_stage
+          description: The Salesforce Opportunity stage at which the Bizible touchpoint occurred.
+        - name: touchpoint_offer_type
+          description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
+        - name: touchpoint_offer_type_grouped
+          description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
+
+
+
+    - name: rpt_l2r_community_data
+      description: Tableau-specific table that joins Zuora, Opportunity, and Lead To Revenue data to hone in on the community-owned opportunities and their related data points. 
+      columns:
+        - name: dim_crm_opportunity_id
+          description: The Salesforce Opportunity ID.
+        - name: dim_crm_account_id
+          description: The Salesforce Account ID.
+        - name: dim_parent_crm_account_id
+          description: The Salesforce Parent Account ID.
+        - name: dim_subscription_id
+          description: The Zuora Quote's Subscription ID.
+        - name: opportunity_owner_id
+          description: The Opportunity Owner's Salesforce User ID.
+        - name: opportunity_name
+          description: The Salesforce Opportunity Name.
+        - name: crm_account_name
+          description: The Salesforce Account Name. 
+        - name: opp_order_type
+          description: The Salesforce Opportunity Order Type. 
+        - name: sales_qualified_source_name
+          description: The Salesforce Sales Qualified Source field. 
+        - name: sales_type
+          description: The Salesforce Opportunity Type. 
+        - name: opp_account_demographics_sales_segment
+          description: The Sales Demographics Sales Segment. 
+        - name: opp_account_demographics_region
+          description: The Sales Demographics Region.
+        - name: opp_account_demographics_area
+          description: The Sales Demographics Area.
+        - name: opp_account_demographics_geo
+          description: The Sales Demographics Geo.
+        - name: opp_account_demographics_territory
+          description: The Sales Demographics Territory.
+        - name: number_of_seats
+          description: The calculated number of seats from a given quote. 
+        - name: product_category
+          description: The Salesforce Product Category from the Opportunity. 
+        - name: community_data_type
+          description: A grouping of the data set by Community program based on opporunity quote SKUs.
+        - name: opportunity_created_date_range_year
+          description: The Year of the Opportunity's Created Date. 
+        - name: opportunity_created_date_range_quarter
+          description: The Quarter of the Opportunity's Created Date. 
+        - name: opportunity_created_date_range_month
+          description: The Month of the Opportunity's Created Date. 
+        - name: opportunity_created_date_range_week
+          description: The Week of the Opportunity's Created Date. 
+        - name: opportunity_created_date_range_day
+          description: The Day of the Opportunity's Created Date. 
+        - name: opportunity_created_date_range_id
+          description: The ID of the Opportunity's Created Date. 
+        - name: sales_accepted_date_range_year
+          description: The Year of the Opportunity's Sales Accepted Date. 
+        - name: sales_accepted_date_range_quarter
+          description: The Quarter of the Opportunity's Sales Accepted Date. 
+        - name: sales_accepted_date_range_month
+          description: The Month of the Opportunity's Sales Accepted Date. 
+        - name: sales_accepted_date_range_week
+          description: The Week of the Opportunity's Sales Accepted Date. 
+        - name: sales_accepted_date_range_day
+          description: The Day of the Opportunity's Sales Accepted Date. 
+        - name: sales_accepted_date_range_id
+          description: The ID of the Opportunity's Sales Accepted Date. 
+        - name: opportunity_closed_date_range_year
+          description: The Year of the Opportunity's Close Date. 
+        - name: opportunity_closed_date_range_quarter
+          description: The Quarter of the Opportunity's Close Date. 
+        - name: opportunity_closed_date_range_month
+          description: The Month of the Opportunity's Close Date. 
+        - name: opportunity_closed_date_range_week
+          description: The Week of the Opportunity's Close Date. 
+        - name: opportunity_closed_date_range_day
+          description: The Day of the Opportunity's Close Date. 
+        - name: opportunity_closed_date_range_id
+          description: The ID of the Opportunity's Close Date. 
+        - name: is_sao
+          description: T/F Flag to indicate if an Opportunity is an SAO
+        - name: is_won
+          description: T/F Flag to indicate if an Opportunity is a Won Opportunity. 
+        - name: is_net_arr_closed_deal
+          description: T/F Flag to indicate if an Opportunity is a closed deal. 
+        - name: is_net_arr_pipeline_created
+          description: T/F Flag to indicate if an Opportunity is qualified net arr for pipeline. 
+        - name: is_last_segment_version
+          description: T/F Flag to indicate if a Quote is the final version on the Opportunity. 
+        - name: is_first_subscription_institution
+          description: T/F Flag to indicate if an Opportunity is the first subscription for a given account hierarchy. 
+
+    - name: rpt_l2r_campaign_interactions_paid_account
+      description: filtered version of rpt_l2r_campaign_interactions on current paying accounts only          

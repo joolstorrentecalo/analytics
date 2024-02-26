@@ -80,6 +80,7 @@ WITH events AS (
 
     FROM events
     WHERE event = 'unstruct'
+      AND is_staging_url = FALSE
 
 )
 

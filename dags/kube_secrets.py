@@ -1,6 +1,6 @@
 """ This file contains k8s secrets used in all DAGs """
 
-from airflow.contrib.kubernetes.secret import Secret
+from airflow.kubernetes.secret import Secret
 
 # BambooHR
 BAMBOOHR_API_TOKEN = Secret(
@@ -177,6 +177,12 @@ SNOWFLAKE_LOAD_WAREHOUSE = Secret(
     "env", "SNOWFLAKE_LOAD_WAREHOUSE", "airflow", "SNOWFLAKE_LOAD_WAREHOUSE"
 )
 
+SNOWFLAKE_LOAD_WAREHOUSE_MEDIUM = Secret(
+    "env",
+    "SNOWFLAKE_LOAD_WAREHOUSE_MEDIUM",
+    "airflow",
+    "SNOWFLAKE_LOAD_WAREHOUSE_MEDIUM",
+)
 
 # Snowflake Static
 SNOWFLAKE_STATIC_DATABASE = Secret(
@@ -202,6 +208,14 @@ SNOWFLAKE_PROD_WAREHOUSE = Secret(
     "env", "SNOWFLAKE_PROD_WAREHOUSE", "airflow", "SNOWFLAKE_PROD_WAREHOUSE"
 )
 SNOWFLAKE_USER = Secret("env", "SNOWFLAKE_USER", "airflow", "SNOWFLAKE_USER")
+
+# Snowflake Tableau
+SNOWFLAKE_TABLEAU_USERNAME = Secret(
+    "env", "SNOWFLAKE_TABLEAU_USERNAME", "airflow", "SNOWFLAKE_TABLEAU_USERNAME"
+)
+SNOWFLAKE_TABLEAU_PASSWORD = Secret(
+    "env", "SNOWFLAKE_TABLEAU_PASSWORD", "airflow", "SNOWFLAKE_TABLEAU_PASSWORD"
+)
 
 # Permission Bot
 PERMISSION_BOT_USER = Secret(
@@ -229,8 +243,6 @@ DORG_USERNAME = Secret("env", "DORG_USERNAME", "airflow", "DORG_USERNAME")
 DORG_PASSWORD = Secret("env", "DORG_PASSWORD", "airflow", "DORG_PASSWORD")
 GMAPS_API_KEY = Secret("env", "GMAPS_API_KEY", "airflow", "GMAPS_API_KEY")
 CLEARBIT_API_KEY = Secret("env", "CLEARBIT_API_KEY", "airflow", "CLEARBIT_API_KEY")
-
-MAILGUN_API_KEY = Secret("env", "MAILGUN_API_KEY", "airflow", "MAILGUN_API_KEY")
 
 # GitLab API
 GITLAB_COM_API_TOKEN = Secret(
@@ -314,6 +326,28 @@ SNOWFLAKE_SALES_ANALYTICS_LOAD_ROLE = Secret(
 )
 
 CLARI_API_KEY = Secret("env", "CLARI_API_KEY", "airflow", "CLARI_API_KEY")
+# Zendesk GCP bucket details.
+ZENDESK_SENSITIVE_EXTRACTION_BUCKET_NAME = Secret(
+    "env",
+    "ZENDESK_SENSITIVE_EXTRACTION_BUCKET_NAME",
+    "airflow",
+    "ZENDESK_SENSITIVE_EXTRACTION_BUCKET_NAME",
+)
+
+# Elastic Search API Key and Org ID
+ELASTIC_SEARCH_BILLING_API_KEY = Secret(
+    "env",
+    "ELASTIC_SEARCH_BILLING_API_KEY",
+    "airflow",
+    "ELASTIC_SEARCH_BILLING_API_KEY",
+)
+
+ELASTIC_CLOUD_ORG_ID = Secret(
+    "env",
+    "ELASTIC_CLOUD_ORG_ID",
+    "airflow",
+    "ELASTIC_CLOUD_ORG_ID",
+)
 
 # Writing to GSheets from Jupyter notebooks
 GSHEETS_SERVICE_ACCOUNT_CREDENTIALS = Secret(
@@ -328,4 +362,109 @@ LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY = Secret(
     "LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY",
     "airflow",
     "LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY",
+)
+
+ADAPTIVE_USERNAME = Secret(
+    "env",
+    "ADAPTIVE_USERNAME",
+    "airflow",
+    "ADAPTIVE_USERNAME",
+)
+
+ADAPTIVE_PASSWORD = Secret(
+    "env",
+    "ADAPTIVE_PASSWORD",
+    "airflow",
+    "ADAPTIVE_PASSWORD",
+)
+
+## OCI Usage Extraction
+
+OCI_FINGERPRINT = Secret("env", "OCI_FINGERPRINT", "airflow", "OCI_FINGERPRINT")
+
+OCI_KEY_CONTENT = Secret("env", "OCI_KEY_CONTENT", "airflow", "OCI_KEY_CONTENT")
+
+OCI_REGION = Secret("env", "OCI_REGION", "airflow", "OCI_REGION")
+
+OCI_TENANCY = Secret("env", "OCI_TENANCY", "airflow", "OCI_TENANCY")
+
+OCI_USER = Secret("env", "OCI_USER", "airflow", "OCI_USER")
+
+GITLAB_METADATA_DB_NAME = Secret(
+    "env", "GITLAB_METADATA_DB_NAME", "airflow", "GITLAB_METADATA_DB_NAME"
+)
+GITLAB_METADATA_DB_HOST = Secret(
+    "env", "GITLAB_METADATA_DB_HOST", "airflow", "GITLAB_METADATA_DB_HOST"
+)
+GITLAB_METADATA_DB_PASS = Secret(
+    "env", "GITLAB_METADATA_DB_PASS", "airflow", "GITLAB_METADATA_DB_PASS"
+)
+GITLAB_METADATA_PG_PORT = Secret(
+    "env", "GITLAB_METADATA_PG_PORT", "airflow", "GITLAB_METADATA_PG_PORT"
+)
+GITLAB_METADATA_DB_USER = Secret(
+    "env", "GITLAB_METADATA_DB_USER", "airflow", "GITLAB_METADATA_DB_USER"
+)
+GITLAB_METADATA_SCHEMA = Secret(
+    "env", "GITLAB_METADATA_SCHEMA", "airflow", "GITLAB_METADATA_SCHEMA"
+)
+GITLAB_BACKFILL_BUCKET = Secret(
+    "env", "GITLAB_BACKFILL_BUCKET", "airflow", "GITLAB_BACKFILL_BUCKET"
+)
+
+TABLEAU_API_SANDBOX_SITE_NAME = Secret(
+    "env", "TABLEAU_API_SANDBOX_SITE_NAME", "airflow", "TABLEAU_API_SANDBOX_SITE_NAME"
+)
+TABLEAU_API_SANDBOX_TOKEN_NAME = Secret(
+    "env", "TABLEAU_API_SANDBOX_TOKEN_NAME", "airflow", "TABLEAU_API_SANDBOX_TOKEN_NAME"
+)
+TABLEAU_API_SANDBOX_TOKEN_SECRET = Secret(
+    "env",
+    "TABLEAU_API_SANDBOX_TOKEN_SECRET",
+    "airflow",
+    "TABLEAU_API_SANDBOX_TOKEN_SECRET",
+)
+TABLEAU_API_SANDBOX_URL = Secret(
+    "env", "TABLEAU_API_SANDBOX_URL", "airflow", "TABLEAU_API_SANDBOX_URL"
+)
+TABLEAU_API_TOKEN_NAME = Secret(
+    "env", "TABLEAU_API_TOKEN_NAME", "airflow", "TABLEAU_API_TOKEN_NAME"
+)
+TABLEAU_API_TOKEN_SECRET = Secret(
+    "env", "TABLEAU_API_TOKEN_SECRET", "airflow", "TABLEAU_API_TOKEN_SECRET"
+)
+TABLEAU_API_URL = Secret("env", "TABLEAU_API_URL", "airflow", "TABLEAU_API_URL")
+TABLEAU_API_SITE_NAME = Secret(
+    "env", "TABLEAU_API_SITE_NAME", "airflow", "TABLEAU_API_SITE_NAME"
+)
+TABLEAU_API_PUBLIC_TOKEN_NAME = Secret(
+    "env", "TABLEAU_API_PUBLIC_TOKEN_NAME", "airflow", "TABLEAU_API_PUBLIC_TOKEN_NAME"
+)
+TABLEAU_API_PUBLIC_TOKEN_SECRET = Secret(
+    "env",
+    "TABLEAU_API_PUBLIC_TOKEN_SECRET",
+    "airflow",
+    "TABLEAU_API_PUBLIC_TOKEN_SECRET",
+)
+TABLEAU_API_PUBLIC_URL = Secret(
+    "env", "TABLEAU_API_PUBLIC_URL", "airflow", "TABLEAU_API_PUBLIC_URL"
+)
+TABLEAU_API_PUBLIC_SITE_NAME = Secret(
+    "env", "TABLEAU_API_PUBLIC_SITE_NAME", "airflow", "TABLEAU_API_PUBLIC_SITE_NAME"
+)
+
+
+# Data Science related credentials
+
+SNOWFLAKE_DATA_SCIENCE_LOAD_USER = Secret(
+    "env",
+    "SNOWFLAKE_DATA_SCIENCE_LOAD_USER",
+    "airflow",
+    "SNOWFLAKE_DATA_SCIENCE_LOAD_USER",
+)
+SNOWFLAKE_DATA_SCIENCE_LOAD_PASSWORD = Secret(
+    "env",
+    "SNOWFLAKE_DATA_SCIENCE_LOAD_PASSWORD",
+    "airflow",
+    "SNOWFLAKE_DATA_SCIENCE_LOAD_PASSWORD",
 )

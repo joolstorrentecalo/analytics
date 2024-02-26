@@ -84,7 +84,7 @@ models:
     columns:
       - name: score
         description: 0-1 value representing the likelihood to purchase. For example, a value of 0.61 would mean a 61% likelihood to purchase in the next 6 months
-      - name: socre_date
+      - name: score_date
         description: date on which the scores were generated
       - name: decile
         description: 1-10 value representing the scoring decile the record falls into. 1 = Top 10% of scores; 10 = Bottom 10% of scores
@@ -92,3 +92,19 @@ models:
         description: Condenses the score into a 1-5 value. The higher the value, the more likely the namespace is to purchase.
       - name: insights
         description: Top 5 presciptive and explanatory insights for an namespace.
+  - name: model_mart_crm_opportunity_id
+    description: >-
+      Summarises per opportunity and score date the scores given by the opportunity forecasting model.
+    columns:
+      - name: forecast_score_date
+        description: date on which the forecasts were generated
+      - name: forecasted_days_remaining
+        description: Forecasted number of days remaining until close-won
+      - name: forecasted_close_won_date
+        description: Forecasted close-won date
+      - name: forecasted_close_won_quarter
+        description: Forecasted close-won quarter
+      - name: forecasted_score_group
+        description: Forecasted number of days remaining until close-won bucketed
+      - name: forecast_insights
+        description: Top insights about how the model arrived at its forecast for that opportunity

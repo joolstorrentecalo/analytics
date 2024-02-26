@@ -5,7 +5,11 @@ can't touch the original code
 import os
 import sys
 
-test_paths = ["extract/saas_usage_ping", "extract/level_up_thought_industries/src"]
+test_paths = [
+    "extract/saas_usage_ping",
+    "extract/level_up_thought_industries/src",
+    "extract/adaptive/src",
+]
 absolute_test_path = os.path.dirname(os.path.realpath(__file__))
 
 for test_path in test_paths:

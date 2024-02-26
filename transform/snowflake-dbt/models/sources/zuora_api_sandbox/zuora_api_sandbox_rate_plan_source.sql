@@ -21,7 +21,9 @@ WITH source AS (
       updateddate         AS updated_date,
       createdbyid         AS created_by_id,
       createddate         AS created_date,
-      deleted             AS is_deleted
+      deleted             AS is_deleted,
+      {{ product_category('rate_plan_name') }},
+      {{ delivery('product_category') }}
 
     FROM source
 

@@ -23,7 +23,12 @@ WITH source AS (
       security_scan_enabled_at::TIMESTAMP           AS security_scan_enabled_at,
       issue_auto_closed_at::TIMESTAMP               AS issue_auto_closed_at,
       repository_imported_at::TIMESTAMP             AS repository_imported_at,
-      repository_mirrored_at::TIMESTAMP             AS repository_mirrored_at
+      repository_mirrored_at::TIMESTAMP             AS repository_mirrored_at,
+      issue_created_at::TIMESTAMP                   AS issue_created_at,
+      license_scanning_run_at::TIMESTAMP            AS license_scanning_run_at,
+      secure_dependency_scanning_run_at::TIMESTAMP  AS secure_dependency_scanning_run_at,
+      secure_dast_run_at::TIMESTAMP                 AS secure_dast_run_at,
+      code_added_at::TIMESTAMP                      AS code_added_at
     FROM source
 
 )

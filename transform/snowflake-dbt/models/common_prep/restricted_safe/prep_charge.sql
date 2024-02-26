@@ -184,6 +184,7 @@
       END                                                               AS is_included_in_arr_calc,
 
       --Dates
+      zuora_subscription.subscription_start_date                        AS subscription_start_date,
       zuora_subscription.subscription_end_date                          AS subscription_end_date,
       zuora_rate_plan_charge.effective_start_date::DATE                 AS effective_start_date,
       zuora_rate_plan_charge.effective_end_date::DATE                   AS effective_end_date,
@@ -311,6 +312,7 @@
           THEN TRUE
         ELSE FALSE
       END                                                                                   AS is_included_in_arr_calc,
+      active_zuora_subscription.subscription_start_date                                     AS subscription_start_date,
       active_zuora_subscription.subscription_end_date                                       AS subscription_end_date,
       effective_start_date                                                                  AS effective_start_date,
       effective_end_date                                                                    AS effective_end_date,

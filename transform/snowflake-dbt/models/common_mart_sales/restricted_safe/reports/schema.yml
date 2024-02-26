@@ -14,4 +14,6 @@ models:
         tests:
           - not_null
           - unique
-
+    
+  - name: rpt_crm_opportunity_renewal
+    description: '{{ doc("rpt_crm_opportunity_renewal") }}'

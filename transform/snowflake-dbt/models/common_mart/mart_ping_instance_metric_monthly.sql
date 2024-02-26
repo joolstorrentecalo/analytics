@@ -13,7 +13,10 @@
     ('dim_license', 'dim_license'),
     ('dim_hosts', 'dim_hosts'),
     ('dim_location', 'dim_location_country'),
-    ('dim_ping_metric', 'dim_ping_metric')
+    ('dim_ping_metric', 'dim_ping_metric'),
+    ('fct_ping_instance', 'fct_ping_instance'),
+    ('dim_app_release_major_minor', 'dim_app_release_major_minor')
+
     ])
 
 }}
@@ -162,8 +165,15 @@
         dim_ping_instance.major_version                                                                                                 AS major_version,
         dim_ping_instance.minor_version                                                                                                 AS minor_version,
         dim_ping_instance.major_minor_version                                                                                           AS major_minor_version,
+        dim_app_release_major_minor.major_minor_version_num                                                                             AS major_minor_version_num,
         dim_ping_instance.major_minor_version_id                                                                                        AS major_minor_version_id,
         dim_ping_instance.version_is_prerelease                                                                                         AS version_is_prerelease,
+        IFF(DATEDIFF('days', dim_app_release_major_minor.release_date, fct_ping_instance_metric.ping_created_at) < 0 AND version_is_prerelease = FALSE,
+          0, DATEDIFF('days', dim_app_release_major_minor.release_date, fct_ping_instance_metric.ping_created_at)) 
+                                                                                                                                        AS days_after_version_release_date,
+        latest_version.major_minor_version                                                                                              AS latest_version_available_at_ping_creation,
+        IFF(latest_version.version_number - dim_app_release_major_minor.version_number < 0 AND version_is_prerelease = FALSE,
+          0, latest_version.version_number - dim_app_release_major_minor.version_number)                                                AS versions_behind_latest_at_ping_creation,
         dim_ping_instance.is_internal                                                                                                   AS is_internal,
         dim_ping_instance.is_staging                                                                                                    AS is_staging,
         dim_ping_instance.instance_user_count                                                                                           AS instance_user_count,
@@ -195,7 +205,11 @@
           AND dim_date.first_day_of_month = license_sha256.reporting_month
       LEFT JOIN dim_location
         ON fct_ping_instance_metric.dim_location_country_id = dim_location.dim_location_country_id
-      WHERE dim_ping_instance.ping_deployment_type IN ('Self-Managed', 'Dedicated')
+      LEFT JOIN dim_app_release_major_minor
+        ON fct_ping_instance_metric.dim_app_release_major_minor_sk = dim_app_release_major_minor.dim_app_release_major_minor_sk
+      LEFT JOIN dim_app_release_major_minor AS latest_version
+        ON fct_ping_instance_metric.dim_latest_available_app_release_major_minor_sk = latest_version.dim_app_release_major_minor_sk
+     WHERE dim_ping_instance.ping_deployment_type IN ('Self-Managed', 'Dedicated')
         OR (dim_ping_instance.ping_delivery_type = 'SaaS' AND fct_ping_instance_metric.dim_installation_id = '8b52effca410f0a380b0fcffaa1260e7')
 
 ), sorted AS (
@@ -203,7 +217,7 @@
     SELECT
 
       -- Primary Key
-      {{ dbt_utils.surrogate_key(['dim_ping_instance_id', 'metrics_path']) }} AS ping_instance_metric_id,
+      {{ dbt_utils.generate_surrogate_key(['dim_ping_instance_id', 'metrics_path']) }} AS ping_instance_metric_id,
       dim_ping_date_id,
       metrics_path,
       metric_value,
@@ -230,7 +244,11 @@
       major_version,
       minor_version,
       major_minor_version,
+      major_minor_version_num,
       version_is_prerelease,
+      days_after_version_release_date,
+      latest_version_available_at_ping_creation,
+      versions_behind_latest_at_ping_creation,
       is_internal,
       is_staging,
       is_trial,
@@ -282,7 +300,7 @@
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@jpeguero",
+    updated_by="@michellecooper",
     created_date="2022-03-11",
-    updated_date="2023-06-22"
+    updated_date="2023-06-30"
 ) }}

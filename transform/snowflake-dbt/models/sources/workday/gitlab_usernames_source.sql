@@ -2,6 +2,7 @@ WITH source AS (
 
   SELECT * 
   FROM {{ source('workday','gitlab_usernames') }}
+  WHERE NOT _fivetran_deleted
   
 ),
 

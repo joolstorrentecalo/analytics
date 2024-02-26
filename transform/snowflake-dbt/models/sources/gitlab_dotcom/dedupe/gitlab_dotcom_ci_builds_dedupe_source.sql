@@ -1,7 +1,8 @@
 {{ config({
     "materialized": "incremental",
     "unique_key": "id",
-    "alias": "gitlab_dotcom_ci_builds_dedupe_source"
+    "alias": "gitlab_dotcom_ci_builds_dedupe_source",
+    "on_schema_change": "sync_all_columns"
     })
 }}
 

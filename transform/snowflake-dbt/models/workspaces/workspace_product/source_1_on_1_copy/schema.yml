@@ -5,37 +5,13 @@ models:
   - name: customers_db_reconciliations
     description: Workspace model of the source data (deduplicated).
 
-  - name: gitlab_dotcom_dast_profiles
-    description: Workspace model of the source data (deduplicated).
-
-  - name: gitlab_dotcom_users_security_dashboard_projects
-    description: Workspace model of the source data (deduplicated).
-
-  - name: gitlab_dotcom_approval_project_rules_users
-    description: Workspace model of the source data (deduplicated).
-
-  - name: gitlab_dotcom_ci_editor_ai_conversation_messages
-    description: Workspace model of the source data (deduplicated).
-
   - name: gitlab_dotcom_fork_network_members
     description: Workspace model of the source data (deduplicated).
 
   - name: gitlab_dotcom_pages_domains
     description: Workspace model of the source data (deduplicated).
-    
-  - name: gitlab_dotcom_project_ci_cd_settings
-    description: Workspace model of the source data (deduplicated).
-    
-  - name: gitlab_dotcom_project_features
-    description: Workspace model of the source data (deduplicated).
 
   - name: gitlab_dotcom_project_settings
-    description: Workspace model of the source data (deduplicated).
-
-  - name: gitlab_dotcom_protected_branch_merge_access_levels
-    description: Workspace model of the source data (deduplicated).
-
-  - name: gitlab_dotcom_protected_branch_push_access_levels
     description: Workspace model of the source data (deduplicated).
 
   - name: gitlab_dotcom_resource_iteration_events
@@ -45,6 +21,15 @@ models:
     description: Workspace model of the source data (one to one copy).
 
   - name: version_usage_ping_metadata
+    description: Workspace model of the source data (one to one copy).
+
+  - name: gitlab_dotcom_subscription_add_ons
+    description: Workspace model of the source data (one to one copy).
+
+  - name: gitlab_dotcom_subscription_add_on_purchases
+    description: Workspace model of the source data (one to one copy).
+
+  - name: gitlab_dotcom_subscription_user_add_on_assignments
     description: Workspace model of the source data (one to one copy).
 
   - name: gitlab_dotcom_ml_candidates
@@ -85,3 +70,29 @@ models:
       - name: user_id
         description: '{{ doc("dim_user_id") }}'
       - name: deleted_on
+  
+  - name: gitlab_dotcom_vulnerability_reads
+    description: Workspace model of the source data (deduplicated).
+
+  - name: gitlab_dotcom_vulnerability_state_transitions
+    description: Workspace model of the source data (deduplicated).
+
+  - name: customers_db_provisions
+    description: Workspace model of the customers.gitlab.com provisions table. The table used to track the provision of SM and SaaS subscriptions through its entire life cycle.
+    description: '{{ doc("customers_db_provisions_source") }}'  
+    columns:
+      - name: subscription_name
+        description: Zuora subscription name
+      - name: subscription_id
+        tests:
+          - not_null
+          - unique
+        description: Zuora subscription id
+      - name: subscription_version
+        description: Zuora subscription version number
+      - name: state
+        description: The state of the provision
+      - name: created_at
+      - name: updated_at
+      - name: state_reason
+        description: Reason to justify the set status after auditing

@@ -2,6 +2,11 @@
     tags=["six_hourly"]
 ) }}
 
+{{ config({
+    "post-hook": "{{ missing_member_column(primary_key = 'dim_crm_opportunity_id') }}"
+    })
+}}
+
 WITH prep_crm_opportunity AS (
 
     SELECT *
@@ -104,6 +109,16 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.subscription_end_date,
       prep_crm_opportunity.resale_partner_name,
       prep_crm_opportunity.record_type_name,
+      prep_crm_opportunity.next_steps,
+      prep_crm_opportunity.auto_renewal_status,
+      prep_crm_opportunity.qsr_notes,
+      prep_crm_opportunity.qsr_status,
+      prep_crm_opportunity.manager_confidence,
+      prep_crm_opportunity.renewal_risk_category,
+      prep_crm_opportunity.renewal_swing_arr,
+      prep_crm_opportunity.renewal_manager, 
+      prep_crm_opportunity.renewal_forecast_health,
+      prep_crm_opportunity.renewal_ownership,
 
       --account people attributes
       prep_crm_opportunity.crm_account_owner_sales_segment,
@@ -159,8 +174,6 @@ WITH prep_crm_opportunity AS (
       -- stamped fields
       prep_crm_opportunity.crm_opp_owner_stamped_name,
       prep_crm_opportunity.crm_account_owner_stamped_name,
-      prep_crm_opportunity.sao_crm_opp_owner_stamped_name,
-      prep_crm_opportunity.sao_crm_account_owner_stamped_name,
       prep_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped,
       prep_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped_grouped,
       prep_crm_opportunity.sao_crm_opp_owner_geo_stamped,
@@ -224,6 +237,10 @@ WITH prep_crm_opportunity AS (
 
       prep_crm_opportunity.downgrade_details,
 
+      -- PTC related fields
+      prep_crm_opportunity.ptc_predicted_arr,
+      prep_crm_opportunity.ptc_predicted_renewal_risk_category,
+
       -- metadata
       prep_crm_opportunity._last_dbt_run
 
@@ -234,7 +251,7 @@ WITH prep_crm_opportunity AS (
 {{ dbt_audit(
     cte_ref="layered",
     created_by="@iweeks",
-    updated_by="@jngCES",
+    updated_by="@snalamaru",
     created_date="2020-11-20",
-    updated_date="2023-04-06"
+    updated_date="2024-01-24"
 ) }}

@@ -4,7 +4,7 @@
 
     SELECT *,
 
-      {{ dbt_utils.surrogate_key( columns ) }} as prev_hash
+      {{ dbt_utils.generate_surrogate_key( columns ) }} as prev_hash
 
     FROM {{ cte_ref }}
 

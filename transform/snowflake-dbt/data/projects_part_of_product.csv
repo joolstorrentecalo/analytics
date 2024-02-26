@@ -18,6 +18,7 @@ gitlab-org/cloud-deploy,15363819
 gitlab-org/cluster-integration/auto-build-image,10400718
 gitlab-org/cluster-integration/auto-deploy-image,11688089
 gitlab-org/cluster-integration/helm-install-image,9184510
+gitlab-org/code-creation/repository-x-ray,51416367
 gitlab-org/cookbook-omnibus-gitlab,95156
 gitlab-org/customers-gitlab-com,2670515, @jeromezng
 gitlab-org/database-team/gitlab-com-database-testing,23345837
@@ -80,20 +81,20 @@ gitlab-org/prometheus-client-mmap,3362933
 gitlab-org/prometheus-storage-migrator,4949400
 gitlab-org/protect/general,26076251
 gitlab-org/release-tools,430285
-gitlab-org/security-products/analyzers/bundler-audit,9358979,@gonzoyumo
+gitlab-org/security-products/analyzers/bundler-audit,9358979,@thiagocsf
 gitlab-org/security-products/analyzers/eslint,10476326, @amarpatel
 gitlab-org/security-products/analyzers/find-sec-bugs-groovy,7795571
 gitlab-org/security-products/analyzers/find-sec-bugs-sbt,6487905
-gitlab-org/security-products/analyzers/gemnasium,9450192, @gonzoyumo
-gitlab-org/security-products/analyzers/gemnasium-maven,9450197,@gonzoyumo
-gitlab-org/security-products/analyzers/gemnasium-python,9450195,@gonzoyumo
+gitlab-org/security-products/analyzers/gemnasium,9450192, @thiagocsf
+gitlab-org/security-products/analyzers/gemnasium-maven,9450197,@thiagocsf
+gitlab-org/security-products/analyzers/gemnasium-python,9450195,@thiagocsf
 gitlab-org/security-products/analyzers/gosec,7660893, @amarpatel
 gitlab-org/security-products/analyzers/kics,30656896, @amarpatel
 gitlab-org/security-products/analyzers/klar,13922331
 gitlab-org/security-products/analyzers/nodejs-scan,7145793, @amarpatel
 gitlab-org/security-products/analyzers/phpcs-security-audit,6392811, @amarpatel
 gitlab-org/security-products/analyzers/pmd-apex,13017938, @amarpatel
-gitlab-org/security-products/analyzers/retire.js,9396716,@gonzoyumo
+gitlab-org/security-products/analyzers/retire.js,9396716,@thiagocsf
 gitlab-org/security-products/analyzers/secrets,10861561
 gitlab-org/security-products/analyzers/sobelow,11625232, @amarpatel
 gitlab-org/security-products/analyzers/spotbugs,11139665, @amarpatel
@@ -107,32 +108,34 @@ gitlab-org/security-products/dast,9762266
 gitlab-org/security-products/dast-runner-validation,26751150
 gitlab-org/security-products/dast-cwe-checks,27060148
 gitlab-org/security-products/analyzers/browserker,21351796
-gitlab-org/security-products/dependency-scanning,5779760,@gonzoyumo
+gitlab-org/security-products/dependency-scanning,5779760,@thiagocsf
 gitlab-org/security-products/gemnasium-db,12006272
-gitlab-org/security-products/gemnasium/api,5777179,@gonzoyumo
-gitlab-org/security-products/gemnasium/croncli,5777819,@gonzoyumo
-gitlab-org/security-products/gemnasium/gcp-config,5772881,@gonzoyumo
-gitlab-org/security-products/gemnasium/logcli,5777853,@gonzoyumo
-gitlab-org/security-products/gemnasium/maven-index-reader,5777939,@gonzoyumo
-gitlab-org/security-products/gemnasium/migrations,5777918,@gonzoyumo
-gitlab-org/security-products/gemnasium/nsqcli,5777952,@gonzoyumo
-gitlab-org/security-products/gemnasium/package-syncer,5777954,@gonzoyumo
-gitlab-org/security-products/gemnasium/pgcli,5777976,@gonzoyumo
-gitlab-org/security-products/gemnasium/registry-syncer,5778037,@gonzoyumo
-gitlab-org/security-products/gemnasium/registry-tracker,5778044,@gonzoyumo
-gitlab-org/security-products/gemnasium/resolver,5778056,@gonzoyumo
-gitlab-org/security-products/gemnasium/schema,5778074,@gonzoyumo
-gitlab-org/security-products/gemnasium/secrets,5778093,@gonzoyumo
-gitlab-org/security-products/gemnasium/semver,5778095,@gonzoyumo
-gitlab-org/security-products/gemnasium/web,5828233,@gonzoyumo
+gitlab-org/security-products/gemnasium/api,5777179,@thiagocsf
+gitlab-org/security-products/gemnasium/croncli,5777819,@thiagocsf
+gitlab-org/security-products/gemnasium/gcp-config,5772881,@thiagocsf
+gitlab-org/security-products/gemnasium/logcli,5777853,@thiagocsf
+gitlab-org/security-products/gemnasium/maven-index-reader,5777939,@thiagocsf
+gitlab-org/security-products/gemnasium/migrations,5777918,@thiagocsf
+gitlab-org/security-products/gemnasium/nsqcli,5777952,@thiagocsf
+gitlab-org/security-products/gemnasium/package-syncer,5777954,@thiagocsf
+gitlab-org/security-products/gemnasium/pgcli,5777976,@thiagocsf
+gitlab-org/security-products/gemnasium/registry-syncer,5778037,@thiagocsf
+gitlab-org/security-products/gemnasium/registry-tracker,5778044,@thiagocsf
+gitlab-org/security-products/gemnasium/resolver,5778056,@thiagocsf
+gitlab-org/security-products/gemnasium/schema,5778074,@thiagocsf
+gitlab-org/security-products/gemnasium/secrets,5778093,@thiagocsf
+gitlab-org/security-products/gemnasium/semver,5778095,@thiagocsf
+gitlab-org/security-products/gemnasium/web,5828233,@thiagocsf
 gitlab-org/security-products/gitlab-cyclonedx-property-taxonomy,37734140
-gitlab-org/security-products/license-management,6130122,@gonzoyumo
-gitlab-org/security-products/license-db/license-exporter,39298809,@gonzoyumo
-gitlab-org/security-products/license-db/license-feeder,40857363,@gonzoyumo
-gitlab-org/security-products/license-db/license-interfacer,39622674,@gonzoyumo
-gitlab-org/security-products/license-db/license-processor,39229232,@gonzoyumo
-gitlab-org/security-products/license-db/deployment,39233486,@gonzoyumo
-gitlab-org/security-products/license-db/schema,39193358,@gonzoyumo
+gitlab-org/security-products/license-management,6130122,@thiagocsf
+gitlab-org/security-products/license-db/advisory-processor,45266022,@thiagocsf
+gitlab-org/security-products/license-db/license-exporter,39298809,@thiagocsf
+gitlab-org/security-products/license-db/license-feeder,40857363,@thiagocsf
+gitlab-org/security-products/license-db/license-interfacer,39622674,@thiagocsf
+gitlab-org/security-products/license-db/license-processor,39229232,@thiagocsf
+gitlab-org/security-products/license-db/deployment,39233486,@thiagocsf
+gitlab-org/security-products/license-db/schema,39193358,@thiagocsf
+gitlab-org/security-products/analyzers/trivy-k8s-wrapper,52241202,@thiagocsf
 gitlab-org/security-products/sast,5373222
 gitlab-org/serverless/runtimes/nodejs,11373038
 gitlab-org/serverless/runtimes/ruby,11533294
@@ -144,7 +147,7 @@ gitlab-org/security-products/analyzers/common,6126012
 gitlab-org/security-products/analyzers/find-sec-bugs,5606894
 gitlab-org/security-products/analyzers/find-sec-bugs-gradle,6280478
 gitlab-org/security-products/analyzers/flawfinder,6237085, @amarpatel
-gitlab-org/security-products/analyzers/gemnasium-maven-plugin,13150952,@gonzoyumo
+gitlab-org/security-products/analyzers/gemnasium-maven-plugin,13150952,@thiagocsf
 gitlab-org/security-products/analyzers/go-ast-scanner,5971589
 gitlab-org/security-products/analyzers/security-code-scan,6535935, @amarpatel
 gitlab-org/security-products/analyzers/api-fuzzing,19617580
@@ -201,7 +204,7 @@ gitlab-org/security-products/vet/vet,27819859
 gitlab-org/security-products/vet/go-tree-sitter,27821148
 gitlab-org/security-products/vet/tree-sitter70cast,27821122
 gitlab-org/security-products/vet/stencils,28502955
-gitlab-org/security-products/analyzers/container-scanning,24673064, @gonzoyumo
+gitlab-org/security-products/analyzers/container-scanning,24673064, @thiagocsf
 gitlab-org/security-products/analyzers/cluster-image-scanning,27497069
 gitlab-org/security-products/security-report-schemas,16683102, @thiagocsf
 gitlab-org/security-products/security-report-schemas-ruby,37954006, @thiagocsf
@@ -305,3 +308,7 @@ gitlab-org/remote-development/gitlab-workspaces-proxy,43788427,@oregand
 gitlab-org/cluster-integration/gitlab-agent-ci-image,29138380
 gitlab-org/charts/gitlab-agent,34907799
 gitlab-org/terraform-provider-gitlab,40916776
+gitlab-org/editor-extensions/gitlab-jetbrains-plugin,32950782
+gitlab-org/editor-extensions/gitlab-visual-studio-extension,46231956
+gitlab-org/editor-extensions/gitlab.vim,47052693
+gitlab-org/editor-extensions/gitlab-lsp,46519181

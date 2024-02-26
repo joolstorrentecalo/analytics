@@ -2,12 +2,20 @@
     tags=["mnpi_exception"]
 ) }}
 
+{{ config({
+    "post-hook": "{{ missing_member_column(primary_key = 'dim_crm_user_hierarchy_sk') }}"
+    })
+}}
+
 {{ simple_cte([
     ('dim_date', 'dim_date'),
     ('prep_crm_user_daily_snapshot', 'prep_crm_user_daily_snapshot'),
+    ('prep_crm_account_daily_snapshot', 'prep_crm_account_daily_snapshot'),
+    ('prep_crm_account', 'prep_crm_account'),
     ('prep_crm_opportunity', 'prep_crm_opportunity'),
     ('prep_sales_funnel_target', 'prep_sales_funnel_target'),
-    ('prep_sales_funnel_partner_alliance_target', 'prep_sales_funnel_partner_alliance_target')
+    ('prep_sales_funnel_partner_alliance_target', 'prep_sales_funnel_partner_alliance_target'),
+    ('prep_crm_person', 'prep_crm_person')
 ]) }}
 
 , fiscal_months AS (
@@ -17,6 +25,12 @@
       fiscal_year,
       first_day_of_month
     FROM dim_date
+
+), current_fiscal_year AS (
+
+    SELECT fiscal_year
+    FROM dim_date
+    WHERE date_actual = CURRENT_DATE - 1
 
 ), sheetload_sales_funnel_targets_matrix_source AS (
 
@@ -30,6 +44,18 @@
       sheetload_sales_funnel_partner_alliance_targets_matrix_source.*
     FROM {{ ref('sheetload_sales_funnel_partner_alliance_targets_matrix_source') }}
   
+), account_demographics_hierarchy AS (
+
+    SELECT DISTINCT
+      created_date_fiscal_year                  AS fiscal_year,
+      UPPER(account_demographics_sales_segment) AS account_demographics_sales_segment,
+      UPPER(account_demographics_geo)           AS account_demographics_geo,
+      UPPER(account_demographics_region)        AS account_demographics_region,
+      UPPER(account_demographics_area)          AS account_demographics_area,
+      NULL                                      AS user_business_unit,
+      dim_account_demographics_hierarchy_sk
+    FROM prep_crm_person 
+
 ), user_hierarchy_source AS (
 
     SELECT 
@@ -51,6 +77,45 @@
       AND IFF(dim_date.fiscal_year > 2023, prep_crm_user_daily_snapshot.crm_user_business_unit IS NOT NULL, 1=1) -- with the change in structure, business unit must be present after FY23
       AND IFF(dim_date.fiscal_year < dim_date.current_fiscal_year,dim_date.date_actual = dim_date.last_day_of_fiscal_year, dim_date.date_actual = dim_date.current_date_actual) -- take only the last valid hierarchy of the fiscal year for previous fiscal years
       AND prep_crm_user_daily_snapshot.is_active = TRUE 
+
+), account_hierarchy_snapshot_source AS (
+
+    SELECT 
+      DISTINCT 
+      dim_date.fiscal_year,
+      prep_crm_account_daily_snapshot.parent_crm_account_sales_segment,
+      prep_crm_account_daily_snapshot.parent_crm_account_geo,
+      prep_crm_account_daily_snapshot.parent_crm_account_region,
+      prep_crm_account_daily_snapshot.parent_crm_account_area,
+      prep_crm_account_daily_snapshot.parent_crm_account_business_unit,
+      prep_crm_account_daily_snapshot.dim_crm_parent_account_hierarchy_sk
+    FROM prep_crm_account_daily_snapshot
+    INNER JOIN dim_date 
+      ON prep_crm_account_daily_snapshot.snapshot_id = dim_date.date_id
+    WHERE prep_crm_account_daily_snapshot.parent_crm_account_sales_segment IS NOT NULL
+      AND prep_crm_account_daily_snapshot.parent_crm_account_geo IS NOT NULL
+      AND prep_crm_account_daily_snapshot.parent_crm_account_region IS NOT NULL
+      AND prep_crm_account_daily_snapshot.parent_crm_account_area IS NOT NULL
+      AND IFF(dim_date.fiscal_year > 2023, prep_crm_account_daily_snapshot.parent_crm_account_business_unit IS NOT NULL, TRUE) -- with the change in structure, business unit must be present after FY23
+      AND IFF(dim_date.fiscal_year < dim_date.current_fiscal_year, dim_date.date_actual = dim_date.last_day_of_fiscal_year, dim_date.date_actual = dim_date.current_date_actual) -- take only the last valid hierarchy of the fiscal year for previous fiscal years
+
+), account_hierarchy_source AS (
+
+    SELECT 
+      DISTINCT 
+      current_fiscal_year.fiscal_year,
+      prep_crm_account.parent_crm_account_sales_segment,
+      prep_crm_account.parent_crm_account_geo,
+      prep_crm_account.parent_crm_account_region,
+      prep_crm_account.parent_crm_account_area,
+      prep_crm_account.parent_crm_account_business_unit,
+      prep_crm_account.dim_crm_parent_account_hierarchy_sk
+    FROM prep_crm_account
+    LEFT JOIN current_fiscal_year
+    WHERE prep_crm_account.parent_crm_account_sales_segment IS NOT NULL
+      AND prep_crm_account.parent_crm_account_geo IS NOT NULL
+      AND prep_crm_account.parent_crm_account_region IS NOT NULL
+      AND prep_crm_account.parent_crm_account_area IS NOT NULL
 
 ), user_hierarchy_sheetload AS (
 /*
@@ -128,6 +193,21 @@
     SELECT *
     FROM user_hierarchy_stamped_opportunity
 
+    UNION
+
+    SELECT *
+    FROM account_hierarchy_snapshot_source
+
+    UNION
+
+    SELECT *
+    FROM account_hierarchy_source
+
+    UNION
+
+    SELECT *
+    FROM account_demographics_hierarchy
+
 ), pre_fy24_hierarchy AS (
 
 /*
@@ -174,29 +254,22 @@
     SELECT *
     FROM fy24_and_beyond_hierarchy
 
-), current_fiscal_year AS(
-
-    SELECT DISTINCT
-      fiscal_year
-    FROM dim_date
-    WHERE date_actual = CURRENT_DATE()
-
 ), final AS (
 
     SELECT DISTINCT 
-      {{ dbt_utils.surrogate_key(['final_unioned.dim_crm_user_hierarchy_sk']) }}                                                AS dim_crm_user_hierarchy_id,
+      {{ dbt_utils.generate_surrogate_key(['final_unioned.dim_crm_user_hierarchy_sk']) }}                                                AS dim_crm_user_hierarchy_id,
       final_unioned.dim_crm_user_hierarchy_sk,
       final_unioned.fiscal_year,
       final_unioned.user_business_unit                                                                                          AS crm_user_business_unit,
-      {{ dbt_utils.surrogate_key(['final_unioned.user_business_unit']) }}                                                       AS dim_crm_user_business_unit_id,
+      {{ dbt_utils.generate_surrogate_key(['final_unioned.user_business_unit']) }}                                                       AS dim_crm_user_business_unit_id,
       final_unioned.user_segment                                                                                                AS crm_user_sales_segment,
-      {{ dbt_utils.surrogate_key(['final_unioned.user_segment']) }}                                                             AS dim_crm_user_sales_segment_id,
+      {{ dbt_utils.generate_surrogate_key(['final_unioned.user_segment']) }}                                                             AS dim_crm_user_sales_segment_id,
       final_unioned.user_geo                                                                                                    AS crm_user_geo,
-      {{ dbt_utils.surrogate_key(['final_unioned.user_geo']) }}                                                                 AS dim_crm_user_geo_id,
+      {{ dbt_utils.generate_surrogate_key(['final_unioned.user_geo']) }}                                                                 AS dim_crm_user_geo_id,
       final_unioned.user_region                                                                                                 AS crm_user_region,
-      {{ dbt_utils.surrogate_key(['final_unioned.user_region']) }}                                                              AS dim_crm_user_region_id,
+      {{ dbt_utils.generate_surrogate_key(['final_unioned.user_region']) }}                                                              AS dim_crm_user_region_id,
       final_unioned.user_area                                                                                                   AS crm_user_area,
-      {{ dbt_utils.surrogate_key(['final_unioned.user_area']) }}                                                                AS dim_crm_user_area_id,
+      {{ dbt_utils.generate_surrogate_key(['final_unioned.user_area']) }}                                                                AS dim_crm_user_area_id,
       CASE
           WHEN final_unioned.user_segment IN ('Large', 'PubSec') THEN 'Large'
           ELSE final_unioned.user_segment
@@ -213,7 +286,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mcooperDD",
-    updated_by="@michellecooper",
+    updated_by="@jpeguero",
     created_date="2021-01-05",
-    updated_date="2023-05-02"
+    updated_date="2023-10-20"
 ) }}

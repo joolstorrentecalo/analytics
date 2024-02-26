@@ -98,6 +98,8 @@ models:
         description: Flag indicating if the subscription is available to renew in the period.
       - name: opportunity_term_group
         description: Duration of the opportunity in years based on the opportunity's term.
+      - name: number_of_seats
+        description: a sum of the quantity where the unit of measurement is 'Seats'.
       - name: arr
         description: Annual recurring revenue associated with the subscription.
 

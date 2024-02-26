@@ -79,6 +79,17 @@ WITH zuora_product AS (
                                                                       , 'Hourly Consulting'
                                                                       , 'JIRA Integration'
                                                                       , 'Custom PS Education Services'
+                                                                      , 'GitLab CI/CD Training - Onsite'
+                                                                      , 'GitLab DevSecOps Fundamentals Training - Remote'
+                                                                      , 'GitLab Agile Portfolio Management Training - Remote'
+                                                                      , 'GitLab System Administration Training - Onsite'
+                                                                      , 'GitLab Agile Portfolio Management Training - Onsite'
+                                                                      , 'GitLab Security Essentials Training - Remote'
+                                                                      , 'GitLab with Git Fundamentals Training - Onsite'
+                                                                      , 'GitLab with Git Fundamentals Training - Remote'
+                                                                      , 'Implementation QuickStart - GitLab.com'
+                                                                      , 'GitLab Security Essentials Training - Onsite'
+                                                                      , 'Implementation QuickStart - Self Managed (HA)'
                                                                      )
           THEN 'Support'
         WHEN LOWER(zuora_product_rate_plan.product_rate_plan_name) LIKE 'gitlab geo%'
@@ -97,6 +108,7 @@ WITH zuora_product AS (
                                                                         'File Locking'
                                                                       , 'Time Tracking'
                                                                       , '1,000 CI Minutes'
+                                                                      , '1,000 Compute Minutes'
                                                                      )
           THEN 'SaaS - Other'
         WHEN TRIM(zuora_product_rate_plan.product_rate_plan_name) IN ('Gitlab Storage 10GB')

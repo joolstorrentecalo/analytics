@@ -3,6 +3,12 @@
     tags=["six_hourly"]
 ) }}
 
+{{ config({
+    "post-hook": "{{ missing_member_column(primary_key = 'dim_crm_user_id') }}"
+    })
+}}
+
+
 WITH final AS (
 
     SELECT 

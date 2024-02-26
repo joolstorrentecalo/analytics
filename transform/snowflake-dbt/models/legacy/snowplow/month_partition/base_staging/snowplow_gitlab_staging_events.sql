@@ -67,12 +67,9 @@ WITH filtered_source as (
       event_version,
       geo_city,
       geo_country,
-      geo_latitude,
-      geo_longitude,
       geo_region,
       geo_region_name,
       geo_timezone,
-      geo_zipcode,
       ip_domain,
       ip_isp,
       ip_netspeed,
@@ -149,7 +146,6 @@ WITH filtered_source as (
       END AS unstruct_event,
       user_fingerprint,
       user_id,
-      user_ipaddress,
       useragent,
       v_collector,
       v_etl,
@@ -187,8 +183,11 @@ WITH filtered_source as (
 
 ), events_with_web_page_id AS (
 
-    SELECT *
-    FROM {{ ref('snowplow_gitlab_events_web_page_id') }}
+    SELECT 
+      event_id,
+      web_page_id
+    FROM {{ ref('snowplow_gitlab_events_context_flattened') }}
+    WHERE has_web_page_context = TRUE
 
 ), base_with_sorted_columns AS (
   
@@ -242,12 +241,9 @@ WITH filtered_source as (
       base.event_version,
       base.geo_city,
       base.geo_country,
-      base.geo_latitude,
-      base.geo_longitude,
       base.geo_region,
       base.geo_region_name,
       base.geo_timezone,
-      base.geo_zipcode,
       base.ip_domain,
       base.ip_isp,
       base.ip_netspeed,
@@ -320,7 +316,6 @@ WITH filtered_source as (
       base.unstruct_event,
       base.user_fingerprint,
       base.user_id,
-      base.user_ipaddress,
       base.useragent,
       base.v_collector,
       base.v_etl,

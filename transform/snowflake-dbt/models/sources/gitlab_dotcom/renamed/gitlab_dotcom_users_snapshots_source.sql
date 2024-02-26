@@ -35,7 +35,7 @@ WITH source AS (
       -- unconfirmed_email // hidden for privacy
       hide_no_ssh_key::BOOLEAN AS has_hide_no_ssh_key_enabled,
       -- website_url // hidden for privacy
-      admin_email_unsubscribed_at::TIMESTAMP AS admin_email_unsubscribed_at,
+      TRY_TO_TIMESTAMP(admin_email_unsubscribed_at) AS admin_email_unsubscribed_at,
       -- Coalesced to match application behavior
       -- https://gitlab.com/gitlab-data/analytics/-/issues/12046#note_863577705
       COALESCE(notification_email, email)::VARCHAR AS notification_email,
@@ -60,7 +60,7 @@ WITH source AS (
       NULLIF(preferred_language, 'nan')::VARCHAR AS preferred_language,
       email_opted_in::BOOLEAN AS is_email_opted_in,
       email_opted_in_source_id::NUMBER AS email_opted_in_source_id,
-      email_opted_in_at::TIMESTAMP AS email_opted_in_at,
+      TRY_TO_TIMESTAMP(email_opted_in_at) AS email_opted_in_at,
       theme_id::NUMBER AS theme_id,
       accepted_term_id::NUMBER AS accepted_term_id,
       private_profile::BOOLEAN AS is_private_profile,

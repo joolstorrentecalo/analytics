@@ -169,8 +169,6 @@ final AS (
     dim_crm_account.is_jihu_account,
 
     -- crm opp owner/account owner fields stamped at SAO date
-    fct_crm_opportunity.sao_crm_opp_owner_stamped_name,
-    fct_crm_opportunity.sao_crm_account_owner_stamped_name,
     fct_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped,
     fct_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped_grouped,
     fct_crm_opportunity.sao_crm_opp_owner_geo_stamped,
@@ -500,7 +498,12 @@ final AS (
     fct_crm_opportunity.net_incremental_acv,
     fct_crm_opportunity.incremental_acv,
     fct_crm_opportunity.forecasted_churn_for_clari,
-    fct_crm_opportunity.override_arr_basis_clari
+    fct_crm_opportunity.override_arr_basis_clari,
+    fct_crm_opportunity.cycle_time_in_days,
+    
+    --PTC related fields
+    fct_crm_opportunity.ptc_predicted_arr,
+    fct_crm_opportunity.ptc_predicted_renewal_risk_category
 
   FROM fct_crm_opportunity
   LEFT JOIN dim_crm_account
@@ -568,7 +571,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@lisvinueza",
+    updated_by="@snalamaru",
     created_date="2022-05-05",
-    updated_date="2023-05-21"
+    updated_date="2024-02-21"
   ) }}

@@ -179,8 +179,6 @@ WITH sfdc_users_xf AS (
        is_booked_net_arr,
        is_downgrade,
        critical_deal_flag,
-       sao_crm_opp_owner_stamped_name,
-       sao_crm_account_owner_stamped_name,
        sao_crm_opp_owner_sales_segment_stamped,
        sao_crm_opp_owner_sales_segment_stamped_grouped,
        sao_crm_opp_owner_geo_stamped,
@@ -436,6 +434,18 @@ WITH sfdc_users_xf AS (
        calculated_age_in_days,
        days_since_last_activity,
        arr_basis,
+
+      -- NF 28072023 These fields will be updated
+       arr_basis_for_clari        AS atr,
+       won_arr_basis_for_clari    AS won_atr,
+
+       CASE
+        WHEN fpa_master_bookings_flag = 1
+          THEN won_arr_basis_for_clari - arr_basis_for_clari
+        ELSE 0
+       END                         AS booked_churned_contraction_net_arr,
+       
+       ------------------------------------------
        iacv,
        net_iacv,
        segment_order_type_iacv_to_net_arr_ratio,
@@ -456,7 +466,6 @@ WITH sfdc_users_xf AS (
        churned_contraction_net_arr,
        calculated_deal_count,
        booked_churned_contraction_deal_count,
-       booked_churned_contraction_net_arr,
        arr,
        recurring_amount,
        true_up_amount,
@@ -536,11 +545,27 @@ WITH sfdc_users_xf AS (
           THEN account_owner.user_region
         ELSE opportunity_owner.user_region
     END                                                       AS report_opportunity_user_region,
-    CASE
+
+
+/*
+
+From Melia: 20230818
+Hybrid reps work across segments (or areas, or whatever). like we have a guy who works on both MM and SMB accounts. 
+he has a default user value of MM that makes all of his opps look like they are MM. instead of making them all MM, 
+you are grabbing the segment off of the account instead so you'll show some as MM and some as SMB.
+
+*/
+
+
+   CASE
         WHEN account_owner.is_hybrid_flag = 1 
             THEN account.parent_crm_account_area
         WHEN edm_opty.close_date < today.current_fiscal_year_date
           THEN account_owner.user_area
+    -- NF: 20230818 VPs might temporary hold opportunities of territories without reps. As their AREA is ALL it needs to 
+    -- be adjusted to the account AREA
+        WHEN UPPER(opportunity_owner.user_area) = 'ALL'
+           THEN account.parent_crm_account_area         
         ELSE opportunity_owner.user_area
     END                                                       AS report_opportunity_user_area,
 
@@ -563,8 +588,15 @@ WITH sfdc_users_xf AS (
         ELSE opportunity_owner.division
     END                                                       AS report_opportunity_user_division,
     CASE 
+        -- NF: see comment above on hybrid reps
+        WHEN account_owner.is_hybrid_flag = 1 
+            THEN account.parent_crm_account_area
         WHEN edm_opty.close_date < today.current_fiscal_year_date
           THEN account_owner.asm
+        -- NF: 20230818 VPs might temporary hold opportunities of territories without reps. As their AREA is ALL it needs to 
+        -- be adjusted to the account AREA
+        WHEN UPPER(opportunity_owner.user_area) = 'ALL'
+           THEN account.parent_crm_account_area         
         ELSE opportunity_owner.asm
     END                                                       AS report_opportunity_user_asm,
     CASE 

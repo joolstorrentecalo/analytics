@@ -449,9 +449,29 @@ Sales funnel targets set by the Finance team to measure performance of Partner a
 
 {% enddocs %}
 
+{% docs fct_sales_funnel_actual %}
+
+Actual sales funnel values are presented in the following table, designed to conform to the format of fct_sales_funnel_target, where the format is defined as `target_date || kpi_name`.
+
+This table is derived from the data in both `fct_crm_person` and `fct_crm_opportunity`, with each metric associated with its corresponding date and sales hierarchy. For instance, when dealing with the KPI `Net ARR`, we use the `close_date` as the date field, employ the stamped user hierarchy for the sales hierarchy, and apply a filter based on the `is_net_arr_closed_deal` flag, selecting only opportunities related to Net ARR.
+
+{% enddocs %}
+
+{% docs fct_sales_funnel_partner_alliance_target_daily %}
+
+Derived fact table from `fct_sales_funnel_partner_alliance_target` that transforms the monthly targets specified in the aforementioned model into daily targets. This transformation is achieved by dividing the monthly target by the number of days in the corresponding month.
+
+{% enddocs %}
+
 {% docs fct_sales_funnel_target %}
 
 Sales funnel targets set by the Finance team to measure performance of important KPIs against goals, broken down by sales hierarchy, and order attributes.
+
+{% enddocs %}
+
+{% docs fct_sales_funnel_target_daily %}
+
+Derived fact table from `fct_sales_funnel_target` that transforms the monthly targets specified in the aforementioned model into daily targets. This transformation is achieved by dividing the monthly target by the number of days in the corresponding month.
 
 {% enddocs %}
 
@@ -718,6 +738,12 @@ Order type dimension, based off of salesforce opportunity data, using the `gener
 
 {% enddocs %}
 
+{% docs dim_sales_funnel_kpi %}
+
+Sales funnel KPI dimension, based on the sales funnel target file KPI name data.
+
+{% enddocs %}
+
 {% docs dim_namespace_hist %}
 
 Table containing GitLab namespace snapshots.
@@ -967,7 +993,7 @@ Issue Links are created when relationships are defined between issues. This tabl
 
 The grain of the table is the `dim_issue_link_id`. This table is easily joinable with:
 
-- `dim_issue` through `dim_issue_id` on `dim_source_issue_id` & `dim_target_issue_id`
+- `dim_issue` through `dim_issue_sk` on `dim_issue_sk_source` & `dim_issue_sk_target`
 {% enddocs %}
 
 {% docs dim_locality %}
@@ -1778,7 +1804,7 @@ The grain of this table is one row per employee_id and valid_from combination
 
 {% docs dim_trial_latest %}
 
-This table summarizes all the trials Orders information for a specific namespace.
+This table summarizes all the trial Orders information for a specific namespace.
 
 We utilize the `customers_db_orders_snapshots_base` model in order to isolate/filter out all the trials. 
 
@@ -1787,5 +1813,119 @@ This model does the following:
 * It isolates the orders that are flagged with the column `is_trial = TRUE`
 * It deduplicates by taking the latest row created for a specific `gitlab_namespace_id`
 * We can join this model with `customers_db_customers` in the downstream models in order to get information about country, company_size of the User who started the trial
+
+{% enddocs %}
+
+
+{% docs fct_trial %}
+
+This model collects all trials that start from the subscription portal. For this we use the `customers_db_orders_snapshots_base` model in order to isolate them. This model does the following:
+
+* It isolates the orders that are flagged with the column `is_trial = TRUE`
+* It joins with customers, users and namespaces. 
+
+Finally, this model identifies if a trial has been converted or not. To achieve that, we join the trials to the `order_snapshots` by selecting only the orders that converted to subscription after the trial starting date (an example has been provided below). We exclude ci_minutes/compute_minutes orders from the `order_snapshots`.   
+
+In order to identify which subscriptions are actually valid and not refunded, we join to `zuora_rate_plan` and `zuora_base_mrr` models to filter out subscriptions that have (mrr <= 0 and tcv <=0). In this case, we also filter out those subscriptions that are cancelled instantly or fully refunded after a certain period.
+
+Examples:
+
+| ORDER_ID | ORDER_UPDATED_AT        | ORDER_START_DATE  | ORDER_END_DATE | ORDER_IS_TRIAL | SUBSCRIPTION_NAME_SLUGIFY |
+|----------|-------------------------|-------------------|----------------|----------------|---------------------------|
+| 32177    | 2019-09-06 23:09:21.858 | 2019-08-17        | 2019-09-15     | TRUE           |                           |
+| 32177    | 2019-09-13 22:39:18.916 | 2019-08-17        | 2019-09-27     | TRUE           |                           |
+| 32177    | 2019-09-26 21:26:23.227 | 2019-08-17        | 2019-10-02     | TRUE           |                           |
+| 32177    | 2019-10-02 16:32:45.664 | 2019-10-02        | 2019-10-04     | TRUE           |                           |
+| 32177    | 2019-10-02 00:00:00.075 | 2019-10-02        |                | FALSE          |                           |
+| 32177    | 2019-10-03 20:11:31.497 | 2019-10-02        | 2020-10-02     | FALSE          | order-1-name-gold         |
+
+Note: The column `subscription_name_slugify` has been anonymised.
+
+This order exemplifies perfectly what is happening in the table `customers_db_orders`. When the order starts, 17th Aug, 2019, it is a trial. That means that the flag `order_is_trial` is set to TRUE. But it doesn't have either a subscription_id or a subscription_name (`subscription_name_slugify` is null). When it converts, 2nd Nov, 2019, the `order_is_trial` flag is set to `FALSE`, the order_start_date (and order_end_date) is changed and a `subscription_name` and `subscription_id` are set! (last row of the table)
+
+
+{% enddocs %}
+
+{% docs fct_trial_first %}
+
+This model is a derived fact table that is built using the `fct_trial` model, which contains all trial orders that start from the subscription portal. This model additionally deduplicates by taking the first row that was created for customers, namespaces and users based on the `order_updated_at` column. 
+
+The grain of this model is `trial order per namespace`. 
+
+This model identifies if a trial order has been converted or not. We exclude ci_minutes/compute_minutes orders from this model. 
+
+Finally, only valid subscriptions that are not refunded are identified by filtering out subscriptions that have (mrr <= 0 and tcv <=0). The subscriptions that are cancelled instantly or fully refunded after a certain period are excluded. 
+
+The `customers_db_orders_snapshots_base` model has reliable data from the 1st of September, 2019, therefore only the orders that have a `start_date` after this date are included this model.
+
+
+{% enddocs %}
+
+
+{% docs fct_trial_latest %}
+
+This model captures information about the latest trial Orders for a specific namespace. 
+
+The grain of this model is `trial order per namespace`.
+
+## Context
+
+To understand the context, the following information is important:
+* Before 2019-09-16, a namespace could subscribe to a trial several times. That was a bug corrected by the fulfillment team in September 2019. More info [here](https://gitlab.com/gitlab-org/customers-gitlab-com/merge_requests/458).
+* All snapshots tables have also been created in September 2019. Before that we don't have historical information.
+* The Customers_db ETL was unstable before October 2019. We improved the logic at the end of October by changing from incremental model to a daily full "drop and create" to the raw database.
+
+## Process
+
+Trial Information is collected in 2 tables (one in the subscription portal database - customer_db, the other in the .com database - main app). These 2 tables don't talk to each other and have incomplete information. We join them together to create a more consistent and complete picture of trials started.
+
+For the gitlab_dotcom database, information is stored in `gitlab_dotcom_gitlab_subscriptions` table. As described [here](https://gitlab.com/gitlab-data/analytics/merge_requests/1983#note_249268694), rows can be deleted in this table, so we use the `gitlab_dotcom_gitlab_subscriptions_snapshot` for higher reporting accuracy.  In this model, we do the following operations:
+* We isolate trials by looking at a specific column `gitlab_subscription_trial_ends_on` which is filled only when a specific subscription was a trial before.
+* We then group by the namespace_id in order to only select the latest trials started for a specific namespace.
+* One weird behaviour of this table is the way it deals with expired orders. It is explained [here](/model.gitlab_snowflake.gitlab_dotcom_gitlab_subscriptions). That means that the `start_date` is NOT a reliable source for us in order to find the trial start date. We therefore use the `gitlab_subscription_trial_ends_on` column in order to estimate when the trial has been started (30 days before the end of the trials in most cases)
+
+The data for latest trial per namespace is derived from `fct_trial` model. We then join the 2 CTEs created on `gitlab_namespace_id`.
+
+This model identifies if a trial has been converted or not. The logic for which has been included in `fct_trial` model. We exclude ci_minutes orders from this model.   
+
+Finally, only valid subscriptions that are not refunded are identified by filtering out subscriptions that have (mrr <= 0 and tcv <=0). The subscriptions that are cancelled instantly or fully refunded after a certain period are excluded.
+
+{% enddocs %}
+
+{% docs dim_snippet %}
+
+[Snippets](https://docs.gitlab.com/ee/user/snippets.html) are pieces of code which can be stored and shared with others on GitLab. This model stores dimensional attributes about snippets including:
+
+  - Author
+  - Project
+  - Ultimate Namespace
+  - Plan
+  - Type (project/personal)
+  - Created Date
+  - Updated Date
+
+{% enddocs %}
+
+{% docs dim_package %}
+
+Customers can publish and share packages in using GitLab's [package registry](https://docs.gitlab.com/ee/user/packages/package_registry/). This models contains dimensional attributes relating to the packages in the package registry.
+
+{% enddocs %}
+
+{% docs dim_integration %}
+
+A dimensional model describing the integration associated with GitLab namespaces.
+
+From the GitLab.com [documentation](https://docs.gitlab.com/ee/user/project/integrations/), we know integrations are like plugins, which give customers the freedom to add functionality to GitLab.
+
+{% enddocs %}
+
+{% docs dim_requirement %}
+
+As described in the [GitLab documentation](https://docs.gitlab.com/ee/user/project/requirements/):
+
+With requirements, you can set criteria to check your products against. They can be based on users, stakeholders, system, software, or anything else you find important to capture. A requirement is an artifact in GitLab which describes the specific behavior of your product. Requirements are long-lived and don’t disappear unless manually cleared.
+
+This dimension model holds all requirement records and provides dimensional data around their state, creation dates, etc.
 
 {% enddocs %}

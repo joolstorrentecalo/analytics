@@ -12,7 +12,7 @@
 , mrr AS (
 
     SELECT
-      {{ dbt_utils.surrogate_key(['dim_date.date_id','prep_charge.dim_charge_id']) }}       AS mrr_id,
+      {{ dbt_utils.generate_surrogate_key(['dim_date.date_id','prep_charge.dim_charge_id']) }}       AS mrr_id,
       dim_date.date_id                                                                      AS dim_date_id,
       prep_charge.dim_charge_id,
       prep_charge.dim_product_detail_id,

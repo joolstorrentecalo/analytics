@@ -1,7 +1,0 @@
-service_description,sku_description,free,paid,internal
-Support,GCP Support Variable fee,0,0,1
-Support,GCP Support Base fee for Region 1 countries,0,0,1
-Security Command Center,Security Command Center Premium,0,0,1
-Cloud Logging,Log Volume,0,0,1
-BigQuery,,0,0,1
-

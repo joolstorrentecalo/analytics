@@ -63,7 +63,7 @@ cleaned AS (
 final AS (
 
   SELECT
-    {{ dbt_utils.surrogate_key(['date_actual', 'employee_id']) }} AS unique_key,
+    {{ dbt_utils.generate_surrogate_key(['date_actual', 'employee_id']) }} AS unique_key,
     *
   FROM cleaned
 

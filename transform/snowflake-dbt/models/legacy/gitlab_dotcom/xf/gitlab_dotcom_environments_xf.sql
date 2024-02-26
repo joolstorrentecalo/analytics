@@ -1,4 +1,4 @@
-{% set fields_to_mask = ['environment_name', 'external_url', 'slug'] %}
+{% set fields_to_mask = ['environment_name'] %}
 
 WITH base AS (
 

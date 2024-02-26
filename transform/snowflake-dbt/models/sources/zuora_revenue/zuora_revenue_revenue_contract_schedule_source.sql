@@ -12,7 +12,7 @@ WITH zuora_revenue_revenue_contract_schedule AS (
 
     SELECT 
 
-      {{ dbt_utils.surrogate_key(['schd_id', 'acctg_type']) }}  AS primary_key,
+      {{ dbt_utils.generate_surrogate_key(['schd_id', 'acctg_type']) }}  AS primary_key,
       rc_id::VARCHAR                                            AS revenue_contract_id,
       rc_ver::VARCHAR                                           AS revenue_contract_version,
       dist_id::VARCHAR                                          AS dist_id,

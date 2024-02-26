@@ -20,7 +20,6 @@ WITH source AS (
       --last_sign_in_ip,
       provider::VARCHAR                AS customer_provider,
       NULLIF(uid, '')::VARCHAR         AS customer_provider_user_id,
-      zuora_account_id::VARCHAR        AS zuora_account_id,
       country::VARCHAR                 AS country,
       state::VARCHAR                   AS state,
       city::VARCHAR                    AS city,

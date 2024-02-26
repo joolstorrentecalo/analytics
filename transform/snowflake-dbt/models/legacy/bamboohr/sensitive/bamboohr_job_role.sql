@@ -34,7 +34,7 @@ intermediate AS (
     sales_geo_differential,
     region,
     DATE_TRUNC('day', uploaded_at) AS effective_date,
-    {{ dbt_utils.surrogate_key(['employee_id', 'job_role', 'job_grade', 
+    {{ dbt_utils.generate_surrogate_key(['employee_id', 'job_role', 'job_grade',
                                 'cost_center', 'jobtitle_speciality', 
                                 'gitlab_username', 'pay_frequency', 
                                 'sales_geo_differential']) }} AS unique_key,

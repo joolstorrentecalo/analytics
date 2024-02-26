@@ -24,7 +24,7 @@ flattened AS (
     flat_contexts.value['data']['data_source']::VARCHAR AS data_source
   FROM clicks,
   LATERAL FLATTEN(input => TRY_PARSE_JSON(clicks.contexts), path => 'data') AS flat_contexts
-  WHERE flat_contexts.value['schema']::VARCHAR = 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-0'
+  WHERE flat_contexts.value['schema']::VARCHAR LIKE 'iglu:com.gitlab/gitlab_service_ping/jsonschema/%'
     {% if is_incremental() %}
     
         AND clicks.behavior_at >= (SELECT MAX(behavior_at) FROM {{this}})
@@ -35,7 +35,7 @@ flattened AS (
 {{ dbt_audit(
     cte_ref="flattened",
     created_by="@mdrussell",
-    updated_by="@mdrussell",
+    updated_by="@michellecooper",
     created_date="2022-12-21",
-    updated_date="2023-01-11"
+    updated_date="2023-10-06"
 ) }}
