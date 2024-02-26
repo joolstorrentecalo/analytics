@@ -5380,8 +5380,10 @@ roles:
             - dev_xs
 
     - nbelokolodov:
-        member_of: []
-        warehouses: []
+        member_of: 
+            - snowflake_analyst
+        warehouses:
+            - dev_xs
 
     - ncregan:
         member_of: []
@@ -7361,8 +7363,9 @@ users:
             - nbilgrami
 
     - nbelokolodov:
-        can_login: no
-        member_of: []
+        can_login: yes
+        member_of:
+            -  nbelokolodov
 
     - ncregan:
         can_login: no
