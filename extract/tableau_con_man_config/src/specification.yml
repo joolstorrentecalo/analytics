@@ -3134,12 +3134,6 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: bmason
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: bmay
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -3526,15 +3520,6 @@ users:
     groups:
       - General All Access
   - user_name: charding
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - ASM AMER Commercial Restricted Access
-      - ASM Restricted Access
-      - General All Access
-      - General SAFE Access
-  - user_name: chenkle
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
@@ -4230,12 +4215,6 @@ users:
       - General SAFE Access
       - Sales All Access
   - user_name: dmurphy
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
-  - user_name: doneal
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
