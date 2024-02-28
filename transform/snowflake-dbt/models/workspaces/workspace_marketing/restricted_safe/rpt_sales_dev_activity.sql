@@ -89,9 +89,9 @@ sales_dev_hierarchy_prep AS (
   dim_crm_user_daily_snapshot AS sales_dev_rep
   INNER JOIN sales_dev_opps
     ON sales_dev_rep.dim_crm_user_id = sales_dev_opps.sdr_bdr_user_id 
-  LEFT JOIN common.dim_crm_user_daily_snapshot AS manager
+  LEFT JOIN dim_crm_user_daily_snapshot AS manager
     ON sales_dev_rep.manager_id = manager.dim_crm_user_id AND sales_dev_rep.snapshot_date = manager.snapshot_date
-  LEFT JOIN common.dim_crm_user_daily_snapshot AS leader
+  LEFT JOIN dim_crm_user_daily_snapshot AS leader
     ON manager.manager_id = leader.dim_crm_user_id AND manager.snapshot_date = leader.snapshot_date
 ),
 
