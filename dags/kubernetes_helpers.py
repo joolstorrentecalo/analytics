@@ -29,9 +29,6 @@ test_tolerations = get_toleration_with_value("test")
 production_affinity = get_affinity_with_key_value("production", ["true"])
 production_tolerations = get_toleration_with_value("production")
 
-data_science_affinity = get_affinity_with_key_value("data_science", ["true"])
-data_science_tolerations = get_toleration_with_value("data_science")
-
 extraction_affinity = get_affinity_with_key_value("extraction", ["true"])
 extraction_tolerations = get_toleration_with_value("extraction")
 
@@ -54,8 +51,6 @@ def is_local_test():
 def get_affinity(affinity):
     if is_local_test():
         return test_affinity
-    if affinity == "data_science":
-        return data_science_affinity
     if affinity == "extraction":
         return extraction_affinity
     if affinity == "extraction_highmem":
@@ -70,8 +65,6 @@ def get_affinity(affinity):
 def get_toleration(tolerations):
     if is_local_test():
         return test_tolerations
-    if tolerations == "data_science":
-        return data_science_tolerations
     if tolerations == "extraction":
         return extraction_tolerations
     if tolerations == "extraction_highmem":

@@ -56,16 +56,6 @@ analytics_pipelines_dag = [
 ]
 
 
-data_science_pipelines_dag = [
-    "ds_propensity_to_expand",
-    "ds_propensity_to_contract",
-    "ds_propensity_to_purchase_trial",
-    "ds_namespace_segmentation",
-    "ds_propensity_to_purchase_free",
-    "ds_churn_forecasting",
-    "ds_propensity_to_purchase_leads",
-]
-
 sales_analytics_pipelines_dag = [
     "sales_analytics_daily_notebooks",
     "sales_analytics_weekly_notebooks",
@@ -172,8 +162,6 @@ def slack_defaults(context, task_type):
     if task_type == "failure":
         if dag_id in analytics_pipelines_dag:
             slack_channel = "#analytics-pipelines"
-        elif dag_id in data_science_pipelines_dag:
-            slack_channel = "#data-science-pipelines"
         elif dag_id in sales_analytics_pipelines_dag:
             slack_channel = "#sales-analytics-pipelines"
         else:
