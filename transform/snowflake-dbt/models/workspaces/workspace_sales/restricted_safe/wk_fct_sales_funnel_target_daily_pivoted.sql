@@ -5,35 +5,6 @@
 
 }},
 
-quarterly_targets AS (
-
-  SELECT
-      fiscal_quarter_name,
-      kpi_name, 
-      dim_crm_user_hierarchy_sk,
-      dim_sales_qualified_source_id,
-      dim_order_type_id,
-      SUM(daily_allocated_target) AS quarterly_allocated_target
-  FROM fct_sales_funnel_target_daily
-  GROUP BY 1,2,3,4,5
-
-),
-
-quarterly_monthly_targets AS (
-
-  SELECT
-    fct_sales_funnel_target_daily.*,
-    quarterly_targets.quarterly_allocated_target
-  FROM fct_sales_funnel_target_daily
-  LEFT JOIN quarterly_targets  
-    ON fct_sales_funnel_target_daily.fiscal_quarter_name = quarterly_targets.fiscal_quarter_name
-      AND fct_sales_funnel_target_daily.kpi_name = quarterly_targets.kpi_name
-        AND fct_sales_funnel_target_daily.dim_crm_user_hierarchy_sk = quarterly_targets.dim_crm_user_hierarchy_sk
-          AND fct_sales_funnel_target_daily.dim_sales_qualified_source_id = quarterly_targets.dim_sales_qualified_source_id
-            AND fct_sales_funnel_target_daily.dim_order_type_id = quarterly_targets.dim_order_type_id
-  
-),
-
 final AS (
   
   SELECT  

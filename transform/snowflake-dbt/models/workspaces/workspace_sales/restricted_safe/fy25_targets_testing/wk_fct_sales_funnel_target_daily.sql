@@ -13,13 +13,19 @@
       DATEADD('day', 1, target_date)                                                    AS report_target_date,
       DATEDIFF('day', fct_sales_funnel_target.first_day_of_month, prep_date.last_day_of_month) + 1   
                                                                                         AS days_of_month,
+      DATEDIFF('day', prep_date.first_day_of_quarter, prep_date.last_day_of_quarter) + 1   
+                                                                                        AS days_of_quarter,
       prep_date.first_day_of_week,
       prep_date.fiscal_quarter_name,
       {{ dbt_utils.star(from=ref('fct_sales_funnel_target'),
                         except=['CREATED_BY', 'UPDATED_BY', 'MODEL_CREATED_DATE', 'MODEL_UPDATED_DATE', 'DBT_UPDATED_AT', 'DBT_CREATED_AT'],
                         relation_alias='fct_sales_funnel_target') }},
+      
+      LEAST(prep_date.last_day_of_week, prep_date.last_day_of_month) - GREATEST(prep_date.first_day_of_week, prep_date.first_day_of_month) + 1 AS eligible_week_days,
       fct_sales_funnel_target.allocated_target                                          AS monthly_allocated_target,
-      fct_sales_funnel_target.allocated_target / days_of_month                          AS daily_allocated_target
+      fct_sales_funnel_target.allocated_target / days_of_month                          AS daily_allocated_target,
+      eligible_week_days * daily_allocated_target                                       AS weekly_allocated_target,
+      days_of_quarter * daily_allocated_target                                          AS quarterly_allocated_target
     FROM fct_sales_funnel_target
     INNER JOIN prep_date
       ON fct_sales_funnel_target.first_day_of_month = prep_date.first_day_of_month
