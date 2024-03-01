@@ -1,12 +1,8 @@
 level_0,level_1,level_2,level_3,level_4,GCP_PROJECT_ID,FULL_PATH,FROM_MAPPING,INFRA_LABEL
-GitLab Infrastructure,Gitaly,Repository Storage,,,,gitlab.com/Infrastructure/Environments/Production,repo_storage_pl_daily,gitaly
+GitLab Infrastructure,Gitaly,Production,Gitaly in gitlab-production,,,gitlab.com/Infrastructure/Environments/Production,repo_storage_pl_daily,gitaly
 GitLab Infrastructure,Gitaly,LFS,,,,gitlab.com/Infrastructure/Environments/Production,infralabel_pl,git_lfs
-GitLab Infrastructure,Gitaly,Staging,,,,gitlab.com/Infrastructure/Environments/Staging,folder_pl,gitaly
-GitLab Infrastructure,Gitaly,Staging,,,,gitlab.com/Infrastructure/Environments/Staging,t2d_cud_lookback,gitaly
-GitLab Infrastructure,Gitaly,Staging,,,,gitlab.com/Infrastructure/Environments/Staging/Staging Gitaly,t2d_cud_lookback,gitaly
-GitLab Infrastructure,Gitaly,Staging,,,,gitlab.com/Infrastructure/Environments/Staging Gitaly,t2d_cud_lookback,gitaly
-GitLab Infrastructure,Gitaly,Staging,,,,gitlab.com/Infrastructure/Environments/Staging Gitaly,folder_pl,gitaly
-GitLab Infrastructure,Gitaly,Staging,,,,gitlab.com/Infrastructure/Environments/Staging/Staging Gitaly,folder_pl,gitaly
+GitLab Infrastructure,Gitaly,Staging,,,gitlab-gitaly-gstg%,gitlab.com/Infrastructure/Environments/Staging/Staging Gitaly,repo_storage_pl_daily,
+GitLab Infrastructure,Gitaly,Production,,,gitlab-gitaly-gprd%,gitlab.com/Infrastructure/Environments/Production/Production Gitaly,repo_storage_pl_daily,
 GitLab Infrastructure,Gitaly,wip,,,,gitlab.com/Infrastructure/Environments/Production,infralabel_pl,gitaly
 GitLab Infrastructure,Gitaly,DR Testing,,,,gitlab.com/Infrastructure/Environments/DR Testing/DR Testing Gitaly%,folder_pl,
 GitLab Infrastructure,CI/CD,Runners,SaaS,linux small ,,gitlab.com/Infrastructure,ci_runner_pl_daily - 2,
@@ -33,24 +29,18 @@ GitLab Infrastructure,CI/CD,Build Artifacts,,,,gitlab.com/Infrastructure/Environ
 GitLab Infrastructure,CI/CD,gitlab-production costs,,,,gitlab.com/Infrastructure/Environments/Production,,continuous_integration
 GitLab Infrastructure,CI/CD,Staging,,,,gitlab.com/Infrastructure/Environments/Staging,continuous_integration_lookback,continuous_integration
 GitLab Infrastructure,CI/CD,Other costs,,,,gitlab.com/Infrastructure/Environments/Production,t2d_cud_lookback,continuous_integration
-GitLab Infrastructure,Gitaly,HAProxy,Carrier Peering Network,HTTPs Git Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-HTTPs Git Data Transfer,
-GitLab Infrastructure,Gitaly,HAProxy,Carrier Peering Network,SSH Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-SSH Data Transfer,
 GitLab Infrastructure,HAProxy,Carrier Peering Network,API Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-API Data Transfer,
 GitLab Infrastructure,HAProxy,Carrier Peering Network,Web Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-Web Data Transfer,
 GitLab Infrastructure,HAProxy,Carrier Peering Network,Pages Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-Pages Data Transfer,
 GitLab Infrastructure,HAProxy,Carrier Peering Network,WebSockets Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-WebSockets Data Transfer,
 GitLab Infrastructure,HAProxy,Carrier Peering Network,Registry Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-Registry Data Transfer,
 GitLab Infrastructure,HAProxy,Carrier Peering Network,TBD,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-TBD,
-GitLab Infrastructure,Gitaly,Networking,Inter-Egress,HTTPs Git Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-HTTPs Git Data Transfer,
-GitLab Infrastructure,Gitaly,Networking,Inter-Egress,SSH Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-SSH Data Transfer,
 GitLab Infrastructure,Networking,Inter-Egress,API Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-API Data Transfer,
 GitLab Infrastructure,Networking,Inter-Egress,Web Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-Web Data Transfer,
 GitLab Infrastructure,Networking,Inter-Egress,Pages Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-Pages Data Transfer,
 GitLab Infrastructure,Networking,Inter-Egress,WebSockets Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-WebSockets Data Transfer,
 GitLab Infrastructure,Networking,Inter-Egress,Registry Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-Registry Data Transfer,
 GitLab Infrastructure,Networking,Inter-Egress,TBD,,,gitlab.com/Infrastructure/Environments/Production,haproxy-inter-egress-TBD,
-GitLab Infrastructure,Gitaly,Networking,CDN,HTTPs Git Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-cdn-HTTPs Git Data Transfer,
-GitLab Infrastructure,Gitaly,Networking,CDN,SSH Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-cdn-SSH Data Transfer,
 GitLab Infrastructure,Networking,CDN,API Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cdn-API Data Transfer,
 GitLab Infrastructure,Networking,CDN,Web Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cdn-Web Data Transfer,
 GitLab Infrastructure,Networking,CDN,Pages Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cdn-Pages Data Transfer,

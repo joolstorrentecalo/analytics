@@ -125,7 +125,7 @@ join_hierarchy_component AS (
     ON coalesce(jf.full_path, '') like coalesce(hi.full_path, '')
       AND coalesce(jf.from_mapping, '') = coalesce(hi.from_mapping, '')
       AND (coalesce(jf.infra_label, '') = coalesce(hi.infra_label, '') or hi.infra_label IS NULL)
-      AND (coalesce(jf.gcp_project_id, '') = coalesce(hi.gcp_project_id, '') or hi.gcp_project_id IS NULL)
+      AND (coalesce(jf.gcp_project_id, '') LIKE coalesce(hi.gcp_project_id, '') or hi.gcp_project_id IS NULL)
 
 )
 

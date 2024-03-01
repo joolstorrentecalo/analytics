@@ -89,9 +89,14 @@ repo_storage_pl_daily AS (
 
 repo_storage_pl_daily_ext AS (
 
+  WITH projects AS (SELECT 'gitlab-gitaly-g%' AS project
+    UNION ALL
+    SELECT 'gitlab-production'
+  )
+
   SELECT
     snapshot_day                               AS date_day,
-    'gitlab-production'                        AS gcp_project_id,
+    projects.project                           AS gcp_project_id,
     NULL                                       AS gcp_service_description,
     NULL                                       AS gcp_sku_description,
     'gitaly'                                   AS infra_label,
@@ -102,6 +107,7 @@ repo_storage_pl_daily_ext AS (
     repo_storage_pl_daily.percent_repo_size_gb AS pl_percent,
     'repo_storage_pl_daily'                    AS from_mapping
   FROM {{ ref ('repo_storage_pl_daily') }}
+  CROSS JOIN projects
 
 ),
 
