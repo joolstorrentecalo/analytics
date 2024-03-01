@@ -1,11 +1,13 @@
-WITH targets_actuals AS (
+WITH actuals AS (
 
   SELECT * 
-  FROM {{ ref('wk_fct_targets_actuals_snapshot') }}
+  FROM {{ ref('wk_fct_crm_opportunity_daily_snapshot') }}
 
 ),
 
 day_5_list AS (
+
+  -- Filter data to only the thursday snapshot of every week
 
   SELECT 
     date_actual AS day_5_current_week,
@@ -16,10 +18,18 @@ day_5_list AS (
 
 ),
 
-final AS (
+day_5_snapshot AS (
 
   SELECT 
-    targets_actuals.*,
+    actuals.*
+  INNER JOIN day_5_list
+      ON actuals.snapshot_date = day_5_list.day_5_current_week
+), 
+
+final AS (
+
+    SELECT 
+      day_5_snapshot.*,
 
     -- TABLEAU FIELDS
     -- Create flags to know whether an action happened in the current snapshot week 
@@ -144,10 +154,7 @@ final AS (
       ELSE 0
     END AS closed_opps_in_snapshot_week,
     IFF(snapshot_fiscal_quarter_date = current_first_day_of_fiscal_quarter, TRUE, FALSE) AS is_current_snapshot_quarter
-  FROM targets_actuals
-  INNER JOIN day_5_list
-    ON targets_actuals.snapshot_date = day_5_list.day_5_current_week
-
+  FROM day_5_snapshot
 )
 
 SELECT * 
