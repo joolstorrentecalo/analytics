@@ -1,26 +1,36 @@
-with fiscal_quarter_target as
-(select 
-dim_order_type_id
-,dim_sales_qualified_source_id
-,dim_crm_user_hierarchy_sk
-,fiscal_Quarter_name
-,sum(daily_allocated_target) as total_quarter_target
-from PROD.RESTRICTED_SAFE_WORKSPACE_SALES.WK_FCT_SALES_FUNNEL_TARGET_DAILY
-where kpi_name = 'Net ARR Company'
-group by 1,2,3,4)
+WITH daily_targets AS (
+    
+    SELECT * 
+    FROM {{ ref('wk_fct_sales_funnel_target_daily') }}
+    
+),    
 
-select 
-td.dim_order_type_id
-,td.dim_sales_qualified_source_id
-,td.dim_crm_user_hierarchy_sk
-,td.fiscal_quarter_name 
-,td.target_date
-,qtd_allocated_target
-,total_quarter_target
-from
-PROD.RESTRICTED_SAFE_WORKSPACE_SALES.WK_FCT_SALES_FUNNEL_TARGET_DAILY td
-left join fiscal_quarter_target tq on td.fiscal_quarter_name = tq.fiscal_quarter_name
-    and td.dim_order_type_id = tq.dim_order_type_id
-    and td.dim_sales_qualified_source_id = tq.dim_sales_qualified_source_id
-    and td.dim_crm_user_hierarchy_sk = tq.dim_crm_user_hierarchy_sk
-where kpi_name = 'Net ARR Company'
+quarterly_targets AS ( 
+
+    SELECT 
+        dim_order_type_id,
+        dim_sales_qualified_source_id,
+        dim_crm_user_hierarchy_sk,
+        fiscal_quarter_name,
+        SUM(daily_allocated_target) AS total_quarter_target
+    FROM daily_targets
+    WHERE kpi_name = 'Net ARR Company'
+    GROUP BY 1,2,3,4
+
+)
+
+SELECT 
+    daily_targets.target_date,
+    daily_targets.dim_order_type_id,
+    daily_targets.dim_sales_qualified_source_id,
+    daily_targets.dim_crm_user_hierarchy_sk,
+    daily_targets.fiscal_quarter_name,
+    quarterly_targets.total_quarter_target,
+    daily_targets.qtd_allocated_target
+FROM daily_targets
+LEFT JOIN quarterly_targets 
+    ON daily_targets.fiscal_quarter_name = quarterly_targets.fiscal_quarter_name
+        AND daily_targets.dim_order_type_id = quarterly_targets.dim_order_type_id
+            AND daily_targets.dim_sales_qualified_source_id = quarterly_targets.dim_sales_qualified_source_id
+                AND daily_targets.dim_crm_user_hierarchy_sk = quarterly_targets.dim_crm_user_hierarchy_sk
+WHERE kpi_name = 'Net ARR Company'
