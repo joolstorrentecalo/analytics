@@ -16,3 +16,6 @@ WITH final AS (
 
 
 )
+
+SELECT * 
+FROM final

@@ -8,10 +8,10 @@ WITH actuals AS (
 targets AS (
 
   SELECT * 
-  FROM {{ ref('wk_fct_sales_funnel_target_quarterly')}}
+  FROM {{ ref('wk_mart_sales_funnel_target_quarterly')}}
 
 
-)
+),
 
 unioned AS (
 
@@ -24,7 +24,7 @@ unioned AS (
     NULL AS dim_crm_opportunity_id,
     dim_sales_qualified_source_id,
     dim_order_type_id,
-    dim_order_type_live_id,
+    NULL AS dim_order_type_live_id,
     dim_crm_user_hierarchy_sk,
     crm_user_business_unit,
     crm_user_sales_segment,
