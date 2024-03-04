@@ -23,6 +23,7 @@ aggregate_data AS (
     sales_type,
     calculated_deal_size,
     deal_size,
+    parent_crm_account_industry,
     crm_user_business_unit,
     crm_user_sales_segment,
     crm_user_geo,
