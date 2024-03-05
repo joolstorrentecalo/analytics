@@ -132,6 +132,7 @@ WITH zuora_central_sandbox_product AS (
           THEN 'Not Applicable'
         ELSE NULL
       END                                                           AS product_delivery_type,
+      zuora_central_sandbox_product.product_delivery_type           AS product_delivery_type_test,
       CASE
         WHEN LOWER(product_tier_historical) LIKE '%self-managed%'
           THEN 'Self-Managed'
@@ -149,6 +150,7 @@ WITH zuora_central_sandbox_product AS (
           THEN 'Not Applicable'
         ELSE NULL
       END                                                           AS product_deployment_type,
+      zuora_central_sandbox_product.product_deployment_type         AS product_deployment_type_test,
       CASE
         WHEN product_tier_historical IN (
                                           'SaaS - Gold'
@@ -176,7 +178,8 @@ WITH zuora_central_sandbox_product AS (
         WHEN product_tier_historical = 'SaaS - Silver'
           THEN 'SaaS - Premium'
         ELSE product_tier_historical
-      END                                                                       AS product_tier
+      END                                                                       AS product_tier,
+      zuora_central_sandbox_product.product_tier                                AS product_tier_test
     FROM zuora_central_sandbox_product
     INNER JOIN zuora_central_sandbox_product_rate_plan
       ON zuora_central_sandbox_product.product_id = zuora_central_sandbox_product_rate_plan.product_id
