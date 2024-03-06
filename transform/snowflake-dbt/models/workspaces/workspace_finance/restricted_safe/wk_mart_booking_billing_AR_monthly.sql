@@ -69,7 +69,7 @@ ORDER BY year_month
 )
 
 {{ dbt_audit(
-cte_ref="final_cdot_invoices_manual_intervention_monthly",
+cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-03-06",
