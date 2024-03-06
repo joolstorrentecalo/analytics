@@ -1186,3 +1186,6 @@ models:
 
   - name: wk_mart_cdot_invoices_manual_intervention_monthly
     description: Comparison of all CDot created invoices vs. CDot invoices that were updated manually by the Billing team
+
+  - name: wk_mart_booking_billing_AR_monthly
+    description: Comparison of monthly booking (opportunity), invoice and payment amounts and counts
