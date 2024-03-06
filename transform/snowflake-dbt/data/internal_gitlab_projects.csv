@@ -206,3 +206,15 @@ gitlab-com/gl-infra/gitlab-services,35744565
 gitlab-com/gl-infra/capacity-planning-test,42376761
 gitlab-com/gl-infra/es-diagnostics,18874917
 gitlab-com/gl-infra/k8s-workloads/gitlab-com,12547113
+gitlab-com/gl-infra/production-engineering,1304532
+gitlab-com/gl-security/threatmanagement/vulnerability-management/vulnerability-management-internal/vulnerability-management-tracker,34199366
+gitlab-com/gl-security/threatmanagement/vulnerability-management/vulnerability-management-internal/wiz-vulnerabilities,52970585
+gitlab-org/build/cng-security,52764962
+gitlab-org/ci-cd/shared-runners/images/macstadium/orka,19922160
+gitlab-org/cloud-native/charts/gitlab-ingress-nginx,32970696
+gitlab-org/cluster-integration/helm-install-image,9184510
+gitlab-org/ruby/gems/devfile-gem,43473862
+gitlab-org/security-products/analyzers/api-fuzzing-src,5964710
+gitlab-org/security-products/analyzers/kics,30656896
+gitlab-org/security-products/analyzers/secrets,10861561
+gitlab-org/security-products/analyzers/semgrep,24075172

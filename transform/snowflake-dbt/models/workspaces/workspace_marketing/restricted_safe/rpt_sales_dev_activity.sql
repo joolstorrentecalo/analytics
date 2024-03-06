@@ -3,8 +3,6 @@
 {{ simple_cte([
     ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
     ('dim_crm_user','dim_crm_user'),
-    ('dim_crm_user_daily_snapshot','dim_crm_user_daily_snapshot'),
-    ('mart_team_member_directory','mart_team_member_directory'),
     ('mart_crm_person','mart_crm_person'),
     ('sfdc_lead','sfdc_lead'),
     ('mart_crm_event','mart_crm_event'),
@@ -60,24 +58,19 @@
     WHERE sales_qualified_source_name = 'SDR Generated' 
       AND sales_accepted_date >= '2022-02-01' 
 
-),  
-
-sales_dev_hierarchy_prep AS (
-
+), sales_dev_hierarchy AS (
+  
   SELECT
   --Sales Dev Data
-    sales_dev_rep.dim_crm_user_id AS sales_dev_rep_user_id,
-    sales_dev_rep.user_role_name  AS sales_dev_rep_role_name,
-    sales_dev_rep.user_name       AS sales_dev_rep_user_name,
-    sales_dev_rep.user_email      AS sales_dev_rep_user_email,
-    sales_dev_rep.manager_id      AS sales_dev_rep_direct_manager_id,
-    manager.user_name             AS sales_dev_rep_direct_manager_name,
-    manager.employee_number       AS sales_dev_rep_direct_manager_employee_number,
-    manager.user_email            AS sales_dev_rep_manager_email,
-    leader.user_name              AS sales_dev_leader_name,
-    leader.employee_number        AS sales_dev_leader_employee_number,
-    leader.user_email             AS sales_dev_leader_email,
-    sales_dev_rep.is_active       AS sales_dev_rep_is_active,
+    sales_dev_rep.dim_crm_user_id AS sales_dev_rep_user_id, 
+    sales_dev_rep.user_role_name AS sales_dev_rep_role_name,
+    sales_dev_rep.user_name AS sales_dev_rep_user_name,
+    sales_dev_rep.title AS sales_dev_rep_title,
+    sales_dev_rep.department AS sales_dev_rep_department,
+    sales_dev_rep.team AS sales_dev_rep_team,
+    sales_dev_rep.manager_id AS sales_dev_rep_direct_manager_id,
+    sales_dev_rep.manager_name AS sales_dev_rep_direct_manager_name,
+    sales_dev_rep.is_active AS sales_dev_rep_is_active,
     sales_dev_rep.crm_user_sales_segment,
     sales_dev_rep.crm_user_geo,
     sales_dev_rep.crm_user_region,
@@ -130,7 +123,7 @@ sales_dev_hierarchy AS (
     mart_crm_person.dim_crm_person_id,
     sfdc_lead.converted_contact_id AS sfdc_record_id,
     sfdc_lead.lead_id AS original_lead_id,
-    sales_dev_opps.dim_crm_opportunity_id,
+    sales_dev_opps.DIM_CRM_OPPORTUNITY_ID,
     sales_dev_opps.opp_created_date,
     mart_crm_person.dim_crm_account_id
   FROM sfdc_lead 
@@ -289,7 +282,6 @@ sales_dev_hierarchy AS (
     END AS is_high_ptp_lead,
     mart_crm_person.marketo_last_interesting_moment,
     mart_crm_person.marketo_last_interesting_moment_date,
-    mart_crm_person.is_high_priority,
     activity_summarised.dim_crm_user_id,
     activity_summarised.activity_date,
     activity_summarised.activity_type,
@@ -334,12 +326,6 @@ sales_dev_hierarchy AS (
     opp_to_lead.is_eligible_open_pipeline,
     sales_dev_hierarchy.sales_dev_rep_user_id,
     sales_dev_hierarchy.sales_dev_rep_role_name,
-    sales_dev_hierarchy.sales_dev_rep_full_name,
-    sales_dev_hierarchy.sales_dev_manager_full_name,
-    sales_dev_hierarchy.sales_dev_leader
-    /* 
-    sales_dev_hierarchy.sales_dev_rep_user_id,
-    sales_dev_hierarchy.sales_dev_rep_role_name,
     sales_dev_hierarchy.sales_dev_rep_user_name,
     sales_dev_hierarchy.sales_dev_rep_title,
     sales_dev_hierarchy.sales_dev_rep_department,
@@ -355,7 +341,6 @@ sales_dev_hierarchy AS (
     sales_dev_hierarchy.sales_dev_rep_manager_role_name,
     sales_dev_hierarchy.sales_dev_rep_manager_id,
     sales_dev_hierarchy.sales_dev_rep_manager_name
-    */
   FROM mart_crm_person
   LEFT JOIN dim_date dim_mql_date
    ON mart_crm_person.mql_date_latest = dim_mql_date.date_day 
@@ -366,7 +351,7 @@ sales_dev_hierarchy AS (
   LEFT JOIN opp_to_lead 
     ON mart_crm_person.dim_crm_person_id = opp_to_lead.waterfall_person_id
   LEFT JOIN sales_dev_hierarchy 
-  ON COALESCE(opp_to_lead.sdr_bdr_user_id,activity_summarised.dim_crm_user_id) = sales_dev_hierarchy.sales_dev_rep_user_id AND activity_summarised.activity_date BETWEEN sales_dev_hierarchy.valid_from AND sales_dev_hierarchy.valid_to 
+  ON COALESCE(opp_to_lead.sdr_bdr_user_id,activity_summarised.dim_crm_user_id) = sales_dev_hierarchy.sales_dev_rep_user_id
   WHERE activity_to_sao_days <= 90 OR activity_to_sao_days IS NULL 
   UNION 
   SELECT DISTINCT -- distinct is necessary in order to not duplicate rows as addition of the rule above of activity_to_sao_days >90 might create multiple rows if there are multiple leads that satisfy the condition per opp which is not ideal. 
@@ -389,7 +374,6 @@ sales_dev_hierarchy AS (
     NULL AS is_high_ptp_lead,
     NULL AS marketo_last_interesting_moment,
     NULL AS marketo_last_interesting_moment_date,
-    NULL AS is_high_priority,
     NULL AS dim_crm_user_id,
     NULL AS activity_date,
     NULL AS activity_type,
@@ -430,13 +414,6 @@ sales_dev_hierarchy AS (
     opps_missing_link.is_eligible_open_pipeline,
     sales_dev_hierarchy.sales_dev_rep_user_id,
     sales_dev_hierarchy.sales_dev_rep_role_name,
-    sales_dev_hierarchy.sales_dev_rep_full_name,
-    sales_dev_hierarchy.sales_dev_manager_full_name,
-    sales_dev_hierarchy.sales_dev_leader
-
-    /* 
-    sales_dev_hierarchy.sales_dev_rep_user_id,
-    sales_dev_hierarchy.sales_dev_rep_role_name,
     sales_dev_hierarchy.sales_dev_rep_user_name,
     sales_dev_hierarchy.sales_dev_rep_title,
     sales_dev_hierarchy.sales_dev_rep_department,
@@ -452,10 +429,9 @@ sales_dev_hierarchy AS (
     sales_dev_hierarchy.sales_dev_rep_manager_role_name,
     sales_dev_hierarchy.sales_dev_rep_manager_id,
     sales_dev_hierarchy.sales_dev_rep_manager_name
-    */
   FROM opps_missing_link
   LEFT JOIN sales_dev_hierarchy 
-    ON opps_missing_link.sdr_bdr_user_id = sales_dev_hierarchy.sales_dev_rep_user_id AND sales_accepted_date BETWEEN sales_dev_hierarchy.valid_from AND sales_dev_hierarchy.valid_to 
+    ON opps_missing_link.sdr_bdr_user_id = sales_dev_hierarchy.sales_dev_rep_user_id
 
 )
 
@@ -464,5 +440,5 @@ sales_dev_hierarchy AS (
     created_by="@rkohnke",
     updated_by="@dmicovic",
     created_date="2023-09-06",
-    updated_date="2024-02-28",
+    updated_date="2023-12-08",
   ) }}

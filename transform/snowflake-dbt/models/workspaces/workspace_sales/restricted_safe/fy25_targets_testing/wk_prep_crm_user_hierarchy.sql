@@ -226,6 +226,7 @@ SELECT
 ), user_hierarchy_stamped_opportunity AS (
 /*
   To get a complete picture of the hierarchy and to ensure fidelity with the stamped opportunities, we will union in the distinct hierarchy values from the stamped opportunities.
+  The hierarchy switched from geo to role after 2024 so we stop taking values after that fiscal_year.
 */
 
     SELECT DISTINCT
@@ -244,6 +245,7 @@ SELECT
       NULL                                                           AS user_role_level_5
     FROM prep_crm_opportunity
     WHERE is_live = 1
+    AND prep_crm_opportunity.close_fiscal_year < 2025
   
 ), unioned AS (
 /*

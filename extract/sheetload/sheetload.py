@@ -1,4 +1,5 @@
 """ This module is for sheetload/driveload/s3 processes"""
+
 import sys
 import re
 from io import StringIO
@@ -389,6 +390,7 @@ def drive_loader(
             dw_uploader_append_only(engine, table=table_name, data=data, chunk=chunk)
 
             if archive_folder_id:
+                info("Moving file to archive folder")
                 google_drive_client.move_file_to_folder(
                     file_id=file_id, to_folder_id=archive_folder_id
                 )

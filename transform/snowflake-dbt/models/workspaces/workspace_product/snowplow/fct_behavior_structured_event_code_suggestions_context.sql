@@ -51,7 +51,12 @@ clicks AS (
       ELSE flat_contexts.value['data']['gitlab_realm']::VARCHAR
     END                                                                             AS delivery_type,
     flat_contexts.value['data']['api_status_code']::INT                             AS api_status_code,
-    flat_contexts.value['data']['gitlab_saas_namespace_ids']::VARCHAR               AS namespace_ids,
+    flat_contexts.value['data']['gitlab_saas_namespace_ids']::VARCHAR               AS saas_namespace_ids,
+    flat_contexts.value['data']['gitlab_saas_duo_pro_namespace_ids']::VARCHAR       AS duo_namespace_ids,
+    COALESCE(
+        IFF(duo_namespace_ids = '[]', NULL, duo_namespace_ids),
+        IFF(saas_namespace_ids = '[]', NULL, saas_namespace_ids)
+        )                                                                           AS namespace_ids,
     flat_contexts.value['data']['gitlab_instance_id']::VARCHAR                      AS instance_id,
     flat_contexts.value['data']['gitlab_host_name']::VARCHAR                        AS host_name
   FROM clicks,
@@ -256,7 +261,7 @@ clicks AS (
 {{ dbt_audit(
     cte_ref="combined",
     created_by="@mdrussell",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2023-09-25",
-    updated_date="2024-02-07"
+    updated_date="2024-02-29"
 ) }}

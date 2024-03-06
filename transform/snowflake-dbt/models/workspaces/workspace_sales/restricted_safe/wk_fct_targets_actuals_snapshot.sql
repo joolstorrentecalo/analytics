@@ -54,13 +54,13 @@ combined AS (
     actuals.ga_client_id,
     actuals.report_user_segment_geo_region_area_sqs_ot,
     actuals.sales_qualified_source_name,
+    actuals.opp_owner_name,
     actuals.order_type,
     actuals.order_type_live,
     actuals.order_type_grouped,
     actuals.stage_name,
     actuals.deal_path_name,
     actuals.sales_type,
-    actuals.parent_crm_account_industry,
 
     -- snapshot info
     actuals.snapshot_date,
@@ -112,7 +112,8 @@ combined AS (
     actuals.calculated_deal_size,
     actuals.deal_size,
 
-    --channel fields
+    -- fields
+    actuals.opportunity_name,
     actuals.lead_source,
     actuals.dr_partner_deal_type,
     actuals.dr_partner_engagement,
@@ -234,6 +235,8 @@ combined AS (
     dim_date.current_day_of_month                                   AS current_day_of_month,
     dim_date.current_day_of_fiscal_quarter                          AS current_day_of_fiscal_quarter,
     dim_date.current_day_of_fiscal_year                             AS current_day_of_fiscal_year,
+    FLOOR((DATEDIFF(day, dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) / 7))                   
+                                                                    AS current_week_of_fiscal_quarter_normalised,
     created_date.date_actual                                        AS created_date,
     created_date.first_day_of_month                                 AS created_month,
     created_date.first_day_of_fiscal_quarter                        AS created_fiscal_quarter_date,

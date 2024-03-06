@@ -152,3 +152,12 @@ models:
     description: an opportunity entitlment table to be used for row level security in Tableau
     columns:
       - name: opportunity_id
+  
+  - name: wk_prep_crm_opportunity_fy25
+    description: test version of prep_crm_opportunity for FY25 hierarchy
+    tests:
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - dim_crm_opportunity_id
+          - snapshot_id
+          - is_live

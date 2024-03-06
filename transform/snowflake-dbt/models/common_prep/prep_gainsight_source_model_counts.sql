@@ -1,4 +1,11 @@
-WITH counts AS (
+WITH filtered_seats AS (
+   
+   SELECT
+     *
+   FROM  {{ ref('customers_db_license_seat_links_source') }}
+   QUALIFY ROW_NUMBER() OVER (PARTITION BY zuora_subscription_id, report_date ORDER BY updated_at DESC) = 1
+
+), counts AS (
   
    SELECT 
     'version_raw_usage_data_source' AS model_name,
@@ -38,7 +45,7 @@ WITH counts AS (
    SELECT 
     'customers_db_license_seat_links_source' AS model_name,
     COUNT(*) AS row_count
-   FROM  {{ ref('customers_db_license_seat_links_source') }}
+   FROM  filtered_seats
 
 )
 
@@ -46,7 +53,7 @@ WITH counts AS (
 {{ dbt_audit(
     cte_ref="counts",
     created_by="@snalamaru",
-    updated_by="@ischweickartDD",
+    updated_by="@mdrussell",
     created_date="2021-02-19",
-    updated_date="2021-04-05"
+    updated_date="2024-02-29"
 ) }}

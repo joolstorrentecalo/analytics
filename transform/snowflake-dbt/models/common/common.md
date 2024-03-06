@@ -1929,3 +1929,9 @@ With requirements, you can set criteria to check your products against. They can
 This dimension model holds all requirement records and provides dimensional data around their state, creation dates, etc.
 
 {% enddocs %}
+
+{% docs dim_milestone %}
+
+All milestones created within a namespace, with details including the start date, due date, description, and title.
+
+{% enddocs %}

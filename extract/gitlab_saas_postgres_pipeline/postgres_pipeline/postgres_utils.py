@@ -248,9 +248,7 @@ def seed_table(
     target_table_name: str,
     target_engine: Engine,
 ) -> None:
-    """
-    Sets the proper data types and column names.
-    """
+    """Sets the proper data types and column names."""
     logging.info(f"Creating table {target_table_name}")
     snowflake_types.append(Column("_uploaded_at", Float))
     if advanced_metadata:
@@ -568,6 +566,8 @@ def chunk_and_upload_metadata(
         - COPY to Snowflake after all files have been uploaded to GCS
     """
     rows_uploaded = 0
+    # the chunks from the copy to stdout are not ordered- need to track max
+    max_last_extracted_id = -1
 
     with tempfile.TemporaryFile() as tmpfile:
         iter_csv = read_sql_tmpfile(
@@ -581,10 +581,16 @@ def chunk_and_upload_metadata(
             row_count = chunk_df.shape[0]
             rows_uploaded += row_count
             last_extracted_id = chunk_df[primary_key].max()
+            max_last_extracted_id = (
+                last_extracted_id
+                if last_extracted_id > max_last_extracted_id
+                else max_last_extracted_id
+            )
             logging.info(
                 f"\nlast_extracted_id for current Postgres chunk: {last_extracted_id}"
             )
 
+            # one caveat is that we no longer write metadata for all uploaded files only the final upload of the chunk...
             upload_date = datetime.utcnow()
             if initial_load_start_date is None:
                 initial_load_start_date = upload_date
@@ -599,36 +605,33 @@ def chunk_and_upload_metadata(
             if row_count > 0:
                 upload_to_gcs(advanced_metadata, chunk_df, upload_file_name)
                 logging.info(f"Uploaded {row_count} rows to GCS in {upload_file_name}")
-                is_export_completed = last_extracted_id >= max_source_id
 
-                # upload to Snowflake before writing metadata=complete for safety
-                if is_export_completed:
-                    upload_to_snowflake_after_extraction(
-                        chunk_df,
-                        database_kwargs,
-                        load_by_id_export_type,
-                        initial_load_start_date,
-                        advanced_metadata,
-                    )
-
-                write_metadata(
-                    database_kwargs["metadata_engine"],
-                    database_kwargs["metadata_table"],
-                    database_kwargs["source_database"],
-                    database_kwargs["real_target_table"],
-                    initial_load_start_date,
-                    upload_date,
-                    upload_file_name,
-                    last_extracted_id,
-                    max_source_id,
-                    is_export_completed,
-                    row_count,
-                )
-                # for loop should auto-terminate, but to be safe, avoid table overwrite
-                if is_export_completed:
-                    break
-
-    # need to return in case it was first set here
+    if rows_uploaded > 0:
+        is_export_completed = max_last_extracted_id >= max_source_id
+        # upload to Snowflake before writing metadata=complete for safety
+        if is_export_completed:
+            upload_to_snowflake_after_extraction(
+                chunk_df,
+                database_kwargs,
+                load_by_id_export_type,
+                initial_load_start_date,
+                advanced_metadata,
+            )
+        # only write metadata after all chunks have been written because chunks aren't ordered, can lead to false last_extracted_id
+        write_metadata(
+            database_kwargs["metadata_engine"],
+            database_kwargs["metadata_table"],
+            database_kwargs["source_database"],
+            database_kwargs["real_target_table"],
+            initial_load_start_date,
+            upload_date,
+            upload_file_name,
+            max_last_extracted_id,
+            max_source_id,
+            is_export_completed,
+            row_count,
+        )
+    # need to return `initial_load_start_date` in case it was first set here
     return initial_load_start_date
 
 
@@ -660,7 +663,7 @@ def range_generator(
         if start > stop:
             logging.info("No more id pairs to extract. Stopping")
             break
-        yield tuple([start, start + step])
+        yield tuple([start, start + step - 1])
         start += step
 
 
@@ -685,7 +688,12 @@ def get_source_and_target_columns(
         pd.read_sql(sql=target_query.format(target_table), con=target_engine)
         .drop(
             axis=1,
-            columns=["_uploaded_at", "_task_instance", "pgp_is_deleted"],
+            columns=[
+                "_uploaded_at",
+                "_task_instance",
+                "pgp_is_deleted",
+                "pgp_is_deleted_updated_at",
+            ],
             errors="ignore",
         )
         .columns
@@ -872,9 +880,17 @@ def get_is_past_due_deletes(prev_initial_load_start_date: datetime):
     and prev_initial_load_start_date has not been updated yet,
     it means that deletes needs to be run
     """
-    dbt_full_refresh_monthly_schedule = "* * * * SUN#1"
+    dbt_full_refresh_monthly_schedule = "45 8 * * SUN#1"
+    try:
+        data_interval_end_str = os.environ["DATE_INTERVAL_END"]
+    except KeyError:
+        raise KeyError("Airflow `data_interval_end` env var required, but missing")
+    airflow_data_interval_end = datetime.strptime(
+        data_interval_end_str, "%Y-%m-%dT%H:%M:%SZ"
+    )
+
     next_monthly_full_refresh_run = croniter(
-        dbt_full_refresh_monthly_schedule
+        dbt_full_refresh_monthly_schedule, airflow_data_interval_end
     ).get_next(datetime)
 
     days_till_refresh_threshold = 2
@@ -882,10 +898,10 @@ def get_is_past_due_deletes(prev_initial_load_start_date: datetime):
         days_till_refresh_threshold
     )
     is_past_due = (prev_initial_load_start_date < date_threshold) and (
-        datetime.utcnow() > date_threshold
+        airflow_data_interval_end > date_threshold
     )
     logging.info(
-        f"\ndeletes date_threshold: {date_threshold}, is_past_due: {is_past_due}"
+        f"\ndeletes_date_threshold: {date_threshold}, airflow_data_interval_end: {airflow_data_interval_end}, is_past_due: {is_past_due}"
     )
 
     return is_past_due
@@ -1010,6 +1026,22 @@ def update_import_query_for_delete_export(import_query: str, primary_key: str):
     return updated_query
 
 
+def add_deletes_column(target_engine, target_table_path, field_details):
+    # Add pgp_is_deleted field to target table if not exists
+    # Snowflake has a 'add column IF NOT EXISTS' clause but it doesn't work with DEFAULT
+    alter_query = f"""
+    ALTER TABLE {target_table_path}
+    ADD COLUMN IF NOT EXISTS {field_details};
+    """
+    try:
+        alter_query_results = query_executor(target_engine, alter_query)
+        logging.info(
+            f"add field if not exists `{field_details}`, {alter_query_results[0][0]}"
+        )
+    except sqlalchemy.exc.ProgrammingError:
+        raise
+
+
 def update_is_deleted_field(deletes_table: str, target_table: str, primary_key: str):
     """
     Run a series of sql statements to update the target table's pgp_is_deleted' field:
@@ -1038,32 +1070,28 @@ def update_is_deleted_field(deletes_table: str, target_table: str, primary_key: 
         target_engine.dispose()
         return
 
-    # Add pgp_is_deleted field to target table if not exists
-    # Snowflake has a 'add column IF NOT EXISTS' clause but it doesn't work with DEFAULT
-    add_is_deleted_field_query = f"ALTER TABLE {target_table_path} ADD COLUMN pgp_is_deleted boolean default false;"
-    try:
-        alter_query_results = query_executor(target_engine, add_is_deleted_field_query)
-        logging.info(f"pgp_is_deleted add column, {alter_query_results[0][0]}")
-    except sqlalchemy.exc.ProgrammingError as e:
-        # 'ambiguous column name' msg means is_delete column already exists, continue
-        if "ambiguous column name" not in str(e):
-            raise
+    # Add pgp_is_deleted/pgp_is_deleted_updated_at fields to target table if not exists
+    pgp_delete_field = "pgp_is_deleted boolean"
+    add_deletes_column(target_engine, target_table_path, pgp_delete_field)
+    pgp_delete_updated_at_field = "pgp_is_deleted_updated_at timestamp"
+    add_deletes_column(target_engine, target_table_path, pgp_delete_updated_at_field)
 
     logging.info("Running update query for pgp_is_deleted column...")
     # Run UPDATE on target table 'pgp_is_deleted' field
     update_query = f"""
     UPDATE {target_table_path} t
     SET
-      t.pgp_is_deleted = TRUE
-    WHERE
-      NOT EXISTS (
+      t.pgp_is_deleted = CASE
+      WHEN NOT EXISTS (
         SELECT *
         FROM
-          {deletes_table_path}
+          {deletes_table_path} s
         WHERE
-          {deletes_table_path}.{primary_key} = t.{primary_key}
-      )
-      AND t.pgp_is_deleted = FALSE;
+          s.{primary_key} = t.{primary_key}
+        ) THEN TRUE
+        ELSE FALSE
+      END,
+      t.pgp_is_deleted_updated_at = CURRENT_TIMESTAMP();
       """
 
     update_query_results = query_executor(target_engine, update_query)
@@ -1073,6 +1101,7 @@ def update_is_deleted_field(deletes_table: str, target_table: str, primary_key: 
 
     # Run DROP table on deletes table
     drop_query = f" drop table {deletes_table_path};"
+    logging.info(f"Running drop table query: {drop_query}")
     drop_query_results = query_executor(target_engine, drop_query)
-    logging.info(f"Table {deletes_table_path}.{drop_query_results[0][0]}")
+    logging.info(f"Table {drop_query_results[0][0]}")
     target_engine.dispose()

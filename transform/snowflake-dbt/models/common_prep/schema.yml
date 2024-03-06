@@ -1470,12 +1470,39 @@ models:
           - unique
 
   - name: prep_milestone
-    description: Prep table used in `prep_event`
+    description: '{{ doc("prep_milestone") }}'
     columns:
-      - name: dim_milestone_id
+      - name: dim_milestone_sk
+        description: '{{ doc("dim_milestone_sk") }}'
         tests:
           - not_null
           - unique
+      - name: milestone_id
+        description: '{{ doc("milestone_id") }}'
+      - name: dim_milestone_id
+        description: '{{ doc("dim_milestone_id") }}'
+      - name: created_at
+        description: '{{ doc("milestone_created_at") }}'
+      - name: updated_at
+        description: '{{ doc("milestone_updated_at") }}'
+      - name: created_date_id
+        description: '{{ doc("milestone_created_date_id") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id") }}'
+      - name: ultimate_parent_namespace_id
+        description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+      - name: dim_plan_id
+        description: '{{ doc("dim_plan_id") }}'
+      - name: milestone_title
+        description: '{{ doc("milestone_title") }}'
+      - name: milestone_description
+        description: '{{ doc("milestone_description") }}'
+      - name: milestone_start_date
+        description: '{{ doc("milestone_start_date") }}'
+      - name: milestone_due_date
+        description: '{{ doc("milestone_due_date") }}'
+      - name: milestone_status
+        description: '{{ doc("milestone_status") }}'
 
   - name: prep_ci_pipeline_schedule
     description: Prep table used in `prep_event`

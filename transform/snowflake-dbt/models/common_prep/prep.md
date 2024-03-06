@@ -861,3 +861,10 @@ This model contains other join keys like `billing_account_id`, `subscription_nam
 This model contains the logic for connecting product licenses and subscriptions for use in connecting service ping data to customer accounts.
 
 {% enddocs %}
+
+
+{% docs prep_milestone %}
+
+All milestones created within a namespace, with details including the start date, due date, description, and title.
+
+{% enddocs %}

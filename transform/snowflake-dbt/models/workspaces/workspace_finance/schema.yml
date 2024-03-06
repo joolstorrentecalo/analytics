@@ -1105,6 +1105,8 @@ models:
       
   - name: driveload_booking_to_billing_monthly_reconciliation
     description: Output of Finance's analysis determining timing differences between bookings and billings
+  - name: driveload_pending_invoices_report
+    description: Report of future dates pending invoices in Zuora, e.g. for multiyear ramp order with annual payment schedule
   - name: rpt_arr_no_manual_adjustment_for_sfdc_reconciliation
     description: Report view of [mart_arr](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.mart_arr) without the manual true up adjustments added from Zuora Revenue. This report is used exclusively for the montly Salesforce reconciliation process and is not to be used for financial reporting since it does not include the manually adjusted true up charges.
     columns:
@@ -1150,3 +1152,33 @@ models:
     description: Zuora payment transaction - grain is one payment
     columns:
       - name: payment_id 
+      
+  - name: wk_finance_fct_invoice_aging_detail
+    description: Zuora invoice aging detail - grain is one transaction
+    columns:
+      - name: invoice_aging_detail_id 
+
+  - name: wk_finance_fct_invoice_payment
+    description: Zuora invoice payment transaction - grain is one payment applied to the invoice
+    columns:
+      - name: invoice_payment_id
+
+  - name: wk_finance_fct_refund_invoice_payment
+    description: Zuora invoice refund transaction - grain is one refund made on the invoice
+    columns:
+      - name: refund_invoice_payment_id
+
+  - name: wk_finance_fct_refund
+    description: Zuora refund transaction - grain is one refund either from invoice or account
+    columns:
+      - name: refund_id
+
+  - name: wk_finance_fct_invoice_item_adjustment
+    description: Zuora invoice item adjustment - grain is one adjustment per invoice item
+    columns:
+      - name: invoice_item_adjustment_id
+
+  - name: wk_finance_fct_credit_balance_adjustment
+    description: Zuora credit balance adjustment - grain is one adjustment per invoice or account
+    columns:
+      - name: credit_balance_adjustment_id

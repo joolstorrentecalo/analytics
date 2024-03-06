@@ -3,7 +3,7 @@
         SELECT * 
         FROM {{ source('sheetload','sales_targets') }}
 
-        )
+), renamed AS (
 
         SELECT
           scenario::VARCHAR                                                         AS scenario,
@@ -27,3 +27,37 @@
           role_level_5::VARCHAR                                                     AS role_level_5,
           REPLACE(allocated_target, ',', '')::FLOAT                                 AS allocated_target
         FROM source
+)
+
+        SELECT *
+        FROM renamed
+
+        UNION
+
+        -- Added new logo KPI so it is easier to relate fct_sales_funnel_target_daily and fct_sales_funnel_actual
+        -- This is because for the actual values there are two flags, one for Deals and another for New Logos
+        -- Issue that introduced this methodology: https://gitlab.com/gitlab-data/analytics/-/issues/18838
+        SELECT
+          scenario,
+          'New Logos' AS kpi_name,
+          month,
+          sales_qualified_source,
+          alliance_partner,
+          partner_category,
+          order_type,
+          area,
+          user_segment,
+          user_geo,
+          user_region,
+          user_area,
+          user_business_unit,
+          user_role_name,
+          role_level_1,
+          role_level_2,
+          role_level_3,
+          role_level_4,
+          role_level_5,
+          allocated_target
+        FROM renamed
+        WHERE kpi_name = 'Deals'
+            AND order_type = '1. New - First Order'

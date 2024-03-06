@@ -4,7 +4,7 @@
 
 {{ simple_cte([
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
-    ('wk_sales_sfdc_opportunity_snapshot_history_xf','wk_sales_sfdc_opportunity_snapshot_history_xf'),
+    ('mart_crm_opportunity_daily_snapshot','mart_crm_opportunity_daily_snapshot'),
     ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
     ('mart_crm_account','mart_crm_account'),
     ('sfdc_bizible_attribution_touchpoint_snapshots_source', 'sfdc_bizible_attribution_touchpoint_snapshots_source'),
@@ -94,80 +94,88 @@
 
 )
 
-, wk_sales_sfdc_opportunity_snapshot_history_xf_base AS (
+, opportunity_snapshot_base AS (
 
-  SELECT
-    wk_sales_sfdc_opportunity_snapshot_history_xf.opportunity_id AS dim_crm_opportunity_id,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.account_id AS dim_crm_account_id,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.account_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.ultimate_parent_account_id AS dim_crm_ultimate_parent_account_id,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.ultimate_parent_account_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.snapshot_opportunity_category AS opportunity_category,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.sales_type,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.order_type_stamped AS order_type,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.sales_qualified_source AS sales_qualified_source_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.stage_name,
+SELECT
+  snapshot.dim_crm_opportunity_id,
+  snapshot.dim_crm_account_id,
+  account.crm_account_name                  AS account_name,
+  snapshot.dim_parent_crm_account_id,
+  account.parent_crm_account_name,
+  live.opportunity_category,
+  live.sales_type,
+  live.order_type,
+  live.sales_qualified_source_name,
+  snapshot.stage_name,
 
---Account Info
-    wk_sales_sfdc_opportunity_snapshot_history_xf.parent_crm_account_sales_segment,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.parent_crm_account_geo,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.parent_crm_account_region,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.parent_crm_account_area,
+  --Account Info
+  account.owner_role                        AS account_owner_role,
+  account.parent_crm_account_territory,
+  live.parent_crm_account_sales_segment,
+  live.parent_crm_account_geo,
+  live.parent_crm_account_region,
+  live.parent_crm_account_area,
+  live.opportunity_owner_role,
 
---Dates 
-    wk_sales_sfdc_opportunity_snapshot_history_xf.created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.sales_accepted_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.pipeline_created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.pipeline_created_fiscal_quarter_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.pipeline_created_fiscal_year,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.net_arr_created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.close_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.close_fiscal_quarter_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.snapshot_date AS opportunity_snapshot_date,
-    dim_date.day_of_fiscal_quarter_normalised as pipeline_created_day_of_fiscal_quarter_normalised,
-    dim_date.day_of_fiscal_year_normalised as pipeline_created_day_of_fiscal_year_normalised,
+  --Dates 
+  snapshot.created_date,
+  snapshot.sales_accepted_date,
+  snapshot.pipeline_created_date,
+  snapshot.pipeline_created_fiscal_quarter_name,
+  snapshot.pipeline_created_fiscal_year,
+  snapshot.net_arr_created_date,
+  snapshot.close_date,
+  snapshot.close_fiscal_quarter_name,
+  snapshot.snapshot_date                    AS opportunity_snapshot_date,
+  dim_date.day_of_fiscal_quarter_normalised AS pipeline_created_day_of_fiscal_quarter_normalised,
+  dim_date.day_of_fiscal_year_normalised    AS pipeline_created_day_of_fiscal_year_normalised,
 
---User Hierarchy
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_segment,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_geo,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_region,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_area,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_business_unit,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_sub_business_unit,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_division,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.report_opportunity_user_asm,
+  --User Hierarchy
+  snapshot.report_opportunity_user_segment  AS snapshot_report_opportunity_user_segment,
+  live.report_opportunity_user_segment,
+  snapshot.report_opportunity_user_geo      AS snapshot_report_opportunity_user_segment,
+  live.report_opportunity_user_geo,
+  snapshot.report_opportunity_user_region   AS snapshot_report_opportunity_user_region,
+  live.report_opportunity_user_region,
+  snapshot.report_opportunity_user_area     AS snapshot_report_opportunity_user_area,
+  live.report_opportunity_user_area,
+  --    report_opportunity_user_business_unit,
+  --    report_opportunity_user_sub_business_unit,
+  --    report_opportunity_user_division,
+  --    report_opportunity_user_asm,
 
---Flags
-    CASE
-        WHEN wk_sales_sfdc_opportunity_snapshot_history_xf.sales_accepted_date IS NOT NULL
-          AND wk_sales_sfdc_opportunity_snapshot_history_xf.is_edu_oss = 0
-          AND wk_sales_sfdc_opportunity_snapshot_history_xf.stage_name != '10-Duplicate'
-            THEN TRUE
-        ELSE FALSE
-      END AS is_sao,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_won,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_web_portal_purchase,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_edu_oss,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_eligible_created_pipeline_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_open,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_lost,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_closed,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_renewal,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_refund,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_credit_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_eligible_sao_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_eligible_open_pipeline_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_booked_net_arr_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf.is_eligible_age_analysis_flag,
+  --Flags
+  live.is_sao,
+  live.is_won,
+  live.is_web_portal_purchase,
+  live.is_edu_oss,
+  live.is_net_arr_pipeline_created          AS is_eligible_created_pipeline_flag,
+  live.is_open,
+  live.is_lost,
+  live.is_closed,
+  live.is_renewal,
+  live.is_refund,
+  live.is_credit                            AS is_credit_flag,
+  --    is_eligible_sao_flag,
+  live.is_eligible_open_pipeline AS is_eligible_open_pipeline_flag,
+  live.is_booked_net_arr AS is_booked_net_arr_flag,
+  live.is_eligible_age_analysis AS is_eligible_age_analysis_flag,
 
---Metrics
-    wk_sales_sfdc_opportunity_snapshot_history_xf.net_arr AS opp_net_arr
+  --Metrics
+  snapshot.net_arr                          AS opp_net_arr
 
-  FROM wk_sales_sfdc_opportunity_snapshot_history_xf
-  INNER JOIN snapshot_dates ON wk_sales_sfdc_opportunity_snapshot_history_xf.snapshot_date = snapshot_dates.date_day
-  LEFT JOIN dim_date on wk_sales_sfdc_opportunity_snapshot_history_xf.pipeline_created_date = dim_date.date_day 
-  WHERE snapshot_dates.fiscal_quarter_name_fy = pipeline_created_fiscal_quarter_name
-
+FROM
+  mart_crm_opportunity_daily_snapshot AS snapshot
+INNER JOIN snapshot_dates
+  ON snapshot.snapshot_date = snapshot_dates.date_day
+LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist AS live
+  ON snapshot.dim_crm_opportunity_id = live.dim_crm_opportunity_id
+LEFT JOIN mart_crm_account AS account
+  ON snapshot.dim_crm_account_id = account.dim_crm_account_id
+LEFT JOIN dim_date 
+  ON snapshot.pipeline_created_date = dim_date.date_day
+WHERE snapshot_dates.fiscal_quarter_name_fy = snapshot.pipeline_created_fiscal_quarter_name 
+  AND snapshot.dim_crm_account_id != '0014M00001kGcORQA0'  -- test account
 ), 
 
 
@@ -175,69 +183,72 @@ combined_models AS (
 
   SELECT
   --IDs
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_opportunity_id,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_account_id,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_ultimate_parent_account_id,
+    opportunity_snapshot_base.dim_crm_opportunity_id,
+    opportunity_snapshot_base.dim_crm_account_id,
+    opportunity_snapshot_base.dim_parent_crm_account_id,
     attribution_touchpoint_snapshot_base.dim_crm_touchpoint_id,
 
   --Dates
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_accepted_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_fiscal_quarter_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_fiscal_year,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_day_of_fiscal_quarter_normalised,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_day_of_fiscal_year_normalised,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.net_arr_created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.close_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.close_fiscal_quarter_name,
+    opportunity_snapshot_base.created_date,
+    opportunity_snapshot_base.sales_accepted_date,
+    opportunity_snapshot_base.pipeline_created_date,
+    opportunity_snapshot_base.pipeline_created_fiscal_quarter_name,
+    opportunity_snapshot_base.pipeline_created_fiscal_year,
+    opportunity_snapshot_base.pipeline_created_day_of_fiscal_quarter_normalised,
+    opportunity_snapshot_base.pipeline_created_day_of_fiscal_year_normalised,
+    opportunity_snapshot_base.net_arr_created_date,
+    opportunity_snapshot_base.close_date,
+    opportunity_snapshot_base.close_fiscal_quarter_name,
     attribution_touchpoint_snapshot_base.bizible_touchpoint_date,
     attribution_touchpoint_snapshot_base.touchpoint_snapshot_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.opportunity_snapshot_date,
+    opportunity_snapshot_base.opportunity_snapshot_date,
   
   --Account Info
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_sales_segment,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_geo,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_region,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_area,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.account_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.ultimate_parent_account_name,
+    opportunity_snapshot_base.account_owner_role,
+    opportunity_snapshot_base.parent_crm_account_territory,
+    opportunity_snapshot_base.parent_crm_account_sales_segment,
+    opportunity_snapshot_base.parent_crm_account_geo,
+    opportunity_snapshot_base.parent_crm_account_region,
+    opportunity_snapshot_base.parent_crm_account_area,
+    opportunity_snapshot_base.account_name,
+    opportunity_snapshot_base.parent_crm_account_name,
 
 --User Hierarchy
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_segment,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_geo,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_region,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_area,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_business_unit,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_sub_business_unit,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_division,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_asm,
+    opportunity_snapshot_base.report_opportunity_user_segment,
+    opportunity_snapshot_base.report_opportunity_user_geo,
+    opportunity_snapshot_base.report_opportunity_user_region,
+    opportunity_snapshot_base.report_opportunity_user_area,
+-- DM: Removed as a part of FY25 hierarchy changes   
+--    opportunity_snapshot_base.report_opportunity_user_business_unit,
+--    opportunity_snapshot_base.report_opportunity_user_sub_business_unit,
+--    opportunity_snapshot_base.report_opportunity_user_division,
+--   opportunity_snapshot_base.report_opportunity_user_asm,
 
 --Opportunity Dimensions
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.opportunity_category,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_type,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.order_type,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_qualified_source_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.stage_name,
+    opportunity_snapshot_base.opportunity_category,
+    opportunity_snapshot_base.sales_type,
+    opportunity_snapshot_base.order_type,
+    opportunity_snapshot_base.sales_qualified_source_name,
+    opportunity_snapshot_base.stage_name,
 
 --Touchpoint Dimensions
     attribution_touchpoint_snapshot_base.bizible_touchpoint_type,
     attribution_touchpoint_snapshot_base.bizible_integrated_campaign_grouping,
     attribution_touchpoint_snapshot_base.opp_touchpoint_sales_stage,
     CASE 
-      WHEN wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_qualified_source_name = 'SDR Generated' 
+      WHEN opportunity_snapshot_base.sales_qualified_source_name = 'SDR Generated' 
         AND attribution_touchpoint_snapshot_base.dim_crm_touchpoint_id IS NULL
       THEN 'SDR Generated'
-      WHEN wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_qualified_source_name = 'Web Direct Generated' 
+      WHEN opportunity_snapshot_base.sales_qualified_source_name = 'Web Direct Generated' 
         AND attribution_touchpoint_snapshot_base.dim_crm_touchpoint_id IS NULL
       THEN 'Web Direct'
       ELSE attribution_touchpoint_snapshot_base.bizible_marketing_channel 
     END AS bizible_marketing_channel,
     CASE 
-      WHEN wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_qualified_source_name = 'SDR Generated' 
+      WHEN opportunity_snapshot_base.sales_qualified_source_name = 'SDR Generated' 
         AND attribution_touchpoint_snapshot_base.dim_crm_touchpoint_id IS NULL
       THEN 'SDR Generated.No Touchpoint'
-      WHEN wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_qualified_source_name = 'Web Direct Generated' 
+      WHEN opportunity_snapshot_base.sales_qualified_source_name = 'Web Direct Generated' 
         AND attribution_touchpoint_snapshot_base.dim_crm_touchpoint_id IS NULL
       THEN 'Web Direct.No Touchpoint'
       ELSE attribution_touchpoint_snapshot_base.bizible_marketing_channel_path 
@@ -266,11 +277,11 @@ combined_models AS (
     attribution_touchpoint_snapshot_base.touchpoint_offer_type_grouped,
 
   --Metrics
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.opp_net_arr,
+    opportunity_snapshot_base.opp_net_arr,
     attribution_touchpoint_snapshot_base.bizible_count_custom_model,
-    attribution_touchpoint_snapshot_base.bizible_weight_custom_model/100 * wk_sales_sfdc_opportunity_snapshot_history_xf_base.opp_net_arr AS custom_net_arr_base,
+    attribution_touchpoint_snapshot_base.bizible_weight_custom_model/100 * opportunity_snapshot_base.opp_net_arr AS custom_net_arr_base,
     CASE 
-      WHEN wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_qualified_source_name IN ('SDR Generated','Web Direct Generated') AND dim_crm_touchpoint_id IS NULL 
+      WHEN opportunity_snapshot_base.sales_qualified_source_name IN ('SDR Generated','Web Direct Generated') AND dim_crm_touchpoint_id IS NULL 
       THEN opp_net_arr 
     ELSE custom_net_arr_base 
     END AS custom_net_arr,
@@ -278,26 +289,26 @@ combined_models AS (
   --
 
   --Flags
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_sao,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_won,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_web_portal_purchase,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_edu_oss,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_created_pipeline_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_open,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_lost,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_closed,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_renewal,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_refund,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_credit_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_sao_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_open_pipeline_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_booked_net_arr_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_age_analysis_flag
+    opportunity_snapshot_base.is_sao,
+    opportunity_snapshot_base.is_won,
+    opportunity_snapshot_base.is_web_portal_purchase,
+    opportunity_snapshot_base.is_edu_oss,
+    opportunity_snapshot_base.is_eligible_created_pipeline_flag,
+    opportunity_snapshot_base.is_open,
+    opportunity_snapshot_base.is_lost,
+    opportunity_snapshot_base.is_closed,
+    opportunity_snapshot_base.is_renewal,
+    opportunity_snapshot_base.is_refund,
+    opportunity_snapshot_base.is_credit_flag,
+--    opportunity_snapshot_base.is_eligible_sao_flag, DM: removed during transition to mart_crm_opportunity_daily_snapshot
+    opportunity_snapshot_base.is_eligible_open_pipeline_flag,
+    opportunity_snapshot_base.is_booked_net_arr_flag,
+    opportunity_snapshot_base.is_eligible_age_analysis_flag
     
-  FROM wk_sales_sfdc_opportunity_snapshot_history_xf_base
+  FROM opportunity_snapshot_base
   LEFT JOIN attribution_touchpoint_snapshot_base
-    ON wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_opportunity_id = attribution_touchpoint_snapshot_base.dim_crm_opportunity_id
-    AND wk_sales_sfdc_opportunity_snapshot_history_xf_base.opportunity_snapshot_date = attribution_touchpoint_snapshot_base.touchpoint_snapshot_date
+    ON opportunity_snapshot_base.dim_crm_opportunity_id = attribution_touchpoint_snapshot_base.dim_crm_opportunity_id
+    AND opportunity_snapshot_base.opportunity_snapshot_date = attribution_touchpoint_snapshot_base.touchpoint_snapshot_date
 
 ), missing_net_arr_difference AS (
     SELECT 
@@ -317,50 +328,54 @@ combined_models AS (
 ),  missing_net_arr_base AS (
     SELECT 
  --IDs
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_opportunity_id,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_account_id,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_ultimate_parent_account_id,
+    opportunity_snapshot_base.dim_crm_opportunity_id,
+    opportunity_snapshot_base.dim_crm_account_id,
+    opportunity_snapshot_base.dim_parent_crm_account_id,
     NULL AS dim_crm_touchpoint_id,
 
   --Dates
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_accepted_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_fiscal_quarter_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_fiscal_year,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_day_of_fiscal_quarter_normalised,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_day_of_fiscal_year_normalised,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.net_arr_created_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.close_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.close_fiscal_quarter_name,
+    opportunity_snapshot_base.created_date,
+    opportunity_snapshot_base.sales_accepted_date,
+    opportunity_snapshot_base.pipeline_created_date,
+    opportunity_snapshot_base.pipeline_created_fiscal_quarter_name,
+    opportunity_snapshot_base.pipeline_created_fiscal_year,
+    opportunity_snapshot_base.pipeline_created_day_of_fiscal_quarter_normalised,
+    opportunity_snapshot_base.pipeline_created_day_of_fiscal_year_normalised,
+    opportunity_snapshot_base.net_arr_created_date,
+    opportunity_snapshot_base.close_date,
+    opportunity_snapshot_base.close_fiscal_quarter_name,
     NULL AS bizible_touchpoint_date,
     NULL AS touchpoint_snapshot_date,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.opportunity_snapshot_date,
+    opportunity_snapshot_base.opportunity_snapshot_date,
   
   --Account Info
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_sales_segment,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_geo,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_region,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.parent_crm_account_area,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.account_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.ultimate_parent_account_name,
+    opportunity_snapshot_base.account_owner_role,
+    opportunity_snapshot_base.parent_crm_account_territory,
+    opportunity_snapshot_base.parent_crm_account_sales_segment,
+    opportunity_snapshot_base.parent_crm_account_geo,
+    opportunity_snapshot_base.parent_crm_account_region,
+    opportunity_snapshot_base.parent_crm_account_area,
+    opportunity_snapshot_base.account_name,
+    opportunity_snapshot_base.parent_crm_account_name,
 
 --User Hierarchy
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_segment,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_geo,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_region,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_area,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_business_unit,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_sub_business_unit,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_division,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.report_opportunity_user_asm,
+    opportunity_snapshot_base.report_opportunity_user_segment,
+    opportunity_snapshot_base.report_opportunity_user_geo,
+    opportunity_snapshot_base.report_opportunity_user_region,
+    opportunity_snapshot_base.report_opportunity_user_area,
+
+-- DM: Removed as a part of FY25 hierarchy changes   
+--    opportunity_snapshot_base.report_opportunity_user_business_unit,
+--    opportunity_snapshot_base.report_opportunity_user_sub_business_unit,
+--    opportunity_snapshot_base.report_opportunity_user_division,
+--   opportunity_snapshot_base.report_opportunity_user_asm,
 
 --Opportunity Dimensions
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.opportunity_category,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_type,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.order_type,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.sales_qualified_source_name,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.stage_name,
+    opportunity_snapshot_base.opportunity_category,
+    opportunity_snapshot_base.sales_type,
+    opportunity_snapshot_base.order_type,
+    opportunity_snapshot_base.sales_qualified_source_name,
+    opportunity_snapshot_base.stage_name,
 
 
 --Touchpoint Dimensions
@@ -393,34 +408,34 @@ combined_models AS (
     NULL AS touchpoint_offer_type_grouped,
 
   --Metrics
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.opp_net_arr,
+    opportunity_snapshot_base.opp_net_arr,
     missing_net_arr_difference.count_difference AS bizible_count_custom_model,
     NULL AS custom_net_arr_base,
     missing_net_arr_difference.net_arr_difference AS custom_net_arr,
-    COALESCE(custom_net_arr,wk_sales_sfdc_opportunity_snapshot_history_xf_base.opp_net_arr) AS net_arr,
+    COALESCE(custom_net_arr,opportunity_snapshot_base.opp_net_arr) AS net_arr,
   --
 
   --Flags
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_sao,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_won,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_web_portal_purchase,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_edu_oss,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_created_pipeline_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_open,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_lost,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_closed,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_renewal,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_refund,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_credit_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_sao_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_open_pipeline_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_booked_net_arr_flag,
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base.is_eligible_age_analysis_flag
+    opportunity_snapshot_base.is_sao,
+    opportunity_snapshot_base.is_won,
+    opportunity_snapshot_base.is_web_portal_purchase,
+    opportunity_snapshot_base.is_edu_oss,
+    opportunity_snapshot_base.is_eligible_created_pipeline_flag,
+    opportunity_snapshot_base.is_open,
+    opportunity_snapshot_base.is_lost,
+    opportunity_snapshot_base.is_closed,
+    opportunity_snapshot_base.is_renewal,
+    opportunity_snapshot_base.is_refund,
+    opportunity_snapshot_base.is_credit_flag,
+--    opportunity_snapshot_base.is_eligible_sao_flag, DM: removed during transition to mart_crm_opportunity_daily_snapshot
+    opportunity_snapshot_base.is_eligible_open_pipeline_flag,
+    opportunity_snapshot_base.is_booked_net_arr_flag,
+    opportunity_snapshot_base.is_eligible_age_analysis_flag
 
     FROM missing_net_arr_difference
     INNER JOIN
-    wk_sales_sfdc_opportunity_snapshot_history_xf_base ON missing_net_arr_difference.dim_crm_opportunity_id = wk_sales_sfdc_opportunity_snapshot_history_xf_base.dim_crm_opportunity_id 
-    AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = wk_sales_sfdc_opportunity_snapshot_history_xf_base.pipeline_created_fiscal_quarter_name
+    opportunity_snapshot_base ON missing_net_arr_difference.dim_crm_opportunity_id = opportunity_snapshot_base.dim_crm_opportunity_id 
+    AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = opportunity_snapshot_base.pipeline_created_fiscal_quarter_name
 
 ), final AS (
     SELECT 
@@ -437,7 +452,7 @@ combined_models AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@rkohnke",
+    updated_by="@dmicovic",
     created_date="2023-04-11",
-    updated_date="2024-02-22",
+    updated_date="2024-03-04",
   ) }}

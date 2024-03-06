@@ -659,6 +659,8 @@ models:
         description: The linked GitLab SFDC Marketing Campaign for Partners
       - name: distributor_marketing_campaign
         description: The linked GitLab SFDC Marketing Campaign for distributors
+      - name: linked_opportunity_id
+        description: The linked Opp on the Deal Registration
 
   - name: sfdc_permission_set_assignment_source
     description: '{{ doc("sfdc_permission_set_assignment_source") }}'

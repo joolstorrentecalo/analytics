@@ -31,7 +31,7 @@
     SELECT 
 
       -- SURROGATE KEY
-     {{ dbt_utils.generate_surrogate_key(['milestone_id']) }}                                                AS dim_milestone_sk,
+     {{ dbt_utils.generate_surrogate_key(['milestone_id']) }}                                       AS dim_milestone_sk,
 
       -- NATURAL KEY
       milestone_id                                                                                  AS milestone_id,
@@ -39,14 +39,17 @@
       -- LEGACY NATURAL KEY
       milestone_id                                                                                  AS dim_milestone_id,
 
-      milestones.created_at,
-      milestones.updated_at,
+      milestones.created_at                                                                         AS created_at,
+      milestones.updated_at                                                                         AS updated_at,
       dim_date.date_id                                                                              AS created_date_id,
       IFNULL(dim_project.dim_project_id, -1)                                                        AS dim_project_id,
       COALESCE(dim_project.ultimate_parent_namespace_id, milestones.group_id, -1)                   AS ultimate_parent_namespace_id,
       COALESCE(dim_namespace_plan_hist.dim_plan_id, prep_gitlab_dotcom_plan.dim_plan_id, 34)        AS dim_plan_id,
-      milestones.milestone_title,
-      milestones.due_date                                                                           AS milestone_due_date
+      milestones.milestone_title                                                                    AS milestone_title,
+      milestones.milestone_description                                                              AS milestone_description,
+      milestones.start_date                                                                         AS milestone_start_date,
+      milestones.due_date                                                                           AS milestone_due_date,
+      milestones.milestone_status                                                                   AS milestone_status
     FROM milestones
     LEFT JOIN dim_project
       ON milestones.project_id = dim_project.dim_project_id
@@ -68,5 +71,5 @@
     created_by="@chrissharp",
     updated_by="@michellecooper",
     created_date="2022-04-01",
-    updated_date="2023-09-27"
+    updated_date="2024-02-28"
 ) }}

@@ -94,3 +94,8 @@ folders:
     folder_name: zuora_revenue_valid_reports_lists
     table_name: zuora_revenue_valid_reports_lists
     table_replace_append: 1
+  - name: pending_invoices_report
+    owner: '@annapiaseczna'
+    folder_name: pending_invoices_report
+    table_name: pending_invoices_report
+    table_replace_append: 0

@@ -80,24 +80,19 @@ final AS (
     END AS created_net_arr_in_snapshot_week,
     CASE
       WHEN is_created_in_snapshot_week = 1
-        THEN 1
+        THEN calculated_deal_count
       ELSE 0
     END AS created_deal_count_in_snapshot_week,
+    CASE
+      WHEN is_close_in_snapshot_week = 1
+        THEN calculated_deal_count
+      ELSE 0
+    END AS closed_deal_count_in_snapshot_week,
     CASE
       WHEN is_close_in_snapshot_week = 1
         THEN net_arr
       ELSE 0
     END AS closed_net_arr_in_snapshot_week,
-    CASE
-      WHEN is_close_in_snapshot_week = 1
-        THEN 1
-      ELSE 0
-    END AS closed_deal_count_in_snapshot_week,
-    CASE
-      WHEN is_close_in_snapshot_week = 1
-        THEN 1
-      ELSE 0
-    END AS closed_new_logo_count_in_snapshot_week,
     CASE
       WHEN is_close_in_snapshot_week = 1
         THEN close_date - created_date
@@ -122,8 +117,6 @@ final AS (
     END AS calculated_deal_count_in_snapshot_week,
     CASE 
       WHEN is_eligible_open_pipeline_combined = 1
-        AND is_close_in_snapshot_week = 1
-          AND is_excluded_from_pipeline_created_combined = 0
         THEN net_arr
       ELSE 0
     END AS open_pipeline_in_snapshot_week,

@@ -32,13 +32,22 @@ sources:
       - name: amendment
       - name: contact 
         description: '{{ doc("zuora_contact_source") }}'
+      - name: credit_balance_adjustment
+        identifier: creditbalanceadjustment
+        description: '{{ doc("zuora_credit_balance_adjustment_source") }}'
       - name: discount_applied_metrics
         identifier: discountappliedmetrics
         description: '{{ doc("zuora_discount_applied_metrics_source") }}'
         freshness: null
+      - name: invoice_aging_detail
+        identifier: invoiceagingdetail
+        description: '{{ doc("zuora_invoice_aging_detail_source") }}'
       - name: invoice_item
         identifier: invoiceitem
         description: '{{ doc("zuora_invoice_item_source") }}'
+      - name: invoice_item_adjustment
+        identifier: invoiceitemadjustment
+        description: '{{ doc("zuora_invoice_item_adjustment_source") }}'
       - name: invoice
         description: '{{ doc("zuora_invoice_source") }}'
       - name: invoice_payment
@@ -68,7 +77,11 @@ sources:
         identifier: rateplan
         description: '{{ doc("zuora_rateplan_source") }}'
       - name: refund
+        identifier: refund
         description: '{{ doc("zuora_refund_source") }}'
+      - name: refund_invoice_payment
+        identifier: refundinvoicepayment
+        description: '{{ doc("zuora_refund_invoice_payment_source") }}'  
       - name: revenue_schedule_item
         identifier: revenuescheduleitem
         description: '{{ doc("zuora_revenue_schedule_item_source") }}'

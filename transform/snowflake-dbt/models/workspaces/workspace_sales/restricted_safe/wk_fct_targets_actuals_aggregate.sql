@@ -23,7 +23,6 @@ aggregate_data AS (
     sales_type,
     calculated_deal_size,
     deal_size,
-    parent_crm_account_industry,
     crm_user_business_unit,
     crm_user_sales_segment,
     crm_user_geo,
@@ -80,6 +79,7 @@ aggregate_data AS (
     current_day_of_month,
     current_day_of_fiscal_quarter,
     current_day_of_fiscal_year,
+    current_week_of_fiscal_quarter_normalised,
 
     --targets
     --deals_daily_target,
@@ -158,7 +158,6 @@ aggregate_data AS (
     SUM(created_deal_count_in_snapshot_week)              AS created_deal_count_in_snapshot_week,
     SUM(closed_net_arr_in_snapshot_week)                  AS closed_net_arr_in_snapshot_week,
     SUM(closed_deal_count_in_snapshot_week)               AS closed_deal_count_in_snapshot_week,
-    SUM(closed_new_logo_count_in_snapshot_week)           AS closed_new_logo_count_in_snapshot_week,
     SUM(closed_cycle_time_in_snapshot_week)               AS closed_cycle_time_in_snapshot_week,
     SUM(booked_net_arr_in_snapshot_week)                  AS booked_net_arr_in_snapshot_week,
     SUM(calculated_deal_count_in_snapshot_week)           AS calculated_deal_count_in_snapshot_week,

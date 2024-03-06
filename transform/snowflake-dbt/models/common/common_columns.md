@@ -2586,3 +2586,69 @@ String of labels associated with a GitLab object (issue, merge request, epic, et
 Top-level namespace name that is unmasked for any user who has been assigned the appropriate access.
 
 {% enddocs %}
+
+{% docs dim_milestone_sk %}
+
+The surrogate key for milestones.
+
+{% enddocs %}
+
+{% docs milestone_id %}
+
+The natural key for milestones.
+
+{% enddocs %}
+
+{% docs dim_milestone_id %}
+
+The legacy unique identifier for milestones.
+
+{% enddocs %}
+
+{% docs milestone_created_at %}
+
+The date a milestone was created.
+
+{% enddocs %}
+
+{% docs milestone_updated_at %}
+
+The most date a milestone was most recently updated.
+
+{% enddocs %}
+
+{% docs milestone_created_date_id %}
+
+The id associated with the milestone's created date that can be joined to `dim_date`.
+
+{% enddocs %}
+
+{% docs milestone_title %}
+
+The title of a milestone. Only available for internal milestones.
+
+{% enddocs %}
+
+{% docs milestone_description %}
+
+A text field description of the milestone.
+
+{% enddocs %}
+
+{% docs milestone_start_date %}
+
+The date the milestone is set to begin.
+
+{% enddocs %}
+
+{% docs milestone_due_date %}
+
+The date the milestone is set to end.
+
+{% enddocs %}
+
+{% docs milestone_status %}
+
+A status indicating if the milestone is `Active` or `Closed`.
+
+{% enddocs %}

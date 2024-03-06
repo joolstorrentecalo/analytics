@@ -1,0 +1,90 @@
+version: '1.0'
+databases:
+  - user1_prod:
+      shared: false
+  - user1_prep:
+      shared: false
+  - covid19:
+      shared: true
+  - user1_prod:
+      shared: false
+  - user1_prep:
+      shared: false
+  - user2_prep:
+      shared: false
+  - user2_prod:
+      shared: false
+roles:
+  - accountadmin:
+      warehouses:
+        - admin
+      member_of:
+        - securityadmin
+        - sysadmin
+  - user1:
+      member_of:
+        - engineer
+        - restricted_safe
+      warehouses:
+        - dev_xs
+        - dev_m
+        - loading
+        - reporting
+      owns:
+        databases:
+          - user1_prep
+          - user1_prod
+        schemas:
+          - user1_prep.*
+          - user1_prod.*
+        tables:
+          - user1_prep.*.*
+          - user1_prod.*.*
+      privileges:
+        databases:
+          read:
+            - user1_prep
+            - user1_prod
+          write:
+            - user1_prep
+            - user1_prod
+        schemas:
+          read:
+            - user1_prep.*
+            - user1_prod.*
+          write:
+            - user1_prep.*
+            - user1_prod.*
+        tables:
+          read:
+            - user1_prep.*.*
+            - user1_prod.*.*
+          write:
+            - user1_prep.*.*
+            - user1_prod.*.*
+  - user2:
+      can_login: true
+      member_of:
+        - user2
+users:
+  - user1:
+      can_login: true
+      member_of:
+        - user1
+  - data_science_loader:
+      can_login: true
+      member_of:
+        - data_science_loader
+  - user2:
+      can_login: true
+      member_of:
+        - user2
+  - user3:
+      can_login: true
+      member_of:
+        - user3
+        - accountadmin
+        - securityadmin
+warehouses:
+  - admin:
+      size: x-small

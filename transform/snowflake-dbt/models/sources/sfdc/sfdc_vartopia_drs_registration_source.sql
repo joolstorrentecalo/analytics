@@ -7,6 +7,7 @@ WITH source AS (
     SELECT
       ID::VARCHAR                                  AS registration_id,
       VartopiaDRS__Vendor_Deal_ID__c::VARCHAR      AS deal_id,
+      VartopiaDRS__Opportunity__c::VARCHAR         AS linked_opportunity_id,
       Name::VARCHAR                                AS registration_name,
       CAM_Approval_Status__c::VARCHAR              AS partner_manager_approval_status,
       VartopiaDRS__Approved_Date__c::VARCHAR       AS deal_registration_approval_date,

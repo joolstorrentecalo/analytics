@@ -8,6 +8,8 @@ WITH source AS (
     SELECT
       zuora_subscription_id::VARCHAR     AS zuora_subscription_id,
       zuora_subscription_name::VARCHAR   AS zuora_subscription_name,
+      hostname::VARCHAR                  AS hostname,
+      instance_identifier::VARCHAR       AS uuid,
       order_id::NUMBER                   AS order_id,
       report_timestamp::TIMESTAMP        AS report_timestamp,
       report_timestamp::DATE             AS report_date,
@@ -18,7 +20,7 @@ WITH source AS (
       license_user_count::NUMBER         AS license_user_count,
       max_historical_user_count::NUMBER  AS max_historical_user_count
     FROM source  
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY zuora_subscription_id, report_date ORDER BY updated_at DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY zuora_subscription_id, hostname, uuid, report_date ORDER BY updated_at DESC) = 1
 
 )
 
