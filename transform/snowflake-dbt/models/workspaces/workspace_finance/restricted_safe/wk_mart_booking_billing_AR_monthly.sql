@@ -11,7 +11,7 @@ SELECT
 DATE_TRUNC('month', close_date) AS opportunity_close_month,
 SUM(amount)                     AS booking_amount,
 COUNT(amount)                   AS booking_count
-FROM prod.restricted_safe_common.fct_crm_opportunity
+FROM {{ ref('fct_crm_opportunity') }}
 WHERE is_closed_won = TRUE
 GROUP BY opportunity_close_month
 
@@ -27,8 +27,8 @@ SUM(fct_invoice.amount)                                       AS invoice_amount_
 SUM(fct_invoice.amount_without_tax)                           AS invoice_amount_without_tax,
 SUM(fct_invoice.amount) - SUM(fct_invoice.amount_without_tax) AS invoice_tax_amount,
 COUNT(fct_invoice.amount)                                     AS invoice_count
-FROM prod.common.dim_invoice
-JOIN prod.restricted_safe_common.fct_invoice ON fct_invoice.dim_invoice_id = dim_invoice.dim_invoice_id
+FROM {{ ref('dim_invoice') }}
+JOIN {{ ref('fct_invoice') }} ON fct_invoice.dim_invoice_id = dim_invoice.dim_invoice_id
 WHERE dim_invoice.status = 'Posted'
 GROUP BY invoice_month
 
@@ -42,7 +42,7 @@ SELECT
 DATE(DATE_TRUNC('month', payment_date)) AS payment_month,
 SUM(payment_amount)                     AS payment_amount,
 COUNT(payment_amount)                   AS payment_count
-FROM prod.restricted_safe_workspace_finance.wk_finance_fct_payment
+FROM {{ ref('dwk_finance_fct_payment') }}
 WHERE payment_status = 'Processed'
 GROUP BY payment_month
 
@@ -51,6 +51,8 @@ GROUP BY payment_month
 final AS (
 
 SELECT
+dim_date.fiscal_year                                 AS fiscal_year,
+dim_date.fiscal_quarter_name_fy                      AS fiscal_quarter,
 opportunity_data.opportunity_close_month             AS year_month,
 COALESCE(opportunity_data.booking_amount, 0)         AS booking_amount,
 COALESCE(opportunity_data.booking_count, 0)          AS booking_count,
@@ -63,6 +65,7 @@ COALESCE(payment_data.payment_count, 0)              AS payment_count
 FROM opportunity_data 
 LEFT JOIN invoice_data ON invoice_data.invoice_month  = opportunity_data.opportunity_close_month
 LEFT JOIN payment_data ON payment_data.payment_month = opportunity_data.opportunity_close_month
+LEFT JOIN {{ ref('dim_date') }} ON dim_date.date_actual = year_month
 WHERE year_month > '2017-06-30'
 ORDER BY year_month
 
