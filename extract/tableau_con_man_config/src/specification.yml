@@ -11,7 +11,7 @@ site:
   status_reason: null
   storage: null
   user_quota: 1310
-  storage_quota: 100000 
+  storage_quota: 100000
   content_url: gitlab
   disable_subscriptions: false
   name: GitLab
@@ -149,7 +149,7 @@ projects:
 # Production
 # This subset of projects are for the Production folders
 # ==========================================
-  
+
   - project_name: Production
     description: ""
     content_permissions: LockedToProjectWithoutNested
@@ -162,7 +162,7 @@ projects:
 
 # ==========================================
 # Customer Success
-# This subset of projects are for the 
+# This subset of projects are for the
 # Customer Success Production folders
 # ==========================================
 
@@ -199,7 +199,7 @@ projects:
 
 # ==========================================
 # Data Team
-# This subset of projects are for the 
+# This subset of projects are for the
 # Data Team Production folders
 # ==========================================
 
@@ -237,7 +237,7 @@ projects:
 
 # ==========================================
 # Engineering
-# This subset of projects are for the 
+# This subset of projects are for the
 # Engineering Production folders
 # ==========================================
 
@@ -274,7 +274,7 @@ projects:
 
 # ==========================================
 # Finance
-# This subset of projects are for the 
+# This subset of projects are for the
 # Finance Production folders
 # ==========================================
 
@@ -310,7 +310,7 @@ projects:
 
 # ==========================================
 # Go To Market
-# This subset of projects are for the 
+# This subset of projects are for the
 # Go To Market Production folders
 # ==========================================
 
@@ -346,7 +346,7 @@ projects:
 
 # ==========================================
 # Marketing
-# This subset of projects are for the 
+# This subset of projects are for the
 # Marketing Production folders
 # ==========================================
 
@@ -380,7 +380,7 @@ projects:
 
 # ==========================================
 # People
-# This subset of projects are for the 
+# This subset of projects are for the
 # People Production folders
 # ==========================================
 
@@ -428,7 +428,7 @@ projects:
 
 # ==========================================
 # Product
-# This subset of projects are for the 
+# This subset of projects are for the
 # Product Production folders
 # ==========================================
 
@@ -464,7 +464,7 @@ projects:
 
 # ==========================================
 # Sales
-# This subset of projects are for the 
+# This subset of projects are for the
 # Sales Production folders
 # ==========================================
 
@@ -510,7 +510,7 @@ projects:
 
 # ==========================================
 # Security
-# This subset of projects are for the 
+# This subset of projects are for the
 # Security Production folders
 # ==========================================
 
@@ -542,11 +542,11 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
-        permission_rule: project_lead       
+        permission_rule: project_lead
 
 # ==========================================
 # Team Member
-# This subset of projects are for the 
+# This subset of projects are for the
 # Team Member Production folders
 # ==========================================
 
@@ -558,7 +558,7 @@ projects:
       - group_name: General All Access
         permission_rule: view
       - group_name: Production Project Lead
-        permission_rule: project_lead    
+        permission_rule: project_lead
 
   - project_name: General
     description: ""
@@ -597,7 +597,7 @@ projects:
 
 # ==========================================
 # Customer Success
-# This subset of projects are for the 
+# This subset of projects are for the
 # Customer Success Ad-hoc folders
 # ==========================================
 
@@ -631,7 +631,7 @@ projects:
     project_path: Ad-hoc/Customer Success/SAFE
     permission_set:
       - group_name: Ad-hoc Project Lead
-        permission_rule: project_lead 
+        permission_rule: project_lead
       - group_name: Customer Success Project Lead
         permission_rule: project_lead
       - group_name: General SAFE Access
@@ -639,7 +639,7 @@ projects:
 
 # ==========================================
 # Data Team
-# This subset of projects are for the 
+# This subset of projects are for the
 # Data Team Ad-hoc folders
 # ==========================================
 
@@ -681,7 +681,7 @@ projects:
 
 # ==========================================
 # Engineering
-# This subset of projects are for the 
+# This subset of projects are for the
 # Engineering Ad-hoc folders
 # ==========================================
 
@@ -723,7 +723,7 @@ projects:
 
 # ==========================================
 # Finance
-# This subset of projects are for the 
+# This subset of projects are for the
 # Finance Ad-hoc folders
 # ==========================================
 
@@ -765,7 +765,7 @@ projects:
 
 # ==========================================
 # Go To Market
-# This subset of projects are for the 
+# This subset of projects are for the
 # Go To Market Ad-hoc folders
 # ==========================================
 
@@ -807,7 +807,7 @@ projects:
 
 # ==========================================
 # Marketing
-# This subset of projects are for the 
+# This subset of projects are for the
 # Marketing Ad-hoc folders
 # ==========================================
 
@@ -849,7 +849,7 @@ projects:
 
 # ==========================================
 # People
-# This subset of projects are for the 
+# This subset of projects are for the
 # People Ad-hoc folders
 # ==========================================
 
@@ -903,7 +903,7 @@ projects:
 
 # ==========================================
 # Product
-# This subset of projects are for the 
+# This subset of projects are for the
 # Product Ad-hoc folders
 # ==========================================
 
@@ -945,7 +945,7 @@ projects:
 
 # ==========================================
 # Sales
-# This subset of projects are for the 
+# This subset of projects are for the
 # Sales Ad-hoc folders
 # ==========================================
 
@@ -999,7 +999,7 @@ projects:
 
 # ==========================================
 # Security
-# This subset of projects are for the 
+# This subset of projects are for the
 # Security Ad-hoc folders
 # ==========================================
 
@@ -1041,7 +1041,7 @@ projects:
 
 # ==========================================
 # Team Member
-# This subset of projects are for the 
+# This subset of projects are for the
 # Team Member Ad-hoc folders
 # ==========================================
 
@@ -1076,7 +1076,7 @@ projects:
     permission_set:
       - group_name: General SAFE Access
         permission_rule: view
-  
+
 # ==========================================
 # Development
 # This subset of projects are for the Development folders
@@ -1094,7 +1094,7 @@ projects:
 
 # ==========================================
 # Customer Success
-# This subset of projects are for the 
+# This subset of projects are for the
 # Customer Success Development folders
 # ==========================================
 
@@ -1136,7 +1136,7 @@ projects:
 
 # ==========================================
 # Data Team
-# This subset of projects are for the 
+# This subset of projects are for the
 # Data Team Development folders
 # ==========================================
 
@@ -1178,7 +1178,7 @@ projects:
 
 # ==========================================
 # Engineering
-# This subset of projects are for the 
+# This subset of projects are for the
 # Engineering Development folders
 # ==========================================
 
@@ -1220,7 +1220,7 @@ projects:
 
 # ==========================================
 # Finance
-# This subset of projects are for the 
+# This subset of projects are for the
 # Finance Development folders
 # ==========================================
 
@@ -1262,7 +1262,7 @@ projects:
 
 # ==========================================
 # Go To Market
-# This subset of projects are for the 
+# This subset of projects are for the
 # Go To Market Development folders
 # ==========================================
 
@@ -1304,7 +1304,7 @@ projects:
 
 # ==========================================
 # Marketing
-# This subset of projects are for the 
+# This subset of projects are for the
 # Marketing Development folders
 # ==========================================
 
@@ -1346,7 +1346,7 @@ projects:
 
 # ==========================================
 # People
-# This subset of projects are for the 
+# This subset of projects are for the
 # People Success Development folders
 # ==========================================
 
@@ -1402,7 +1402,7 @@ projects:
 
 # ==========================================
 # Product
-# This subset of projects are for the 
+# This subset of projects are for the
 # Product Development folders
 # ==========================================
 
@@ -1444,7 +1444,7 @@ projects:
 
 # ==========================================
 # Sales
-# This subset of projects are for the 
+# This subset of projects are for the
 # Sales Development folders
 # ==========================================
 
@@ -1498,7 +1498,7 @@ projects:
 
 # ==========================================
 # Security
-# This subset of projects are for the 
+# This subset of projects are for the
 # Security Development folders
 # ==========================================
 
@@ -1540,7 +1540,7 @@ projects:
 
 # ==========================================
 # Team Member
-# This subset of projects are for the 
+# This subset of projects are for the
 # Team Member Development folders
 # ==========================================
 
@@ -1609,7 +1609,7 @@ permission_templates:
       Read: Allow
     metric:
       Read: Allow
-    # not built into the python TSC 
+    # not built into the python TSC
     virtual_connection:
       Read:  Allow # View
       Connect: Allow # Connect
@@ -1639,7 +1639,7 @@ permission_templates:
       Read: Allow
     metric:
       Read: Allow
-    # not built into the python TSC 
+    # not built into the python TSC
     virtual_connection:
       Read:  Allow # View
       Connect: Allow # Connect
@@ -1653,7 +1653,7 @@ permission_templates:
       ProjectLeader: Allow
 
   - name: publish
-    workbook:  
+    workbook:
       # View
       Read: Allow # View
       Filter: Allow # Filter
@@ -1662,7 +1662,7 @@ permission_templates:
       ExportImage: Allow # Download Image/PDF
       ExportData: Allow  # Download Summary Data
       # Explore
-      ShareView: Allow # Share Customized 
+      ShareView: Allow # Share Customized
       ViewUnderlyingData: Allow # Download Full Data
       WebAuthoring: Allow  # Web Edit
       RunExplainData: Allow # Run Explain Data
@@ -1674,7 +1674,7 @@ permission_templates:
       Read: Allow # View
       Write: Allow # Publish
     datasource:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
       # Explore
@@ -1683,7 +1683,7 @@ permission_templates:
       Write:  Allow  # Overwrite
       SaveAs:  Allow  # Save As
     flow:
-      # View 
+      # View
       Read:  Allow # View
       # Explore
       ExportXml:  Allow # Download Flow
@@ -1692,39 +1692,39 @@ permission_templates:
       Write:  Allow  # Overwrite
       WebAuthoringForFlows: Allow # Web Edit
     datarole:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
     lens:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow # Overwrite
     metric:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
     virtual_connection:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
       # Publish
       Write:  Allow  # Overwrite
     database:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
     table:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
 
   - name: tableau-admin
-    workbook:  
+    workbook:
       # View
       Read: Allow # View
       Filter: Allow # Filter
@@ -1733,7 +1733,7 @@ permission_templates:
       ExportImage: Allow # Download Image/PDF
       ExportData: Allow  # Download Summary Data
       # Explore
-      ShareView: Allow # Share Customized 
+      ShareView: Allow # Share Customized
       ViewUnderlyingData: Allow # Download Full Data
       WebAuthoring: Allow  # Web Edit
       RunExplainData: Allow # Run Explain Data
@@ -1744,12 +1744,12 @@ permission_templates:
       # Administer
       ChangeHierarchy: Allow # Move
       Delete: Allow # Delete
-      ChangePermissions: Allow # Set Permissions     
+      ChangePermissions: Allow # Set Permissions
     project:
       Read: Allow # View
       Write: Allow # Publish
     datasource:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
       # Explore
@@ -1762,7 +1762,7 @@ permission_templates:
       Delete:  Allow  # Delete
       ChangePermissions:  Allow # Set Permissions
     flow:
-      # View 
+      # View
       Read:  Allow # View
       # Explore
       ExportXml:  Allow # Download Flow
@@ -1775,7 +1775,7 @@ permission_templates:
       Delete:  Allow  # Delete
       ChangePermissions:  Allow # Set Permissions
     datarole:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
@@ -1784,7 +1784,7 @@ permission_templates:
       Delete:  Allow  # Delete
       ChangePermissions:  Allow # Set Permissions
     lens:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow # Overwrite
@@ -1793,7 +1793,7 @@ permission_templates:
       Delete:  Allow  # Delete
       ChangePermissions:  Allow # Set Permissions
     metric:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
@@ -1802,7 +1802,7 @@ permission_templates:
       Delete:  Allow  # Delete
       ChangePermissions:  Allow # Set Permissions
     virtual_connection:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
       # Publish
@@ -1812,15 +1812,15 @@ permission_templates:
       Delete:  Allow  # Delete
       ChangePermissions:  Allow # Set Permissions
     database:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
       # Administer
       ChangeHierarchy: Allow # Move
-      ChangePermissions:  Allow # Set Permissions  
+      ChangePermissions:  Allow # Set Permissions
     table:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
@@ -1829,7 +1829,7 @@ permission_templates:
       ChangePermissions:  Allow # Set Permissions
 
   - name: tableau-publish
-    workbook:  
+    workbook:
       # View
       Read: Allow # View
       Filter: Allow # Filter
@@ -1838,19 +1838,19 @@ permission_templates:
       ExportImage: Allow # Download Image/PDF
       ExportData: Allow  # Download Summary Data
       # Explore
-      ShareView: Allow # Share Customized 
+      ShareView: Allow # Share Customized
       ViewUnderlyingData: Allow # Download Full Data
       WebAuthoring: Allow  # Web Edit
       RunExplainData: Allow # Run Explain Data
       # Publish
       ExportXml: Allow # Download/Save a Copy
       Write: Allow # Overwrite
-      CreateRefreshMetrics: Allow # Create/Refresh Metrics   
+      CreateRefreshMetrics: Allow # Create/Refresh Metrics
     project:
       Read: Allow # View
       Write: Allow # Publish
     datasource:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
       # Explore
@@ -1859,7 +1859,7 @@ permission_templates:
       Write:  Allow  # Overwrite
       SaveAs:  Allow  # Save As
     flow:
-      # View 
+      # View
       Read:  Allow # View
       # Explore
       ExportXml:  Allow # Download Flow
@@ -1868,33 +1868,33 @@ permission_templates:
       Write:  Allow  # Overwrite
       WebAuthoringForFlows: Allow # Web Edit
     datarole:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
     lens:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow # Overwrite
     metric:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
     virtual_connection:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
       # Publish
       Write:  Allow  # Overwrite
     database:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
-      Write:  Allow  # Overwrite   
+      Write:  Allow  # Overwrite
     table:
-      # View 
+      # View
       Read:  Allow # View
       # Publish
       Write:  Allow  # Overwrite
@@ -1902,7 +1902,7 @@ permission_templates:
   - name: tableau-explore
     project:
       Read: Allow # View
-    workbook:  
+    workbook:
       # View
       Read: Allow # View
       Filter: Allow # Filter
@@ -1911,45 +1911,45 @@ permission_templates:
       ExportImage: Allow # Download Image/PDF
       ExportData: Allow  # Download Summary Data
       # Explore
-      ShareView: Allow # Share Customized 
+      ShareView: Allow # Share Customized
       ViewUnderlyingData: Allow # Download Full Data
       WebAuthoring: Allow  # Web Edit
       RunExplainData: Allow # Run Explain Data
     datasource:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
       # Explore
       ExportXml:  Allow # Download Data Source
     flow:
-      # View 
+      # View
       Read:  Allow # View
       # Explore
       ExportXml:  Allow # Download Flow
     datarole:
-      # View 
+      # View
       Read:  Allow # View
     lens:
-      # View 
+      # View
       Read:  Allow # View
     metric:
-      # View 
+      # View
       Read:  Allow # View
     virtual_connection:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
     database:
-      # View 
+      # View
       Read:  Allow # View
     table:
-      # View 
+      # View
       Read:  Allow # View
 
   - name: tableau-view
     project:
       Read: Allow # View
-    workbook:  
+    workbook:
       # View
       Read: Allow # View
       Filter: Allow # Filter
@@ -1958,30 +1958,30 @@ permission_templates:
       ExportImage: Allow # Download Image/PDF
       ExportData: Allow  # Download Summary Data
     datasource:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
     flow:
-      # View 
+      # View
       Read:  Allow # View
     datarole:
-      # View 
+      # View
       Read:  Allow # View
     lens:
-      # View 
+      # View
       Read:  Allow # View
     metric:
-      # View 
+      # View
       Read:  Allow # View
     virtual_connection:
-      # View 
+      # View
       Read:  Allow # View
       Connect: Allow # Connect
     database:
-      # View 
-      Read:  Allow # View  
+      # View
+      Read:  Allow # View
     table:
-      # View 
+      # View
       Read:  Allow # View
 
   - name: publish_limited
@@ -1997,7 +1997,7 @@ permission_templates:
       ExportData: Allow  # Download Summary Data
       ShareView: Allow # Share Customized
       WebAuthoring: Allow  # Web Edit
-      RunExplainData: Allow # Run Explain Data 
+      RunExplainData: Allow # Run Explain Data
       Write: Allow # Overwrite
       CreateRefreshMetrics: Allow # Create/Refresh Metrics
     datasource:
@@ -2026,13 +2026,13 @@ permission_templates:
       Read: Allow # View
       Write:  Allow  # Overwrite
       ChangeHierarchy: Allow # Move
-      Delete:  Allow  # Delete 
+      Delete:  Allow  # Delete
     virtual_connection:
       Read:  Allow # View
       Connect: Allow # Connect
       Write:  Allow  # Overwrite
       ChangeHierarchy: Allow # Move
-      Delete:  Allow  # Delete 
+      Delete:  Allow  # Delete
     database:
       Read:  Allow # View
       Write:  Allow  # Overwrite
@@ -2066,7 +2066,7 @@ groups:
 # Project Lead Groups
 # Convention: [Project Name] Project Lead
 # ==========================================
-  
+
   - group_name: Ad-hoc Project Lead
   - group_name: Customer Success Project Lead
   - group_name: Data Team Project Lead
@@ -3988,7 +3988,7 @@ users:
       - General All Access
       - General SAFE Access
       - Engineering Project Lead
-      - Security Project Lead     
+      - Security Project Lead
   - user_name: ddesanto
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -10345,13 +10345,13 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-      - General SAFE Access     
+      - General SAFE Access
   - user_name: rakreddy
     user_name_domain: gitlab.com
     site_role: Creator
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: shinya
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
@@ -10369,14 +10369,14 @@ users:
     site_role: ExplorerCanPublish
     auth_setting: SAML
     groups:
-      - General All Access              
+      - General All Access
   - user_name: stseng
     user_name_domain: gitlab.com
     site_role: Creator
     auth_setting: SAML
     groups:
       - General All Access
-      - General SAFE Access 
+      - General SAFE Access
   - user_name: srehm
     user_name_domain: gitlab.com
     site_role: Creator
@@ -10500,7 +10500,7 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: bwong 
+  - user_name: bwong
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
@@ -10511,7 +10511,7 @@ users:
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
-    groups: 
+    groups:
       - General All Access
       - General SAFE Access
   - user_name: ksu
@@ -10519,15 +10519,15 @@ users:
     site_role: ExplorerCanPublish
     auth_setting: SAML
     groups:
-      - General All Access 
-      - General SAFE Access 
-  - user_name: vlu 
+      - General All Access
+      - General SAFE Access
+  - user_name: vlu
     user_name_domain: gitlab.com
     site_role: Creator
     auth_setting: SAML
     groups:
-      - General All Access 
-      - General SAFE Access     
+      - General All Access
+      - General SAFE Access
   - user_name: sbitters
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
@@ -10546,37 +10546,37 @@ users:
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: ecarey
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: jslaughter
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: lionel
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: ohoralkoretska
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: tvik
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: tread
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -10594,43 +10594,43 @@ users:
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
-  - user_name: mdavies 
+      - General All Access
+  - user_name: mdavies
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: ssrirangan
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: vtatarintev
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access                   
+      - General All Access
   - user_name: msaleiko
     user_name_domain: gitlab.com
     site_role: Creator
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: ebonet 
+  - user_name: ebonet
     user_name_domain: gitlab.com
     site_role: Creator
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: dfrey
     user_name_domain: gitlab.com
     site_role: Creator
     auth_setting: SAML
     groups:
-      - General All Access         
+      - General All Access
   - user_name: jschneeweisz
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
@@ -10655,7 +10655,7 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-      - General SAFE Access                       
+      - General SAFE Access
   - user_name: mdineley
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -10673,121 +10673,121 @@ users:
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: jquick
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: bcole
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: jtozzi
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: lbruno
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: dhan
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: sakumar
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: dswa
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: aalshami
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: dkazadi
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: dartik
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: aemara
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: sharris
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: ishpigel
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: kfosse
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: jfujita
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: bmorrow
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: rchapa
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: bkoop
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
   - user_name: rreyes
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access                         
+      - General All Access
   - user_name: apanchal
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
@@ -10799,7 +10799,7 @@ users:
     site_role: ExplorerCanPublish
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: nbelokolodov
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
@@ -10811,19 +10811,19 @@ users:
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: syasonik
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
-  - user_name: pskorupa 
+      - General All Access
+  - user_name: pskorupa
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: sabrina
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -10837,7 +10837,7 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-      - General SAFE Access                                    
+      - General SAFE Access
   - user_name: vhempel
     user_name_domain: gitlab.com
     site_role: Creator
@@ -10851,8 +10851,8 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-      - General SAFE Access  
-  - user_name: ahemdan 
+      - General SAFE Access
+  - user_name: ahemdan
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
@@ -10869,158 +10869,158 @@ users:
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: azubov
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: avovchenko
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: hustewart
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: mmazurskiy
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: partiaga
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: tnishida
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: twatson
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: tfurrer
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access   
-  - user_name: vtak 
+      - General All Access
+  - user_name: vtak
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: omiles
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access              
+      - General All Access
   - user_name: mflorian
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access   
+      - General All Access
   - user_name: afontaine
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: azubov
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: avovchenko
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: hustewart
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: mmazurskiy
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: partiaga
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: tnishida
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: twatson
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access  
+      - General All Access
   - user_name: tfurrer
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access   
-  - user_name: vtak 
+      - General All Access
+  - user_name: vtak
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: omiles
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access              
+      - General All Access
   - user_name: mflorian
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: wszabo
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
       - General SAFE Access
   - user_name: mhanna
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access    
+      - General All Access
       - General SAFE Access
   - user_name: dteverovsky
     user_name_domain: gitlab.com
@@ -11033,13 +11033,13 @@ users:
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access 
+      - General All Access
   - user_name: alasch
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access                                           
+      - General All Access
   - user_name: rskolnik
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -11048,11 +11048,11 @@ users:
       - General All Access
   - user_name: gsodhi
     user_name_domain: gitlab.com
-    site_role: Viewer
+    site_role: ExplorerCanPublish
     auth_setting: SAML
     groups:
       - General All Access
-      - General SAFE Access                
+      - General SAFE Access
   - user_name: sfigueroa
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish

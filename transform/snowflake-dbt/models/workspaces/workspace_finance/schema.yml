@@ -1182,3 +1182,7 @@ models:
     description: Zuora credit balance adjustment - grain is one adjustment per invoice or account
     columns:
       - name: credit_balance_adjustment_id
+
+
+  - name: wk_mart_cdot_invoices_manual_intervention_monthly
+    description: Comparison of all CDot created invoices vs. CDot invoices that were updated manually by the Billing team

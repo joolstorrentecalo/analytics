@@ -185,6 +185,12 @@
       {{ sales_segment_region_grouped('dim_crm_user_hierarchy_live.crm_user_sales_segment',
         'dim_crm_user_hierarchy_live.crm_user_geo', 'dim_crm_user_hierarchy_live.crm_user_region') }}
                                                                            AS crm_user_sales_segment_region_grouped,
+      dim_crm_user_hierarchy_live.crm_user_role_name,
+      dim_crm_user_hierarchy_live.crm_user_role_level_1,
+      dim_crm_user_hierarchy_live.crm_user_role_level_2,
+      dim_crm_user_hierarchy_live.crm_user_role_level_3,
+      dim_crm_user_hierarchy_live.crm_user_role_level_4,
+      dim_crm_user_hierarchy_live.crm_user_role_level_5,
 
        -- crm account owner/sales rep live fields
       dim_crm_user_hierarchy_account_owner.crm_user_sales_segment                                                       AS crm_account_user_sales_segment,
@@ -196,6 +202,12 @@
       {{ sales_segment_region_grouped('dim_crm_user_hierarchy_account_owner.crm_user_sales_segment',
         'dim_crm_user_hierarchy_account_owner.crm_user_geo', 'dim_crm_user_hierarchy_account_owner.crm_user_region') }}
                                                                                                                         AS crm_account_user_sales_segment_region_grouped,
+      dim_crm_user_hierarchy_account_owner.crm_user_role_name                                                           AS crm_account_user_role_name,
+      dim_crm_user_hierarchy_account_owner.crm_user_role_level_1                                                        AS crm_account_user_role_level_1,
+      dim_crm_user_hierarchy_account_owner.crm_user_role_level_2                                                        AS crm_account_user_role_level_2,
+      dim_crm_user_hierarchy_account_owner.crm_user_role_level_3                                                        AS crm_account_user_role_level_3,
+      dim_crm_user_hierarchy_account_owner.crm_user_role_level_4                                                        AS crm_account_user_role_level_4,
+      dim_crm_user_hierarchy_account_owner.crm_user_role_level_5                                                        AS crm_account_user_role_level_5,
 
       -- crm opp owner/account owner fields stamped at SAO date
       -- If the opportunity's SAO date is in a prior fiscal year, use the sales hierarchy from the account owner, unless the current account owner is a hybrid user, in which case

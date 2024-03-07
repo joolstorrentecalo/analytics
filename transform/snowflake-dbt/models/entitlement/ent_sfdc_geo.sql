@@ -36,7 +36,6 @@ target_user_roles AS (
     ('VP Sales Development', TRUE),
     ('VPSA', TRUE),
     ('Executive - Global Minus Pubsec', FALSE),
-    ('Executive - No View All', FALSE),
     ('Implementation Engineers - Global (with/without Pubsec)', FALSE),
     ('Marketing Operations Manager', FALSE),
     ('Marketing Program Manager', FALSE)
