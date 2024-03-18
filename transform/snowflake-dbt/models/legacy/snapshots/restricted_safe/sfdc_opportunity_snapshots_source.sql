@@ -52,6 +52,7 @@ WITH source AS (
         merged_opportunity__c                                                               AS merged_opportunity_id,
         duplicate_opportunity__c                                                            AS duplicate_opportunity_id,
         account_owner__c                                                                    AS account_owner,
+        account_owner_role__c                                                               AS account_owner_role,
         opportunity_owner__c                                                                AS opportunity_owner,
         manager_current__c                                                                  AS opportunity_owner_manager,
         sales_market__c                                                                     AS opportunity_owner_department,
