@@ -14,6 +14,15 @@
 , joined AS (
 
     SELECT
+        {{ dbt_utils.generate_surrogate_key(
+        [
+          'paid_user_metrics.dim_subscription_id',
+          'paid_user_metrics.deployment_type',
+          'paid_user_metrics.uuid',
+          'paid_user_metrics.hostname',
+          'paid_user_metrics.dim_namespace_id'
+        ]
+      ) }} AS primary_key_no_snapshot_month,
         paid_user_metrics.snapshot_month,
         paid_user_metrics.primary_key,
         dim_crm_account.crm_account_name,
@@ -92,7 +101,18 @@
 
 -- ci metrics --
         paid_user_metrics.ci_pipelines_28_days_user,
+
+        paid_user_metrics.ci_builds_28_days_user,
+        paid_user_metrics.ci_builds_all_time_event,
+        div0(paid_user_metrics.ci_builds_all_time_event, paid_user_metrics.billable_user_count) AS ci_build_per_user,
+        div0(paid_user_metrics.ci_builds_28_days_user, paid_user_metrics.billable_user_count) AS ci_build_utilization,
         div0(paid_user_metrics.ci_pipelines_28_days_user, paid_user_metrics.billable_user_count) AS ci_pipeline_utilization,
+
+        div0(paid_user_metrics.ci_builds_all_time_event, action_monthly_active_users_project_repo_28_days_user_clean) AS ci_build_per_scm,
+        div0(paid_user_metrics.ci_builds_28_days_user, action_monthly_active_users_project_repo_28_days_user_clean) AS ci_build_utilization_scm,
+        div0(paid_user_metrics.ci_pipelines_28_days_user, action_monthly_active_users_project_repo_28_days_user_clean) AS ci_pipeline_utilization_scm,
+
+        
         CASE WHEN ci_pipeline_utilization IS NULL THEN NULL
             WHEN ci_pipeline_utilization < .25 THEN 25
             WHEN ci_pipeline_utilization >= .25 and ci_pipeline_utilization < .50 THEN 63
@@ -277,10 +297,29 @@ LEFT JOIN mart_arr
 WHERE paid_user_metrics.license_user_count != 0
 qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instance_identifier ORDER BY paid_user_metrics.ping_created_at DESC NULLs last) = 1
 
+), final AS (
+
+    SELECT joined.*,
+
+        past.ci_builds_all_time_event AS past_ci_builds_all_time_event,
+        past.ci_pipelines_28_days_user        AS past_ci_pipelines_28_days_user,
+        CASE WHEN joined.ci_pipelines_28_days_user > 0 AND past_ci_pipelines_28_days_user = 0 THEN NULL
+            WHEN past_ci_pipelines_28_days_user > 0 THEN joined.ci_pipelines_28_days_user / past_ci_pipelines_28_days_user
+        END AS perc_ci_pipelines_28_days_user,
+
+        JOINED.ci_builds_all_time_event - past_ci_builds_all_time_event AS delta_ci_builds_all_time_event,
+
+        div0(delta_ci_builds_all_time_event, joined.billable_user_count) AS ci_build_event_utilization,
+        div0(delta_ci_builds_all_time_event, joined.action_monthly_active_users_project_repo_28_days_user_clean) AS ci_build_event_utilization_scm
+    FROM joined
+    LEFT JOIN joined AS past
+        ON joined.primary_key_no_snapshot_month = past.primary_key_no_snapshot_month
+        AND joined.snapshot_month = DATEADD('month', 1, past.snapshot_month)
+
 )
 
 {{ dbt_audit(
-    cte_ref="joined",
+    cte_ref="final",
     created_by="@jngCES",
     updated_by="@bbutterfield",
     created_date="2023-03-30",
