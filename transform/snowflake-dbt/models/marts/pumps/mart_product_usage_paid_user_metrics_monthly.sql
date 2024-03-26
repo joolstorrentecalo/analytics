@@ -69,7 +69,11 @@
       AND dates.day_of_month = 1
     LEFT JOIN subscriptions ON charges.dim_subscription_id = subscriptions.dim_subscription_id
     WHERE charges.subscription_status IN ('Active','Cancelled')
-      AND charges.product_tier_name != 'Storage'
+      AND charges.product_tier_name NOT IN (
+        'Storage',
+        'Not Applicable',
+        'None'
+      )
       AND charges.rate_plan_charge_name NOT IN (
         'Dedicated - Administration Fee [Large] - 1 Year',
         'Dedicated - Administration Fee  [XLarge] - 1 Year',
@@ -745,7 +749,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@ischweickartDD",
-    updated_by="@annapiaseczna",
+    updated_by="@mdrussell",
     created_date="2021-06-11",
-    updated_date="2023-12-07"
+    updated_date="2024-03-26"
 ) }}
