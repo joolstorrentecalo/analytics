@@ -1227,6 +1227,4 @@ models:
 
   - name: wk_mart_processed_iia_monthly
     description: View of invoice item adjustments aggregated monthly
-
-  - name: wk_mart_credit_balance_adjustments
-    description: View of credit balance adjustments aggregated monthly
+    
