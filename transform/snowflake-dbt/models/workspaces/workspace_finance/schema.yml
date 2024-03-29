@@ -1230,4 +1230,3 @@ models:
 
   - name: wk_mart_credit_balance_adjustments
     description: View of credit balance adjustments aggregated monthly
-    
