@@ -12,7 +12,7 @@ WITH iia_credit AS
 SELECT
 DATE(DATE_TRUNC('month', invoice_item_adjustment_date)) AS iia_credit_date,
 SUM(invoice_item_adjustment_amount) * -1 AS amount_credit
-FROM prod.restricted_safe_workspace_finance.wk_finance_fct_invoice_item_adjustment
+FROM {{ ref('wk_finance_fct_invoice_item_adjustment') }}
 WHERE invoice_item_adjustment_status = 'Processed'
 AND invoice_item_adjustment_type = 'Credit'
 GROUP BY iia_credit_date
@@ -29,7 +29,7 @@ iia_charge AS
 SELECT
 DATE(DATE_TRUNC('month', invoice_item_adjustment_date)) AS iia_charge_date,
 SUM(invoice_item_adjustment_amount) AS amount_charge
-FROM prod.restricted_safe_workspace_finance.wk_finance_fct_invoice_item_adjustment
+FROM {{ ref('wk_finance_fct_invoice_item_adjustment') }}
 WHERE invoice_item_adjustment_status = 'Processed'
 AND invoice_item_adjustment_type = 'Charge'
 GROUP BY iia_charge_date
