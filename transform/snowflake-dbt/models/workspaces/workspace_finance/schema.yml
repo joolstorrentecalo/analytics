@@ -1221,4 +1221,7 @@ models:
 
   - name: wk_mart_historical_balance_by_payment_terms_bucket_monthly
     description: View of historical balances with payment terms and aging bucket by month
+
+  - name: wk_rpt_booking_billing_collections_monthly
+    description: View of monthly booking, billing and collection aggregated amounts and percentage
     
