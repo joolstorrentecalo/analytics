@@ -36,7 +36,7 @@ ORDER BY wk_mart_collections_monthly.billed_month
 
 ),
 
-finals AS
+final AS
 
 (
 
