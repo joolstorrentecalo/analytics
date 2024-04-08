@@ -1198,7 +1198,7 @@ models:
   - name: wk_mart_payment_type
     description: Comparison of amounts and volumes by payment type (electronic vs. external) by month
 
-  - name: wk_mart_ar_per_SSP_channel_monthly
+  - name: wk_mart_ar_per_ssp_channel_monthly
     description: Compare balances and count per SSP channel vs. the total balances for all open invoices monthly
 
   - name: wk_mart_public_sector_ar_monthly
