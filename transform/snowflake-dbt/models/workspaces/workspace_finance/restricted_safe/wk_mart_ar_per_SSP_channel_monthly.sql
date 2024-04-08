@@ -43,7 +43,7 @@ GROUP BY accounting_period_end_date
 ),
 
 
-Final AS (
+final AS (
 
 
 /* Compare balances and count per SSP channel vs. the total balances for all open invoices monthly */
