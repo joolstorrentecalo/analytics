@@ -1,11 +1,14 @@
 {{ config(
-    materialized="table",
-    tags=["mnpi"]
+   materialized="table",
+   tags=["mnpi"]
 ) }}
+
 
 WITH balance_per_ssp_channel AS (
 
+
 /* Determine the total balances per SSP channel monthly */
+
 
 SELECT
 DATE(DATE_TRUNC('month',wk_finance_fct_invoice_aging_detail.accounting_period_end_date)) AS accounting_period_month,
@@ -19,11 +22,15 @@ WHERE dim_billing_account.ssp_channel IS NOT NULL
 GROUP BY wk_finance_fct_invoice_aging_detail.accounting_period_end_date, dim_billing_account.ssp_channel
 ORDER BY wk_finance_fct_invoice_aging_detail.accounting_period_end_date, dim_billing_account.ssp_channel
 
+
 ),
+
 
 total AS (
 
+
 /* Determine the total balances for all open invoices monthly */
+
 
 SELECT
 DATE(DATE_TRUNC('month',wk_finance_fct_invoice_aging_detail.accounting_period_end_date)) AS accounting_period_month,
@@ -32,11 +39,15 @@ COUNT(account_balance_impact) AS count_all_open_invoices
 FROM {{ ref('wk_finance_fct_invoice_aging_detail') }}
 GROUP BY accounting_period_end_date
 
+
 ),
+
 
 Final AS (
 
+
 /* Compare balances and count per SSP channel vs. the total balances for all open invoices monthly */
+
 
 SELECT
 balance_per_ssp_channel.accounting_period_month,
@@ -51,14 +62,18 @@ FROM balance_per_ssp_channel
 LEFT JOIN total ON total.accounting_period_month = balance_per_ssp_channel.accounting_period_month
 ORDER BY balance_per_ssp_channel.accounting_period_month, balance_per_ssp_channel.ssp_channel
 
+
 )
+
+
 
 
 {{ dbt_audit(
 cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
-created_date="2024-03-08",
-updated_date="2024-03-08"
+created_date="2024-04-08",
+updated_date="2024-04-08"
 ) }}
+
 
