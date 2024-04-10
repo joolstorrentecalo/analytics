@@ -152,6 +152,68 @@
           THEN dim_crm_account_user_business_unit_id
         ELSE dim_crm_opp_owner_business_unit_stamped_id
       END                                                                                                                         AS dim_crm_current_account_set_business_unit_id,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN dim_crm_account_user_role_name_id
+        ELSE dim_crm_opp_owner_user_role_name_id
+      END                                                                                                                         AS dim_crm_current_account_set_role_name_id,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN dim_crm_account_user_role_level_1_id
+        ELSE dim_crm_opp_owner_user_role_level_1_id
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_1_id,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN dim_crm_account_user_role_level_2_id
+        ELSE dim_crm_opp_owner_user_role_level_2_id
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_2_id,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN dim_crm_account_user_role_level_3_id
+        ELSE dim_crm_opp_owner_user_role_level_3_id
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_3_id,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN dim_crm_account_user_role_level_4_id
+        ELSE dim_crm_opp_owner_user_role_level_4_id
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_4_id,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN dim_crm_account_user_role_level_5_id
+        ELSE dim_crm_opp_owner_user_role_level_5_id
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_5_id,
+            CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN sales_rep_account._user_role_name
+        ELSE sales_rep.user_role_name
+      END                                                                                                                         AS dim_crm_current_account_set_role_name,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN sales_rep_account.dim_crm_user_role_level_1
+        ELSE sales_rep.dim_crm_user_role_level_1
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_1,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN sales_rep_account.dim_crm_user_role_level_2
+        ELSE sales_rep.dim_crm_user_role_level_2
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_2,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN sales_rep_account.dim_crm_user_role_level_3
+        ELSE sales_rep.dim_crm_user_role_level_3
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_3,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN sales_rep_account.dim_crm_user_role_level_4
+        ELSE sales_rep.dim_crm_user_role_level_4
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_4,
+      CASE
+        WHEN close_fiscal_year < prep_date.current_fiscal_year
+          THEN sales_rep_account.dim_crm_user_role_level_5
+        ELSE sales_rep.dim_crm_user_role_level_5
+      END                                                                                                                         AS dim_crm_current_account_set_role_level_5,
+
+
       sfdc_opportunity.ssp_id,
       sfdc_opportunity.ga_client_id,
 
@@ -286,6 +348,8 @@
       ON sfdc_opportunity.sales_segment = sales_segment.sales_segment_name
     LEFT JOIN prep_crm_user_hierarchy
       ON sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk = prep_crm_user_hierarchy.dim_crm_user_hierarchy_sk
+    LEFT JOIN prep_crm_user AS account_owner
+      ON prep_crm_account.crm_account_owner_id = prep_crm_user.dim_crm_user_id
     LEFT JOIN prep_crm_user_hierarchy AS account_hierarchy
       ON prep_crm_account.dim_crm_parent_account_hierarchy_sk = account_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dr_partner_engagement
