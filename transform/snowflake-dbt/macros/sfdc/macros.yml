@@ -27,3 +27,5 @@ macros:
     description: '{{ doc("sqs_bucket_engagement")}}'
   - name: integrated_budget_holder
     description: '{{ doc("integrated_budget_holder")}}'
+  - name: date_spine_7th_day
+    description: '{{ doc("date_spine_7th_day")}}'

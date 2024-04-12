@@ -21,7 +21,7 @@ README.md          @iweeks @dvanrooijen2 @nmcavinue @amiebright
 [Data Engineering]
 /dags/                              @paul_armstrong @vedprakash2021 @rbacovic @jjstark
 /extract/                           @jjstark @paul_armstrong @vedprakash2021 @rbacovic
-/extract/tableau_con_man_config/    @paul_armstrong @pempey @iweeks @ttnguyen28 @nmcavinue
+/extract/tableau_con_man_config/    @paul_armstrong @pempey @iweeks @ttnguyen28 @nmcavinue @jjstark @vedprakash2021
 /load/                              @jjstark @paul_armstrong @vedprakash2021 @rbacovic
 /orchestration/                     @jjstark @paul_armstrong @vedprakash2021 @rbacovic
 /permissions/                       @dvanrooijen2 @paul_armstrong @jjstark
@@ -48,7 +48,6 @@ docker-compose.yml  @jjstark @paul_armstrong @vedprakash2021 @rbacovic
 /transform/snowflake-dbt/                           @jjstark @paul_armstrong @vedprakash2021 @iweeks @pempey @mdrussell @snalamaru
 /transform/snowflake-dbt/snowflake-dbt-ci.yml       @jjstark @paul_armstrong @vedprakash2021
 /transform/snowflake-dbt/generate_dbt_schema.py     @jjstark @paul_armstrong @vedprakash2021
-/transform/snowflake-dbt/periscope_check.py         @jjstark @paul_armstrong @vedprakash2021
 
 /transform/snowflake-dbt/analysis/                  @jjstark @paul_armstrong @vedprakash2021 @pempey @mdrussell @snalamaru
 /transform/snowflake-dbt/docs/                      @jjstark @paul_armstrong @vedprakash2021
@@ -165,8 +164,8 @@ transform/snowflake-dbt/models/marts/pumps_sensitive/       @jjstark @paul_armst
 /transform/snowflake-dbt/data/handbook_file_classification_mapping.csv                  @iweeks @snalamaru @pempey @mdrussell
 /transform/snowflake-dbt/data/historical_counts_maintainers_engineers.csv               @iweeks @snalamaru @pempey @mdrussell
 /transform/snowflake-dbt/data/netsuite_expense_cost_category.csv                        @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/projects_part_of_product.csv                              @clefelhocz1 @timzallmann @cdu1 @wayne @sgoldstein @dsatcher @m_gill @jeromezng
-/transform/snowflake-dbt/data/projects_part_of_product_ops.csv                          @clefelhocz1 @timzallmann @cdu1 @wayne @sgoldstein @dsatcher @m_gill @jeromezng
+/transform/snowflake-dbt/data/projects_part_of_product.csv                              @sgoldstein @dsatcher @m_gill @jeromezng @yanguo1
+/transform/snowflake-dbt/data/projects_part_of_product_ops.csv                          @sgoldstein @dsatcher @m_gill @jeromezng @yanguo1
 /transform/snowflake-dbt/data/raw_netsuite_currencies.csv                               @iweeks @snalamaru @pempey @mdrussell
 /transform/snowflake-dbt/data/seeds.md                                                  @iweeks @snalamaru @pempey @mdrussell
 /transform/snowflake-dbt/data/seeds.yml                                                 @iweeks @snalamaru @pempey @mdrussell

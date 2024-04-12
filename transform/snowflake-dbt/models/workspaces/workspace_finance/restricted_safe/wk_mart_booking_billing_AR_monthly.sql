@@ -66,7 +66,6 @@ FROM opportunity_data
 LEFT JOIN invoice_data ON invoice_data.invoice_month  = opportunity_data.opportunity_close_month
 LEFT JOIN payment_data ON payment_data.payment_month = opportunity_data.opportunity_close_month
 LEFT JOIN {{ ref('dim_date') }} ON dim_date.date_actual = opportunity_invoice_payment_year_month
-WHERE opportunity_invoice_payment_year_month > '2017-06-30'
 ORDER BY opportunity_invoice_payment_year_month
 
 )
@@ -76,6 +75,6 @@ cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-03-07",
-updated_date="2024-03-07"
+updated_date="2024-04-08"
 ) }}
 

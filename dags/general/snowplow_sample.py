@@ -41,7 +41,7 @@ drop_cmd = f"""
 dag = DAG(
     "snowplow_event_sample",
     default_args=default_args,
-    schedule_interval="0 21 * * 5",
+    schedule_interval="0 21 * * *",
     catchup=False,
 )
 

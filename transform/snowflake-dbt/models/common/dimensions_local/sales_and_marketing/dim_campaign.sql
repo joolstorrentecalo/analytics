@@ -27,6 +27,7 @@ WITH sfdc_campaign_info AS (
       gtm_motion,
       total_planned_mqls,
       will_there_be_mdf_funding,
+      mdf_request_id,
       campaign_partner_crm_id
     FROM sfdc_campaign_info
 

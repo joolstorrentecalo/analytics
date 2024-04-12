@@ -44,6 +44,14 @@ SELECT
       THEN 'Enterprise Sales'
     WHEN department IN ('Enablement','Field Ops - Child')
       THEN 'Field Operations'
+    WHEN department = 'Development'
+      THEN 'Core Development'
+    WHEN department = 'Quality'
+      THEN 'Platforms'
+    WHEN department = 'Infrastructure'
+      THEN 'Core Infrastructure'
+    WHEN department = 'Incubation Engineering'
+      THEN 'Expansion'
     ELSE department
   END AS modified_department,
   CASE

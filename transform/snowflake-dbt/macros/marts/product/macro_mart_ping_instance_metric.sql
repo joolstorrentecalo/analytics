@@ -1,15 +1,51 @@
 {% macro macro_mart_ping_instance_metric(model_name1) %}
 
+{% set filter_date = (run_started_at - modules.datetime.timedelta(days=31)).strftime('%Y-%m-%d') %}
+{% set filter_statement = "DBT_INTERNAL_DEST.uploaded_at > '" + filter_date + "'" %}
+
+{{ config(
+    materialized = "incremental",
+    unique_key = "ping_instance_metric_id",
+    on_schema_change="sync_all_columns",
+    incremental_predicates = [filter_statement]
+) }}
+
 {{ simple_cte([
     ('dim_date', 'dim_date'),
     ('dim_ping_instance', 'dim_ping_instance'),
     ('dim_location', 'dim_location_country'),
     ('dim_ping_metric', 'dim_ping_metric'),
     ('dim_app_release_major_minor', 'dim_app_release_major_minor'),
+    ('subscriptions', 'dim_subscription'),
     ('license_subscriptions','prep_license_subscription')
     ])
 
 }},
+
+{% if is_incremental() %}
+updated_subscriptions AS (
+  SELECT
+    dim_subscription_id
+  FROM subscriptions
+  QUALIFY MAX(subscription_updated_date) OVER (PARTITION BY dim_subscription_id_original) > (SELECT MAX(dimensions_checked_at) FROM {{ this }} )
+),
+
+ping_instance_list AS (
+  SELECT
+    ARRAY_AGG( dim_ping_instance_id) AS dim_ping_instance_id_array
+  FROM dim_ping_instance
+  GROUP BY dim_instance_id, dim_host_id, uploaded_group
+  HAVING MAX(next_ping_uploaded_at) >  (SELECT MAX(dimensions_checked_at) FROM {{ this }} )
+),
+
+updated_ping_instance AS (
+  SELECT
+    value::VARCHAR AS dim_ping_instance_id
+  FROM ping_instance_list
+  INNER JOIN LATERAL FLATTEN(INPUT => dim_ping_instance_id_array)
+),
+
+{% endif %}
 
 bdg_license_instance AS (
   SELECT DISTINCT
@@ -47,6 +83,17 @@ fct_ping_instance_metric AS (
   SELECT *
   FROM {{ ref(model_name1) }}
   WHERE IS_REAL(TO_VARIANT(metric_value))
+  {% if is_incremental() %}
+  -- Filter added to match incremental_predicates filter to prevent inclusion of 
+  -- additional unmatched vales from being inserted even though they have the same primary key
+  AND uploaded_at > '{{ filter_date }}'
+  AND (uploaded_at >= (SELECT MAX(uploaded_at) FROM {{ this }})
+  -- Added to capture changes to the latest subscription
+  OR dim_subscription_id IN (SELECT * FROM updated_subscriptions)
+  -- Added to capture changes in the latest ping flags 
+  OR dim_ping_instance_id  IN (SELECT * FROM updated_ping_instance)
+  )
+  {% endif %}
 
 ),
 
@@ -131,7 +178,9 @@ joined AS (
     dim_ping_instance.is_last_ping_of_week                                                                     AS is_last_ping_of_week,
     fct_ping_instance_metric.dim_location_country_id                                                           AS dim_location_country_id,
     dim_location.country_name                                                                                  AS country_name,
-    dim_location.iso_2_country_code                                                                            AS iso_2_country_code
+    dim_location.iso_2_country_code                                                                            AS iso_2_country_code,
+    fct_ping_instance_metric.uploaded_at,
+    CURRENT_TIMESTAMP() AS dimensions_checked_at
   FROM fct_ping_instance_metric
   LEFT JOIN dim_ping_metric
     ON fct_ping_instance_metric.metrics_path = dim_ping_metric.metrics_path
@@ -193,6 +242,7 @@ sorted AS (
     is_staging,
     is_trial,
     umau_value,
+    uploaded_at,
 
     -- metadata metrics
 
@@ -230,7 +280,8 @@ sorted AS (
     ping_created_date_month,
     is_last_ping_of_month,
     ping_created_date_week,
-    is_last_ping_of_week
+    is_last_ping_of_week,
+    dimensions_checked_at
 
   FROM joined
   WHERE time_frame != 'none'

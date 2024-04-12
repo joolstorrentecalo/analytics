@@ -627,3 +627,36 @@ models:
             - reporting_month
             - dim_subscription_id_original
             - dim_namespace_id
+  
+  - name: mart_behavior_structured_event_service_ping_metrics
+    description: '{{ doc("mart_behavior_structured_event_service_ping_metrics") }}'
+    columns:
+      - name: snowplow_events_service_ping_metrics_sk
+        tests:
+          - unique:
+              config:
+                where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
+      - name: behavior_structured_event_pk
+        description: '{{ doc("behavior_structured_event_pk") }}'
+      - name: behavior_at
+        description: '{{ doc("behavior_at") }}'
+      - name: gsc_pseudonymized_user_id
+        description: '{{ doc("gsc_pseudonymized_user_id") }}'
+      - name: dim_namespace_id
+        description: '{{ doc("dim_namespace_id_behavior_model") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id_behavior_model") }}'
+      - name: gsc_plan
+        description: '{{ doc("gsc_plan") }}'
+      - name: ultimate_parent_namespace_id
+        description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+      - name: redis_event_name
+        description: ' {{ doc("redis_event_name") }} '
+      - name: metrics_path
+        description: '{{ doc("metrics_path") }}'
+      - name: metrics_status
+        description: '{{ doc("metrics_status_ping_metric") }}'
+      - name: time_frame
+        description: '{{ doc("time_frame") }}'
+      - name: data_source
+        description: '{{ doc("data_source_ping_metric") }}'

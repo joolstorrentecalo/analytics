@@ -116,6 +116,112 @@ models:
       - name: running_pto_sum_qtd
       - name: running_pto_sum_ytd
       - name: running_pto_sum_r12
+  - name: wk_talent_acquisition_application_recruiter_override
+    columns: 
+      - name: application_id
+      - name: candidate_id
+      - name: job_id
+      - name: app_recruiter
+      - name: app_recruiter_map_override
+  - name: wk_talent_acquisition_candidate_tag
+    columns: 
+      - name: candidate_id
+      - name: candidate_tag_id
+      - name: tag_id
+      - name: tag_name
+      - name: candidate_tag_created_at
+      - name: candidate_tag_updated_at
+  - name: wk_talent_acquisition_candidate_survey
+    columns: 
+      - name: candidate_survey_id
+      - name: response_date
+      - name: department_id
+      - name: sub_department_name
+      - name: department_name
+      - name: cost_center_name
+      - name: candidate_survey_question_1
+      - name: candidate_survey_question_2
+      - name: candidate_survey_question_3
+      - name: candidate_survey_question_4
+      - name: candidate_survey_question_5
+      - name: candidate_survey_question_6
+      - name: candidate_survey_question_7
+      - name: candidate_survey_question_8
+  - name: wk_talent_acquisition_hiring_manager_survey
+    columns: 
+      - name: responded_at
+      - name: overall_rating
+      - name: sourced_by_ta
+      - name: recruiter_communication
+      - name: ta_customer_service_rating
+  - name: wk_talent_acquisition_offer
+    columns: 
+      - name: offer_id
+      - name: application_id
+      - name: offer_status
+      - name: created_by
+      - name: start_date
+      - name: created_at
+      - name: sent_at
+      - name: resolved_at
+      - name: updated_at
+  - name: wk_talent_acquisition_requisition_opening
+    columns: 
+      - name: job_opening_id
+      - name: job_id
+      - name: opening_id
+      - name: hired_application_id
+      - name: job_opened_at
+      - name: job_closed_at
+      - name: close_reason
+      - name: job_opening_created_at
+      - name: job_opening_updated_at
+      - name: target_start_date
+      - name: type
+      - name: finance_id
+      - name: hiring_manager
+      - name: backfill_name
+      - name: sales_capacity_date
+  - name: wk_talent_acquisition_requisition
+    columns: 
+      - name: job_id
+      - name: requisition_id
+      - name: organization_name
+      - name: department_name
+      - name: sub_department_name
+      - name: cost_center_name
+      - name: job_name
+      - name: job_status
+      - name: job_created_at  
+      - name: job_opened_at
+      - name: job_closed_at
+      - name: job_updated_at
+      - name: hiring_plan
+      - name: requisition_title
+      - name: employment_type
+      - name: job_grade
+      - name: quota_coverage_type
+      - name: hourly  
+      - name: confidential
+      - name: finance_id
+      - name: planned_hire_date
+      - name: quota_carrying
+      - name: type
+      - name: hiring_manager_id
+      - name: recruiter_id
+      - name: coordinator_id
+      - name: sourcer_id  
+      - name: hiring_manager_name
+      - name: recruiter_name
+      - name: sourcer_name
+      - name: coordinator_name
+  - name: wk_talent_acquisition_application_stage
+    columns: 
+      - name: job_id
+      - name: job_stage_order
+      - name: job_stage_name_modified
+      - name: job_stage_id
+      - name: job_stage_milestone
   - name: wk_talent_acquisition
     columns: 
       - name: id

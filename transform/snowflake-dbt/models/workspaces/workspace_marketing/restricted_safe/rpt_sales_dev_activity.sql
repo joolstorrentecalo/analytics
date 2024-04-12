@@ -34,6 +34,12 @@
     report_opportunity_user_region,
     report_opportunity_user_area,
     report_user_segment_geo_region_area,
+    parent_crm_account_territory,
+    parent_crm_account_sales_segment,
+    parent_crm_account_geo,
+    parent_crm_account_region,
+    parent_crm_account_area,
+    deal_path_name,
     created_date AS opp_created_date,
     close_date,
     pipeline_created_date,
@@ -243,6 +249,7 @@
     dim_inquiry_date.fiscal_quarter_name_fy as inquiry_fiscal_quarter_name,
     mart_crm_person.account_demographics_sales_segment AS person_sales_segment,
     mart_crm_person.account_demographics_sales_segment_grouped AS person_sales_segment_grouped,
+    mart_crm_person.account_demographics_geo as person_first_geo,
     mart_crm_person.is_mql,
     mart_crm_person.is_first_order_person,
     mart_crm_person.person_first_country,
@@ -284,6 +291,12 @@
     opp_to_lead.report_opportunity_user_region,
     opp_to_lead.report_opportunity_user_area,
     opp_to_lead.report_user_segment_geo_region_area,
+    opp_to_lead.parent_crm_account_territory,
+    opp_to_lead.parent_crm_account_sales_segment,
+    opp_to_lead.parent_crm_account_geo,
+    opp_to_lead.parent_crm_account_region,
+    opp_to_lead.parent_crm_account_area,
+    opp_to_lead.deal_path_name,
     opp_to_lead.opp_created_date,
     opp_to_lead.close_date,
     opp_to_lead.pipeline_created_date,
@@ -329,7 +342,7 @@
   LEFT JOIN opp_to_lead 
     ON mart_crm_person.dim_crm_person_id = opp_to_lead.waterfall_person_id
   LEFT JOIN sales_dev_hierarchy 
-  ON COALESCE(opp_to_lead.sdr_bdr_user_id,activity_summarised.dim_crm_user_id) = sales_dev_hierarchy.sales_dev_rep_user_id
+  ON COALESCE(opp_to_lead.sdr_bdr_user_id,activity_summarised.dim_crm_user_id) = sales_dev_hierarchy.sales_dev_rep_user_id 
   WHERE activity_to_sao_days <= 90 OR activity_to_sao_days IS NULL 
   UNION 
   SELECT DISTINCT -- distinct is necessary in order to not duplicate rows as addition of the rule above of activity_to_sao_days >90 might create multiple rows if there are multiple leads that satisfy the condition per opp which is not ideal. 
@@ -345,6 +358,7 @@
     NULL AS inquiry_fiscal_quarter_name,
     NULL AS person_sales_segment,
     NULL AS person_sales_segment_grouped,
+    NULL AS person_first_geo,
     NULL AS is_mql,
     NULL AS is_first_order_person,
     NULL AS person_first_country,
@@ -374,6 +388,12 @@
     opps_missing_link.report_opportunity_user_region,
     opps_missing_link.report_opportunity_user_area,
     opps_missing_link.report_user_segment_geo_region_area,
+    opps_missing_link.parent_crm_account_territory,
+    opps_missing_link.parent_crm_account_sales_segment,
+    opps_missing_link.parent_crm_account_geo,
+    opps_missing_link.parent_crm_account_region,
+    opps_missing_link.parent_crm_account_area,
+    opps_missing_link.deal_path_name,
     opps_missing_link.opp_created_date,
     opps_missing_link.close_date,
     opps_missing_link.pipeline_created_date,
@@ -418,7 +438,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@rkohnke",
+    updated_by="@dmicovic",
     created_date="2023-09-06",
-    updated_date="2024-03-06",
+    updated_date="2024-03-29",
   ) }}

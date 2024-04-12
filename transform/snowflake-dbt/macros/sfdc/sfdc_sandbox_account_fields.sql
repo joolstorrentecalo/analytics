@@ -25,9 +25,9 @@ WITH map_merged_crm_account AS (
     SELECT * 
     FROM
     {%- if model_type == 'live' %}
-        {{ ref('prep_crm_user') }}
+        {{ ref('wk_prep_crm_user') }}
     {%- elif model_type == 'snapshot' %}
-        {{ ref('dim_crm_user_daily_snapshot') }}
+        {{ ref('wk_prep_crm_user_daily_snapshot') }}
     {% endif %}
 
 {%- if model_type == 'live' %}
@@ -316,7 +316,7 @@ WITH map_merged_crm_account AS (
                       '-',
                       sfdc_account.snapshot_fiscal_year
                       )
-        WHEN sfdc_account.snapshot_fiscal_year > 2024
+        WHEN sfdc_account.snapshot_fiscal_year >= 2025
           THEN CONCAT(
                       UPPER(account_owner_role),
                       '-',
@@ -563,7 +563,7 @@ WITH map_merged_crm_account AS (
       sfdc_account.number_of_licenses_this_account,
       sfdc_account.decision_maker_count_linkedin,
       sfdc_account.number_of_employees,
-      crm_user.crm_user_role_type                                         AS user_role_type,
+      crm_user.user_role_type                                             AS user_role_type,
       crm_user.user_role_name                                             AS owner_role,
       {%- if model_type == 'live' %}
       sfdc_account.lam                                                    AS parent_crm_account_lam,

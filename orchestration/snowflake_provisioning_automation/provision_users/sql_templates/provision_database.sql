@@ -1,6 +1,6 @@
 -- IF GOING TO BE A DBT USER, run this to create the development databases
 -- assumes sysadmin role, admin warehouse is being used
-set username = (select upper('{{ username }}'));
+set username = (select upper(:username));
 set prod_db = (select $username || '_PROD');
 set prep_db = (select $username || '_PREP');
 

@@ -4,152 +4,134 @@
 --->
 
 
-Please see the new [dbt change workflow](https://about.gitlab.com/handbook/business-technology/data-team/how-we-work/dbt-change-workflow/) handbook page for guidance on submitting a dbt MR. We will update the MR template at a later point in time.
+Please see the [dbt change workflow](https://handbook.gitlab.com/handbook/business-technology/data-team/how-we-work/dbt-change-workflow/) handbook page for details on these sections.
 
-## Issue
+## Plan
+
+Fill in the subsequent planning sections as part of the preparatory work for these changes.
+
+### Scope
+
 <!--- Link the Issue this MR closes --->
 Closes #
 
-## Solution
+This step describes the changes that will be made. Details can be deferred to an issue or epic. Include links to any related MRs and/or issues.
 
-Describe the solution. Include links to any related MRs and/or issues.
+### Tests
 
-## Submitter Checklist
+Define the tests to check if the changes have the intended impact and the extent of testing and reviews.
 
-#### Handbook First: Enterprise Dimensional Model Documentation
+### Environment
 
-**These requirements are for dimensional models in the COMMON schemas ONLY**
+Define the models that will be needed to construct and test the changes.
+
+## Create
+
+Using the defined plan, set up the local environment, perform the scoped changes, and perform the local testing.
+Add any results from the local testing here for documentation.
+
+## Verify
+
+The database and tables created as part of the CI process will act as the remove environment for the changes. 
+Using the defined plan, set up the remote environment and perform the remote testing.
+
+### Remote Testing
+
+Add the results of the testing in the remote environment here for review and documentation.
+
+### Review
+
+Before requesting a review consider the following:
+- Do the changes require a change to the existing Entity Relationship Diagrams?
+- Have the changes been tested sufficiently to have confidence in the effect of the change?
+- Have all of the required CI Jobs been run?
+- Do the changes meet the team's style and structure standards?
+- Have the changes' impact on performance been evaluated?
+- Have Masking Policies on columns and their dependencies been considered?
+- Has the impact on downstream tables and reports been considered?
+
+#### Accuracy and Effects Review
+To be completed by Stakeholders, Subject Matter Experts and Code Owners. Items may be added for user acceptance testing as needed.
+
+- [ ] Checked if a dbt full refresh is needed.
+- [ ] Checked if the changes have been tested sufficiently.
+- [ ] Checked if the changes have a downstream impact.
+
+
+#### Compliance Review
+
+To be completed by Maintainers
+
+- [ ] Checked if pipelines have been run and passed.
+- [ ] Checked for proper documentation.
+- [ ] Checked for impact on performance.
+- [ ] Checked changes for alignment to SQL style and structure.
+- [ ] Checked if the stated testing has been performed.
+
+## References
 
 <details>
-<summary><i>EDM Documentation Checklist</i></summary>
+<summary><i>EDM Documentation</i></summary>
 
-- [ ] Have the new or changed models in the MR been added or updated on an ERD in the [Lead to Cash ERD Library](https://about.gitlab.com/handbook/business-technology/data-team/platform/edw/#lead-to-cash-erds), [Product Release to Adoption ERD Library](https://about.gitlab.com/handbook/business-technology/data-team/platform/edw/#product-release-to-adoption-erds), or the [Team Member ERD Library](https://about.gitlab.com/handbook/business-technology/data-team/platform/edw/#team-member-erds)? If not, please add or update the models on an ERD and link the related MR to this MR.
-- [ ] Have the new or changed column definitions been added or updated in the schema.yml file? If not, please add or update the column definitions in the schema.yml file.
+Change to EDM models should be reflected on an ERD in the [Lead to Cash ERD Library](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/edw/#lead-to-cash-erds), [Product Release to Adoption ERD Library](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/edw/#product-release-to-adoption-erds), or the [Team Member ERD Library](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/edw/#team-member-erds). Additionally, all columns should be added and defined in the reliant `schema.yml` file.
 
 </details>
 
-#### Testing - any exceptions must be noted
-
-- [ ] Every model should be [tested](https://docs.getdbt.com/docs/testing-and-documentation) AND documented in a `schema.yml` file. At minimum, unique, not nullable fields, and foreign key constraints should be tested, if applicable.
-- [ ] All models should be integrated into the [trusted data framework](https://about.gitlab.com/handbook/business-technology/data-team/platform/#tdf)
-- [ ] Run the appropriate pipeline for the model changes in this MR
-  - [ ] If there is an associated MR in the [Data Tests](https://gitlab.com/gitlab-data/data-tests) project, be sure to pass the branch name to the manual job using the `DATA_TEST_BRANCH` environment variable.
-- [ ] If the periscope_query job failed, validate that the changes you've made don't affect the grain of the table or the expected output in Periscope.
-- [ ] If you are on the Data Team, please paste the output of `dbt test` when run locally below. Any failing tests should be fixed or explained prior to requesting a review.
-
 <details>
-<summary> dbt Test Results </summary>
+<summary><i>Testing</i></summary>
 
-<pre><code>
+[Component testing](https://handbook.gitlab.com/handbook/business-technology/data-team/how-we-work/dbt-change-workflow/#component-tests) should be implemented and documented for every model in a `schema.yml` file. At minimum, unique, not nullable fields, and foreign key constraints should be tested, if applicable.
+Integration testing should be sufficient to be confident of the effect and impact of the changes. System testing should be used to show the effect and impact of the changes. Acceptance testing should be used to show that the changes meet the needs of the requestor requirements.
 
-Paste the results of dbt test here, including the command.
-
-</code></pre>
 
 </details>
 
-#### Style & Structure
-
-- [ ] Field names should all be lowercased.
-- [ ] Function names should all be capitalized.
-- [ ] Ensure source tables/views are only referenced within [base models](https://about.gitlab.com/handbook/business-ops/data-team/platform/sql-style-guide/#base-models).
-- [ ] All references to existing tables/views/sources (i.e. `{{ ref('...') }}` statements) should be placed in CTEs at the top of the file.
-- [ ] If you are using [custom schemas](https://docs.getdbt.com/docs/using-custom-schemas) or modifying [materializations](https://docs.getdbt.com/docs/materializations), ensure these attributes are specified in the model.
-
-
-#### Pipelines
-
-* [ ] Run the [run_changed_models_sql](https://about.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#%EF%B8%8Frun_changed_models_sql) with the variable `ANCESTOR_TYPE` set to either `+` to build changed models and all upstream models or `@` to test downstream models and pull in all dependencies. 
-* [ ] Re-run the [run_changed_models_sql](https://about.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#%EF%B8%8Frun_changed_models_sql) pipeline (you may need to create a new pipeline with the "Run Pipeline" button), which will run only the models that have changed (ex. dim_subscription), to remove any un-related pipeline failures.  You do not need to provide any variable values in this case.
-* Note, if your changes are only to the `schema.yml` or `source.yml` files you will need to run the [dbt-run](https://about.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#%EF%B8%8F-dbt-run) CI jobs while inputting the model names manually as those changes are not picked up by the `run_changed_*` jobs
-* [ ] If your changes are only to the `schema.yml`, `source.yml` or any `*.md` file files you will need to run the [📚✏️generate_dbt_docs](https://about.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#generate_dbt_docs) CI job to check and validate `dbt` documentations changes
-**Which pipeline job do I run?** See our [handbook page](https://about.gitlab.com/handbook/business-ops/data-team/platform/ci-jobs/) on our CI jobs to better understand which job to run.
-
-**Provide an explanation here in case of any pipeline failures:**
-<!--- explanation per pipeline failure and indicate why this is accepted ---> 
-
-
-**What to do for failed pipelines** See our [handbook page](https://about.gitlab.com/handbook/business-ops/data-team/platform/ci-jobs/#what-to-do-if-a-pipeline-fails) 
-
-#### Performance
 <details>
-<summary><i>Click to toggle Performance</i></summary>
-The aim of the Performance sections is to bring awareness to the performance of the models that are being changed.  Not every change is expected to effect the performance of the model but understanding the model performance will support future development.  Use your discretion on the effort put into this section of the Merge Request as is it not intended to be a blocker to development.
+<summary><i>Style & Structure</i></summary>
 
-- [ ] Using the [dbt Model Performance runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/dbt_performance/model_build_performance.md) retrieve the performance categories for any changed or new models.
-- [ ] Follow the [guidelines](https://about.gitlab.com/handbook/business-technology/data-team/platform/dbt-guide/#guidance-for-checking-model-performance) in the handbook for improving the performance as needed.
-
-<details>
-<summary> Performance Categories Table </summary>
-
-| Model Name | Run Time Category | Size Category | Efficiency Category |
-|------------|-------------------|---------------|---------------------|
-|            |                   |               |                     |
+- Field names should all be lowercase.
+- Function names should all be capitalized.
+- All references to existing tables/views/sources (i.e. `{{ ref('...') }}` statements) should be placed in CTEs at the top of the file.
+- [dbt Style Guide](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/dbt-guide/#style-and-usage-guide)
+- [SQL Style Guide](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/sql-style-guide/#sql-style-guide)
 
 </details>
-</details>
-
-#### Auditing
-<details>
-<summary><i>Click to toggle Auditing</i></summary>
-What are you using to audit your results are accurate If you have an existing report/dashboard/dataset as reference, please provide your query used to validate the results of your model changes. If this is the first iteration of a model or validation is otherwise out of scope, please provide additional context.
-
-- [ ] Have you updated the values in any `dbt_audit` macros that you're referencing?
 
 <details>
-<summary> Paste query and results here </summary>
+<summary><i>Pipelines and Remote Environment Set Up</i></summary>
 
-<pre><code>
+- The `generate_dbt_docs` job can be used when only the documentation is changed.
+- The `build_changes` job should be used for most changes.
+- Variables can be added to the `build_changes` job to capture more nuance in the build.
+- The `custom_invocation` job can be used to capture anything not covered by the `build_changes` job.
+- [dbt CI Jobs](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#-dbt-run)
 
-Example: You might be looking at the count of opportunities before and after, if you're editing the opportunity model.
+**Which pipeline job do I run?** See the crosswalk our [handbook page](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#build_changes) on our CI jobs to better understand which job to run base on what changes are being made.
 
-</code></pre>
+**What to do for failed pipelines** See our [handbook page](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#what-to-do-if-a-pipeline-fails) 
+
+
 </details>
-</details>
-
-#### Macros
 
 <details>
-<summary><i>Click to toggle Macros</i></summary>
+<summary><i>Performance</i></summary>
 
-  - [ ] Does this MR utilize [macros](https://docs.getdbt.com/docs/macros)?
-  - [ ] This MR contains new macros. Follow the naming convention (file name matches macro name) and document in the `macros.yml` file
+
+- The [dbt Model Performance runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/dbt_performance/model_build_performance.md) will retrieve the performance categories for any changed or new models.
+- The [guidelines](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/dbt-guide/#guidance-for-checking-model-performance) in the handbook provide information for improving the performance as needed.
+
 </details>
 
-#### Incremental Models
-
 <details>
-<summary><i>Click to toggle Incremental Models</i></summary>
+<summary><i>Incremental Models</i></summary>
 
-- [ ] Does this MR contain an [incremental model](https://docs.getdbt.com/docs/configuring-incremental-models#section-how-do-i-use-the-incremental-materialization-)?
-  - [ ] If the MR adds/renames columns to a specific model, a `dbt run --full-refresh` will be needed after merging the MR. Please, add it to the Reviewer Checklist to warn them that this step is required.
+Incremental Models may require a full refresh of the model if the structure of the data or the business logic has changed.  If a full refresh is needed this should be made clear to the reviewer.
+
 </details>
 
-#### Schema or Model Name Changes
 <details>
-<summary><i>Click to toggle Schema or Model Name Changes</i></summary>
+<summary><i>Salesforce Models</i></summary>
 
-- [ ] Does this MR change the **schema** or **model name** of any existing models?
-  - [ ] Create an issue to change all existing periscope reporting to reference the new schema/name.
-  - [ ] After merging, ensure the old model is dropped from snowflake. This can be done by creating an issue specifying the tables/models to be dropped and assiging to a snowflake admin.
-- [ ] Does this MR introduce a new **schema**?
-  - [ ] Create the schema using the corresponding role (on `RAW` using the `LOADER` role, on `PREP` and `PROD` using the `TRANSFORMER` role)
-  - [ ] Run the Monte Carlo permissions script (documented in the [Handbook](https://about.gitlab.com/handbook/business-technology/data-team/platform/monte-carlo/#note-on-dwh-permissions) and located in MC's official docs) with the corresponding database name as a parameter, for the permissions on this schema to be granted to the `data_observability` role
-</details>
-
-#### Snapshot Model
-<details>
-<summary><i>Click to toggle Snapshot model</i></summary>
-
-- [ ] Is this MR creating or renaming a snapshot model?
-- [ ] Does it concern Gitlab.com data?
-  - [ ] Make sure its captured into the selection criteria of the [GDPR deletion](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/macros/warehouse/gdpr_delete_gitlab_dotcom.sql) macro for GitLab.com data.
-</details>
-
-#### Salesforce Models
-
-<details>
-<summary><i>Click to toggle Salesforce Models</i></summary>
 
 - [ ] Does this MR add, remove, or update logic in `sfdc_account_source`?
   - [ ] Mirror the changes in `sfdc_account_snapshots_source`.
@@ -159,29 +141,21 @@ Example: You might be looking at the count of opportunities before and after, if
   - [ ] Mirror the changes in `sfdc_user_snapshots_source`.
 - [ ] Does this MR add, remove, or update logic in `sfdc_account_fields`, `sfdc_user_fields`, or `prep_crm_opportunity`?
   - [ ]If the MR updates these models, a `dbt run --full-refresh` will be needed after merging the MR. Please, add it to the Reviewer Checklist to warn them that this step is required.
+
 </details>
 
-## All MRs Checklist
-- [ ] This MR follows the coding conventions laid out in the [SQL style guide](https://about.gitlab.com/handbook/business-ops/data-team/platform/sql-style-guide/), including the [dbt guidelines](https://about.gitlab.com/handbook/business-ops/data-team/platform/sql-style-guide/#dbt-guidelines).
-- [ ] [Label hygiene](https://about.gitlab.com/handbook/business-ops/data-team/how-we-work/#issue-labeling) on issue.
-  - [ ] Apply Label [Business logic change](https://gitlab.com/gitlab-data/analytics/-/labels?subscribed=&search=business+logic+change) for any business logic changes like adding new dimensions, facts, marts, changing joins, adding new calculated fields.
-- [ ] Branch set to delete. (Leave commits unsquashed)
-- [ ] Latest CI pipeline passes.
-  - [ ] If not, an explanation has been provided in testing section of this MR.
-  - [ ] If (Sisense)/Periscope pipeline failed, link to the periscope issue/mr or provide an explanation:  
-- [ ] This MR is ready for final review and merge.
-- [ ] All threads are resolved.
-- [ ] Remove the `Draft:` prefix in the MR title before assigning to reviewer.
-- [ ] DBT full refresh required post merge?
-  - [ ] Yes. Create an issue with the model name which needs to be refreshed and assign it to the Reviewer to run it post merge. 
-  - [ ] No.
-- [ ] Assigned to reviewer.
+<details>
+<summary><i>Schema or Model Name Changes</i></summary>
 
-## Reviewer Checklist
-- [ ]  Check before setting to merge
-- [ ]  Is DBT Full refresh is required?
-  - [ ] Yes. Ensure to get the issue for Full Refresh Request. 
-  - [ ] No.
+- If the change introduces a change to the name of a **schema** or **model**, then the impact the the downstream reporting should be evaluated. Also the table with the old model name will need to be dropped from the database, this task can be assigned to the Data Platform team.
+- New schemas may require an update to the `data_observability` role permissions that Monte Carlo uses. Guidance for the permissions can be found in the [handbook](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/monte-carlo/#note-on-dwh-permissions) and in MC's official docs.
 
-## Further changes requested
-* [ ]  AUTHOR: Uncheck all boxes before taking further action.
+</details>
+
+<details>
+
+<summary><i>Snapshot Models</i></summary>
+
+If a snapshot model concerns GitLab.com data, make sure it is captured in the selection criteria of the [GDPR deletion macro](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/macros/warehouse/gdpr_delete_gitlab_dotcom.sql) for GitLab.com data.
+
+</details>

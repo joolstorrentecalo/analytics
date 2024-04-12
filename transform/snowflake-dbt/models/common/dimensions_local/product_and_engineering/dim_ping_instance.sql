@@ -113,6 +113,11 @@ usage_data_w_date AS (
       WHEN last_ping_of_week_flag = TRUE                       THEN TRUE
       ELSE FALSE
     END                                                                                                           AS is_last_ping_of_week,
+    LAG(uploaded_at,1,uploaded_at) OVER (
+      PARTITION BY prep_ping_instance.uuid, prep_ping_instance.host_id
+      ORDER BY ping_created_at DESC, prep_ping_instance.id DESC) AS next_ping_uploaded_at,
+    CONDITIONAL_TRUE_EVENT(next_ping_uploaded_at != uploaded_at)
+                           OVER ( PARTITION BY prep_ping_instance.uuid, prep_ping_instance.host_id ORDER BY ping_created_at DESC, prep_ping_instance.id DESC) AS uploaded_group,
     REPLACE(REPLACE(REPLACE(
                         LOWER((prep_ping_instance.raw_usage_data_payload['settings']['collected_data_categories']::VARCHAR)),
                         '"', ''), '[', ''), ']', '')                                                              AS collected_data_categories,
@@ -139,5 +144,5 @@ usage_data_w_date AS (
     created_by="@icooper-acp",
     updated_by="@pempey",
     created_date="2022-03-08",
-    updated_date="2023-08-28"
+    updated_date="2024-04-01"
 ) }}

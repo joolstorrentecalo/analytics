@@ -1,7 +1,12 @@
 -- assumes securityadmin role and admin warehouse are being used
-set username = (select upper('{{ username }}'));
+SET username = (select upper(:username));
+SET email = (select :email);
 
-CREATE USER identifier($username);
+CREATE USER
+  identifier($username)
+  EMAIL = $email
+  DEFAULT_WAREHOUSE = 'DEV_XS';
+
 CREATE ROLE identifier($username);
 
 GRANT ROLE identifier($username) TO ROLE "SYSADMIN";

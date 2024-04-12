@@ -22,6 +22,7 @@ clicks AS (
   SELECT
     behavior_structured_event_pk,
     behavior_at,
+    is_staging_event,
     contexts
   FROM {{ ref('fct_behavior_structured_event') }}
   WHERE behavior_at >= '2023-08-01' -- no events added to context before Aug 2023
@@ -32,6 +33,7 @@ clicks AS (
   SELECT
     clicks.behavior_structured_event_pk,
     clicks.behavior_at,
+    clicks.is_staging_event,
     flat_contexts.value                                                             AS code_suggestions_context,
     flat_contexts.value['data']['model_engine']::VARCHAR                            AS model_engine,
     flat_contexts.value['data']['model_name']::VARCHAR                              AS model_name,
@@ -264,5 +266,5 @@ clicks AS (
     created_by="@mdrussell",
     updated_by="@michellecooper",
     created_date="2023-09-25",
-    updated_date="2024-03-25"
+    updated_date="2024-04-02"
 ) }}

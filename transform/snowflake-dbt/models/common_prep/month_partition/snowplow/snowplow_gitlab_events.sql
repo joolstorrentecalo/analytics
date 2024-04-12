@@ -355,10 +355,11 @@ WITH filtered_source as (
       base.uploaded_at,
       base.infra_source,
       CASE
+        WHEN app_id = 'gitlab-staging' THEN TRUE
         WHEN LOWER(page_url) LIKE 'https://staging.gitlab.com/%' THEN TRUE
         WHEN LOWER(page_url) LIKE 'https://customers.stg.gitlab.com/%' THEN TRUE
         ELSE FALSE
-      END AS is_staging_url,
+      END AS is_staging_event,
       events_with_flattened_context.web_page_context,
       events_with_flattened_context.has_web_page_context,
       events_with_flattened_context.web_page_id,
@@ -397,9 +398,12 @@ WITH filtered_source as (
       events_with_flattened_context.user_agent,
       events_with_flattened_context.delivery_type,
       events_with_flattened_context.api_status_code,
+      events_with_flattened_context.duo_namespace_ids,
+      events_with_flattened_context.saas_namespace_ids,
       events_with_flattened_context.namespace_ids,
       events_with_flattened_context.instance_id,
       events_with_flattened_context.host_name,
+      events_with_flattened_context.is_streaming,
       events_with_flattened_context.gitlab_service_ping_context,
       events_with_flattened_context.has_gitlab_service_ping_context,
       events_with_flattened_context.redis_event_name,

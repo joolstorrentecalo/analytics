@@ -36,6 +36,7 @@ experiment_events AS
     INNER JOIN dim_behavior_event AS event_details
       ON event_details.dim_behavior_event_sk = experiment.dim_behavior_event_sk
       AND experiment.behavior_at::DATE BETWEEN DATEADD(YEAR,-1,CURRENT_DATE()) and CURRENT_DATE() -- events triggered in the past 1 year for query efficiency
+    WHERE experiment.is_staging_event = FALSE
     
 
     UNION ALL
@@ -98,7 +99,7 @@ experiment_events AS
 	{{ dbt_audit(
     cte_ref="base",
     created_by="@eneuberger",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2023-10-23",
-    updated_date="2024-02-12"
+    updated_date="2024-03-25"
 ) }}

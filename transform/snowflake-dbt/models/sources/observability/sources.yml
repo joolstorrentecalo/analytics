@@ -28,14 +28,6 @@ sources:
         identifier: incident_history
       - name: monitor_issues_and_solutions
         identifier: monitor_issues_and_solutions
-      - name: monitor_recom_dimension_tracking
-        identifier: monitor_recom_dimension_tracking
-      - name: rca_query_change
-        identifier: rca_query_change
-      - name: table_read_write_stats
-        identifier: table_read_write_stats
-      - name: top_queries_per_executor
-        identifier: top_queries_per_executor
       - name: monitor_recom_field_health
         identifier: monitor_recom_field_health
       - name: events

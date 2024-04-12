@@ -49,6 +49,9 @@ WITH page_views AS (
           AND event_action = 'browse_catalog'
           AND event_category = 'projects:ci:pipeline_editor:show'
           THEN 'browser_catalog_clicks'
+        WHEN event_action = 'unique_users_visiting_ci_catalog'
+          AND event_category = 'InternalEventTracking'
+          THEN 'users_visiting_ci_catalog'
       END                                               AS metric,
       COUNT(DISTINCT behavior_structured_event_pk)      AS total_events
     FROM {{ ref('mart_behavior_structured_event') }}
@@ -88,5 +91,5 @@ WITH page_views AS (
     created_by="@nhervas",
     updated_by="@nhervas",
     created_date="2024-02-15",
-    updated_date="2024-02-20"
+    updated_date="2024-03-26"
 ) }}

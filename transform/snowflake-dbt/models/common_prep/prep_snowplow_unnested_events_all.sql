@@ -8,7 +8,7 @@
 
 WITH unioned_view AS (
 
-{{ schema_union_limit('snowplow_', 'snowplow_unnested_events', 'derived_tstamp', 800, database_name=env_var('SNOWFLAKE_PREP_DATABASE'), boolean_filter_statement='is_staging_url = FALSE') }}
+{{ schema_union_limit('snowplow_', 'snowplow_unnested_events', 'derived_tstamp', 800, database_name=env_var('SNOWFLAKE_PREP_DATABASE')) }}
 
 )
 
@@ -32,6 +32,7 @@ SELECT
   se_label                                                                                                          AS event_label,
   se_property                                                                                                       AS event_property,
   se_value                                                                                                          AS event_value,
+  is_staging_event                                                                                                  AS is_staging_event,
   platform                                                                                                          AS platform,
   gsc_pseudonymized_user_id                                                                                         AS gsc_pseudonymized_user_id,
   page_urlhost                                                                                                      AS page_url_host,
@@ -166,9 +167,12 @@ SELECT
   user_agent                                                                                                        AS user_agent,
   delivery_type                                                                                                     AS delivery_type,
   api_status_code                                                                                                   AS api_status_code,
+  duo_namespace_ids                                                                                                 AS duo_namespace_ids,
+  saas_namespace_ids                                                                                                AS saas_namespace_ids,
   namespace_ids                                                                                                     AS namespace_ids,
   instance_id                                                                                                       AS instance_id,
   host_name                                                                                                         AS host_name,
+  is_streaming                                                                                                      AS is_streaming,
   gitlab_service_ping_context                                                                                       AS gitlab_service_ping_context,
   redis_event_name                                                                                                  AS redis_event_name,
   key_path                                                                                                          AS key_path,

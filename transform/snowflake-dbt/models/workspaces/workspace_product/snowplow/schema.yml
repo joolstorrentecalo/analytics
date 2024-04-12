@@ -3,25 +3,15 @@ version: 2
 models:
 
   - name: fct_behavior_link_click
-    description: A derived fact from fct_behavior_unstructured_event containing only link_click event types.
+    description: Derived fact table containing quantitative data for both staging and non-staging snowplow unstructured events limited to link_click event types.
     columns: 
       - name: fct_behavior_unstructured_sk
         tests:
           - not_null
           - unique
 
-  - name: fct_behavior_structured_event_service_ping_context
-    description: Derived fact table that parses out the Redis event from the Service Ping context which can optionally be sent with an event.
-    columns:
-      - name: behavior_structured_event_pk
-        tests:
-        - unique:
-            config:
-              where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
-        - not_null
-
-  - name: fct_behavior_structured_event_ide_extension_version
-    description: Derived fact table that parses out the [ide_extension_version context](https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/issues/256#contexts) based on the [schema](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/ide_extension_version/jsonschema) which can optionally be sent with an event.
+  - name: wk_fct_behavior_structured_event_ide_extension_version
+    description: Derived fact table containing quantitative data for both staging and non-staging snowplow structured events that parses out the [ide_extension_version context](https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/issues/256#contexts) based on the [schema](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/ide_extension_version/jsonschema) which can optionally be sent with an event.
     columns:
       - name: behavior_structured_event_pk
         description: '{{ doc("behavior_structured_event_pk") }}'
@@ -35,20 +25,22 @@ models:
       - name: ide_extension_version_context
         description: '{{ doc("ide_extension_version_context") }}'
       - name: extension_name
-        description: '{{ doc("ide_extension_name") }}'
+        description: '{{ doc("extension_name") }}'
       - name: extension_version
-        description: '{{ doc("ide_extension_version") }}'
+        description: '{{ doc("extension_version") }}'
       - name: ide_name
-        description: '{{ doc("ide_extension_ide_name") }}'
+        description: '{{ doc("ide_name") }}'
       - name: ide_vendor
-        description: '{{ doc("ide_extension_ide_vendor") }}'
+        description: '{{ doc("ide_vendor") }}'
       - name: ide_version
-        description: '{{ doc("ide_extension_ide_version") }}'
+        description: '{{ doc("ide_version") }}'
       - name: language_server_version
-        description: '{{ doc("ide_extension_language_server_version") }}'
+        description: '{{ doc("language_server_version") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
 
   - name: fct_behavior_structured_event_code_suggestions_context
-    description: Derived fact table that parses out the code_suggestions_context context based on the [schema](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/code_suggestions_context/jsonschema) which can optionally be sent with an event.
+    description: Derived fact table containing quantitative data for both staging and non-staging snowplow structured events that parses out the code_suggestions_context context based on the [schema](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/code_suggestions_context/jsonschema) which can optionally be sent with an event.
     columns:
       - name: behavior_structured_event_pk
         description: '{{ doc("behavior_structured_event_pk") }}'
@@ -73,6 +65,8 @@ models:
         description: '{{ doc("code_suggestions_language") }}'
       - name: user_agent
         description: '{{ doc("code_suggestions_user_agent") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
       - name: delivery_type
         description: ' {{ doc("product_delivery_type") }} In the raw Snowplow data, this field comes through as `gitlab_realm`.'
         tests:
@@ -159,17 +153,17 @@ models:
       - name: api_status_code
         description: '{{ doc("code_suggestions_api_status_code") }}'
       - name: extension_name
-        description: '{{ doc("ide_extension_name") }}'
+        description: '{{ doc("extension_name") }}'
       - name: extension_version
-        description: '{{ doc("ide_extension_version") }}'
+        description: '{{ doc("extension_version") }}'
       - name: ide_name
-        description: '{{ doc("ide_extension_ide_name") }}'
+        description: '{{ doc("ide_name") }}'
       - name: ide_vendor
-        description: '{{ doc("ide_extension_ide_vendor") }}'
+        description: '{{ doc("ide_vendor") }}'
       - name: ide_version
-        description: '{{ doc("ide_extension_ide_version") }}'
+        description: '{{ doc("ide_version") }}'
       - name: language_server_version
-        description: '{{ doc("ide_extension_language_server_version") }}'
+        description: '{{ doc("language_server_version") }}'
       - name: contexts
         description: '{{ doc("contexts") }}'
       - name: code_suggestions_context

@@ -684,6 +684,8 @@ models:
           description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
         - name: touchpoint_offer_type_grouped
           description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
+        - name: campaign_owner_manager
+          description: The name of the campaign owners manager from SFDC.
 
 
 

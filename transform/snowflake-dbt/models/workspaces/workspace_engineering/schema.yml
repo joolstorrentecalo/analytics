@@ -142,6 +142,13 @@ models:
         tests:
           - not_null
           - unique
+  - name: zendesk_frt
+    description: A model for Zendesk First Reply Time (FRT)
+    columns:
+      - name: ticket_id
+        tests:
+          - not_null
+          - unique
   - name: issues_history
     description: >
       Table containing age metrics & related metadata for gitlab.com internal

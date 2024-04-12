@@ -442,3 +442,22 @@ models:
       - name: jobs_to_be_done
         description: Jobs to be done, or what is to be accomplished
       
+  - name: prep_yearlies_target
+    description: Unpivoted version of yearlies_target to join with yearlies_actual
+    columns:
+      - name: yearly_name
+        description: name of the yearly item
+        tests:
+          - not_null
+      - name: yearly_dri
+        description: DRI of the yearly item
+      - name: yearly_description
+        description: description of the yearly item
+      - name: targets_raw
+        description: raw targets of the yearly item (includes mnpi)
+      - name: quarter
+        description: quarter of the yearly target
+      - name: is_mnpi
+        description: boolean flag whether the yearly item is mnpi or not
+
+      

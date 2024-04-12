@@ -74,10 +74,7 @@ Run the following CI Jobs on the MR:
 * [ ] `❄️ Snowflake: clone_raw_specific_schema` 
   * Pass the variable SCHEMA_NAME with the value `driveload`
 * [ ] `Extract: driveload`
-* [ ] `⚙️ dbt Run: specify_raw_model`
-    * Pass `DBT_MODELS` as key and `driveload` for value (alternatively, you can pass `driveload_file_name_source`)
-* [ ] In the case there is staging model, run `⚙️ dbt Run: specify_model`
-    * Pass `DBT_MODELS` as key and `driveload` for value (alternatively, you can pass `driveload_file_name`)
+* [ ] `⚙️ dbt Run: build_changes`
 
 ## Final Steps
 * [ ]  Assign MR to project maintainer for review (iterate until model is complete).

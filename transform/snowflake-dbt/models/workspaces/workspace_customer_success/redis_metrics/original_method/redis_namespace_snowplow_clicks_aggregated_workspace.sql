@@ -8,7 +8,7 @@
 WITH clicks_filtered AS (
   SELECT
     *
-  FROM {{ ref('redis_namespace_snowplow_clicks_workspace') }}
+  FROM {{ ref('fct_behavior_structured_event_redis_hll_counters') }}
   WHERE event_action IN (
     'action_active_users_project_repo',
     'p_terraform_state_api_unique_users',
@@ -18,7 +18,7 @@ WITH clicks_filtered AS (
 
 final AS (
   SELECT
-    DATE_TRUNC('month', derived_tstamp) AS date_month,
+    DATE_TRUNC('month', behavior_at) AS date_month,
     ultimate_parent_namespace_id,
     event_action,
     COUNT(DISTINCT gsc_pseudonymized_user_id) AS distinct_users
@@ -29,7 +29,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mdrussell",
-    updated_by="@iweeks",
+    updated_by="@utkarsh060",
     created_date="2022-05-24",
-    updated_date="2022-06-27"
+    updated_date="2024-04-04"
 ) }}

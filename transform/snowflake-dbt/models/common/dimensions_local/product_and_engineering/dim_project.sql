@@ -66,11 +66,11 @@ WITH prep_project AS (
       only_mirror_protected_branches,
       pull_mirror_available_overridden,
       mirror_overwrites_diverged_branches,
+      has_merge_trains_enabled,
       namespace_is_internal,
       project_description, 
       project_import_source,
       project_issues_template,
-      project_build_coverage_regex,
       project_name,
       project_path,
       project_import_url,
@@ -85,7 +85,7 @@ WITH prep_project AS (
 {{ dbt_audit(
     cte_ref="prep_project",
     created_by="@mpeychet_",
-    updated_by="@mpeychet_",
+    updated_by="@michellecooper",
     created_date="2021-05-19",
-    updated_date="2021-05-19"
+    updated_date="2024-04-10"
 ) }}

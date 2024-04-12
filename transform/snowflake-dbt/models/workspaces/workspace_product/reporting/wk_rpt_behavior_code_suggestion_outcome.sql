@@ -93,6 +93,22 @@ error AS (
 
 ),
 
+stream_started AS (
+
+  SELECT *
+  FROM gitlab_ide_extension_events
+  WHERE event_action = 'suggestion_stream_started'
+
+),
+
+stream_completed AS (
+
+  SELECT *
+  FROM gitlab_ide_extension_events
+  WHERE event_action = 'suggestion_stream_completed'
+
+),
+
 event_count_per_action AS (
 
   --get a count of events per suggestion (event_label) and event_action - there should only be one
@@ -173,7 +189,9 @@ suggestion_level AS (
     IFF(rejected.event_label IS NOT NULL, TRUE, FALSE)                                              AS was_rejected,
     IFF(cancelled.event_label IS NOT NULL, TRUE, FALSE)                                             AS was_cancelled,
     IFF(not_provided.event_label IS NOT NULL, TRUE, FALSE)                                          AS was_not_provided,
-    IFF(error.event_label IS NOT NULL, TRUE, FALSE)                                                 AS was_error
+    IFF(error.event_label IS NOT NULL, TRUE, FALSE)                                                 AS was_error,
+    IFF(stream_started.event_label IS NOT NULL, TRUE, FALSE)                                        AS was_stream_started,
+    IFF(stream_completed.event_label IS NOT NULL, TRUE, FALSE)                                      AS was_stream_completed
   FROM requested
   LEFT JOIN loaded
     ON requested.event_label = loaded.event_label
@@ -191,6 +209,10 @@ suggestion_level AS (
     ON requested.event_label = error.event_label
   LEFT JOIN suggestions_with_duplicate_events
     ON requested.event_label = suggestions_with_duplicate_events.event_label
+  LEFT JOIN stream_started
+    ON stream_started.event_label = requested.event_label
+  LEFT JOIN stream_completed
+    ON stream_completed.event_label = requested.event_label
   WHERE suggestions_with_duplicate_events.event_label IS NULL --exclude suggestions with duplicate events
 
 )
@@ -198,8 +220,8 @@ suggestion_level AS (
 {{ dbt_audit(
     cte_ref="suggestion_level",
     created_by="@cbraza",
-    updated_by="@michellecooper",
+    updated_by="@mdrussell",
     created_date="2023-10-20",
-    updated_date="2024-03-08"
+    updated_date="2024-03-25"
 ) }}
 

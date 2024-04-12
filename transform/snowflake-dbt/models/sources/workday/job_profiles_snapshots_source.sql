@@ -1,7 +1,7 @@
 WITH source AS (
 
   SELECT *
-  FROM {{ source('snapshots', 'job_profiles_snapshots') }}   
+  FROM {{ source('snapshots', 'job_profiles_snapshots') }}
 
 ),
 
@@ -15,7 +15,8 @@ final AS (
     job_level::VARCHAR                      AS job_level,
     IFF(inactive::BOOLEAN = 0, TRUE, FALSE) AS is_job_profile_active,
     dbt_valid_from::TIMESTAMP               AS valid_from,
-    dbt_valid_to::TIMESTAMP                 AS valid_to
+    dbt_valid_to::TIMESTAMP                 AS valid_to,
+    job_workday_id::VARCHAR                 AS job_workday_id
   FROM source
 
 )

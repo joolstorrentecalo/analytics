@@ -3,17 +3,30 @@ This module args.py parses the command line arguments provided by the user.
 """
 
 import argparse
-from utils_update_roles import get_username_changes
+from utils_update_roles import get_user_changes
 
 
-def get_usernames_added() -> list:
-    """returns the usernames ADDED to the snowflake_usernames.yml file"""
-    return get_username_changes()[0]
+def get_users_added() -> list:
+    """returns the users ADDED to the snowflake_users.yml file"""
+
+    try:
+        users_added = get_user_changes()[0]
+    except IndexError as e:
+        raise IndexError(
+            f"Check that utils_snowflake_provisionin.get_user_changes() returns 2 lists, error: {e}"
+        )
+    return users_added
 
 
-def get_usernames_removed() -> list:
-    """returns the usernames REMOVED from the snowflake_usernames.yml file"""
-    return get_username_changes()[1]
+def get_users_removed() -> list:
+    """returns the users REMOVED from the snowflake_users.yml file"""
+    try:
+        users_removed = get_user_changes()[1]
+    except IndexError as e:
+        raise IndexError(
+            f"Check that utils_snowflake_provisionin.get_user_changes() returns 2 lists, error: {e}"
+        )
+    return users_removed
 
 
 def get_default_databases_template() -> str:
@@ -37,8 +50,8 @@ def get_default_users_template() -> str:
 def parse_arguments() -> argparse.Namespace:
     """
     The user can pass in the following arguemnts:
-        --usernames-to-add
-        --usernames-to-remove
+        --users-to-add
+        --users-to-remove
         --databases-template
         --roles-template
         --users-template
@@ -49,19 +62,19 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Update roles.yml options")
     parser.add_argument(
         "-ua",
-        "--usernames-to-add",
+        "--users-to-add",
         nargs="+",
         type=str,
-        default=get_usernames_added(),
-        help="usernames to ADD to the roles.yml file",
+        default=get_users_added(),
+        help="users to ADD to the roles.yml file",
     )
     parser.add_argument(
         "-ur",
-        "--usernames-to-remove",
+        "--users-to-remove",
         nargs="+",
         type=str,
-        default=get_usernames_removed(),
-        help="usernames to REMOVE from the roles.yml file",
+        default=get_users_removed(),
+        help="users to REMOVE from the roles.yml file",
     )
     parser.add_argument(
         "-d",
