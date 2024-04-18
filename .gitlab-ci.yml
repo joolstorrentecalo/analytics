@@ -24,7 +24,13 @@ workflow:
 # CI Stages
 # ======
 stages:
+  - base
   - 🐍 Python
+
+job_name:
+  stage: base
+  script:
+    - echo "Hello, GitLab CI!"
 
 .snowflake_provisioning_automation: &snowflake_provisioning_automation
   stage: 🐍 Python
