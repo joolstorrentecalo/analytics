@@ -53,7 +53,7 @@ container_cmd = f"""
 dag = DAG(
     "handbook_mrs_backfill",
     default_args=default_args,
-    schedule_interval="0 2 * * *",
+    schedule_interval=None,
     catchup=False,
 )
 
