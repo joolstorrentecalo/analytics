@@ -9,6 +9,9 @@ job_name:
   stage: base
   script:
     - echo "Hello, GitLab CI!"
+  only:
+    refs:
+      - merge_requests
   when: always
 
 snowflake_provisioning_snowflake_users:
