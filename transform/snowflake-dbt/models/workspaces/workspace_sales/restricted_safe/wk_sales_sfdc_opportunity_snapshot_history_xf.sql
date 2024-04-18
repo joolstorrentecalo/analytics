@@ -380,8 +380,6 @@ WITH date_details AS (
       edm_snapshot_opty.record_type_id,
       
       edm_snapshot_opty.dim_crm_account_id                       AS account_id,
-      edm_snapshot_opty.account_owner_team_stamped,
-      edm_snapshot_opty.account_owner_team_stamped_cro_level,
       edm_snapshot_opty.crm_account_name                         AS account_name,
       
       edm_snapshot_opty.dim_parent_crm_account_id                AS ultimate_parent_account_id,

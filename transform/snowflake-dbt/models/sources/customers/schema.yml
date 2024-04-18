@@ -199,6 +199,11 @@ models:
     description: '{{ doc("customers_db_reconciliations_source") }}'  
   - name: customers_db_trial_histories_source
     description: '{{ doc("customers_db_trial_histories_source") }}'  
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - gl_namespace_id
+            - trial_type
     columns:
       - name: gl_namespace_id
         tags:
@@ -206,7 +211,6 @@ models:
           - customers_db
         tests:
           - not_null
-          - unique
 
   - name: customers_db_billing_accounts_source
     description: '{{ doc("customers_db_billing_accounts_source") }}'  

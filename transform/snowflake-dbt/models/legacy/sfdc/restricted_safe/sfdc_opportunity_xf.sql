@@ -36,39 +36,7 @@ WITH sfdc_opportunity AS (
     SELECT
       sfdc_opportunity.opportunity_id,
       sfdc_opportunity.owner_id,
-      'CRO'                                                           AS level_1,
-      CASE account_owner_team_stamped
-        WHEN 'APAC'                 THEN 'VP Ent'
-        WHEN 'Commercial'           THEN 'VP Comm SMB'
-        WHEN 'Commercial - MM'      THEN 'VP Comm MM'
-        WHEN 'Commercial - SMB'     THEN 'VP Comm SMB'
-        WHEN 'EMEA'                 THEN 'VP Ent'
-        WHEN 'MM - APAC'            THEN 'VP Comm MM'
-        WHEN 'MM - East'            THEN 'VP Comm MM'
-        WHEN 'MM - EMEA'            THEN 'VP Comm MM'
-        WHEN 'MM - West'            THEN 'VP Comm MM'
-        WHEN 'MM-EMEA'              THEN 'VP Comm MM'
-        WHEN 'Public Sector'        THEN 'VP Ent'
-        WHEN 'SMB'                  THEN 'VP Comm SMB'
-        WHEN 'SMB - International'  THEN 'VP Comm SMB'
-        WHEN 'SMB - US'             THEN 'VP Comm SMB'
-        WHEN 'US East'              THEN 'VP Ent'
-        WHEN 'US West'              THEN 'VP Ent'
-        ELSE NULL
-      END                                                             AS level_2,
-      CASE account_owner_team_stamped
-        WHEN 'APAC'                 THEN 'RD APAC'
-        WHEN 'EMEA'                 THEN 'RD EMEA'
-        WHEN 'MM - APAC'            THEN 'ASM - MM - APAC'
-        WHEN 'MM - East'            THEN 'ASM - MM - East'
-        WHEN 'MM - EMEA'            THEN 'ASM - MM - EMEA'
-        WHEN 'MM - West'            THEN 'ASM - MM - West'
-        WHEN 'MM-EMEA'              THEN 'ASM - MM - EMEA'
-        WHEN 'Public Sector'        THEN 'RD PubSec'
-        WHEN 'US East'              THEN 'RD US East'
-        WHEN 'US West'              THEN 'RD US West'
-        ELSE NULL
-      END                                                             AS level_3
+      'CRO'                                                           AS level_1
     FROM sfdc_opportunity
     -- sfdc Sales Admin user
     WHERE owner_id = '00561000000mpHTAAY'
@@ -102,7 +70,6 @@ WITH sfdc_opportunity AS (
       opportunity_owner.title                                                                     AS opportunity_owner_title,
       sfdc_opportunity.opportunity_sales_development_representative,
       sfdc_opportunity.opportunity_development_representative,
-      sfdc_opportunity.account_owner_team_stamped,
       sfdc_opportunity.opportunity_term,
       sfdc_opportunity.primary_campaign_source_id                                                 AS primary_campaign_source_id,
       sfdc_opportunity.sales_accepted_date,
@@ -263,8 +230,6 @@ WITH sfdc_opportunity AS (
       sfdc_opportunity.comp_channel_neutral,
 
       -- account owner hierarchies levels
-      account_owner.sales_team_level_2                                                                    AS account_owner_team_level_2,
-      account_owner.sales_team_level_3                                                                    AS account_owner_team_level_3,
       account_owner.sales_team_level_4                                                                    AS account_owner_team_level_4,
       account_owner.sales_team_vp_level                                                                   AS account_owner_team_vp_level,
       account_owner.sales_team_rd_level                                                                   AS account_owner_team_rd_level,
@@ -272,17 +237,6 @@ WITH sfdc_opportunity AS (
       account_owner.sales_min_hierarchy_level                                                             AS account_owner_min_team_level,
       account_owner.sales_region                                                                          AS account_owner_sales_region,
 
-      -- opportunity owner hierarchies levels
-      CASE
-        WHEN sales_admin_hierarchy.level_2 IS NOT NULL
-          THEN sales_admin_hierarchy.level_2
-        ELSE opportunity_owner.sales_team_level_2
-      END                                                                                                AS opportunity_owner_team_level_2,
-      CASE
-        WHEN sales_admin_hierarchy.level_3 IS NOT NULL
-          THEN sales_admin_hierarchy.level_3
-        ELSE opportunity_owner.sales_team_level_3
-      END                                                                                                AS opportunity_owner_team_level_3,
 
       -- reporting helper flags
       CASE

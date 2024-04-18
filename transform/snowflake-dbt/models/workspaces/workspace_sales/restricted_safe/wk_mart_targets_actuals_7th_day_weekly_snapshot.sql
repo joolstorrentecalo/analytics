@@ -96,24 +96,15 @@ final AS (
     dim_date.days_until_last_day_of_month                           AS snapshot_days_until_last_day_of_month,
     DATEDIFF('week',dim_date.first_day_of_fiscal_quarter, targets_actuals.date_actual) + 1     
                                                                     AS snapshot_week_of_fiscal_quarter,
-    -- crm owner/sales rep live fields
-    dim_crm_user_hierarchy.crm_user_sales_segment,
-    dim_crm_user_hierarchy.crm_user_geo,
-    dim_crm_user_hierarchy.crm_user_region,
-    dim_crm_user_hierarchy.crm_user_area,
-    dim_crm_user_hierarchy.crm_user_business_unit,
-    dim_crm_user_hierarchy.crm_user_sales_segment_grouped,
-    dim_crm_user_hierarchy.crm_user_sales_segment_region_grouped,
-
-    dim_crm_user_hierarchy.crm_user_role_name,
-    dim_crm_user_hierarchy.crm_user_role_level_1,
-    dim_crm_user_hierarchy.crm_user_role_level_2,
-    dim_crm_user_hierarchy.crm_user_role_level_3,
-    dim_crm_user_hierarchy.crm_user_role_level_4,
-    dim_crm_user_hierarchy.crm_user_role_level_5,
+    dim_crm_user_hierarchy.crm_user_role_name                       AS crm_current_account_set_role_name,
+    dim_crm_user_hierarchy.crm_user_role_level_1                    AS crm_current_account_set_role_level_1,
+    dim_crm_user_hierarchy.crm_user_role_level_2                    AS crm_current_account_set_role_level_2,
+    dim_crm_user_hierarchy.crm_user_role_level_3                    AS crm_current_account_set_role_level_3,
+    dim_crm_user_hierarchy.crm_user_role_level_4                    AS crm_current_account_set_role_level_4,
+    dim_crm_user_hierarchy.crm_user_role_level_5                    AS crm_current_account_set_role_level_5,
     sales_qualified_source.sales_qualified_source_name,
     sales_qualified_source.sales_qualified_source_grouped,
-    order_type.order_type_name AS order_type,
+    order_type.order_type_name                                      AS order_type,
     order_type.order_type_grouped
   FROM targets_actuals
   LEFT JOIN dim_date 

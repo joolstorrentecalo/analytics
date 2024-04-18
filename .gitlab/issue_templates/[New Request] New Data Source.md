@@ -11,8 +11,8 @@ To support the new data source triage process, try to complete the below checkli
   - [ ] Complete new pipeline
   - [ ] Change/extension of an existing pipeline: `     `
 * [ ] Do any objects in this data source need to be snapshotted? If yes, please open separate issues to have the objects snapshotted.
-* [ ] Does it contain MNPI data?
-* [ ] Does it contain Personal Data?
+* [ ] Does it contain MNPI data (see the [SAFE guide](https://handbook.gitlab.com/handbook/legal/safe-framework/#sensitive) for more information about MNPI)?
+* [ ] Does it contain [Personal Data](https://handbook.gitlab.com/handbook/security/data-classification-standard/#data-classification-definitions)?
 * [ ] Severity in case of an incident
   - [ ] Critical - S1
   - [ ] High - S2

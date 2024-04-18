@@ -77,7 +77,6 @@
       dim_crm_opportunity.net_new_source_categories,
       dim_crm_opportunity.invoice_number,
       dim_crm_opportunity.opportunity_term,
-      dim_crm_opportunity.account_owner_team_stamped,
       dim_crm_opportunity.stage_name_3plus,
       dim_crm_opportunity.stage_name_4plus,
       dim_crm_opportunity.stage_category,
@@ -265,7 +264,6 @@
       dim_crm_opportunity.sales_team_vp_level,
       dim_crm_opportunity.sales_team_avp_rd_level,
       dim_crm_opportunity.sales_team_asm_level,
-      dim_crm_opportunity.account_owner_team_stamped_cro_level,
       LOWER(
         dim_crm_opportunity.crm_account_owner_sales_segment
       ) AS account_owner_user_segment,

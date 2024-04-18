@@ -1511,12 +1511,16 @@ models:
 
 - name: rpt_namespace_onboarding
   description: '{{ doc("rpt_namespace_onboarding") }}'
+  tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ultimate_parent_namespace_id
+            - trial_type
   columns:
     - name: ultimate_parent_namespace_id
       description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
       tests:
         - not_null
-        - unique
     - name: namespace_created_at
       description: '{{ doc("namespace_created_at") }}'
     - name: namespace_created_date
@@ -1549,6 +1553,10 @@ models:
       description: Creator invite accepted at timestamp within 2min of creating the ultimate parent namespace. This can be used to filter out namespaces that may have lower intent to purchase.
     - name: trial_start_date
       description: First trial start date associated with the ultimate parent namespace from customers_db_trial_histories.
+    - name: trial_type
+      description: '{{ doc("trial_type") }}'
+    - name: trial_type_name
+      description: '{{ doc("trial_type_name") }}'
     - name: days_since_namespace_creation_at_trial
       description: Date difference in days between ultimate parent namespace creation and trial start.
     - name: first_paid_subscription_start_date
@@ -1657,6 +1665,8 @@ models:
       description: Unique identifier of a version of a subscription
     - name: ultimate_subscription_flag
       description: This field is a flag that designates if a subscription is an ultimate subscription or not. 1 = Ultimate subscription, 0 = Non-Ultimate subscription
+    - name: is_oss_program
+      description: This field is a flag that designates if a subscription is an OSS program or not. True = OSS Subscription, False = Not an OSS Subscription
     - name: delivery_type 
       tests: 
         - not_null

@@ -157,10 +157,12 @@ tables:
       , entity_id
       , entity_type
       , CASE
-            WHEN details ilike '%%custom_message: Added group%%' THEN 'custom_message: Added group'
-            WHEN details ilike '%%add: group%%' THEN 'add: group'
-            WHEN details ilike '%%remove: group%%' THEN 'remove: group'
-            ELSE NULL
+          WHEN details ILIKE '%%custom_message: Added group%%' THEN 'custom_message: Added group'
+          WHEN details ILIKE '%%add: group%%' THEN 'add: group'
+          WHEN details ILIKE '%%remove: group%%' THEN 'remove: group'
+          WHEN details ILIKE '%%banned%%' THEN 'banned'
+          WHEN details ILIKE '%%blocked%%' THEN 'blocked'
+          ELSE NULL
         END as details
       , created_at
       FROM audit_events

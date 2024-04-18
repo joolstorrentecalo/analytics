@@ -58,6 +58,10 @@ models:
       - name: namespace_was_trial
       - name: saas_trial_start_date
       - name: saas_trial_expired_on
+      - name: saas_trial_type
+        description: '{{ doc("trial_type") }}'
+      - name: saas_trial_type_name
+        description: '{{ doc("trial_type_name") }}'
       - name: customer_id
       - name: dim_product_tier_id_with_trial
       - name: product_tier_name_with_trial
@@ -99,6 +103,10 @@ models:
       - name: namespace_was_trial
       - name: saas_trial_start_date
       - name: saas_trial_expired_on
+      - name: saas_trial_type
+        description: '{{ doc("trial_type") }}'
+      - name: saas_trial_type_name
+        description: '{{ doc("trial_type_name") }}'
       - name: customer_id
       - name: dim_product_tier_id_with_trial
       - name: product_tier_name_with_trial
@@ -4982,7 +4990,6 @@ models:
       - name: merged_crm_opportunity_id
         description: If the closed lost reason is that the Opp was merged into another opportunity than this field will be the id for that opportunity record.
       - name: net_new_source_categories
-      - name: account_owner_team_stamped
       - name: primary_campaign_source_id
       - name: sales_accepted_date
       - name: sales_path
@@ -5018,8 +5025,6 @@ models:
       - name: risk_type
       - name: risk_reasons
       - name: tam_notes
-      - name: account_owner_team_stamped_cro_level
-        description: Assigns opportunities to Large, Mid-Market, and SMB by stamped account owner teams.
       - name: calculated_deal_size
         description: Banded groupings of net ARR.
       - name: competitors_amazon_code_commit_flag

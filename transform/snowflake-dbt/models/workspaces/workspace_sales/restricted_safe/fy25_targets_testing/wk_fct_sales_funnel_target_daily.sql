@@ -15,7 +15,7 @@
                                                                                         AS days_of_month,
       prep_date.first_day_of_week,
       prep_date.fiscal_quarter_name,
-      {{ dbt_utils.star(from=ref('fct_sales_funnel_target'),
+      {{ dbt_utils.star(from=ref('wk_fct_sales_funnel_target'),
                         except=['CREATED_BY', 'UPDATED_BY', 'MODEL_CREATED_DATE', 'MODEL_UPDATED_DATE', 'DBT_UPDATED_AT', 'DBT_CREATED_AT'],
                         relation_alias='fct_sales_funnel_target') }},
       fct_sales_funnel_target.allocated_target                                          AS monthly_allocated_target,

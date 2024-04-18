@@ -94,7 +94,6 @@ final AS (
     fct_crm_opportunity.generated_source,
     fct_crm_opportunity.churn_contraction_type,
     fct_crm_opportunity.churn_contraction_net_arr_bucket,
-    fct_crm_opportunity.account_owner_team_stamped,
     fct_crm_opportunity.stage_name_3plus,
     fct_crm_opportunity.stage_name_4plus,
     fct_crm_opportunity.stage_category,
@@ -244,7 +243,6 @@ final AS (
     fct_crm_opportunity.sales_team_vp_level,
     fct_crm_opportunity.sales_team_avp_rd_level,
     fct_crm_opportunity.sales_team_asm_level,
-    fct_crm_opportunity.account_owner_team_stamped_cro_level,
     LOWER(
       account_owner_live.crm_user_sales_segment
     ) AS account_owner_user_segment,
@@ -573,7 +571,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@rkohnke",
+    updated_by="@snalamaru",
     created_date="2022-05-05",
-    updated_date="2024-03-19"
+    updated_date="2024-04-16"
   ) }}

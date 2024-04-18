@@ -299,6 +299,8 @@
     prep_namespace_order_trial.order_end_date                                   AS trial_expired_date,
     IFF(CURRENT_DATE() >= trial_start_date AND CURRENT_DATE() <= COALESCE(trial_expired_date, CURRENT_DATE()), TRUE, FALSE) 
                                                                                 AS is_active_trial,
+    prep_namespace_order_trial.trial_type,
+    prep_namespace_order_trial.trial_type_name,
     prep_namespace_order_trial.glm_content,
     prep_namespace_order_trial.glm_source,
 

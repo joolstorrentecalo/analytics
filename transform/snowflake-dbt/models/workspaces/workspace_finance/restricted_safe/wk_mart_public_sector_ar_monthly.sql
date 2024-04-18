@@ -55,14 +55,17 @@ final AS (
 /* Compare balances and count per segment vs. the total balances for all open invoices monthly */
 
 SELECT
-balance_per_segment.accounting_period_month,
-balance_per_segment.segment,
+balance_per_segment.accounting_period_month                                                    AS accounting_period_month,
+dim_date.fiscal_year                                                                           AS fiscal_year,
+dim_date.fiscal_quarter_name_fy                                                                AS fiscal_quarter,
+balance_per_segment.segment                                                                    AS segment,
 ROUND((balance_per_segment.total_balance_per_segment / total.total_all_balance) * 100,2)       AS percentage_of_open_balance_per_segment,
-balance_per_segment.total_balance_per_segment,
+balance_per_segment.total_balance_per_segment                                                  AS total_balance_per_segment,
 ROUND((balance_per_segment.invoice_count_per_segment / total.count_all_open_invoices) * 100,2) AS percentage_of_open_invoices_count_per_segment,
-balance_per_segment.invoice_count_per_segment
+balance_per_segment.invoice_count_per_segment                                                  AS invoice_count_per_segment
 FROM balance_per_segment
 LEFT JOIN total ON total.accounting_period_month = balance_per_segment.accounting_period_month
+LEFT JOIN {{ ref('dim_date') }} ON dim_date.date_actual = balance_per_segment.accounting_period_month
 
 )
 
@@ -71,6 +74,6 @@ cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-03-24",
-updated_date="2024-03-24"
+updated_date="2024-04-16"
 ) }}
 

@@ -60,9 +60,6 @@ WITH source AS (
         BDR_LU__c                                                                           AS opportunity_business_development_representative_lookup,
         BDR_SDR__c                                                                          AS opportunity_development_representative,
 
-
-        account_owner_team_o__c                                                             AS account_owner_team_stamped,
-
         sales_accepted_date__c                                                              AS sales_accepted_date,
         engagement_type__c                                                                  AS sales_path,
         sales_qualified_date__c                                                             AS sales_qualified_date,
