@@ -1,32 +1,62 @@
-WITH source AS (
+WITH mart AS (
+  SELECT * FROM
+    {{ ref ('mart_behavior_structured_event') }}
+  WHERE event_action IN ('tokens_per_user_request_response', 'tokens_per_user_request_prompt')
+    AND behavior_at BETWEEN '2023-10-01' AND '2024-03-31'
+
+),
+
+source_all_feats_except_cs AS (
   SELECT
-    e.behavior_date  AS behavior_date,
-    e.event_action   AS event_action,
-    e.event_label    AS feature,
-    e.event_category AS model,
-    e.event_property AS request_id,
-    e.event_value    AS token_amount,
-    e.contexts
+    behavior_date  AS behavior_date,
+    event_action   AS event_action,
+    event_label    AS feature,
+    event_category AS model,
+    event_property AS request_id,
+    event_value    AS token_amount,
+    contexts
   FROM
-    {{ ref ('mart_behavior_structured_event') }} AS e
+    mart
   WHERE
-    (
-      e.event_action = 'tokens_per_user_request_prompt'
-      OR
-      e.event_action = 'tokens_per_user_request_response'
-    )
-    AND
-    e.behavior_date > '2024-01-01'
-    AND
-    e.app_id = 'gitlab'
+    app_id = 'gitlab'
+),
+
+source_cs AS (
+
+  SELECT
+    behavior_date  AS behavior_date,
+    event_action   AS event_action,
+    event_label    AS feature,
+    event_category AS model,
+    event_property AS request_id,
+    event_value    AS token_amount,
+    contexts
+  FROM mart
+  WHERE
+    event_category = 'code_suggestions'
+    AND event_label IN ('code_generation', 'code_completion')
+
+),
+
+source AS (
+
+  SELECT * FROM source_all_feats_except_cs
+  UNION ALL
+  SELECT * FROM source_cs
+
 )
+
 
 SELECT
   DATE_TRUNC('day', behavior_date) AS day,
   CASE WHEN model LIKE '%Anthropic%' OR LOWER(model) LIKE '%aigateway%' THEN 'Anthropic'
-    ELSE 'Google'
+    WHEN feature = 'code_completion' THEN 'Google'
+    WHEN feature = 'code_generation' THEN 'Anthropic' -- https://gitlab.com/gitlab-org/quality/engineering-analytics/finops/finops-analysis/-/issues/140#note_1867359025
+    ELSE model
   END                              AS provider,
-  model                            AS model,
+  CASE WHEN feature = 'code_completion' THEN 'Gitlab::Llm::VertexAi::Codey'
+    WHEN feature = 'code_generation' THEN 'Gitlab::Llm::Anthropic' ELSE model
+  END                              AS model,
   feature                          AS feature,
   event_action                     AS prompt_answer,
   SUM(token_amount)                AS tokens_tracked,
