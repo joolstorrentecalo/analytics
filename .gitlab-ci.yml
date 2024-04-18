@@ -337,8 +337,9 @@ snowflake_provisioning_snowflake_users:
   <<: *snowflake_provisioning_automation
   rules:
     # only allow trigger if MR approved
-    - if: '$CI_MERGE_REQUEST_APPROVED == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_APPROVED == "true"'
       when: manual
+    - when: never
   script:
     # provision_users.py specific argument
     - export IS_DEV_DB_FINAL=""
