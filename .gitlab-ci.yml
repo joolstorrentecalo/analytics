@@ -9,6 +9,7 @@ job_name:
   stage: base
   script:
     - echo "Hello, GitLab CI!"
+  when: always
 
 snowflake_provisioning_snowflake_users:
   stage: Python
