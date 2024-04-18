@@ -327,17 +327,13 @@ clone_stop:
 
     - export USERS_TO_ADD_FINAL=""
     - if [ -n "$USERS_TO_ADD" ]; then USERS_TO_ADD_FINAL="--users-to-add $USERS_TO_ADD"; fi
-
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  when: manual
   allow_failure: true
 
 snowflake_provisioning_snowflake_users:
   <<: *snowflake_provisioning_automation
   rules:
     # only allow trigger if MR approved
-    - if: '$CI_MERGE_REQUEST_APPROVED == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_APPROVED == "true"'
       when: manual
   script:
     # provision_users.py specific argument
@@ -353,6 +349,9 @@ snowflake_provisioning_snowflake_users:
 
 snowflake_provisioning_roles_yaml:
   <<: *snowflake_provisioning_automation
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
   script:
     # update_roles_yaml.py specific arguments below
     - export USERS_TO_REMOVE_FINAL=""
