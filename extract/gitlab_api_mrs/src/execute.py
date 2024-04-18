@@ -21,7 +21,8 @@ def get_product_project_ids() -> List[str]:
     """
     Extracts the part of product CSV and returns the unique project_ids listed in the CSV.
     """
-    url = "https://gitlab.com/gitlab-data/analytics/raw/master/transform/snowflake-dbt/data/projects_part_of_product.csv"
+    url = "https://gitlab.com/gitlab-data/analytics/-/raw/20357-full-refresh-engineering_part_of_product_merge_requests_source/transform/snowflake-dbt/data/projects_part_of_product.csv"
+    # url = "https://gitlab.com/gitlab-data/analytics/raw/master/transform/snowflake-dbt/data/projects_part_of_product.csv"
     csv_bytes = requests.get(url).content
     csv = pd.read_csv(io.StringIO(csv_bytes.decode("utf-8")))
     return csv["project_id"].unique()
