@@ -10665,6 +10665,8 @@ users:
     groups:
       - General All Access
       - General SAFE Access
+      - Sales All Access
+      - Sales Development SAFE Access
   - user_name: sfigueroa
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
