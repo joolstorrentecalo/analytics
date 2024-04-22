@@ -662,10 +662,6 @@ models:
       description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
       tests:
         - dbt_utils.at_least_one
-    - name: coverage_fuzzing_pipeline_usage_28_days_event
-      description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
     - name: environments_all_time_event
       description: '{{ doc("environments_all_time_event_desc") }}'
       tests:
@@ -1038,10 +1034,6 @@ models:
         - dbt_utils.at_least_one
     - name: projects_with_repositories_enabled_all_time_user
       description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
-    - name: coverage_fuzzing_pipeline_usage_28_days_event
-      description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
       tests:
         - dbt_utils.at_least_one
     - name: environments_all_time_event

@@ -15,7 +15,8 @@ WITH page_views AS (
         WHEN page_url_path LIKE '%ci/editor%' 
           THEN 'pipeline_editor_pageview'
       END                                               AS metric, 
-      COUNT(DISTINCT fct_behavior_website_page_view_sk) AS total_events
+      COUNT(DISTINCT fct_behavior_website_page_view_sk) AS total_events,
+      COUNT(DISTINCT gsc_pseudonymized_user_id) as total_users
     FROM {{ ref('fct_behavior_website_page_view') }}
     LEFT JOIN {{ ref('dim_plan') }}
       ON dim_plan.plan_name = fct_behavior_website_page_view.gsc_plan
@@ -53,6 +54,7 @@ WITH page_views AS (
           AND event_category = 'InternalEventTracking'
           THEN 'users_visiting_ci_catalog'
       END                                               AS metric,
+      COUNT(DISTINCT gsc_pseudonymized_user_id)         AS total_users,
       COUNT(DISTINCT behavior_structured_event_pk)      AS total_events
     FROM {{ ref('mart_behavior_structured_event') }}
     WHERE metric IS NOT NULL
@@ -69,7 +71,8 @@ WITH page_views AS (
       ultimate_parent_namespace_id, 
       gsc_project_id,
       metric,
-      total_events
+      total_events,
+      total_users
     FROM page_views
 
     UNION ALL 
@@ -81,7 +84,8 @@ WITH page_views AS (
       ultimate_parent_namespace_id, 
       gsc_project_id,
       metric,
-      total_events
+      total_events,
+      total_users
     FROM structured_events
 
 )
@@ -91,5 +95,5 @@ WITH page_views AS (
     created_by="@nhervas",
     updated_by="@nhervas",
     created_date="2024-02-15",
-    updated_date="2024-03-26"
+    updated_date="2024-04-17"
 ) }}

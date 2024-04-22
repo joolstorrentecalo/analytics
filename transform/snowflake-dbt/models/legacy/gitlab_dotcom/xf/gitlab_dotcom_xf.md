@@ -12,34 +12,6 @@ This table contains all [Custom Attributes](https://docs.gitlab.com/ee/api/custo
 
 {% enddocs %}
 
-{% docs gitlab_dotcom_daily_usage_data_events_90 %}
-
-This table selects all the rows from `gitlab_dotcom_usage_data_events` that have an `event_date` (date when the event happened) that is less than 90 days ago. 
-
-{% enddocs %}
-
-{% docs gitlab_dotcom_daily_usage_data_events %}
-
-This table is a daily aggregated table built on top of `gitlab_dotcom_usage_data_events` table aggregated at the TOP LEVEL NAMESPACE/USER_ID. It is preferable to use this table instead of `gitlab_dotcom_usage_data_events` for efficiency.
-
-The NAMESPACE_ID in this table is the TOP LEVEL NAMESPACE_ID. When joining with the projects table, for example you will need to join on the ultimate_parent_namespace_id.
-
-That means that this table will have one record per action type taken by a specific user U on a date D in a top-level Namespace N
-
-What you can do with this table:
-
-- Counting the number of users using a specific feature over the course of the month
-- Assessing retention of a specific feature over the course of a period
-- ...
-
-What you can't do with it ?
-
-- Sequential Analysis
-- Time to convert (at a finer grain, like hours)
-- Time to second event
-
-{% enddocs %}
-
 {% docs gitlab_dotcom_environments_xf %}
 
 This model anonymizes three fields: `environment_name`, `slug`, `external_url` based on the visibility of the projects the environments are associated to 

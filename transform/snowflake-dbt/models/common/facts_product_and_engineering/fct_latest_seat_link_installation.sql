@@ -6,6 +6,7 @@
 WITH final AS (
 
     SELECT
+      latest_seat_link_installation_sk,
       dim_subscription_id,
       subscription_name,
       host_name,
@@ -28,5 +29,5 @@ WITH final AS (
     created_by="@mdrussell",
     updated_by="@mdrussell",
     created_date="2024-03-07",
-    updated_date="2024-03-07"
+    updated_date="2024-04-18"
 ) }}

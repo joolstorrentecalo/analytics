@@ -162,7 +162,6 @@
       "redis_hll_counters.analytics.p_analytics_ci_cd_lead_time_monthly"                        AS ci_cd_lead_time_usage_28_days_event,
       "redis_hll_counters.analytics.p_analytics_ci_cd_deployment_frequency_monthly"             AS ci_cd_deployment_frequency_usage_28_days_event,
       "usage_activity_by_stage.create.projects_with_repositories_enabled"                       AS projects_with_repositories_enabled_all_time_user,
-      "usage_activity_by_stage_monthly.secure.coverage_fuzzing_pipeline"                        AS coverage_fuzzing_pipeline_usage_28_days_event,
       "counts.environments"                                                                     AS environments_all_time_event,
       "counts.feature_flags"                                                                    AS feature_flags_all_time_event,
       "counts_monthly.successful_deployments"                                                   AS successful_deployments_28_days_event,
@@ -276,5 +275,5 @@
     created_by="@mdrussell",
     updated_by="@annapiaseczna",
     created_date="2022-10-12",
-    updated_date="2023-12-10"
+    updated_date="2024-04-18"
 ) }}

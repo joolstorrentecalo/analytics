@@ -73,16 +73,14 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       charges.subscription_start_date                              AS first_paid_subscription_start_date,
       DATEDIFF('days', namespace_created_date, charges.subscription_start_date)   
                                                                    AS days_since_namespace_creation_at_first_paid_subscription,
-      SPLIT_PART(product_tier.product_tier_name, ' - ', 2)         AS first_paid_plan_name, --product_category: SaaS - Premium, SaaS - Ultimate, etc
+      SPLIT_PART(charges.product_tier_name, ' - ', 2)              AS first_paid_plan_name, --product_category: SaaS - Premium, SaaS - Ultimate, etc
       IFF(charges.subscription_created_by_id IN ('2c92a0fd55822b4d015593ac264767f2','2c92a0107bde3653017bf00cd8a86d5a'),
            TRUE, FALSE)                                            AS first_paid_plan_purchased_through_subscription_portal -- logic to be moved to fact_charge model
     FROM namespaces
     INNER JOIN mart_charge charges
       ON namespaces.ultimate_parent_namespace_id = charges.ultimate_parent_namespace_id
-    INNER JOIN dim_product_tier product_tier
-      ON namespaces.dim_product_tier_id = product_tier.dim_product_tier_id
-    WHERE product_tier.product_tier_name != 'Storage' --exclude storage payments
-      AND product_tier.product_tier_name NOT LIKE 'Self-Managed%' --exclude SM plans
+    WHERE charges.product_tier_name != 'Storage' --exclude storage payments
+      AND charges.product_tier_name NOT LIKE 'Self-Managed%' --exclude SM plans
       AND charges.dim_namespace_id IS NOT NULL
       AND charges.mrr > 0
     QUALIFY ROW_NUMBER() OVER(PARTITION BY namespaces.ultimate_parent_namespace_id ORDER BY charges.subscription_start_date)  = 1

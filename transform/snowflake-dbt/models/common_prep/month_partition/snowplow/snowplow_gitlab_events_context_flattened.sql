@@ -4,8 +4,10 @@
 {% set end_date = (start_date + modules.datetime.timedelta(days=31)).strftime('%Y-%m-01') %}
 
 {{config({
-    "unique_key":"event_id",
-    "cluster_by":['derived_tstamp_date']
+    "materialized":"incremental",
+    "unique_key":['event_id', 'derived_tstamp_date'],
+    "cluster_by":['derived_tstamp_date'],
+    "on_schema_change":"sync_all_columns"
   })
 }}
 
@@ -29,6 +31,11 @@ WITH filtered_source as (
       AND derived_tstamp >= '{{ start_date }}'
       AND derived_tstamp < '{{ end_date }}'
       AND uploaded_at < '{{ run_started_at }}'
+    {% if is_incremental() %}
+
+      AND TRY_TO_TIMESTAMP(derived_tstamp) > (SELECT MAX(derived_tstamp_date) FROM {{this}})
+
+    {% endif %}
 )
 
 , base AS (

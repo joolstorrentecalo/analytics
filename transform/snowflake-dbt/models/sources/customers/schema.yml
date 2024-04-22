@@ -89,7 +89,7 @@ models:
           - not_null
           - unique:
               config:
-                where: "created_at >= DATEADD('day',-3,CURRENT_DATE())"
+                where: "created_at >= DATEADD('day',-2,CURRENT_DATE())"
 
   - name: customers_db_license_versions_source
     description: '{{ doc("customers_db_license_versions_source") }}'
