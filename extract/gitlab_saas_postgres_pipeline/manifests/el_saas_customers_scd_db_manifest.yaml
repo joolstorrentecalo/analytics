@@ -331,6 +331,7 @@ tables:
         , glm_source
         , glm_content
         , trial_entity
+        , trial_type
       FROM trial_histories
   version_associations:
     export_db: EXPORT_DB

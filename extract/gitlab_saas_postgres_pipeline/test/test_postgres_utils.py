@@ -1,4 +1,5 @@
 """ Test postgres_utils.py """
+
 import os
 import re
 import pytest
@@ -22,6 +23,7 @@ from postgres_utils import (
     upload_to_snowflake_after_extraction,
     is_delete_export_needed,
     get_is_past_due_deletes,
+    range_generator,
 )
 
 CSV_CHUNKSIZE = 500
@@ -152,7 +154,7 @@ class TestPostgresUtils:
         Test that when we have reached the max_source_id,
         that the files ARE uploaded to Snowflake
 
-        Should reach max_source_id after 2 loops and then terminate.
+        Should reach max_source_id after 4 loops and then terminate.
         Therefore, test that upload_to_gcs() and write_metadata()
         are called twice.
 
@@ -163,12 +165,15 @@ class TestPostgresUtils:
             f"{os.path.dirname(os.path.realpath(__file__))}/test_iter_csv.csv",
             chunksize=5,
         )
+        df = pd.read_csv(
+            f"{os.path.dirname(os.path.realpath(__file__))}/test_iter_csv.csv"
+        )
         mock_read_sql_tmpfile.return_value = iter_csv
         some_engine = MagicMock(spec=Engine)
 
         query = "select 1;"
         primary_key = "ID"
-        max_source_id = 10
+        max_source_id = df[primary_key].max()
         initial_load_start_date = datetime.utcnow()
         database_kwargs = {
             "source_database": "some_db",
@@ -189,8 +194,8 @@ class TestPostgresUtils:
             load_by_id_export_type,
         )
 
-        assert mock_upload_to_gcs.call_count == 2
-        assert mock_write_metadata.call_count == 2
+        assert mock_upload_to_gcs.call_count == 4
+        mock_write_metadata.assert_called_once()
         mock_upload_to_snowflake_after_extraction.assert_called_once()
 
         assert returned_initial_load_start_date == initial_load_start_date
@@ -427,3 +432,42 @@ class TestPostgresUtils:
         prev_initial_load_start_date = datetime(2999, 12, 31)
         is_past_due = get_is_past_due_deletes(prev_initial_load_start_date)
         assert is_past_due is False
+
+    def test_range_generator(self):
+        # 1) stop is less than step
+        start, stop, step = 1, 1, 300
+        id_pairs = []
+        for id_pair in range_generator(start, stop, step):
+            id_pairs.append(id_pair)
+
+        assert id_pairs == [(start, step)]
+
+        # 2) stop is on one of the steps
+        start, stop, step = 1, 600, 300
+        id_pairs = []
+        for id_pair in range_generator(start, stop, step):
+            id_pairs.append(id_pair)
+
+        assert id_pairs == [(start, step), (step + 1, step * 2)]
+
+        # check that the pairs don't overlap
+        first_pair_stop = id_pairs[0][1]
+        second_pair_start = id_pairs[1][0]
+        assert first_pair_stop + 1 == second_pair_start
+
+        # 3) stop is not on one of the steps
+        start, stop, step = 1, 602, 300
+        id_pairs = []
+        for id_pair in range_generator(start, stop, step):
+            id_pairs.append(id_pair)
+
+        assert id_pairs == [
+            (start, step),
+            (step + 1, step * 2),
+            (step * 2 + 1, step * 3),
+        ]
+
+        # check that the pairs don't overlap
+        first_pair_stop = id_pairs[0][1]
+        second_pair_start = id_pairs[1][0]
+        assert first_pair_stop + 1 == second_pair_start

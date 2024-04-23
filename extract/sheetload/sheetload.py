@@ -1,4 +1,5 @@
 """ This module is for sheetload/driveload/s3 processes"""
+
 import sys
 import re
 from io import StringIO
@@ -259,27 +260,32 @@ def s3_loader(bucket: str, schema: str, conn_dict: Dict[str, str] = None) -> Non
     # Iterate through files and upload
     for obj in s3_bucket["Contents"]:
         file = obj["Key"]
-        info(f"Working on {file}...")
 
-        if re.search(r"\.csv", file):
-            csv_obj = s3_client.get_object(Bucket=bucket, Key=file)
-            body = csv_obj["Body"]
-            csv_string = body.read().decode("utf-8")
-            try:
-                sheet_df = pd.read_csv(
-                    StringIO(csv_string), engine="c", low_memory=False
-                )
+        if (
+            file != "application_question_answers.csv"
+        ):  # Temporary hotfix to address https://gitlab.com/gitlab-data/analytics/-/issues/19972#note_1806135779
 
-                table_name, extension = file.split(".")[0:2]
-                # To pick up the file name alone  not the whole path to the file for as table name
-                table = table_name.split("/")[-1]
+            info(f"Working on {file}...")
 
-                dw_uploader(engine, table, sheet_df, truncate=True)
+            if re.search(r"\.csv", file):
+                csv_obj = s3_client.get_object(Bucket=bucket, Key=file)
+                body = csv_obj["Body"]
+                csv_string = body.read().decode("utf-8")
+                try:
+                    sheet_df = pd.read_csv(
+                        StringIO(csv_string), engine="c", low_memory=False
+                    )
 
-                check_s3_csv_count_integrity(bucket, file, s3_client, engine, table)
+                    table_name, extension = file.split(".")[0:2]
+                    # To pick up the file name alone  not the whole path to the file for as table name
+                    table = table_name.split("/")[-1]
 
-            except ParserError:
-                error(f"Problem processing {file}")
+                    dw_uploader(engine, table, sheet_df, truncate=True)
+
+                    check_s3_csv_count_integrity(bucket, file, s3_client, engine, table)
+
+                except ParserError:
+                    error(f"Problem processing {file}")
 
 
 def csv_loader(
@@ -389,6 +395,7 @@ def drive_loader(
             dw_uploader_append_only(engine, table=table_name, data=data, chunk=chunk)
 
             if archive_folder_id:
+                info("Moving file to archive folder")
                 google_drive_client.move_file_to_folder(
                     file_id=file_id, to_folder_id=archive_folder_id
                 )

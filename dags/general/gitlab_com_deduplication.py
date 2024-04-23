@@ -1,4 +1,5 @@
 """ Airflow DAG for removing duplicate data in gitlab.com tables"""
+
 import os
 from datetime import datetime, timedelta
 import logging

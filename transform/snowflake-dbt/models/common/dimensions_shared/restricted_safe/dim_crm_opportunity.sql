@@ -29,7 +29,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.merged_opportunity_id,
       prep_crm_opportunity.duplicate_opportunity_id,
       prep_crm_opportunity.net_new_source_categories,
-      prep_crm_opportunity.account_owner_team_stamped,
       prep_crm_opportunity.primary_campaign_source_id,
       prep_crm_opportunity.sales_path,
       prep_crm_opportunity.sales_type,
@@ -158,7 +157,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.cp_use_cases,
       prep_crm_opportunity.cp_champion,
       prep_crm_opportunity.cp_close_plan,
-      prep_crm_opportunity.cp_competition,
       prep_crm_opportunity.cp_decision_criteria,
       prep_crm_opportunity.cp_decision_process,
       prep_crm_opportunity.cp_economic_buyer,
@@ -215,7 +213,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.sales_team_vp_level,
       prep_crm_opportunity.sales_team_avp_rd_level,
       prep_crm_opportunity.sales_team_asm_level,
-      prep_crm_opportunity.account_owner_team_stamped_cro_level,
 
       -- channel reporting
       prep_crm_opportunity.dr_partner_deal_type,
@@ -253,5 +250,5 @@ WITH prep_crm_opportunity AS (
     created_by="@iweeks",
     updated_by="@snalamaru",
     created_date="2020-11-20",
-    updated_date="2024-01-24"
+    updated_date="2024-04-18"
 ) }}

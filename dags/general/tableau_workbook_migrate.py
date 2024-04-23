@@ -124,5 +124,3 @@ tableau_workbook_migrate = KubernetesPodOperator(
     do_xcom_push=True,
     dag=dag,
 )
-
-tableau_provision_users >> tableau_workbook_migrate

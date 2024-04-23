@@ -500,6 +500,14 @@ More information about [CI Pipelines here](https://docs.gitlab.com/ee/user/proje
 
 {% enddocs %}
 
+{% docs prep_member_accepted_invites %}
+
+Prep table used to capture user accepted invites to any namespace.
+An 'accept_invite' event is captured only when the user takes an action to accept the invite to a namespace, in this case the INVITE_ACCEPTED_AT IS NOT NULL.
+Existing users who're granted the access to a namespace are not included as they don't need to take an action to 'accept' the invite, In such cases, the INVITE_ACCEPTED_AT IS NULL.
+
+{% enddocs %}
+
 {% docs prep_ci_build %}
 
 Prep table used to build the `dim_ci_build` table.
@@ -683,18 +691,6 @@ All columns are pulled directly from the yaml files, with the exception of the f
 
 {% enddocs %}
 
-{% docs has_performance_timing_context %}
-
-A flag to indicate if the event has additional information in the context field related to `performance_timing`.
-
-{% enddocs %} 
-
-{% docs has_web_page_context %}
-
-A flag to indicate if the event has additional information in the context field related to `web_page`.
-
-{% enddocs %}
-
 {% docs has_ci_build_failed_context %}
 
 A flag to indicate if the event has additional information in the context field related to `ci_build_failed`.  This context is defined in the Gitlab [iglu project](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab).
@@ -707,21 +703,9 @@ A flag to indicate if the event has additional information in the context field 
 
 {% enddocs %}
 
-{% docs has_gitlab_standard_context %}
-
-A flag to indicate if the event has additional information in the context field related to `gitlab_standard`.  This context is defined in the Gitlab [iglu project](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab)
-
-{% enddocs %}
-
 {% docs has_email_campaigns_context %}
 
 A flag to indicate if the event has additional information in the context field related to `email_campaigns`.  This context is defined in the Gitlab [iglu project](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab)
-
-{% enddocs %}
-
-{% docs has_gitlab_service_ping_context %}
-
-A flag to indicate if the event has additional information in the context field related to `gitlab_service_ping`.  This context is defined in the Gitlab [iglu project](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab)
 
 {% enddocs %}
 
@@ -740,12 +724,6 @@ A flag to indicate if the event has additional information in the context field 
 {% docs has_secure_scan_context %}
 
 A flag to indicate if the event has additional information in the context field related to `secure_scan`.  This context is defined in the Gitlab [iglu project](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab)
-
-{% enddocs %}
-
-{% docs has_gitlab_experiment_context  %}
-
-A flag to indicate if the event has additional information in the context field related to `gitlab_experiment`.  This context is defined in the Gitlab [iglu project](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab)
 
 {% enddocs %}
 
@@ -815,6 +793,12 @@ The element id from the unstructured link click event
 
 {% enddocs %}
 
+{% docs is_staging_event %}
+
+Flag to indicate whether the event is staging or not. Staging events are defined as events where `app_id = 'gitlab-staging'` or the `page_url` indicates that the event comes from a staging environment.
+
+{% enddocs %}
+
 {% docs prep_user_trial %}
 
 Prep table to store information about our users, trial users are also included. The data is sourced from an underlying tap-postgres customers table from customers.gitlab.com.
@@ -866,5 +850,11 @@ This model contains the logic for connecting product licenses and subscriptions 
 {% docs prep_milestone %}
 
 All milestones created within a namespace, with details including the start date, due date, description, and title.
+
+{% enddocs %}
+
+{% docs prep_latest_seat_link_installation %}
+
+Contains the latest Seat Link record for every installation in the source Seat Link model.
 
 {% enddocs %}

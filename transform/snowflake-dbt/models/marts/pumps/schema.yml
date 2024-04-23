@@ -1136,3 +1136,11 @@ models:
 
   - name: mart_crm_subscription_id
     description: '{{ doc("mart_crm_opportunity_id") }}'
+
+  - name: pump_sfdc_seat_utilization
+    description: '{{ doc("pump_sfdc_seat_utilization") }}'
+    columns:
+      - name: dim_subscription_id_original
+        tests:
+          - not_null
+          - unique

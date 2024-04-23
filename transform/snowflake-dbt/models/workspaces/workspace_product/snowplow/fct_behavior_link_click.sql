@@ -24,6 +24,7 @@
       events.dim_behavior_operating_system_sk,
       events.gsc_pseudonymized_user_id,
       events.session_id,
+      events.is_staging_event,
       events.link_click_target_url
     FROM events
     INNER JOIN dim_event
@@ -41,7 +42,7 @@
 {{ dbt_audit(
     cte_ref="link_click",
     created_by="@chrissharp",
-    updated_by="@chrissharp",
+    updated_by="@utkarsh060",
     created_date="2022-09-22",
-    updated_date="2022-09-27"
+    updated_date="2024-04-02"
 ) }}

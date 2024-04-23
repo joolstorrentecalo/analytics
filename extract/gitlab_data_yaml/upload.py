@@ -1,4 +1,5 @@
 """Source code to perform extraction of YAML file from Gitlab handbook, internal handbook, comp calculator"""
+
 import logging
 import subprocess
 import sys
@@ -17,7 +18,8 @@ from gitlabdata.orchestration_utils import (
 
 
 if __name__ == "__main__":
-    handbook_dict = dict(categories="categories", stages="stages")
+
+    handbook_dict = dict(categories="categories", stages="stages", releases="releases")
 
     pi_file_dict = dict(
         chief_of_staff_team_pi="chief_of_staff_team",

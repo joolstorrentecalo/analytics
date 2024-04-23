@@ -1,4 +1,5 @@
 """ Gitlab.Com Extract and load DAG"""
+
 import os
 from tokenize import String
 from datetime import datetime, timedelta
@@ -466,6 +467,7 @@ for source_name, config in config_dict.items():
                             **config["env_vars"],
                             "TASK_INSTANCE": "{{ task_instance_key_str }}",
                             "LAST_LOADED": get_last_loaded(config["dag_name"]),
+                            "DATE_INTERVAL_END": "{{ data_interval_end.to_iso8601_string() }}",
                         },
                         affinity=get_affinity("extraction_highmem"),
                         tolerations=get_toleration("extraction_highmem"),

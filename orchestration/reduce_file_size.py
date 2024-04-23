@@ -1,6 +1,7 @@
 """
 Set of routines to reduce manifest.json file
 """
+
 import json
 import os
 import argparse

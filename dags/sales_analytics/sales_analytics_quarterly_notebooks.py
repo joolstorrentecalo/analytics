@@ -2,7 +2,6 @@
 Quarterly Dag for Sales Analytics notebooks
 """
 
-
 import os
 import pathlib
 from datetime import datetime, timedelta

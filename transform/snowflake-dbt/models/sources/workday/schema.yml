@@ -525,6 +525,17 @@ models:
         description: Job grades. GitLab job grades aid in mapping a role for internal equity with respect to cash and equity.
       - name: is_job_profile_active
         description: Flag indicating whether the job profile is currently active.
+  
+  - name: job_profiles_source
+    columns:
+      - name: job_code
+        description: The unique job identifier
+      - name: job_profile
+      - name: job_family
+      - name: management_level
+      - name: job_level
+      - name: is_job_profile_active
+      - name: job_workday_id
 
   - name: staffing_history_approved_source
     columns:

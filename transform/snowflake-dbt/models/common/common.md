@@ -977,12 +977,6 @@ That means if a user creates the same day an issue on the Gitlab Data Team proje
 
 If 2 users A and B create on the same day 1 merge request on the GitLab Data Team projectm 2 rows will be also recorded in the table.
 
-Some examples of analysis that were done with the legacy table `gitlab_dotcom_daily_usage_data_events`:
-
-1. [User Journey Analysis](https://app.periscopedata.com/app/gitlab/869174/WIP-Cross-Stage-Adoption-Dashboard): See how often different product stages are used by the same namespaces. See what stages are used in combination.
-1. [New Namespace Stage Adoption](https://app.periscopedata.com/app/gitlab/761347/Group-Namespace-Conversion-Metrics): Evaluate how often new namespaces are adopting stages such as 'Create' and 'Verify' within their first days of use.
-1. [Stages per Organization](https://app.periscopedata.com/app/gitlab/824044/Stages-per-Organization-Deep-Dive---SpO): Identify how namespaces adopt stages within their first days and how this correlates with paid conversion and long-term engagement.
-
 {% enddocs %}
 
 {% docs dim_issue_links %}
@@ -1531,6 +1525,7 @@ Information on the Enterprise Dimensional Model can be found in the [handbook](h
 
 This ID is generated in [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all) using `event`, `event_name`, `platform`, `gsc_environment`, `se_category`, `se_action`, `se_label` and `se_property`.
 
+
 **Other Comments:**
 - [Snowplow column definitions](https://docs.snowplow.io/docs/understanding-your-pipeline/canonical-event/)
 
@@ -1538,7 +1533,7 @@ This ID is generated in [prep_snowplow_unnested_events_all](https://dbt.gitlabda
 
 {% docs fct_behavior_structured_event %}
 
-**Description:** Fact table containing quantitative data for Snowplow Structured events. Structured events are custom events implemented with five parameters: event_category, event_action, event_label, event_property and event_value. Snowplow documentation on [types of events](https://docs.snowplow.io/docs/understanding-tracking-design/out-of-the-box-vs-custom-events-and-entities/).
+**Description:** Fact table containing quantitative data for both staging and non-staging snowplow structured events. Structured events are custom events implemented with five parameters: event_category, event_action, event_label, event_property and event_value. Snowplow documentation on [types of events](https://docs.snowplow.io/docs/understanding-tracking-design/out-of-the-box-vs-custom-events-and-entities/).
 
 **Data Grain:** behavior_structured_event_pk
 
@@ -1607,7 +1602,7 @@ This ID is generated using `event_id` and `page_view_end_at` from [prep_snowplow
 
 {% docs fct_behavior_unstructured_event %}
 
-**Description:** Fact table containing quantitative data for Snowplow unstructured events. These events include [Snowplow-authored "out of the box" events](https://docs.snowplow.io/docs/understanding-tracking-design/out-of-the-box-vs-custom-events-and-entities/#snowplow-authored-events) like `link_click`, `focus_form`, `change_form`, and `submit_form`. Unstructured event data is based on a JSON schema.
+**Description:** Fact table containing quantitative data for both staging and non-staging snowplow unstructured events. These events include [Snowplow-authored "out of the box" events](https://docs.snowplow.io/docs/understanding-tracking-design/out-of-the-box-vs-custom-events-and-entities/#snowplow-authored-events) like `link_click`, `focus_form`, `change_form`, and `submit_form`. Unstructured event data is based on a JSON schema.
 
 **Data Grain:** fct_behavior_unstructured_sk (generated in [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all))
 - event_id
@@ -1659,7 +1654,7 @@ This ID is generated using `event_id` and `page_view_end_at` from [prep_snowplow
 
 {% docs fct_behavior_structured_event_experiment %}
 
-**Description:** Derived fact table containing quantitative data for Snowplow structured events related to experiments.
+**Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events related to experiments.
 
 **Data Grain:** behavior_structured_event_pk
 
@@ -1682,7 +1677,7 @@ This model only includes structured events implemented for experiments. Experime
 
 {% docs fct_behavior_structured_event_without_assignment %}
 
-**Description:** Derived fact table containing quantitative data for Snowplow structured events **excluding assignment events**. Assignment events are events that signifies a user was enrolled into an Experiment.
+**Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events **excluding assignment events**. Assignment events are events that signifies a user was enrolled into an Experiment.
 
 **Data Grain:** behavior_structured_event_pk
 
@@ -1690,7 +1685,7 @@ This ID is generated using event_id from [prep_snowplow_unnested_events_all](htt
 
 **Filters Applied to Model:**
 
-This model excludes assignment events (`event_action = 'assignment'`)
+- This model excludes assignment events (`event_action = 'assignment'`)
 
 **Tips for use:**
 
@@ -1704,7 +1699,7 @@ This model excludes assignment events (`event_action = 'assignment'`)
 
 {% docs fct_behavior_structured_event_without_assignment_190 %}
 
-**Description:** Derived fact table containing quantitative data for Snowplow structured events **excluding assignment events** for the **last 190 days**. Assignment events are events that signifies a user was enrolled into an Experiment.
+**Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events **excluding assignment events** for the **last 190 days**. Assignment events are events that signifies a user was enrolled into an Experiment.
 
 **Data Grain:** behavior_structured_event_pk
 
@@ -1727,7 +1722,7 @@ This ID is generated using event_id from [prep_snowplow_unnested_events_all](htt
 
 {% docs fct_behavior_structured_event_without_assignment_400 %}
 
-**Description:** Derived fact table containing quantitative data for Snowplow structured events **excluding assignment events** for the **last 400 days**. Assignment events are events that signifies a user was enrolled into an Experiment.
+**Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events **excluding assignment events** for the **last 400 days**. Assignment events are events that signifies a user was enrolled into an Experiment.
 
 **Data Grain:** behavior_structured_event_pk
 
@@ -1745,6 +1740,28 @@ This ID is generated using event_id from [prep_snowplow_unnested_events_all](htt
 - Join this model to `dim_behavior_website_page` using `dim_behavior_referrer_page_sk` in order to pull in information about the referring URL
 - Join this model to `dim_behavior_operating_system` using `dim_behavior_operating_system_sk` in order to pull in information about the user OS 
 - Join this model to `dim_behavior_browser` using `dim_behavior_browser_sk` in  order to pull in information about the user browser 
+
+{% enddocs %}
+
+{% docs fct_behavior_structured_event_redis_hll_counters %}
+
+**Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events related to redis hll metrics.
+
+**Data Grain:** behavior_structured_event_pk
+
+This ID is generated using event_id from [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all). 
+
+**Filters Applied to Model:**
+
+- This model only includes structured events implemented for redis hll metrics.
+- Redis hll metric events are defined as any event that includes certain event actions (`event_action IN ('g_analytics_valuestream', 'action_active_users_project_repo' 'push_package', 'ci_templates_unique', 'p_terraform_state_api_unique_users', 'i_search_paid')`)
+
+**Tips for use:**
+
+- Join this model to `dim_behavior_website_page` using `dim_behavior_website_page_sk` in order to pull in information about the page URL
+- Join this model to `dim_behavior_website_page` using `dim_behavior_referrer_page_sk` in order to pull in information about the referring URL
+- Join this model to `dim_behavior_operating_system` using `dim_behavior_operating_system_sk` in order to pull in information about the user OS details 
+- Join this model to `dim_behavior_browser` using `dim_behavior_browser_sk` in  order to pull in information about the user browser details
 
 {% enddocs %}
 
@@ -1933,5 +1950,29 @@ This dimension model holds all requirement records and provides dimensional data
 {% docs dim_milestone %}
 
 All milestones created within a namespace, with details including the start date, due date, description, and title.
+
+{% enddocs %}
+
+{% docs fct_latest_seat_link_installation %}
+
+Contains the latest Seat Link record for every installation in the source Seat Link model.
+
+{% enddocs %}
+
+{% docs fct_behavior_structured_event_code_suggestion %}
+
+Fact derived from `fct_behavior_structured_event`, limited to only Snowplow events with the [Code Suggestions context](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/code_suggestions_context/jsonschema) and columns, which indicates they are Code Suggestions events.
+
+{% enddocs %}
+
+{% docs fct_behavior_structured_event_ide_extension_version %}
+
+Fact derived from `fct_behavior_structured_event`, limited to only Snowplow events with the [IDE Extension Version context](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/ide_extension_version/jsonschema) and columns, which indicates they are IDE Extension Version events.
+
+{% enddocs %}
+
+{% docs fct_behavior_structured_event_service_ping %}
+
+Fact derived from `fct_behavior_structured_event`, limited to only Snowplow events with the [Service Ping context](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/gitlab_service_ping/jsonschema) and columns, which indicates they are Service Ping events.
 
 {% enddocs %}

@@ -58,3 +58,5 @@ models:
   description: Marketing's FY23 success metric for the awareness stage of the journey
 - name: driveload_booking_to_billing_monthly_reconciliation_source
   description: Output of Finance's analysis determining timing differences between bookings and billings
+- name: driveload_pending_invoices_report_source
+  description: Report of future dated pending invoices in Zuora (e.g. for multiyear ramp orders billed annually)

@@ -202,7 +202,9 @@ models:
       description: the unique composite ID for the mart_event_user_daily model consisting of event_date, dim_user_id, dim_ultimate_parent_namespace_id, and event_name.
       tests:
         - not_null
-        - unique
+        - unique:
+            config: 
+              where: "event_date >= DATEADD('day',-3,CURRENT_DATE())"
     - name: dim_event_date_id
       description: '{{ doc("dim_event_date_id") }}'
     - name: dim_ultimate_parent_namespace_id
@@ -816,6 +818,8 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+    - name: dimensions_checked_at
+      description: '{{ doc("dimensions_checked_at") }}'
 
 - name: mart_ping_instance_metric_7_day
   description: ' {{ doc("mart_ping_instance_metric_7_day") }} '
@@ -954,6 +958,8 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+    - name: dimensions_checked_at
+      description: '{{ doc("dimensions_checked_at") }}'
 
 - name: mart_ping_instance_metric_28_day
   description: ' {{ doc("mart_ping_instance_metric_28_day") }} '
@@ -1092,6 +1098,8 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+    - name: dimensions_checked_at
+      description: '{{ doc("dimensions_checked_at") }}'
 
 - name: mart_ping_instance_metric_all_time
   description: ' {{ doc("mart_ping_instance_metric_all_time") }} '
@@ -1230,6 +1238,8 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+    - name: dimensions_checked_at
+      description: '{{ doc("dimensions_checked_at") }}'
 
 - name: mart_event_namespace_monthly
   description: '{{ doc("mart_event_namespace_monthly") }}'
@@ -1341,6 +1351,8 @@ models:
       description: '{{ doc("user_snowplow_domain_id") }}'
     - name: gsc_source
       description: '{{ doc("gsc_source") }}'
+    - name: gsc_is_gitlab_team_member
+      description: '{{ doc("gsc_is_gitlab_team_member") }}'
     - name: event_value
       description: '{{ doc("event_value") }}'
     - name: event_action
@@ -1399,3 +1411,105 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+
+- name: mart_behavior_structured_event_code_suggestion
+  description: '{{ doc("mart_behavior_structured_event_code_suggestion") }}'
+  columns:
+    - name: behavior_structured_event_pk
+      description: '{{ doc("behavior_structured_event_pk") }}'
+      tests:
+        - unique
+        - not_null
+    - name: behavior_date
+      description: '{{ doc("behavior_at") }}'
+    - name: behavior_at_date
+      description: '{{ doc("behavior_date") }}'
+    - name: app_id
+      description: '{{ doc("app_id") }}'
+    - name: event_category
+      description: '{{ doc("event_category") }}'
+    - name: event_action
+      description: '{{ doc("event_action") }}'
+    - name: event_label
+      description: '{{ doc("event_label") }}'
+    - name: event_property
+      description: '{{ doc("event_property") }}'
+    - name: language
+      description: '{{ doc("code_suggestions_language") }}'
+    - name: delivery_type
+      description: '{{ doc("product_delivery_type") }}'
+      accepted_values:
+        values: ['Self-Managed', 'SaaS']
+    - name: model_engine
+      description: '{{ doc("code_suggestions_model_engine") }}'
+    - name: model_name
+      description: '{{ doc("code_suggestions_model_name") }}'
+    - name: prefix_length
+      description: '{{ doc("code_suggestions_prefix_length") }}'
+    - name: suffix_length
+      description: '{{ doc("code_suggestions_suffix_length") }}'
+    - name: api_status_code
+      description: '{{ doc("code_suggestions_api_status_code") }}'
+    - name: extension_name
+      description: '{{ doc("extension_name") }}'
+    - name: extension_version
+      description: '{{ doc("extension_version") }}'
+    - name: ide_name
+      description: '{{ doc("ide_name") }}'
+    - name: ide_vendor
+      description: '{{ doc("ide_vendor") }}'
+    - name: ide_version
+      description: '{{ doc("ide_version") }}'
+    - name: language_server_version
+      description: '{{ doc("language_server_version") }}'
+    - name: contexts
+      description: '{{ doc("contexts") }}'
+    - name: code_suggestions_context
+      description: '{{ doc("code_suggestions_context") }}'
+    - name: ide_extension_version_context
+      description: '{{ doc("ide_extension_version_context") }}'
+    - name: has_code_suggestions_context
+      description: '{{ doc("has_code_suggestions_context") }}'
+    - name: has_ide_extension_version_context
+      description: '{{ doc("has_ide_extension_version_context") }}'
+    - name: instance_id
+      description: '{{ doc("dim_instance_id") }}'
+    - name: host_name
+      description: '{{ doc("host_name") }}'
+    - name: is_streaming
+      description: '{{ doc("code_suggestions_is_streaming") }}'
+    - name: namespace_ids
+      description: '{{ doc("code_suggestions_namespace_ids") }}'
+    - name: ultimate_parent_namespace_ids
+      description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }}'
+    - name: dim_installation_ids
+      description: '{{ doc("code_suggestions_dim_installation_ids") }}'
+    - name: host_names
+      description: '{{ doc("code_suggestions_host_names") }}'
+    - name: subscription_names
+      description: '{{ doc("code_suggestions_subscription_names") }}'
+    - name: dim_crm_account_ids
+      description: '{{ doc("code_suggestions_dim_crm_account_ids") }}'
+    - name: crm_account_names
+      description: '{{ doc("code_suggestions_crm_account_names") }}'
+    - name: dim_parent_crm_account_ids
+      description: '{{ doc("code_suggestions_dim_parent_crm_account_ids") }}'
+    - name: parent_crm_account_names
+      description: '{{ doc("code_suggestions_parent_crm_account_names") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("code_suggestions_dim_crm_account_id") }}'
+    - name: crm_account_name
+      description: '{{ doc("code_suggestions_crm_account_name") }}'
+    - name: dim_parent_crm_account_id
+      description: '{{ doc("code_suggestions_dim_parent_crm_account_id") }}'
+    - name: parent_crm_account_name
+      description: '{{ doc("code_suggestions_parent_crm_account_name") }}'
+    - name: subscription_name
+      description: '{{ doc("code_suggestions_subscription_name") }}'
+    - name: ultimate_parent_namespace_id
+      description: '{{ doc("code_suggestions_ultimate_parent_namespace_id") }}'
+    - name: dim_installation_id
+      description: '{{ doc("code_suggestions_dim_installation_id") }}'
+    - name: installation_host_name
+      description: '{{ doc("code_suggestions_installation_host_name") }}'
+

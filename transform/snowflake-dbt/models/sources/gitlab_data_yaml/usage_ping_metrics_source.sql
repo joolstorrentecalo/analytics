@@ -17,6 +17,8 @@ WITH source AS (
      SELECT 
       data_by_row['key_path']::TEXT                                                                     AS metrics_path,
       data_by_row['data_source']::TEXT                                                                  AS data_source,
+      data_by_row['data_category']::TEXT                                                                AS data_category,
+      data_by_row['distribution']                                                                       AS distribution,
       data_by_row['description']::TEXT                                                                  AS description,
       data_by_row['instrumentation_class']::TEXT                                                        AS instrumentation_class,
       data_by_row['product_group']::TEXT                                                                AS product_group,
@@ -26,6 +28,7 @@ WITH source AS (
       data_by_row['tier']                                                                               AS tier,
       data_by_row['time_frame']::TEXT                                                                   AS time_frame,
       data_by_row['value_type']::TEXT                                                                   AS value_type,
+      data_by_row['performance_indicator_type']                                                         AS performance_indicator_type,
       ARRAY_CONTAINS( 'gmau'::VARIANT , data_by_row['performance_indicator_type'])                      AS is_gmau,
       ARRAY_CONTAINS( 'smau'::VARIANT , data_by_row['performance_indicator_type'])                      AS is_smau,
       ARRAY_CONTAINS( 'paid_gmau'::VARIANT , data_by_row['performance_indicator_type'])                 AS is_paid_gmau,

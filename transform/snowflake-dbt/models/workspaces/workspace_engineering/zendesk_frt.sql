@@ -128,6 +128,7 @@ final AS (
 
     SELECT DISTINCT zendesk_tickets.ticket_id
     , zendesk_tickets.ticket_created_at
+    , zendesk_tickets.ticket_form_id
     , date_trunc('month',zendesk_tickets.ticket_created_at)::date AS ticket_create_month
     , reply_timestamps.first_reply_at
     , date_trunc('month',reply_timestamps.first_reply_at)::date AS first_reply_month

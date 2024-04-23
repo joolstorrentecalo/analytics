@@ -129,3 +129,6 @@ sources:
       - name: devrel_influenced_campaigns
       - name: youtube_views_gitlab
       - name: devrel_blog_posts_views
+      - name: pagerslack_stats
+      - name: fy25_yearlies_target
+      - name: ta_team_assignment

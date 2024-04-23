@@ -1,6 +1,7 @@
 """
 Run daily Clari extract
 """
+
 import os
 from datetime import datetime, timedelta
 

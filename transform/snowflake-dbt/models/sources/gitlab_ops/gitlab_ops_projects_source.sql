@@ -12,7 +12,6 @@ WITH source AS (
       description::VARCHAR                                                        AS project_description,
       import_source::VARCHAR                                                      AS project_import_source,
       issues_template::VARCHAR                                                    AS project_issues_template,
-      build_coverage_regex                                                        AS project_build_coverage_regex,      
       name::VARCHAR                                                               AS project_name,
       path::VARCHAR                                                               AS project_path,
       import_url::VARCHAR                                                         AS project_import_url,

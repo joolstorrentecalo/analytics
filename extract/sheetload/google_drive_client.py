@@ -4,7 +4,7 @@ import ssl
 from io import BytesIO
 from logging import info
 from os import environ as env
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Callable
 
 import pandas as pd
 from apiclient.http import MediaIoBaseDownload
@@ -24,6 +24,31 @@ class GoogleDriveClient:
         self.service = build(
             "drive", "v3", credentials=credentials, cache_discovery=False
         )
+
+    @staticmethod
+    def retry_with_ssl_error(
+        func: Callable,
+        max_retry_request_count: int = 5,
+        wait: int = 30,
+        *args: Any,
+        **kwargs: Any,
+    ):
+        """
+        Sometimes driveload api throws SSLError
+        This is a wrapper function that handles the error
+        """
+        for retry_request_count in range(max_retry_request_count):
+            try:
+                return func(*args, **kwargs)
+            except ssl.SSLError as e:
+                info(f"Caught SSL error: {e}")
+                if retry_request_count < max_retry_request_count - 1:
+                    info(
+                        f"Retrying in {wait} seconds, attempt {retry_request_count + 1}/{max_retry_request_count}"
+                    )
+                    time.sleep(wait)
+                else:
+                    raise e
 
     def get_data_frame_from_file_id(self, file_id: str) -> pd.DataFrame:
         """
@@ -69,16 +94,16 @@ class GoogleDriveClient:
             query = f"{query} and '{in_folder_id}' in parents"
 
         # Call the Drive v3 API
-        results = (
+        results = GoogleDriveClient.retry_with_ssl_error(
             self.service.files()
             .list(q=query, pageSize=10, fields="nextPageToken, files(id)")
-            .execute()
+            .execute
         )
+
         items = results.get("files", [])
         if not items:
             return ""
-        else:
-            return items[0].get("id")
+        return items[0].get("id")
 
     def get_archive_folder_id(self, in_folder_id) -> str:
         """
@@ -184,25 +209,9 @@ class GoogleDriveClient:
         :param to_folder_id: folder id to move to
         :return:
         """
-        # retry on ssl error
-        max_retry_request_count, wait = 5, 30
-        for retry_request_count in range(max_retry_request_count):
-            try:
-                # Retrieve the existing parents to remove
-                file = (
-                    self.service.files().get(fileId=file_id, fields="parents").execute()
-                )
-                break
-            except ssl.SSLError as e:
-                info(f"Caught SSL error when retrieving parent folder: {e}")
-                if retry_request_count <= max_retry_request_count:
-                    info(
-                        f"Retrying in {wait} seconds, {retry_request_count+1}/{max_retry_request_count} tries"
-                    )
-                    time.sleep(wait)
-                else:
-                    raise e
-
+        file = GoogleDriveClient.retry_with_ssl_error(
+            self.service.files().get(fileId=file_id, fields="parents").execute
+        )
         previous_parents = ",".join(file.get("parents"))
 
         # Move the file to the new folder

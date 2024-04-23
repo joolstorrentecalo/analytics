@@ -41,6 +41,8 @@ ping_metric AS (
       || REPLACE(metrics_path, '.', '''][''')
       || ''']'                                               AS sql_friendly_path,
     data_source                                              AS data_source,
+    LOWER(data_category)                                     AS data_category,
+    distribution                                             AS distribution,
     description                                              AS description,
     IFF(SUBSTRING(product_group, 0, 5) = 'group',
       SPLIT_PART(REPLACE(product_group, ' ', '_'), ':', 3),
@@ -52,6 +54,7 @@ ping_metric AS (
     time_frame                                               AS time_frame,
     value_type                                               AS value_type,
     instrumentation_class                                    AS instrumentation_class,
+    performance_indicator_type                               AS performance_indicator_type,
     IFNULL(is_gmau, FALSE)                                   AS is_gmau,
     IFNULL(is_smau, FALSE)                                   AS is_smau,
     IFNULL(is_paid_gmau, FALSE)                              AS is_paid_gmau,
@@ -71,6 +74,8 @@ final AS (
     ping_metric.metrics_path,
     ping_metric.sql_friendly_path,
     ping_metric.data_source,
+    ping_metric.data_category,
+    ping_metric.distribution,
     ping_metric.description,
     group_section_stage_source.group_name,
     group_section_stage_source.section_name,
@@ -82,6 +87,7 @@ final AS (
     ping_metric.time_frame,
     ping_metric.value_type,
     ping_metric.instrumentation_class,
+    ping_metric.performance_indicator_type,
     ping_metric.is_gmau,
     ping_metric.is_smau,
     ping_metric.is_paid_gmau,
@@ -101,5 +107,5 @@ final AS (
     created_by="@icooper-acp",
     updated_by="@utkarsh060",
     created_date="2022-04-14",
-    updated_date="2024-02-21"
+    updated_date="2024-03-12"
 ) }}

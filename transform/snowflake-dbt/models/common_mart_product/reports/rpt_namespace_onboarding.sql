@@ -59,6 +59,8 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
     SELECT DISTINCT
       namespaces.ultimate_parent_namespace_id,
       trials.order_start_date::DATE                                      AS trial_start_date, 
+      trials.trial_type,
+      trials.trial_type_name,
       DATEDIFF('days', namespace_created_date, trial_start_date)         AS days_since_namespace_creation_at_trial
     FROM namespaces
     INNER JOIN prep_namespace_order_trial AS trials
@@ -71,16 +73,14 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       charges.subscription_start_date                              AS first_paid_subscription_start_date,
       DATEDIFF('days', namespace_created_date, charges.subscription_start_date)   
                                                                    AS days_since_namespace_creation_at_first_paid_subscription,
-      SPLIT_PART(product_tier.product_tier_name, ' - ', 2)         AS first_paid_plan_name, --product_category: SaaS - Premium, SaaS - Ultimate, etc
+      SPLIT_PART(charges.product_tier_name, ' - ', 2)              AS first_paid_plan_name, --product_category: SaaS - Premium, SaaS - Ultimate, etc
       IFF(charges.subscription_created_by_id IN ('2c92a0fd55822b4d015593ac264767f2','2c92a0107bde3653017bf00cd8a86d5a'),
            TRUE, FALSE)                                            AS first_paid_plan_purchased_through_subscription_portal -- logic to be moved to fact_charge model
     FROM namespaces
     INNER JOIN mart_charge charges
       ON namespaces.ultimate_parent_namespace_id = charges.ultimate_parent_namespace_id
-    INNER JOIN dim_product_tier product_tier
-      ON namespaces.dim_product_tier_id = product_tier.dim_product_tier_id
-    WHERE product_tier.product_tier_name != 'Storage' --exclude storage payments
-      AND product_tier.product_tier_name NOT LIKE 'Self-Managed%' --exclude SM plans
+    WHERE charges.product_tier_name != 'Storage' --exclude storage payments
+      AND charges.product_tier_name NOT LIKE 'Self-Managed%' --exclude SM plans
       AND charges.dim_namespace_id IS NOT NULL
       AND charges.mrr > 0
     QUALIFY ROW_NUMBER() OVER(PARTITION BY namespaces.ultimate_parent_namespace_id ORDER BY charges.subscription_start_date)  = 1
@@ -301,6 +301,8 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       IFF(namespaces.is_namespace_created_within_2min_of_creator_invite_acceptance = 1, TRUE, FALSE) 
                                                                           AS is_namespace_created_within_2min_of_creator_invite_acceptance, --consistent TRUE/FALSE formatting to match the rest of the resulting boolean values
       trials.trial_start_date,
+      trials.trial_type,
+      trials.trial_type_name,
       trials.days_since_namespace_creation_at_trial,
       charges.first_paid_subscription_start_date,
       charges.days_since_namespace_creation_at_first_paid_subscription,
@@ -376,7 +378,7 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
 {{ dbt_audit(
     cte_ref="base",
     created_by="@snalamaru",
-    updated_by="@snalamaru",
+    updated_by="@utkarsh060",
     created_date="2023-11-10",
-    updated_date="2023-11-10"
+    updated_date="2024-04-12"
 ) }}

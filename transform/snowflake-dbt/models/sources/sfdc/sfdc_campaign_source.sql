@@ -27,6 +27,7 @@ WITH source AS (
         sub_region__c                                                       AS sub_region,
         budget_holder__c                                                    AS budget_holder,
         will_there_be_mdf_funding__c                                        AS will_there_be_mdf_funding,
+        mdf_request__c                                                      AS mdf_request_id,
         vartopiadrs__partner_account__c                                     AS campaign_partner_crm_id,
 
         --projections

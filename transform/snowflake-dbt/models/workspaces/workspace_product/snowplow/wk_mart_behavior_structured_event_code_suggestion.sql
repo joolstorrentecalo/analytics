@@ -11,7 +11,7 @@
 
 {{ simple_cte([
     ('fct_behavior_structured_event_code_suggestions_context', 'fct_behavior_structured_event_code_suggestions_context'),
-    ('fct_behavior_structured_event_ide_extension_version', 'fct_behavior_structured_event_ide_extension_version'),
+    ('fct_behavior_structured_event_ide_extension_version', 'wk_fct_behavior_structured_event_ide_extension_version'),
     ('fct_behavior', 'fct_behavior_structured_event'),
     ('dim_behavior_event', 'dim_behavior_event')
 ]) }}
@@ -24,6 +24,7 @@
     "IDE_EXTENSION_VERSION_CONTEXT","EXTENSION_NAME","EXTENSION_VERSION","IDE_NAME","IDE_VENDOR","IDE_VERSION","LANGUAGE_SERVER_VERSION",
     "MODEL_ENGINE","MODEL_NAME","PREFIX_LENGTH","SUFFIX_LENGTH","LANGUAGE","USER_AGENT","DELIVERY_TYPE","API_STATUS_CODE","NAMESPACE_IDS","INSTANCE_ID","HOST_NAME"]) }}
   FROM fct_behavior
+  WHERE is_staging_event = FALSE
   
 
 ),
@@ -129,6 +130,7 @@ filtered_code_suggestion_events AS (
     has_ide_extension_version_context,
     instance_id,
     host_name,
+    is_streaming,
     namespace_ids,
     ultimate_parent_namespace_ids,
     dim_installation_ids,
@@ -157,5 +159,5 @@ filtered_code_suggestion_events AS (
     created_by="@cbraza",
     updated_by="@utkarsh060",
     created_date="2023-10-09",
-    updated_date="2024-02-07"
+    updated_date="2023-03-22"
 ) }}

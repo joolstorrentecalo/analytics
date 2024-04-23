@@ -77,6 +77,7 @@ WITH dim_billing_account AS (
       dim_crm_account.dim_parent_crm_account_id                                       AS dim_parent_crm_account_id,
       dim_crm_account.parent_crm_account_name                                         AS parent_crm_account_name,
       dim_crm_account.parent_crm_account_sales_segment                                AS parent_crm_account_sales_segment,
+      dim_crm_account.parent_crm_account_sales_segment_legacy                         AS parent_crm_account_sales_segment_legacy,
       dim_crm_account.parent_crm_account_industry                                     AS parent_crm_account_industry,
       dim_crm_account.crm_account_employee_count_band                                 AS crm_account_employee_count_band,
       dim_crm_account.health_score_color                                              AS health_score_color,

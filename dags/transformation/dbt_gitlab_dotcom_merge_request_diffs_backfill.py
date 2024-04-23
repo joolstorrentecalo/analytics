@@ -4,6 +4,7 @@ Split backfill of a postgres table into 100 chunks.
 From those 100 chunks, based on the max id of the table
 evenly distribute the ids to each chunk
 """
+
 import os
 from datetime import datetime
 from typing import List, Tuple

@@ -8,7 +8,10 @@
 
 WITH source AS (
 
-  SELECT *
+  SELECT 
+    primary_key,
+    uploaded_at,
+    project_ancestors
   FROM {{ ref('summary_gcp_billing_source') }}
   {% if is_incremental() %}
 
@@ -30,8 +33,8 @@ renamed AS (
             'source_primary_key',
             'folder_name',
             'folder_id'] ) }}                                                                                            AS project_folder_label_pk
-  FROM source,
-    LATERAL FLATTEN(input=> project_ancestors) project_ancestors_flat
+  FROM source
+  INNER JOIN LATERAL FLATTEN(input=> source.project_ancestors) project_ancestors_flat
 )
 
 SELECT *

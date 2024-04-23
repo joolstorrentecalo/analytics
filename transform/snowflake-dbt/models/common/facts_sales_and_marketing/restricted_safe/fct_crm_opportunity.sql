@@ -125,7 +125,7 @@
           THEN dim_crm_user_hierarchy_account_user_sk  -- live account owner hierarchy
         WHEN close_fiscal_year < prep_date.current_fiscal_year AND sales_rep_account.is_hybrid_user = 1
           THEN {{ get_keyed_nulls('account_hierarchy.dim_crm_user_hierarchy_sk') }} -- account hierarchy
-        ELSE sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk -- stamped account owner hierarchy
+        ELSE {{ get_keyed_nulls('sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk') }} -- stamped account owner hierarchy
       END                                                                                                                         AS dim_crm_current_account_set_hierarchy_sk,
       CASE
         WHEN close_fiscal_year < prep_date.current_fiscal_year AND sales_rep_account.is_hybrid_user = 0
@@ -240,6 +240,8 @@
       sfdc_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       sfdc_opportunity.calculated_from_ratio_net_arr,
       sfdc_opportunity.net_arr,
+      sfdc_opportunity.xdr_net_arr_stage_1,
+      sfdc_opportunity.xdr_net_arr_stage_3,
       sfdc_opportunity.raw_net_arr,
       sfdc_opportunity.created_and_won_same_quarter_net_arr,
       sfdc_opportunity.new_logo_count,

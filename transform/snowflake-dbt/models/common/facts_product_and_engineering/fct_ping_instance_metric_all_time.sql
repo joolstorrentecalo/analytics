@@ -1,5 +1,8 @@
 {{ config(
-    tags=["product", "mnpi_exception"]
+    tags=["product", "mnpi_exception"],
+    materialized = "incremental",
+    unique_key = "ping_instance_metric_id",
+    on_schema_change="sync_all_columns"
 ) }}
 
 {{ simple_cte([
@@ -13,6 +16,9 @@
     SELECT
         {{ dbt_utils.star(from=ref('fct_ping_instance_metric'), except=['CREATED_BY', 'UPDATED_BY', 'MODEL_CREATED_DATE', 'MODEL_UPDATED_DATE', 'DBT_CREATED_AT', 'DBT_UPDATED_AT']) }}
     FROM {{ ref('fct_ping_instance_metric') }} 
+    {% if is_incremental() %}
+    WHERE uploaded_at >= (SELECT MAX(uploaded_at) FROM {{this}})
+    {% endif %}
 
 ),
 
@@ -32,7 +38,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@icooper-acp",
-    updated_by="@iweeks",
+    updated_by="@pempey",
     created_date="2022-05-03",
-    updated_date="2022-07-20"
+    updated_date="2024-03-04"
 ) }}

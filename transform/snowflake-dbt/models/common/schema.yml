@@ -58,6 +58,10 @@ models:
       - name: namespace_was_trial
       - name: saas_trial_start_date
       - name: saas_trial_expired_on
+      - name: saas_trial_type
+        description: '{{ doc("trial_type") }}'
+      - name: saas_trial_type_name
+        description: '{{ doc("trial_type_name") }}'
       - name: customer_id
       - name: dim_product_tier_id_with_trial
       - name: product_tier_name_with_trial
@@ -99,6 +103,10 @@ models:
       - name: namespace_was_trial
       - name: saas_trial_start_date
       - name: saas_trial_expired_on
+      - name: saas_trial_type
+        description: '{{ doc("trial_type") }}'
+      - name: saas_trial_type_name
+        description: '{{ doc("trial_type_name") }}'
       - name: customer_id
       - name: dim_product_tier_id_with_trial
       - name: product_tier_name_with_trial
@@ -328,6 +336,8 @@ models:
       - name: strategic_marketing_contribution
       - name: campaign_partner_crm_id
         description: The partner associated with this campaign through Vartopia.
+      - name: mdf_request_id
+        description: The ID MDF Request that funded the campaign for MDF Campaigns.
 
   - name: dim_crm_person
     description: '{{ doc("dim_crm_person") }}'
@@ -1126,6 +1136,8 @@ models:
         description: ID of the user who created the project
       - name: member_count
         description: Do not use this count, it is incorrect. Use [gitlab_dotcom_memberships](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.gitlab_dotcom_memberships) for member counts.
+      - name: has_merge_trains_enabled
+        description: '{{ doc("has_merge_trains_enabled") }}'   
 
   - name: dim_revenue_contract
     description: '{{ doc("dim_revenue_contract") }}'
@@ -1653,10 +1665,6 @@ models:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
@@ -2711,7 +2719,9 @@ models:
         description: Unique key of CI Build
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "ci_build_started_at >= DATEADD('day',-3,CURRENT_DATE())"
       - name: dim_ci_runner_id
         description: ID of the runner with which the CI build has been run.
       - name: dim_ci_pipeline_id
@@ -3010,6 +3020,8 @@ models:
         description: '{{ doc("ping_delivery_type") }}'
       - name: ping_deployment_type
         description: '{{ doc("ping_deployment_type") }}'
+      - name: next_ping_uploaded_at
+        description: '{{ doc("next_ping_uploaded_at") }}'
 
   - name: dim_ping_metric
     description: ' {{ doc("dim_ping_metric") }} '
@@ -3018,17 +3030,23 @@ models:
         tests:
           - not_null
           - unique
-        description: The unique ID of the dim_ping_metric model consisting of metrics_path, created using the dbt surrogate_key macro
+        description: ' {{ doc("ping_metric_id") }} '
       - name: metrics_path
         description: '{{ doc("metrics_path") }}'
       - name: sql_friendly_path
-        description: Reformatted metrics_path that reflects how the metrics_path would be filtered from the raw payload. The metrics are prepended with `raw_usage_data_payload`, and `.` are replaced with `[]`. (Ex. `usage_activity_by_stage_monthly.plan.assignee_lists` has the value `raw_usage_data_payload['usage_activity_by_stage_monthly']['plan']['assignee_lists']`)
+        description: '{{ doc("sql_friendly_path") }}'
       - name: data_source
         description: '{{ doc("data_source_ping_metric") }}'
+      - name: data_category
+        description: '{{ doc("data_category_ping_metric") }}'
+      - name: distribution
+        description: '{{ doc("distribution_ping_metric") }}'
       - name: description
-        description: A description of the metric
+        description: '{{ doc("description_ping_metric") }}'
       - name: instrumentation_class
         description: '{{ doc("instrumentation_class_ping_metric") }}'
+      - name: performance_indicator_type
+        description: '{{ doc("performance_indicator_type_ping_metric") }}'
       - name: group_name
         description: '{{ doc("group_name") }}'
       - name: section_name
@@ -3038,15 +3056,15 @@ models:
       - name: milestone
         description: '{{ doc("milestone_ping_metric") }}'
       - name: skip_validation
-        description: This will always be NULL
+        description: '{{ doc("skip_validation_ping_metric") }}'
       - name: metrics_status
         description: '{{ doc("metrics_status_ping_metric") }}'
       - name: tier
-        description: The tier(s) where the tracked feature is available, formatted as an array containing one or a combination of free, premium or ultimate (ex. `[   "free",   "premium",   "ultimate" ]`)
+        description: '{{ doc("tier_ping_metric") }}'
       - name: time_frame
         description: '{{ doc("time_frame") }}'
       - name: value_type
-        description: One of `string`, `number`, `boolean`, `object`
+        description: '{{ doc("value_type_ping_metric") }}'
       - name: is_gmau
         description: '{{ doc("is_gmau") }}'
       - name: is_paid_gmau
@@ -3058,11 +3076,11 @@ models:
       - name: is_health_score_metric
         description: '{{ doc("is_health_score_metric") }}'
       - name: snapshot_date
-        description: The date the data was extracted from metrics YAML files
+        description: '{{ doc("snapshot_date_ping_metric") }}'
       - name: uploaded_at
-        description: The time the data was extracted from metrics YAML files
+        description: '{{ doc("uploaded_at_ping_metric") }}'
       - name: data_by_row
-        description: JSON object with all fields from YAML file
+        description: '{{ doc("data_by_row_ping_metric") }}'
       - name: created_by
         description: '{{ doc("created_by") }}'
       - name: updated_by
@@ -3079,17 +3097,23 @@ models:
         tests:
           - not_null
           - unique
-        description: The unique composite ID of the dim_ping_metric_daily_snapshot model consisting of metrics_path and date_id
+        description: '{{ doc("ping_metric_hist_id") }}'
       - name: metrics_path
         description: '{{ doc("metrics_path") }}'
       - name: sql_friendly_path
-        description: Reformatted metrics_path that reflects how the metrics_path would be filtered from the raw payload. The metrics are prepended with `raw_usage_data_payload`, and `.` are replaced with `[]`. (Ex. `usage_activity_by_stage_monthly.plan.assignee_lists` has the value `raw_usage_data_payload['usage_activity_by_stage_monthly']['plan']['assignee_lists']`)
+        description: '{{ doc("sql_friendly_path") }}'
       - name: data_source
         description: '{{ doc("data_source_ping_metric") }}'
+      - name: data_category
+        description: '{{ doc("data_category_ping_metric") }}'
+      - name: distribution
+        description: '{{ doc("distribution_ping_metric") }}'
       - name: description
-        description: A description of the metric
+        description: '{{ doc("description_ping_metric") }}'
       - name: instrumentation_class
         description: '{{ doc("instrumentation_class_ping_metric") }}'
+      - name: performance_indicator_type
+        description: '{{ doc("performance_indicator_type_ping_metric") }}'
       - name: group_name
         description: '{{ doc("group_name") }}'
       - name: section_name
@@ -3099,15 +3123,15 @@ models:
       - name: milestone
         description: '{{ doc("milestone_ping_metric") }}'
       - name: skip_validation
-        description: This will always be NULL
+        description: '{{ doc("skip_validation_ping_metric") }}'
       - name: metrics_status
         description: '{{ doc("metrics_status_ping_metric") }}'
       - name: tier
-        description: The tier(s) where the tracked feature is available, formatted as an array containing one or a combination of free, premium, or ultimate
+        description: '{{ doc("tier_ping_metric") }}'
       - name: time_frame
         description: '{{ doc("time_frame") }}'
       - name: value_type
-        description: One of `string`, `number`, `boolean`, `object`
+        description: '{{ doc("value_type_ping_metric") }}'
       - name: is_gmau
         description: '{{ doc("is_gmau") }}'
       - name: is_paid_gmau
@@ -3117,7 +3141,7 @@ models:
       - name: is_umau
         description: '{{ doc("is_umau") }}'
       - name: uploaded_at
-        description: The time the data was extracted from metrics YAML files
+        description: '{{ doc("uploaded_at_ping_metric") }}'
       - name: created_by
         description: '{{ doc("created_by") }}'
       - name: updated_by
@@ -3127,9 +3151,9 @@ models:
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
       - name: valid_from
-        description: Timestamp of when this metric path mapping is valid from
+        description: '{{ doc("valid_from") }}'
       - name: valid_to
-        description: Timestamp of when this metric path mapping is valid until
+        description: '{{ doc("valid_to") }}'
 
 
   - name: fct_ping_instance_metric
@@ -3718,10 +3742,6 @@ models:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
@@ -4964,7 +4984,6 @@ models:
       - name: merged_crm_opportunity_id
         description: If the closed lost reason is that the Opp was merged into another opportunity than this field will be the id for that opportunity record.
       - name: net_new_source_categories
-      - name: account_owner_team_stamped
       - name: primary_campaign_source_id
       - name: sales_accepted_date
       - name: sales_path
@@ -5000,8 +5019,6 @@ models:
       - name: risk_type
       - name: risk_reasons
       - name: tam_notes
-      - name: account_owner_team_stamped_cro_level
-        description: Assigns opportunities to Large, Mid-Market, and SMB by stamped account owner teams.
       - name: calculated_deal_size
         description: Banded groupings of net ARR.
       - name: competitors_amazon_code_commit_flag
@@ -6194,6 +6211,8 @@ models:
         description: '{{ doc("gsc_pseudonymized_user_id") }}'
       - name: gsc_source
         description: '{{ doc("gsc_source") }}'
+      - name: gsc_is_gitlab_team_member
+        description: '{{ doc("gsc_is_gitlab_team_member") }}'
       - name: page_url_path
         description: '{{ doc("page_url_path") }}'
       - name: referer_url_path
@@ -6305,6 +6324,8 @@ models:
         description: '{{ doc("page_url_fragment") }}'
       - name: event_value
         description: '{{ doc("event_value") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
       - name: gsc_pseudonymized_user_id
         description: '{{ doc("gsc_pseudonymized_user_id") }}'
       - name: gsc_google_analytics_client_id
@@ -6316,7 +6337,9 @@ models:
       - name: gsc_source
         description: '{{ doc("gsc_source") }}'
       - name: gsc_environment
-        description: '{{ doc("environment_behavior_model") }}'  
+        description: '{{ doc("environment_behavior_model") }}'
+      - name: gsc_is_gitlab_team_member
+        description: '{{ doc("gsc_is_gitlab_team_member") }}'
       - name: created_by
         description: '{{ doc("created_by") }}'
       - name: updated_by
@@ -6333,34 +6356,151 @@ models:
         description: '{{ doc("user_region") }}'
       - name: user_timezone_name
         description: '{{ doc("user_timezone_name") }}'
-      - name: has_performance_timing_context
-        description: '{{ doc("has_performance_timing_context") }}'
-      - name: has_web_page_context
-        description: '{{ doc("has_web_page_context") }}'
-      - name: has_ci_build_failed_context
-        description: '{{ doc("has_ci_build_failed_context") }}'
-      - name: has_wiki_page_context
-        description: '{{ doc("has_wiki_page_context") }}'
+      - name: gitlab_standard_context
+        description: ' {{ doc("gitlab_standard_context") }} '
+      - name: gitlab_standard_context_schema
+        description: ' {{ doc("gitlab_standard_context_schema") }} '
       - name: has_gitlab_standard_context
-        description: '{{ doc("has_gitlab_standard_context") }}'
-      - name: has_email_campaigns_context
-        description: '{{ doc("has_email_campaigns_context") }}'
-      - name: has_gitlab_service_ping_context
-        description: '{{ doc("has_gitlab_service_ping_context") }}'
-      - name: has_design_management_context
-        description: '{{ doc("has_design_management_context") }}'
-      - name: has_customer_standard_context
-        description: '{{ doc("has_customer_standard_context") }}'
-      - name: has_secure_scan_context
-        description: '{{ doc("has_secure_scan_context") }}'
+        description: ' {{ doc("has_gitlab_standard_context") }} '
+      - name: is_gitlab_team_member
+        description: ' {{ doc("gsc_is_gitlab_team_member") }} '
+      - name: web_page_context
+        description: ' {{ doc("web_page_context") }} '
+      - name: web_page_context_schema
+        description: ' {{ doc("web_page_context_schema") }} '
+      - name: has_web_page_context
+        description: ' {{ doc("has_web_page_context") }} '
+      - name: web_page_id
+        description: ' {{ doc("web_page_id") }} '
+      - name: gitlab_experiment_context
+        description: ' {{ doc("gitlab_experiment_context") }} '
+      - name: gitlab_experiment_context_schema
+        description: ' {{ doc("gitlab_experiment_context_schema") }} '
       - name: has_gitlab_experiment_context
-        description: '{{ doc("has_gitlab_experiment_context") }}'
-      - name: has_subscription_auto_renew_context
-        description: '{{ doc("has_subscription_auto_renew_context") }}'
+        description: ' {{ doc("has_gitlab_experiment_context") }} '
+      - name: experiment_name
+        description: ' {{ doc("experiment_name") }} '
+      - name: experiment_context_key
+        description: ' {{ doc("experiment_context_key") }} '
+      - name: experiment_variant
+        description: ' {{ doc("experiment_variant") }} '
+      - name: experiment_migration_keys
+        description: ' {{ doc("experiment_migration_keys") }} '
+      - name: code_suggestions_context
+        description: ' {{ doc("code_suggestions_context") }} '
+      - name: code_suggestions_context_schema
+        description: ' {{ doc("code_suggestions_context_schema") }} '
       - name: has_code_suggestions_context
-        description: '{{ doc("has_code_suggestions_context") }}'
+        description: ' {{ doc("has_code_suggestions_context") }} '
+      - name: model_engine
+        description: ' {{ doc("code_suggestions_model_engine") }} '
+      - name: model_name
+        description: ' {{ doc("code_suggestions_model_name") }} '
+      - name: prefix_length
+        description: ' {{ doc("code_suggestions_prefix_length") }} '
+      - name: suffix_length
+        description: ' {{ doc("code_suggestions_suffix_length") }} '
+      - name: language
+        description: ' {{ doc("code_suggestions_language") }} '
+      - name: user_agent
+        description: ' {{ doc("code_suggestions_user_agent") }} '
+      - name: delivery_type
+        description: '{{ doc("product_delivery_type") }}'
+        accepted_values:
+          values: ['Self-Managed', 'SaaS']
+      - name: api_status_code
+        description: ' {{ doc("code_suggestions_api_status_code") }} '
+      - name: duo_namespace_ids
+        description: ' {{ doc("code_suggestions_duo_namespace_ids") }}'
+      - name: saas_namespace_ids
+        description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
+      - name: namespace_ids
+        description: ' {{ doc("code_suggestions_namespace_ids") }} '
+      - name: instance_id
+        description: ' {{ doc("dim_instance_id") }} '
+      - name: host_name
+        description: ' {{ doc("host_name") }} '
+      - name: is_streaming
+        description: ' {{ doc("code_suggestions_is_streaming") }} '
+      - name: ide_extension_version_context
+        description: ' {{ doc("ide_extension_version_context") }} '
+      - name: ide_extension_version_context_schema
+        description: ' {{ doc("ide_extension_version_context_schema") }} '
       - name: has_ide_extension_version_context
-        description: '{{ doc("has_ide_extension_version_context") }}'
+        description: ' {{ doc("has_ide_extension_version_context") }} '
+      - name: extension_name
+        description: ' {{ doc("extension_name") }} '
+      - name: extension_version
+        description: ' {{ doc("extension_version") }} '
+      - name: ide_name
+        description: ' {{ doc("ide_name") }} '
+      - name: ide_vendor
+        description: ' {{ doc("ide_vendor") }} '
+      - name: ide_version
+        description: ' {{ doc("ide_version") }} '
+      - name: language_server_version
+        description: ' {{ doc("language_server_version") }} '
+      - name: gitlab_service_ping_context
+        description: ' {{ doc("gitlab_service_ping_context") }} '
+      - name: gitlab_service_ping_context_schema
+        description: ' {{ doc("gitlab_service_ping_context_schema") }} '
+      - name: has_gitlab_service_ping_context
+        description: ' {{ doc("has_gitlab_service_ping_context") }} '
+      - name: redis_event_name
+        description: ' {{ doc("redis_event_name") }} '
+      - name: key_path
+        description: ' {{ doc("service_ping_key_path") }} '
+      - name: data_source
+        description: ' {{ doc("service_ping_data_source") }} '
+      - name: performance_timing_context
+        description: ' {{ doc("performance_timing_context") }} '
+      - name: performance_timing_context_schema
+        description: ' {{ doc("performance_timing_context_schema") }} '
+      - name: has_performance_timing_context
+        description: ' {{ doc("has_performance_timing_context") }} '
+      - name: connect_end
+        description: ' {{ doc("connect_end") }} '
+      - name: connect_start
+        description: ' {{ doc("connect_start") }} '
+      - name: dom_complete
+        description: ' {{ doc("dom_complete") }} '
+      - name: dom_content_loaded_event_end
+        description: ' {{ doc("dom_content_loaded_event_end") }} '
+      - name: dom_content_loaded_event_start
+        description: ' {{ doc("dom_content_loaded_event_start") }} '
+      - name: dom_interactive
+        description: ' {{ doc("dom_interactive") }} '
+      - name: dom_loading
+        description: ' {{ doc("dom_loading") }} '
+      - name: domain_lookup_end
+        description: ' {{ doc("domain_lookup_end") }} '
+      - name: domain_lookup_start
+        description: ' {{ doc("domain_lookup_start") }} '
+      - name: fetch_start
+        description: ' {{ doc("fetch_start") }} '
+      - name: load_event_end
+        description: ' {{ doc("load_event_end") }} '
+      - name: load_event_start
+        description: ' {{ doc("load_event_start") }} '
+      - name: navigation_start
+        description: ' {{ doc("navigation_start") }} '
+      - name: redirect_end
+        description: ' {{ doc("redirect_end") }} '
+      - name: redirect_start
+        description: ' {{ doc("redirect_start") }} '
+      - name: request_start
+        description: ' {{ doc("request_start") }} '
+      - name: response_end
+        description: ' {{ doc("response_end") }} '
+      - name: response_start
+        description: ' {{ doc("response_start") }} '
+      - name: secure_connection_start
+        description: ' {{ doc("secure_connection_start") }} '
+      - name: unload_event_end
+        description: ' {{ doc("unload_event_end") }} '
+      - name: unload_event_start
+        description: ' {{ doc("unload_event_start") }} '
+
 
   - name: fct_behavior_structured_event_experiment
     description:  '{{ doc("fct_behavior_structured_event_experiment") }}'
@@ -6412,6 +6552,8 @@ models:
         description: '{{ doc("page_url_fragment") }}'
       - name: event_value
         description: '{{ doc("event_value") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
       - name: gsc_pseudonymized_user_id
         description: '{{ doc("gsc_pseudonymized_user_id") }}'
       - name: gsc_google_analytics_client_id
@@ -6476,8 +6618,8 @@ models:
               config:
                 error_if: ">5784"
         description: '{{ doc("experiment_variant") }}'
-      - name: context_key
-        description: '{{ doc("context_key") }}'
+      - name: experiment_context_key
+        description: '{{ doc("experiment_context_key") }}'
       - name: experiment_migration_keys
         description: '{{ doc("experiment_migration_keys") }}'
 
@@ -6533,6 +6675,8 @@ models:
         description: '{{ doc("page_url_fragment") }}'
       - name: event_value
         description: '{{ doc("event_value") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
       - name: gsc_pseudonymized_user_id
         description: '{{ doc("gsc_pseudonymized_user_id") }}'
       - name: gsc_google_analytics_client_id
@@ -6638,6 +6782,8 @@ models:
         description: '{{ doc("page_url_fragment") }}'
       - name: event_value
         description: '{{ doc("event_value") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
       - name: gsc_pseudonymized_user_id
         description: '{{ doc("gsc_pseudonymized_user_id") }}'
       - name: gsc_google_analytics_client_id
@@ -6744,6 +6890,8 @@ models:
         description: '{{ doc("page_url_fragment") }}'
       - name: event_value
         description: '{{ doc("event_value") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
       - name: gsc_pseudonymized_user_id
         description: '{{ doc("gsc_pseudonymized_user_id") }}'
       - name: gsc_google_analytics_client_id
@@ -6797,6 +6945,58 @@ models:
       - name: has_subscription_auto_renew_context
         description: '{{ doc("has_subscription_auto_renew_context") }}'  
 
+  - name: fct_behavior_structured_event_redis_hll_counters
+    description: '{{ doc("fct_behavior_structured_event_redis_hll_counters") }}'
+    columns:
+      - name: behavior_structured_event_pk
+        tests:
+          - not_null
+          - unique
+        description: '{{ doc("behavior_structured_event_pk") }}'
+      - name: dim_behavior_website_page_sk
+        description: '{{ doc("dim_behavior_website_page_sk") }}'
+      - name: dim_behavior_browser_sk
+        description: '{{ doc("dim_behavior_browser_sk") }}'
+      - name: dim_behavior_operating_system_sk
+        description: '{{ doc("dim_behavior_operating_system_sk") }}'
+      - name: dim_namespace_id
+        description: '{{ doc("dim_namespace_id_behavior_model") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id_behavior_model") }}'
+      - name: dim_behavior_event_sk
+        description: '{{ doc("dim_behavior_event_sk") }}'
+      - name: dvce_created_tstamp
+        description: '{{ doc("dvce_created_tstamp") }}'
+      - name: behavior_at
+        description: '{{ doc("behavior_at") }}'
+      - name: tracker_version
+        description: '{{ doc("tracker_version") }}'
+      - name: session_index
+        description: '{{ doc("session_index") }}'
+      - name: app_id
+        description: '{{ doc("app_id") }}'
+      - name: session_id
+        description: '{{ doc("session_id") }}'
+      - name: user_snowplow_domain_id
+        description: '{{ doc("user_snowplow_domain_id") }}'
+      - name: contexts
+        description: '{{ doc("contexts") }}'
+      - name: gsc_google_analytics_client_id
+        description: '{{ doc("gsc_google_analytics_client_id") }}'
+      - name: gsc_pseudonymized_user_id
+        description: '{{ doc("gsc_pseudonymized_user_id") }}'
+      - name: gsc_environment
+        description: '{{ doc("environment_behavior_model") }}' 
+      - name: gsc_extra
+        description: '{{ doc("gsc_extra") }}'
+      - name: gsc_plan
+        description: '{{ doc("gsc_plan") }}'
+      - name: gsc_source
+        description: '{{ doc("gsc_source") }}'
+      - name: gsc_is_gitlab_team_member
+        description: '{{ doc("gsc_is_gitlab_team_member") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
 
   - name: fct_behavior_unstructured_event
     description: '{{ doc("fct_behavior_unstructured_event") }}'
@@ -6828,8 +7028,12 @@ models:
         description: '{{ doc("behavior_at") }}' 
       - name: gsc_pseudonymized_user_id
         description: '{{ doc("gsc_pseudonymized_user_id") }}'
+      - name: gsc_is_gitlab_team_member
+        description: '{{ doc("gsc_is_gitlab_team_member") }}'
       - name: user_snowplow_domain_id
         description: '{{ doc("user_snowplow_domain_id") }}'
+      - name: is_staging_event
+        description: '{{ doc("is_staging_event") }}'
       - name: link_click_target_url
         description: '{{ doc("link_click_target_url") }}'
       - name: link_click_element_id
@@ -6962,18 +7166,12 @@ models:
         description: Monthly count of deployments
       - name: packages_28_days_event
         description: Monthly count of Packages
-      - name: sast_jobs_all_time_event
-        description: Count of SAST CI jobs. Job names ending in '-sast'
       - name: dast_jobs_all_time_event
         description: Count of DAST jobs
-      - name: dependency_scanning_jobs_all_time_event
-        description: Count of Dependency Scanning jobs run
       - name: user_license_management_jobs_all_time_event
         description: no idea, Count of License Scanning jobs run, it implies user and monthly, but AFAIK we don't track per user
       - name: secret_detection_jobs_all_time_event
         description: Count of ‘secret-detection’ CI jobs.
-      - name: container_scanning_jobs_all_time_event
-        description: Count of Container Scanning jobs run
       - name: projects_jenkins_active_all_time_event
         description: Count of projects with active integrations for Jenkins
       - name: projects_bamboo_active_all_time_event
@@ -6986,8 +7184,6 @@ models:
         description: Count of Issues imported from Jira per month. This metric has been deprecated but we are keeping the field around for history.
       - name: projects_github_active_all_time_event
         description: Count of projects with active integrations for GitHub
-      - name: projects_jira_server_active_all_time_event
-        description: Count of active integrations with Jira Software (server)
       - name: projects_jira_dvcs_cloud_active_all_time_event
         description: Count of active integrations with Jira Cloud (DVCS Connector)
       - name: projects_with_repositories_enabled_all_time_event
@@ -7012,25 +7208,21 @@ models:
       - name: auto_devops_enabled
       - name: gitaly_clusters_instance
       - name: epics_deepest_relationship_level_instance
-      - name: clusters_applications_cilium_all_time_event
       - name: network_policy_forwards_all_time_event
       - name: network_policy_drops_all_time_event
       - name: requirements_with_test_report_all_time_event
       - name: requirement_test_reports_ci_all_time_event
       - name: projects_imported_from_github_all_time_event
-      - name: projects_jira_cloud_active_all_time_event
       - name: projects_jira_dvcs_server_active_all_time_event
       - name: service_desk_issues_all_time_event
       - name: ci_pipelines_all_time_user
       - name: service_desk_issues_28_days_user
       - name: projects_jira_active_28_days_user
-      - name: projects_jira_dvcs_cloud_active_28_days_user
       - name: projects_jira_dvcs_server_active_28_days_user
       - name: merge_requests_with_required_code_owners_28_days_user
       - name: analytics_value_stream_28_days_event
       - name: code_review_user_approve_mr_28_days_user
       - name: epics_usage_28_days_user
-      - name: ci_templates_usage_28_days_event
       - name: project_management_issue_milestone_changed_28_days_user
       - name: project_management_issue_iteration_changed_28_days_user
       - name: installation_creation_date
@@ -7139,18 +7331,12 @@ models:
         description: Monthly count of deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlydeployments))
       - name: packages_28_days_event
         description: Monthly count of Packages ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#counts_monthlypackages))
-      - name: sast_jobs_all_time_event
-        description: All-time count of SAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssast_jobs))
       - name: dast_jobs_all_time_event
         description: All-time count of DAST CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdast_jobs))
-      - name: dependency_scanning_jobs_all_time_event
-        description: All-time count of Dependency Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsdependency_scanning_jobs))
       - name: license_management_jobs_all_time_event
         description: All-time count of License Management CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countslicense_management_jobs))
       - name: secret_detection_jobs_all_time_event
         description: All-time count of Secret Detection’ CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countssecret_detection_jobs))
-      - name: container_scanning_jobs_all_time_event
-        description: All-time count of Container Scanning CI builds ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countscontainer_scanning_jobs))
       - name: projects_jenkins_active_all_time_event
         description: All-time count of projects with active integrations for Jenkins ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jenkins_active))
       - name: projects_bamboo_active_all_time_event
@@ -7163,8 +7349,6 @@ models:
         description: Monthly count of Issues imported from Jira ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlymanageissue_importsjira)). This metric has been deprecated but we are keeping the field around for history.
       - name: projects_github_active_all_time_event
         description: All-time count of projects with active integrations for GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_github_active))
-      - name: projects_jira_server_active_all_time_event
-        description: All-time count of active integrations with Jira Server ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_server_active))
       - name: projects_jira_dvcs_cloud_active_all_time_event
         description: All-time count of active integrations with Jira Cloud (DVCS Connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_cloud_active))
       - name: projects_with_repositories_enabled_all_time_event
@@ -7193,8 +7377,6 @@ models:
         description: Number of GitLab Managed clusters both enabled and disabled on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#gitalyclusters))
       - name: epics_deepest_relationship_level_instance
         description: Numeric level of the deepest relationship of all epics on an instance ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsepics_deepest_relationship_level))
-      - name: clusters_applications_cilium_all_time_event
-        description: All-time total of GitLab Managed clusters with GitLab Managed App:Cilium installed ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsclusters_applications_cilium))
       - name: network_policy_forwards_all_time_event
         description: Cumulative count of packets forwarded by Cilium (Container Network Security) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsnetwork_policy_forwards))
       - name: network_policy_drops_all_time_event
@@ -7205,8 +7387,6 @@ models:
         description: All-time count of requirement test reports created from CI ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsrequirement_test_reports_ci))
       - name: projects_imported_from_github_all_time_event
         description: All-time count of project imported from GitHub ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_imported_from_github))
-      - name: projects_jira_cloud_active_all_time_event
-        description: All-time count of active integrations with Jira Cloud ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_cloud_active))
       - name: projects_jira_dvcs_server_active_all_time_event
         description: All-time count of active integrations with Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_jira_dvcs_server_active))
       - name: service_desk_issues_all_time_event
@@ -7217,8 +7397,6 @@ models:
         description: Monthly count of users opening service desk issues ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanservice_desk_issues))
       - name: projects_jira_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_active))
-      - name: projects_jira_dvcs_cloud_active_28_days_user
-        description: Monthly count of users interacting with active integrations of Jira Cloud (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_cloud_active))
       - name: projects_jira_dvcs_server_active_28_days_user
         description: Monthly count of users interacting with active integrations of Jira Software (DVCS connector) ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyplanprojects_jira_dvcs_server_active))
       - name: merge_requests_with_required_code_owners_28_days_user
@@ -7229,8 +7407,6 @@ models:
         description: Monthly count of users approving merge requests ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_counterscode_reviewi_code_review_user_approve_mr_monthly))
       - name: epics_usage_28_days_user
         description: Monthly users count for epics_usage ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersepics_usageepics_usage_total_unique_counts_monthly))
-      - name: ci_templates_usage_28_days_event
-        description: Monthly count of CI templates ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersci_templatesci_templates_total_unique_counts_monthly))
       - name: project_management_issue_milestone_changed_28_days_user
         description: Monthly count of MAU changing an issue’s milestone ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_milestone_changed_monthly))
       - name: project_management_issue_iteration_changed_28_days_user
@@ -7249,42 +7425,6 @@ models:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_jobs_usage_28_days_user
-        description: '{{ doc("api_fuzzing_jobs_usage_28_days_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: api_fuzzing_pipeline_usage_28_days_event
-        description: '{{ doc("api_fuzzing_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: container_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("container_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dependency_scanning_pipeline_usage_28_days_event
-        description: '{{ doc("dependency_scanning_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: sast_pipeline_usage_28_days_event
-        description: '{{ doc("sast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: secret_detection_pipeline_usage_28_days_event
-        description: '{{ doc("secret_detection_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: dast_pipeline_usage_28_days_event
-        description: '{{ doc("dast_pipeline_usage_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: coverage_fuzzing_jobs_28_days_user
-        description: '{{ doc("coverage_fuzzing_jobs_28_days_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
@@ -7489,10 +7629,6 @@ models:
           - dbt_utils.at_least_one
       - name: groups_streaming_destinations_all_time_event
         description: '{{ doc("groups_streaming_destinations_all_time_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: groups_streaming_destinations_28_days_event
-        description: '{{ doc("groups_streaming_destinations_28_days_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: audit_event_destinations_all_time_event
@@ -8268,3 +8404,142 @@ models:
         description: '{{ doc("milestone_due_date") }}'
       - name: milestone_status
         description: '{{ doc("milestone_status") }}'
+        
+  - name: fct_latest_seat_link_installation
+    description: '{{ doc("fct_latest_seat_link_installation") }}'
+    columns:
+      - name: latest_seat_link_installation_sk
+        tests:
+          - not_null
+          - unique:
+              config:
+                where: "report_date >= DATEADD('day', -3, CURRENT_DATE())"
+
+  - name: fct_behavior_structured_event_code_suggestion
+    description: '{{ doc("fct_behavior_structured_event_code_suggestion") }}'
+    columns:
+    - name: behavior_structured_event_pk
+      description: '{{ doc("behavior_structured_event_pk") }}'
+      tests:
+        - unique
+        - not_null
+    - name: behavior_at
+      description: '{{ doc("behavior_at") }}'
+    - name: code_suggestions_context
+      description: '{{ doc("code_suggestions_context") }}'
+    - name: model_engine
+      description: '{{ doc("code_suggestions_model_engine") }}'
+    - name: model_name
+      description: '{{ doc("code_suggestions_model_name") }}'
+    - name: prefix_length
+      description: '{{ doc("code_suggestions_prefix_length") }}'
+    - name: suffix_length
+      description: '{{ doc("code_suggestions_suffix_length") }}'
+    - name: language
+      description: '{{ doc("code_suggestions_language") }}'
+    - name: delivery_type
+      description: '{{ doc("product_delivery_type") }}'
+      accepted_values:
+        values: ['Self-Managed', 'SaaS']
+    - name: api_status_code
+      description: '{{ doc("code_suggestions_api_status_code") }}'
+    - name: duo_namespace_ids
+      description: ' {{ doc("code_suggestions_duo_namespace_ids") }}'
+    - name: saas_namespace_ids
+      description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
+    - name: namespace_ids
+      description: '{{ doc("code_suggestions_namespace_ids") }}'
+    - name: instance_id
+      description: '{{ doc("dim_instance_id") }}'
+    - name: host_name
+      description: '{{ doc("host_name") }}'
+    - name: is_streaming
+      description: '{{ doc("code_suggestions_is_streaming") }}'
+    - name: ultimate_parent_namespace_ids
+      description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }} '
+    - name: subscription_names
+      description: '{{ doc("code_suggestions_subscription_names") }}'
+    - name: dim_crm_account_ids
+      description: '{{ doc("code_suggestions_dim_crm_account_ids") }}'
+    - name: dim_parent_crm_account_ids
+      description: '{{ doc("code_suggestions_dim_parent_crm_account_ids") }}'
+    - name: crm_account_names
+      description: '{{ doc("code_suggestions_crm_account_names") }}'
+    - name: parent_crm_account_names
+      description: '{{ doc("code_suggestions_parent_crm_account_names") }}'
+    - name: dim_installation_ids
+      description: '{{ doc("code_suggestions_dim_installation_ids") }}'
+    - name: host_names
+      description: '{{ doc("code_suggestions_host_names") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("code_suggestions_dim_crm_account_id") }}'
+    - name: dim_parent_crm_account_id
+      description: '{{ doc("code_suggestions_dim_parent_crm_account_id") }}'
+    - name: subscription_name
+      description: '{{ doc("code_suggestions_subscription_name") }}'
+    - name: crm_account_name
+      description: '{{ doc("code_suggestions_crm_account_name") }}'
+    - name: parent_crm_account_name
+      description: ' {{ doc("code_suggestions_parent_crm_account_name") }}'
+    - name: ultimate_parent_namespace_id
+      description: '{{ doc("code_suggestions_ultimate_parent_namespace_id") }}'
+    - name: dim_installation_id
+      description: '{{ doc("code_suggestions_dim_installation_id") }}'
+    - name: installation_host_name
+      description: '{{ doc("code_suggestions_installation_host_name") }}'
+    - name: namespace_is_internal
+      description: '{{ doc("code_suggestions_namespace_is_internal") }}'
+
+  - name: fct_behavior_structured_event_ide_extension_version
+    description: '{{ doc("fct_behavior_structured_event_ide_extension_version") }}'
+    columns:
+    - name: behavior_structured_event_pk
+      description: '{{ doc("behavior_structured_event_pk") }}'
+      tests:
+        - unique
+        - not_null
+    - name: behavior_at
+      description: '{{ doc("behavior_at") }}'
+    - name: ide_extension_version_context
+      description: ' {{ doc("ide_extension_version_context") }}'
+    - name: extension_name
+      description: ' {{ doc("extension_name") }}'
+    - name: extension_version
+      description: ' {{ doc("extension_version") }}'
+    - name: ide_name
+      description: ' {{ doc("ide_name") }}'
+    - name: ide_vendor
+      description: ' {{ doc("ide_vendor") }}'
+    - name: ide_version
+      description: ' {{ doc("ide_version") }}'
+    - name: language_server_version
+      description: ' {{ doc("language_server_version") }}'
+
+  - name: fct_behavior_structured_event_service_ping
+    description: '{{ doc("fct_behavior_structured_event_service_ping") }}'
+    columns:
+      - name: behavior_structured_event_pk
+        description: '{{ doc("behavior_structured_event_pk") }}'
+        tests:
+        - unique:
+            config:
+              where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
+        - not_null
+      - name: behavior_at
+        description: '{{ doc("behavior_at") }}'
+      - name: gsc_pseudonymized_user_id
+        description: '{{ doc("gsc_pseudonymized_user_id") }}'
+      - name: dim_namespace_id
+        description: '{{ doc("dim_namespace_id_behavior_model") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id_behavior_model") }}'
+      - name: gsc_plan
+        description: '{{ doc("gsc_plan") }}'
+      - name: ultimate_parent_namespace_id
+        description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+      - name: redis_event_name
+        description: ' {{ doc("redis_event_name") }} '
+      - name: key_path
+        description: ' {{ doc("service_ping_key_path") }} '
+      - name: data_source
+        description: ' {{ doc("service_ping_data_source") }} '

@@ -21,7 +21,8 @@ def main(engine: Engine) -> None:
     WITH raw AS (
     SELECT * EXCLUDE (geo_zipcode, geo_latitude, geo_longitude, user_ipaddress)
     FROM raw.snowplow.gitlab_events
-    WHERE uploaded_at::DATE > dateadd(day, -7, current_date)::DATE
+    WHERE uploaded_at::DATE > dateadd(day, -1, current_date)::DATE
+      AND TRY_TO_DATE(derived_tstamp) > dateadd(day,-7,current_date)::DATE
     LIMIT 5000000)
     SELECT *,
     NULL AS geo_zipcode,

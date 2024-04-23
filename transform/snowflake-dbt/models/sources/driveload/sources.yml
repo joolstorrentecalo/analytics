@@ -32,3 +32,4 @@ sources:
       - name: zuora_revenue_billing_waterfall_report_with_additional_columns
       - name: marketing_press_sov
       - name: booking_to_billing_monthly_reconciliation
+      - name: pending_invoices_report

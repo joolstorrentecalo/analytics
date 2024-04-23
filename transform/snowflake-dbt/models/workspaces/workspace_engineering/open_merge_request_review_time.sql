@@ -2,7 +2,7 @@ WITH product_mrs AS (
 
   SELECT * EXCLUDE (merge_request_description)
   FROM {{ ref('engineering_merge_requests') }}
-  WHERE YEAR(created_at) >= 2022
+  WHERE created_at >= DATEADD(MONTH, -36, CURRENT_DATE)
 
 ),
 
@@ -95,7 +95,7 @@ date_spine AS (
 
   SELECT date_actual
   FROM {{ ref('dim_date') }}
-  WHERE date_actual BETWEEN DATEADD(MONTH, -24, CURRENT_DATE) AND CURRENT_DATE
+  WHERE date_actual BETWEEN DATEADD(MONTH, -36, CURRENT_DATE) AND CURRENT_DATE
 
 ),
 

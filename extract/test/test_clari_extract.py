@@ -1,6 +1,7 @@
 """
 Test clari extract
 """
+
 from datetime import datetime
 
 import pytest

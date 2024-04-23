@@ -82,5 +82,19 @@ This model is intended to be used as a reporting model for the Growth Section an
 
 * This model filters out internal ultimate parent namespaces, ultimate parent namespaces whose creator is blocked, and is aggregated at the ultimate parent namespace level meaning that sub-groups and projects are not included in this model.
 
+{% enddocs %}
+
+{% docs mart_behavior_structured_event_service_ping_metrics %}
+
+This model is for analysing SaaS product usage data at the namespace level. Snowplow events that contain the Service Ping Context are joined with the bridge table containing metric name, redis event name, aggregate operator and attribute.
+It is limited to events carrying the `service_ping_context`, in addition to other filters.
+
+**Data Grain:** The combination of a Snowplow event containing a Service Ping event, and every Service Ping metric that Service Ping event joins to. (The relationship between Service Ping events and Service Ping metrics is many-to-many).
+
+This ID is generated using `behavior_structured_event_pk` from [fct_behavior_structured_event_service_ping](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.fct_behavior_structured_event_service_ping) and `metrics_path` from [bdg_metrics_redis_events](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.bdg_metrics_redis_events).
+
+**Filters Applied to Model:**
+- Include events containing the `service_ping_context`
+- `Inherited` - This model only includes Structured events (when `event=struct` from `dim_behavior_event`)
 
 {% enddocs %}

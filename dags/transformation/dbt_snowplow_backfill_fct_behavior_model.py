@@ -104,7 +104,7 @@ def generate_dbt_command(vars_dict):
 
     dbt_generate_command = f""" 
         {dbt_install_deps_nosha_cmd} &&
-        export SNOWFLAKE_TRANSFORM_WAREHOUSE="TRANSFORMING_XL" &&
+        export SNOWFLAKE_TRANSFORM_WAREHOUSE="TRANSFORMING_4XL" &&
         dbt run --profiles-dir profile --target {target} --models {snowplow_model_to_full_refresh} --vars "{var_yaml}"; ret=$?;
         """
 

@@ -108,6 +108,46 @@ tables:
       , board_id
       , label_id
       FROM board_labels
+  catalog_resources:
+    advanced_metadata: true
+    dbt_source_model: true
+    export_schema: 'gitlab_com'
+    export_table: 'catalog_resources'
+    export_table_primary_key: id
+    import_db: gitlab_db
+    import_query: |-
+      select id
+      , project_id
+      , created_at
+      , state
+      , latest_released_at
+      , name
+      , description
+      , visibility_level
+      , search_vector
+      , verification_level
+      , last_30_day_usage_count
+      , last_30_day_usage_count_updated_at
+      from catalog_resources
+  catalog_resource_versions:
+    advanced_metadata: true
+    dbt_source_model: true
+    export_schema: 'gitlab_com'
+    export_table: 'catalog_resource_versions'
+    export_table_primary_key: id
+    import_db: gitlab_db
+    import_query: |-
+      select id
+      , release_id
+      , catalog_resource_id
+      , project_id
+      , created_at
+      , released_at
+      , semver_major
+      , semver_minor
+      , semver_patch
+      , semver_prerelease
+      from catalog_resource_versions
   cluster_groups:
     dbt_source_model: true
     export_schema: 'gitlab_com'
@@ -878,4 +918,4 @@ tables:
       , state
       , dismissal_reason
       FROM vulnerability_reads
-  
+

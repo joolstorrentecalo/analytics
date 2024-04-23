@@ -1105,6 +1105,8 @@ models:
       
   - name: driveload_booking_to_billing_monthly_reconciliation
     description: Output of Finance's analysis determining timing differences between bookings and billings
+  - name: driveload_pending_invoices_report
+    description: Report of future dates pending invoices in Zuora, e.g. for multiyear ramp order with annual payment schedule
   - name: rpt_arr_no_manual_adjustment_for_sfdc_reconciliation
     description: Report view of [mart_arr](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.mart_arr) without the manual true up adjustments added from Zuora Revenue. This report is used exclusively for the montly Salesforce reconciliation process and is not to be used for financial reporting since it does not include the manually adjusted true up charges.
     columns:
@@ -1180,3 +1182,60 @@ models:
     description: Zuora credit balance adjustment - grain is one adjustment per invoice or account
     columns:
       - name: credit_balance_adjustment_id
+
+  - name: wk_mart_cdot_invoices_manual_intervention_monthly
+    description: Comparison of all CDot created invoices vs. CDot invoices that were updated manually by the Billing team
+
+  - name: wk_mart_booking_billing_AR_monthly
+    description: Comparison of monthly booking (opportunity), invoice and payment amounts and counts
+   
+  - name: wk_mart_collections_monthly
+    description: Monthly payment amounts applied to invoices against billed amounts
+
+  - name: wk_mart_web_direct_vs_sales_assisted_ar_monthly
+    description: Comparison of collections for web direct vs sales assisted invoices
+
+  - name: wk_mart_payment_type
+    description: Comparison of amounts and volumes by payment type (electronic vs. external) by month
+
+  - name: wk_mart_ar_per_SSP_channel_monthly
+    description: Compare balances and count per SSP channel vs. the total balances for all open invoices monthly
+
+  - name: wk_mart_public_sector_ar_monthly
+    description: Compare balances and count of PubSec vs. the total balances for all open invoices monthly
+
+  - name: wk_mart_invoices_in_preview_monthly
+    description: View of monthly invoice count and amount for future billing (pending invoices, invoices in preview, invoices related to ramps and multiyear orders)
+
+  - name: wk_mart_processed_refunds_monthly
+    description: View of refund amounts processed monthly
+
+  - name: wk_mart_payments_refunds_against_future_invoices
+    description: View of all payment totals received and applied to future dated invoices monthly
+
+  - name: wk_mart_booking_by_payment_schedule_opportunity_category_monthly
+    description: View of all sales assisted opportunities compared to non-standard bookings (e.g. ramps, non-prepaid orders)
+
+  - name: wk_mart_booking_by_order_type_monthly
+    description: Booking amount and count by sales type
+
+  - name: wk_mart_historical_balance_by_payment_terms_bucket_monthly
+    description: View of historical balances with payment terms and aging bucket by month
+
+  - name: wk_rpt_booking_billing_collections_monthly
+    description: View of monthly booking, billing and collection aggregated amounts and percentage
+
+  - name: wk_mart_processed_iia_monthly
+    description: View of invoice item adjustments aggregated monthly
+
+  - name: wk_mart_processed_cba_monthly
+    description: View of credit balance adjustments aggregated monthly
+
+  - name: wk_rpt_accounting_period_balance_monthly 
+    description: Billing accounting period balances monthly
+
+  - name: wk_rpt_dso_cei_monthly 
+    description: Days Sales Outstanding and Collections Effectiveness Index metrics
+
+  - name: wk_mart_current_ar_by_aging_payment_terms_monthly
+    description: Analysis of currently open invoice balances by payment terms and aging buckets

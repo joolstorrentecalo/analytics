@@ -1,6 +1,7 @@
 """
 DAG for SnowPlow backfilling
 """
+
 import json
 import os
 from datetime import date, datetime

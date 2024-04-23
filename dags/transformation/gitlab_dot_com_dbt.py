@@ -1,4 +1,5 @@
 """Gitlab COM DBT DAG """
+
 import os
 from datetime import datetime
 

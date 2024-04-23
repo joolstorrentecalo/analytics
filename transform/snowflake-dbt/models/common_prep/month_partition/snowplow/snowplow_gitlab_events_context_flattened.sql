@@ -4,8 +4,10 @@
 {% set end_date = (start_date + modules.datetime.timedelta(days=31)).strftime('%Y-%m-01') %}
 
 {{config({
-    "unique_key":"event_id",
-    "cluster_by":['derived_tstamp_date']
+    "materialized":"incremental",
+    "unique_key":['event_id', 'derived_tstamp_date'],
+    "cluster_by":['derived_tstamp_date'],
+    "on_schema_change":"sync_all_columns"
   })
 }}
 
@@ -28,6 +30,12 @@ WITH filtered_source as (
     WHERE TRY_TO_TIMESTAMP(derived_tstamp) IS NOT NULL
       AND derived_tstamp >= '{{ start_date }}'
       AND derived_tstamp < '{{ end_date }}'
+      AND uploaded_at < '{{ run_started_at }}'
+    {% if is_incremental() %}
+
+      AND TRY_TO_TIMESTAMP(derived_tstamp) > (SELECT MAX(derived_tstamp_date) FROM {{this}})
+
+    {% endif %}
 )
 
 , base AS (
@@ -113,9 +121,11 @@ WITH filtered_source as (
             {'field':'user_agent'},
             {'field':'gitlab_realm'},
             {'field':'api_status_code', 'data_type':'int'},
-            {'field':'gitlab_saas_namespace_ids', 'alias':'namespace_ids'},
+            {'field':'gitlab_saas_namespace_ids', 'alias':'saas_namespace_ids'},
+            {'field':'gitlab_saas_duo_pro_namespace_ids', 'alias':'duo_namespace_ids'},
             {'field':'gitlab_instance_id', 'alias':'instance_id'},
-            {'field':'gitlab_host_name', 'alias':'host_name'}
+            {'field':'gitlab_host_name', 'alias':'host_name'},
+            {'field':'is_streaming', 'data_type':'boolean'}
             ]
         )
       }},
@@ -128,6 +138,10 @@ WITH filtered_source as (
           THEN NULL
         ELSE gitlab_realm
       END                                                                                                                                                     AS delivery_type,
+      COALESCE(
+        IFF(duo_namespace_ids = '[]', NULL, duo_namespace_ids),
+        IFF(saas_namespace_ids = '[]', NULL, saas_namespace_ids)
+        )                                                                                                                                                     AS namespace_ids,
 
       -- IDE Extension Version Context Columns
       {{
@@ -236,9 +250,12 @@ SELECT
   MAX(column_selection.user_agent)                            AS user_agent,
   MAX(column_selection.delivery_type)                         AS delivery_type,
   MAX(column_selection.api_status_code)                       AS api_status_code,
+  MAX(column_selection.duo_namespace_ids)                     AS duo_namespace_ids, 
+  MAX(column_selection.saas_namespace_ids)                    AS saas_namespace_ids, 
   MAX(column_selection.namespace_ids)                         AS namespace_ids,
   MAX(column_selection.instance_id)                           AS instance_id,
   MAX(column_selection.host_name)                             AS host_name,
+  MAX(column_selection.is_streaming)                          AS is_streaming,
 
   MAX(column_selection.ide_extension_version_context)         AS ide_extension_version_context,
   MAX(column_selection.ide_extension_version_context_schema)  AS ide_extension_version_context_schema,

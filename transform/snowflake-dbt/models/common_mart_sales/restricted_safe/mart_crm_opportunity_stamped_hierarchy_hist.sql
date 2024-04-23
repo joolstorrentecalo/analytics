@@ -71,7 +71,6 @@
       dim_crm_opportunity.net_new_source_categories,
       dim_crm_opportunity.invoice_number,
       dim_crm_opportunity.opportunity_term,
-      dim_crm_opportunity.account_owner_team_stamped,
       dim_crm_opportunity.stage_name_3plus,
       dim_crm_opportunity.stage_name_4plus,
       dim_crm_opportunity.stage_category,
@@ -332,7 +331,6 @@
       dim_crm_opportunity.sales_team_vp_level,
       dim_crm_opportunity.sales_team_avp_rd_level,
       dim_crm_opportunity.sales_team_asm_level,
-      dim_crm_opportunity.account_owner_team_stamped_cro_level,
       LOWER(
         dim_crm_opportunity.crm_account_owner_sales_segment
       ) AS account_owner_user_segment,
@@ -385,7 +383,6 @@
       dim_crm_opportunity.cp_review_notes,
       dim_crm_opportunity.cp_champion,
       dim_crm_opportunity.cp_close_plan,
-      dim_crm_opportunity.cp_competition,
       dim_crm_opportunity.cp_decision_criteria,
       dim_crm_opportunity.cp_decision_process,
       dim_crm_opportunity.cp_economic_buyer,
@@ -545,6 +542,8 @@
       fct_crm_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       fct_crm_opportunity.calculated_from_ratio_net_arr,
       fct_crm_opportunity.net_arr,
+      fct_crm_opportunity.xdr_net_arr_stage_1,
+      fct_crm_opportunity.xdr_net_arr_stage_3,
       fct_crm_opportunity.raw_net_arr,
       fct_crm_opportunity.created_and_won_same_quarter_net_arr,
       fct_crm_opportunity.new_logo_count,
@@ -654,7 +653,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@jeanpeguero",
-    updated_by="@rkohnke",
+    updated_by="@snalamaru",
     created_date="2022-02-28",
-    updated_date="2023-11-01"
+    updated_date="2024-04-14"
   ) }}

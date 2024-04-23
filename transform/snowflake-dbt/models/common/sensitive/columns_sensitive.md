@@ -18,6 +18,8 @@ Each object in the array contains the following fields (in case it does not, it 
 - **is_setup_for_company**: Flag indicating whether the namespace was set up for company use or not.
 - **trial_start_date**: Trial start date of the namespace. 
 - **trial_expired_date**: Date in which the trial expires/expired at. 
+- **trial_type**: Indicates the type of trial offering, such as Premium/Ultimate subscription or GitLab Duo Pro add-on. The default value is 1 for both Premium and Ultimate trials, and 2 for GitLab DuoPro trials.
+- **trial_type_name**: Specifies the name of the trial offering type. The value 1 corresponds to Premium/Ultimate trials, while 2 corresponds to GitLab Duo Pro trials.
 - **is_active_trial**: Flag that indicates whether the namespace is in an active trial. 
 - **glm_content**: GLM content of the trial. 
 - **glm_source**: GLM source of the trial. 

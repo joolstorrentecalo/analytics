@@ -642,3 +642,20 @@ models:
   description: A list updated by the DevRel team of Youtube videos they worked on.
 - name: sheetload_youtube_views_gitlab_source
   description: A list updated by the DevRel team of blog posts they worked on.
+- name: sheetload_pagerslack_stats_source
+  description: Temporary data source for Pagerslack dashboard in Tableau
+- name: sheetload_fy25_yearlies_target_source
+  description: The raw values for yearly targets published in the internal handbook - includes MNPI 
+  columns:
+    - name: yearly_name
+      tests:
+      - not_null
+    - name: yearly_dri
+    - name: yearly_description
+    - name: is_mnpi
+    - name: FY25-Q4
+    - name: FY25-Q3
+    - name: FY25-Q2
+    - name: FY25-Q1
+- name: sheetload_ta_team_assignment_source
+  description: The list of department, team and recruiter data 

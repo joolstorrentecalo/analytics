@@ -207,5 +207,5 @@ clean-python:
 	@poetry env remove python3
 
 update_roles: 
-	echo "Running updates_roles_yaml.py..." && poetry run python3 orchestration/snowflake_provisioning_automation/update_roles_yaml/src/update_roles_yaml.py
+	echo "Running updates_roles_yaml.py..." && poetry run python3 orchestration/snowflake_provisioning_automation/update_roles_yaml/update_roles_yaml.py --no-test-run
 	

@@ -2,6 +2,7 @@
 Tweak test_path as due to script execution way in Airflow,
 can't touch the original code
 """
+
 import os
 import sys
 

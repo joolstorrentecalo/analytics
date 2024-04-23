@@ -53,6 +53,10 @@ sources:
         identifier: gitlab_db_board_assignees
       - name: board_labels
         identifier: gitlab_db_board_labels
+      - name: catalog_resource_versions
+        identifier: gitlab_db_catalog_resource_versions
+      - name: catalog_resources
+        identifier: gitlab_db_catalog_resources
       - name: boards
         identifier: gitlab_db_boards
       - name: ci_build_trace_chunks
@@ -523,6 +527,10 @@ sources:
         identifier: gitlab_db_work_item_types
       - name: workspaces
         identifier: gitlab_db_workspaces
+      - name: zoekt_enabled_namespaces
+        identifier: gitlab_db_zoekt_enabled_namespaces
+      - name: zoekt_indices
+        identifier: gitlab_db_zoekt_indices
       - name: zoom_meetings
         identifier: gitlab_db_zoom_meetings
         freshness:

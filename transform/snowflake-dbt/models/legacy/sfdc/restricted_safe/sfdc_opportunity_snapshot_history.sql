@@ -40,7 +40,6 @@ WITH sfdc_opportunity_snapshots AS (
       SDR_LU__c                      AS opportunity_sales_development_representative,
       BDR_LU__c                      AS opportunity_business_development_representative,
       BDR_SDR__c                     AS opportunity_development_representative,
-      account_owner_team_o__c        AS account_owner_team_stamped,
       COALESCE({{ sales_segment_cleaning('ultimate_parent_sales_segment_emp_o__c') }}, {{ sales_segment_cleaning('ultimate_parent_sales_segment_o__c') }} )
                                      AS parent_segment,
       sales_accepted_date__c         AS sales_accepted_date,
@@ -142,7 +141,6 @@ WITH sfdc_opportunity_snapshots AS (
       -- command plan fields
       fm_champion__c                 AS cp_champion,
       fm_close_plan__c               AS cp_close_plan,
-      fm_competition__c              AS cp_competition,
       fm_decision_criteria__c        AS cp_decision_criteria,
       fm_decision_process__c         AS cp_decision_process,
       fm_economic_buyer__c           AS cp_economic_buyer,

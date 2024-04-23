@@ -213,7 +213,6 @@ WITH edm_opty AS (
     edm_opty.stage_6_closed_lost_date,
     edm_opty.cp_champion,
     edm_opty.cp_close_plan,
-    edm_opty.cp_competition,
     edm_opty.cp_decision_criteria,
     edm_opty.cp_decision_process,
     edm_opty.cp_economic_buyer,

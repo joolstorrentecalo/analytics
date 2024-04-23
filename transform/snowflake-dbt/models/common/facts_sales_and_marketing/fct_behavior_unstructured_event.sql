@@ -21,6 +21,7 @@
       behavior_at,
       event,
       dim_behavior_event_sk,
+      is_staging_event,
       platform,
       gsc_pseudonymized_user_id,
       gsc_is_gitlab_team_member,
@@ -44,6 +45,7 @@
       environment
     FROM events
     WHERE event = 'unstruct'
+
 
     {% if is_incremental() %}
 
@@ -79,6 +81,7 @@
       user_snowplow_domain_id,
 
       -- Attributes
+      is_staging_event,
       link_click_target_url,
       link_click_element_id,
       submit_form_id,
@@ -97,5 +100,5 @@
     created_by="@chrissharp",
     updated_by="@utkarsh060",
     created_date="2022-09-27",
-    updated_date="2024-01-25"
+    updated_date="2024-04-02"
 ) }}

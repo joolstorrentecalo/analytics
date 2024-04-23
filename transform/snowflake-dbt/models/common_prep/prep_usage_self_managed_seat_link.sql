@@ -2,7 +2,14 @@
     tags=["mnpi_exception"]
 ) }}
 
-WITH seat_links AS (
+WITH raw_seat_link AS (
+
+    SELECT
+      *
+    FROM {{ ref('customers_db_license_seat_links_source') }}
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY zuora_subscription_id, report_date ORDER BY updated_at DESC) = 1
+
+), seat_links AS (
 
     SELECT
       order_id,
@@ -21,7 +28,7 @@ WITH seat_links AS (
             PARTITION BY order_id
             ORDER BY report_date DESC) = 1,
           TRUE, FALSE)                                                      AS is_last_seat_link_report_per_order
-    FROM {{ ref('customers_db_license_seat_links_source') }}
+    FROM raw_seat_link
 
 ), customers_orders AS (
 
@@ -76,7 +83,7 @@ WITH seat_links AS (
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@ischweickartDD",
-    updated_by="@snalamaru",
+    updated_by="@mdrussell",
     created_date="2021-02-02",
-    updated_date="2023-12-27"
+    updated_date="2024-02-29"
 ) }}

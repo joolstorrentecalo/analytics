@@ -1,4 +1,4 @@
-{% set sensitive_fields = ['project_description', 'project_import_source', 'project_issues_template', 'project_build_coverage_regex',
+{% set sensitive_fields = ['project_description', 'project_import_source', 'project_issues_template',
                            'project_name', 'project_path', 'project_import_url', 'project_merge_requests_template'] %}
 
 {{ simple_cte([
@@ -11,6 +11,7 @@
     ('prep_namespace', 'prep_namespace'),
     ('projects_source', 'gitlab_dotcom_projects_source'),
     ('prep_product_tier', 'prep_product_tier'),
+    ('gitlab_dotcom_project_ci_cd_settings_source', 'gitlab_dotcom_project_ci_cd_settings_source')
 
 ]) }}
 
@@ -112,6 +113,7 @@
       projects_source.only_mirror_protected_branches,
       projects_source.pull_mirror_available_overridden,
       projects_source.mirror_overwrites_diverged_branches,
+      gitlab_dotcom_project_ci_cd_settings_source.merge_trains_enabled AS has_merge_trains_enabled,
       -- namespace metadata
 
       IFNULL(prep_namespace.namespace_is_internal, FALSE)            AS namespace_is_internal,
@@ -146,6 +148,8 @@
         AND projects_source.created_at >= gitlab_subscriptions.valid_from AND projects_source.created_at < {{ coalesce_to_infinity("gitlab_subscriptions.valid_to") }}
     LEFT JOIN active_services
       ON projects_source.project_id = active_services.project_id
+    LEFT JOIN gitlab_dotcom_project_ci_cd_settings_source
+      ON projects_source.project_id = gitlab_dotcom_project_ci_cd_settings_source.project_id
     {{ dbt_utils.group_by(n=66) }}
 
 )
@@ -155,6 +159,6 @@
     created_by="@mpeychet_",
     updated_by="@michellecooper",
     created_date="2021-03-17",
-    updated_date="2023-09-27"
+    updated_date="2024-04-10"
 ) }}
 

@@ -62,6 +62,7 @@
       ----ultimate parent crm account info
       prep_crm_account.parent_crm_account_name,
       prep_crm_account.parent_crm_account_sales_segment,
+      prep_crm_account.parent_crm_account_sales_segment_legacy,
       prep_crm_account.parent_crm_account_sales_segment_grouped,
       prep_crm_account.parent_crm_account_segment_region_stamped_grouped,
       prep_crm_account.parent_crm_account_industry,

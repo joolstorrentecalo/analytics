@@ -17,3 +17,6 @@ models:
     
   - name: rpt_crm_opportunity_renewal
     description: '{{ doc("rpt_crm_opportunity_renewal") }}'
+
+  - name: rpt_crm_opportunity_open
+    description: '{{ doc("rpt_crm_opportunity_open") }}'

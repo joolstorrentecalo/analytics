@@ -4,6 +4,7 @@ Automated Service Ping main unit
 usage_ping.py is responsible for uploading the following into Snowflake:
 - usage ping combined metrics (sql + redis)
 """
+
 import datetime
 import json
 import logging
