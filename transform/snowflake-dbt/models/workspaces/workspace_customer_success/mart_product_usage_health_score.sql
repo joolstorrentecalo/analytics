@@ -121,6 +121,10 @@
             WHEN ci_pipeline_utilization_score = 25 THEN 'Red'
             WHEN ci_pipeline_utilization_score = 63 THEN 'Yellow'
             WHEN ci_pipeline_utilization_score = 88 THEN 'Green' end               AS ci_pipeline_utilization_color,
+        CASE WHEN ci_pipeline_utilization IS NULL THEN NULL
+            WHEN ci_pipeline_utilization <= 0.022 THEN 'Red'
+            WHEN ci_pipeline_utilization <= 0.33 THEN 'Yellow'
+            WHEN ci_pipeline_utilization > 0.33 THEN 'Green' end               AS ci_color_new,
         ci_pipeline_utilization_score AS ci_score,
         CASE WHEN ci_score IS NULL THEN NULL
             WHEN ci_score = 25 THEN 'Red'
