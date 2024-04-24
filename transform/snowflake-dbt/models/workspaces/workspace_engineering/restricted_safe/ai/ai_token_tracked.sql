@@ -14,7 +14,7 @@ source_all_feats_except_cs AS (
     event_category AS model,
     event_property AS request_id,
     event_value    AS token_amount,
-    contexts
+    gsc_is_gitlab_team_member
   FROM
     mart
   WHERE
@@ -30,7 +30,7 @@ source_cs AS (
     event_category AS model,
     event_property AS request_id,
     event_value    AS token_amount,
-    contexts
+    gsc_is_gitlab_team_member
   FROM mart
   WHERE
     event_category = 'code_suggestions'
@@ -58,8 +58,9 @@ SELECT
     WHEN feature = 'code_generation' THEN 'Gitlab::Llm::Anthropic' ELSE model
   END                              AS model,
   feature                          AS feature,
+  gsc_is_gitlab_team_member        AS is_gitlab_team_member,
   event_action                     AS prompt_response,
   SUM(token_amount)                AS tokens_tracked,
   SUM(token_amount) * 4            AS characters_tracked
 FROM source
-GROUP BY 1, 2, 3, 4, 5
+GROUP BY 1, 2, 3, 4, 5, 6
