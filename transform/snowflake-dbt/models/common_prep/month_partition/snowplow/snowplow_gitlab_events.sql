@@ -4,7 +4,9 @@
 {% set end_date = (start_date + modules.datetime.timedelta(days=31)).strftime('%Y-%m-01') %}
 
 {{config({
-    "unique_key":"event_id"
+    "materialized":"incremental",
+    "unique_key":"event_id",
+    "on_schema_change":"sync_all_columns"
   })
 }}
 
@@ -199,6 +201,11 @@ WITH filtered_source as (
         AND IFF(event_name IN ('submit_form', 'focus_form', 'change_form') AND TRY_TO_TIMESTAMP(derived_tstamp) < '2021-05-26'
             , FALSE
             , TRUE)
+    {% if is_incremental() %}
+
+      AND TRY_TO_TIMESTAMP(derived_tstamp) > (SELECT MAX(derived_tstamp) FROM {{this}})
+
+    {% endif %}
 
 )
 

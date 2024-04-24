@@ -31,7 +31,11 @@ from convert_sql_templates import convert_to_sql_statements
 abs_path = os.path.dirname(os.path.realpath(__file__))
 parent_path = abs_path[: abs_path.find("/provision_users")]
 sys.path.insert(1, parent_path)
-from utils_snowflake_provisioning import get_snowflake_usernames, get_emails
+from utils_snowflake_provisioning import (
+    get_snowflake_usernames,
+    get_emails,
+    get_valid_users,
+)
 
 
 def configure_logging():
@@ -44,11 +48,13 @@ def configure_logging():
 def process_args() -> Tuple[list, bool, bool]:
     """returns command line args passed in by user"""
     args = parse_arguments()
-    return (
-        args.users_to_add,
+    valid_users_to_add = get_valid_users(args.users_to_add)
+    parsed_args = (
+        valid_users_to_add,
         args.dev_db,
         args.test_run,
     )
+    return parsed_args
 
 
 def _get_snowflake_connection(role: str, is_test_run: bool):

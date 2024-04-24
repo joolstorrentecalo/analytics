@@ -287,41 +287,6 @@ clone_stop:
     done;
   allow_failure: false
 
-.snowflake_provisioning_automation: &snowflake_provisioning_automation
-  stage: 🐍 Python
-  image: registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.7
-  tags:
-    - analytics
-  before_script:
-    - cd orchestration/snowflake_provisioning_automation/
-
-    # shared arguments
-    - export IS_TEST_RUN_FINAL="--no-test-run"
-    - if [ -n $IS_TEST_RUN ]; then IS_TEST_RUN_FINAL="--test-run"; fi
-
-    - export USERS_TO_ADD_FINAL=""
-    - if [ -n "$USERS_TO_ADD" ]; then USERS_TO_ADD_FINAL="--users-to-add $USERS_TO_ADD"; fi
-
-    - echo "Below are CI job arguments, missing key/values will use default Python values:"
-    - echo -e "IS_TEST_RUN=$IS_TEST_RUN_FINAL\n\
-               USERS_TO_ADD=$USERS_TO_ADD_FINAL\n"
-  only:
-    refs:
-      - merge_requests
-  allow_failure: true
-
-snowflake_provisioning_snowflake_users:
-  <<: *snowflake_provisioning_automation
-  script:
-    # provision_users.py specific argument
-    - export IS_DEV_DB_FINAL=""
-    - if [ -n "$IS_DEV_DB" ]; then IS_DEV_DB_FINAL="--dev-db"; fi
-    - echo "IS_DEV_DB=$IS_DEV_DB_FINAL"
-
-    - python3 provision_users/provision_users.py $IS_TEST_RUN_FINAL $USERS_TO_ADD_FINAL $IS_DEV_DB_FINAL
-  when: manual
-  allow_failure: true
-
 .permifrost: &permifrost
   stage: 🐍 Python
   image: registry.gitlab.com/gitlab-data/permifrost:v0.15.4
@@ -347,6 +312,83 @@ snowflake_provisioning_snowflake_users:
     - permifrost spec-test permissions/snowflake/roles.yml
   when: manual
   allow_failure: true
+
+.snowflake_provisioning_automation: &snowflake_provisioning_automation
+  stage: 🐍 Python
+  image: registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.7
+  tags:
+    - analytics
+  before_script:
+    - cd orchestration/snowflake_provisioning_automation/
+
+    # shared arguments
+    - export IS_TEST_RUN_FINAL="--no-test-run"
+    - if [ -n "$IS_TEST_RUN" ]; then IS_TEST_RUN_FINAL="--test-run"; fi
+
+    - export USERS_TO_ADD_FINAL=""
+    - if [ -n "$USERS_TO_ADD" ]; then USERS_TO_ADD_FINAL="--users-to-add $USERS_TO_ADD"; fi
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  when: manual
+  allow_failure: true
+
+snowflake_provisioning_snowflake_users:
+  <<: *snowflake_provisioning_automation
+  rules:
+    # only allow trigger if MR approved
+    - if: '$CI_MERGE_REQUEST_APPROVED == "true"'
+      when: manual
+  script:
+    # provision_users.py specific argument
+    - export IS_DEV_DB_FINAL=""
+    - if [ -n "$IS_DEV_DB" ]; then IS_DEV_DB_FINAL="--dev-db"; fi
+
+    - echo "Below are CI job arguments, missing key/values will use default Python values:"
+    - echo -e "IS_TEST_RUN=$IS_TEST_RUN_FINAL\n\
+               USERS_TO_ADD=$USERS_TO_ADD_FINAL\n
+               IS_DEV_DB=$IS_DEV_DB_FINAL"
+
+    - python3 provision_users/provision_users.py $IS_TEST_RUN_FINAL $USERS_TO_ADD_FINAL $IS_DEV_DB_FINAL
+
+snowflake_provisioning_roles_yaml:
+  <<: *snowflake_provisioning_automation
+  script:
+    # update_roles_yaml.py specific arguments below
+    - export USERS_TO_REMOVE_FINAL=""
+    - if [ -n "$USERS_TO_REMOVE" ]; then USERS_TO_REMOVE_FINAL="--users-to-remove $USERS_TO_REMOVE"; fi
+
+    - export DATABASES_TEMPLATE_FINAL=""
+    - if [ -n "$DATABASES_TEMPLATE" ]; then DATABASES_TEMPLATE_FINAL="$DATABASES_TEMPLATE"; fi
+
+    - export ROLES_TEMPLATE_FINAL=""
+    - if [ -n "$ROLES_TEMPLATE" ]; then ROLES_TEMPLATE_FINAL="$ROLES_TEMPLATE"; fi
+
+    - export USERS_TEMPLATE_FINAL=""
+    - if [ -n "$USERS_TEMPLATE" ]; then USERS_TEMPLATE_FINAL="$USERS_TEMPLATE"; fi
+
+    - echo "Below are CI job arguments, missing key/values will use default Python values:"
+    - echo -e "IS_TEST_RUN=$IS_TEST_RUN_FINAL\n\
+      USERS_TO_ADD=$USERS_TO_ADD_FINAL\n\
+      USERS_TO_REMOVE=$USERS_TO_REMOVE_FINAL\n\
+      DATABASES_TEMPLATE=$DATABASES_TEMPLATE_FINAL\n\
+      ROLES_TEMPLATE=$ROLES_TEMPLATE_FINAL\n\
+      USERS_TEMPLATE=$USERS_TEMPLATE_FINAL"
+
+    - python3 update_roles_yaml/update_roles_yaml.py $IS_TEST_RUN_FINAL $USERS_TO_ADD_FINAL $USERS_TO_REMOVE_FINAL --databases-template "$DATABASES_TEMPLATE_FINAL" --roles-template "$ROLES_TEMPLATE_FINAL" --users-template "$USERS_TEMPLATE_FINAL"
+
+    # If there are changes to roles.yml, then commit/push back to repo
+    - if [[ -n $(git status --porcelain) ]]; then
+      git config user.email "analyticsapi@gitlab.com";
+      git config user.name "snowflake_provisioning_automation";
+      git remote add gitlab_origin https://oauth2:$SNOWFLAKE_PROVISIONING_AUTOMATION_PROJECT_ACCESS_TOKEN@gitlab.com/gitlab-data/analytics.git;
+      cd $(git rev-parse --show-toplevel);
+      git add permissions/snowflake/roles.yml;
+      git commit -m "pushed from `snowflake_provisioning_roles_yaml` job";
+      git push gitlab_origin HEAD:$BRANCH_NAME;
+      else
+        echo "Nothing to commit. Check if 'snowflake_users.yml' was updated. Aborting.";
+      fi
 
 # ======
 # dbt docs to GitLab Pages

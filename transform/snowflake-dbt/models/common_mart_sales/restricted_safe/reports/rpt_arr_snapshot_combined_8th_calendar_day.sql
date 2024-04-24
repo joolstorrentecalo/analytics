@@ -42,7 +42,9 @@
       dim_parent_crm_account_id,
       parent_crm_account_name,
       parent_crm_account_billing_country,
-      parent_crm_account_sales_segment,
+      -- Coalescing these two values since sales segment has been changed in SFDC but finance reporting needs to keep using the legacy value
+      -- Background issue: https://gitlab.com/gitlab-data/analytics/-/issues/20395
+      COALESCE(parent_crm_account_sales_segment_legacy, parent_crm_account_sales_segment)       AS parent_crm_account_sales_segment,
       parent_crm_account_industry,
       parent_crm_account_owner_team,
       parent_crm_account_sales_territory,
@@ -83,7 +85,9 @@
       dim_parent_crm_account_id,
       parent_crm_account_name,
       NULL                                                                                      AS parent_crm_account_billing_country,
-      parent_crm_account_sales_segment,
+      -- Sales segment has been changed in SFDC but finance reporting needs to keep using the legacy value
+      -- Background issue: https://gitlab.com/gitlab-data/analytics/-/issues/20395
+      parent_crm_account_sales_segment_legacy                                                   AS parent_crm_account_sales_segment,
       parent_crm_account_industry,
       NULL                                                                                      AS parent_crm_account_owner_team,
       NULL                                                                                      AS parent_crm_account_sales_territory,

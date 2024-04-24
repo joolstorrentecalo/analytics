@@ -73,6 +73,8 @@
       END AS person_order_type,
       last_utm_campaign,
       last_utm_content,
+      lead_score_classification,
+      is_defaulted_trial,
 
   --Person Dates
       person_base.true_inquiry_date,
@@ -294,6 +296,8 @@
       last_utm_content,
       person_base.prospect_share_status,
       person_base.partner_prospect_status,
+      person_base.lead_score_classification,
+      person_base.is_defaulted_trial,
 
   --Person Dates
       person_base.true_inquiry_date,
@@ -390,7 +394,7 @@
       ON opp.dim_crm_account_id=dim_crm_account.dim_crm_account_id
     LEFT JOIN dim_crm_account partner_account
       ON opp.partner_account=partner_account.dim_crm_account_id
-  {{dbt_utils.group_by(n=182)}}
+  {{dbt_utils.group_by(n=185)}}
     
 ), cohort_base_combined AS (
   
@@ -454,6 +458,8 @@
       last_utm_content,
       prospect_share_status,
       partner_prospect_status,
+      lead_score_classification,
+      is_defaulted_trial,
 
   --Person Dates
       true_inquiry_date,
@@ -667,6 +673,8 @@
       last_utm_content,
       prospect_share_status,
       partner_prospect_status,
+      lead_score_classification,
+      is_defaulted_trial,
     
     --Person Dates
       true_inquiry_date,
@@ -1043,5 +1051,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-07-05",
-    updated_date="2024-02-01",
+    updated_date="2024-03-12",
   ) }}

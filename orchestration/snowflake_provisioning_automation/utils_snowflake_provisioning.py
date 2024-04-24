@@ -21,6 +21,7 @@ from typing import Tuple, List
 
 abs_path = os.path.realpath(__file__)
 YAML_PATH = abs_path[: abs_path.find("/orchestration")] + "/permissions/snowflake/"
+USERS_FILE_NAME = "snowflake_users.yml"
 config_dict = os.environ.copy()
 
 
@@ -50,9 +51,10 @@ def run_git_diff_command(file_path: str, base_branch: str = "master") -> str:
     return diff_output
 
 
-def get_snowflake_usernames(users):
+def get_snowflake_usernames(users: List[str]):
     """
-    Return snowflake username, need to update the string by:
+    Given a gitlab user,
+    return snowflake username, need to update the string by:
     - Remove '-ext'
     - Remove non \\w chars
     """
@@ -66,7 +68,7 @@ def get_snowflake_usernames(users):
     return usernames
 
 
-def get_emails(users):
+def get_emails(users: List[str]):
     """
     From the user, i.e `jdoe-ext`, return the email
     """
@@ -81,7 +83,7 @@ def get_emails(users):
     return emails
 
 
-def check_is_valid_user_format(user):
+def check_is_valid_user_format(user: str):
     """
     To prevent sql injection, make sure the `user` string
     matches the following criteria
@@ -97,18 +99,31 @@ def check_is_valid_user_format(user):
     return True
 
 
-def get_user_changes() -> Tuple[List[str], List[str]]:
+def get_valid_users(users: List[str]):
+    """
+    Given a list of users, return a list of valid users.
+    That is, users that match the valid format constraints defined
+    within `check_is_valid_user_format()`
+    """
+    valid_users = []
+    for user in users:
+        if check_is_valid_user_format(user):
+            valid_users.append(user)
+        else:
+            logging.info(f"Skipping user {user}, not a valid user")
+    return valid_users
+
+
+def get_file_changes(yaml_path: str, file_name: str) -> Tuple[List[str], List[str]]:
     """
     Based on git diff to the `snowflake_users.yml` file,
     returns user additions and removals
     """
-    # Get the directory of the Python script
-    users_file_name = "snowflake_users.yml"
-    users_file_path = os.path.join(YAML_PATH, users_file_name)
+    file_path = os.path.join(yaml_path, file_name)
 
     # Run the Git diff command
     base_branch = "origin/master"
-    diff_output = run_git_diff_command(users_file_path, base_branch)
+    diff_output = run_git_diff_command(file_path, base_branch)
 
     users_added = []
     users_removed = []
@@ -120,10 +135,7 @@ def get_user_changes() -> Tuple[List[str], List[str]]:
             continue
 
         # check that user isn't a blank line
-        if (change.startswith("+") or change.startswith("-")) and user:
-            if not check_is_valid_user_format(user):
-                logging.info(f"Skipping user {user}, not a valid user")
-                continue
+        if user:
             if change.startswith("+"):
                 users_added.append(user)
             if change.startswith("-"):

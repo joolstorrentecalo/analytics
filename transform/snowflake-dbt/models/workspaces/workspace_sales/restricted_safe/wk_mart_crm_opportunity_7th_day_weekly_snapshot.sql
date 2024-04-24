@@ -19,9 +19,20 @@ final AS (
     fct_crm_opportunity.dim_sales_qualified_source_id,
     fct_crm_opportunity.dim_order_type_id,
     fct_crm_opportunity.dim_order_type_live_id,
-    fct_crm_opportunity.dim_crm_user_hierarchy_sk,
+    
     fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
-    fct_crm_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk,
+
+    fct_crm_opportunity.crm_current_account_set_sales_segment_live AS crm_current_account_set_sales_segment,
+    fct_crm_opportunity.crm_current_account_set_geo_live AS crm_current_account_set_geo,
+    fct_crm_opportunity.crm_current_account_set_region_live AS crm_current_account_set_region,
+    fct_crm_opportunity.crm_current_account_set_area_live AS crm_current_account_set_area,
+    fct_crm_opportunity.crm_current_account_set_business_unit_live AS crm_current_account_set_business_unit,
+    fct_crm_opportunity.crm_current_account_set_role_name,
+    fct_crm_opportunity.crm_current_account_set_role_level_1,
+    fct_crm_opportunity.crm_current_account_set_role_level_2,
+    fct_crm_opportunity.crm_current_account_set_role_level_3,
+    fct_crm_opportunity.crm_current_account_set_role_level_4,
+    fct_crm_opportunity.crm_current_account_set_role_level_5,
 
     fct_crm_opportunity.merged_crm_opportunity_id,
     fct_crm_opportunity.dim_crm_account_id,
@@ -145,55 +156,44 @@ final AS (
     dim_crm_account.crm_account_zi_technologies,
     dim_crm_account.is_jihu_account,
 
-    -- crm opp owner/account owner fields stamped at SAO date
-    fct_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped_grouped,
-    fct_crm_opportunity.sao_crm_opp_owner_geo_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_region_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_area_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_segment_region_stamped_grouped,
-    fct_crm_opportunity.sao_crm_opp_owner_sales_segment_geo_region_area_stamped,
-
-    -- crm opp owner/account owner stamped fields stamped at close date
-    fct_crm_opportunity.crm_opp_owner_stamped_name,
-    fct_crm_opportunity.crm_account_owner_stamped_name,
-    fct_crm_opportunity.user_segment_stamped AS crm_opp_owner_sales_segment_stamped,
-    fct_crm_opportunity.user_segment_stamped_grouped AS crm_opp_owner_sales_segment_stamped_grouped,
-    fct_crm_opportunity.user_geo_stamped AS crm_opp_owner_geo_stamped,
-    fct_crm_opportunity.user_region_stamped AS crm_opp_owner_region_stamped,
-    fct_crm_opportunity.user_area_stamped AS crm_opp_owner_area_stamped,
-    fct_crm_opportunity.user_business_unit_stamped AS crm_opp_owner_business_unit_stamped,
-    {{ sales_segment_region_grouped('fct_crm_opportunity.user_segment_stamped',
-        'fct_crm_opportunity.user_geo_stamped', 'fct_crm_opportunity.user_region_stamped') }}
-    AS crm_opp_owner_sales_segment_region_stamped_grouped,
-    fct_crm_opportunity.crm_opp_owner_sales_segment_geo_region_area_stamped,
-    fct_crm_opportunity.crm_opp_owner_user_role_type_stamped,
-
-    -- crm owner/sales rep live fields
-    dim_crm_user_hierarchy.crm_user_sales_segment,
-    dim_crm_user_hierarchy.crm_user_geo,
-    dim_crm_user_hierarchy.crm_user_region,
-    dim_crm_user_hierarchy.crm_user_area,
-    dim_crm_user_hierarchy.crm_user_business_unit,
-    dim_crm_user_hierarchy.crm_user_sales_segment_grouped,
-    dim_crm_user_hierarchy.crm_user_sales_segment_region_grouped,
-
-    dim_crm_user_hierarchy.crm_user_role_name,
-    dim_crm_user_hierarchy.crm_user_role_level_1,
-    dim_crm_user_hierarchy.crm_user_role_level_2,
-    dim_crm_user_hierarchy.crm_user_role_level_3,
-    dim_crm_user_hierarchy.crm_user_role_level_4,
-    dim_crm_user_hierarchy.crm_user_role_level_5,
-
-    -- crm account owner/sales rep live fields
-    account_owner_live.crm_user_sales_segment AS crm_account_user_sales_segment,
-    account_owner_live.crm_user_sales_segment_grouped AS crm_account_user_sales_segment_grouped,
-    account_owner_live.crm_user_geo AS crm_account_user_geo,
-    account_owner_live.crm_user_region AS crm_account_user_region,
-    account_owner_live.crm_user_area AS crm_account_user_area,
-    {{ sales_segment_region_grouped('account_owner_live.crm_user_sales_segment',
-        'account_owner_live.crm_user_geo', 'account_owner_live.crm_user_region') }}
-    AS crm_account_user_sales_segment_region_grouped,
+    -- fields to be removed after a bug is fixed in Tableau
+    NULL AS sao_crm_opp_owner_sales_segment_stamped,
+    NULL AS sao_crm_opp_owner_sales_segment_stamped_grouped,
+    NULL AS sao_crm_opp_owner_geo_stamped,
+    NULL AS sao_crm_opp_owner_region_stamped,
+    NULL AS sao_crm_opp_owner_area_stamped,
+    NULL AS sao_crm_opp_owner_segment_region_stamped_grouped,
+    NULL AS sao_crm_opp_owner_sales_segment_geo_region_area_stamped,
+    NULL AS crm_opp_owner_stamped_name,
+    NULL AS crm_account_owner_stamped_name,
+    NULL AS crm_opp_owner_sales_segment_stamped,
+    NULL AS crm_opp_owner_sales_segment_stamped_grouped,
+    NULL AS crm_opp_owner_geo_stamped,
+    NULL AS crm_opp_owner_region_stamped,
+    NULL AS crm_opp_owner_area_stamped,
+    NULL AS crm_opp_owner_business_unit_stamped,
+    NULL AS crm_opp_owner_sales_segment_region_stamped_grouped,
+    NULL AS crm_opp_owner_sales_segment_geo_region_area_stamped,
+    NULL AS crm_opp_owner_user_role_type_stamped,
+    NULL AS crm_user_sales_segment,
+    NULL AS crm_user_geo,
+    NULL AS crm_user_region,
+    NULL AS crm_user_area,
+    NULL AS crm_user_business_unit,
+    NULL AS crm_user_sales_segment_grouped,
+    NULL AS crm_user_sales_segment_region_grouped,
+    NULL AS crm_user_role_name,
+    NULL AS crm_user_role_level_1,
+    NULL AS crm_user_role_level_2,
+    NULL AS crm_user_role_level_3,
+    NULL AS crm_user_role_level_4,
+    NULL AS crm_user_role_level_5,
+    NULL AS crm_account_user_sales_segment,
+    NULL AS crm_account_user_sales_segment_grouped,
+    NULL AS crm_account_user_geo,
+    NULL AS crm_account_user_region,
+    NULL AS crm_account_user_area,
+    NULL AS crm_account_user_sales_segment_region_grouped,
 
     -- channel fields
     
@@ -213,10 +213,11 @@ final AS (
     dim_date.current_day_of_fiscal_quarter,
     dim_date.current_day_of_fiscal_year,
     CASE WHEN current_day_name = 'Sun' THEN dim_date.current_date_actual
-      ELSE DATEADD('day', -1, DATE_TRUNC('week', dim_date.current_date_actual)) END     AS current_first_day_of_week,--need to add this field to date_details
+      ELSE DATEADD('day', -1, DATE_TRUNC('week', dim_date.current_date_actual)) END     
+                                                                    AS current_first_day_of_week,
     FLOOR((DATEDIFF(day, dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) / 7))                   
                                                                     AS current_week_of_fiscal_quarter_normalised,
-    DATEDIFF('week',dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) + 1     
+    FLOOR((DATEDIFF(day, dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) / 7)) 
                                                                     AS current_week_of_fiscal_quarter,
     created_date.date_actual                                        AS created_date,
     created_date.first_day_of_month                                 AS created_month,
@@ -365,10 +366,14 @@ final AS (
     dim_date.week_of_fiscal_quarter_normalised                      AS snapshot_week_of_fiscal_quarter_normalised,
     dim_date.is_first_day_of_fiscal_quarter_week                    AS snapshot_is_first_day_of_fiscal_quarter_week,
     dim_date.days_until_last_day_of_month                           AS snapshot_days_until_last_day_of_month,
-    DATEDIFF('week',dim_date.first_day_of_fiscal_quarter, fct_crm_opportunity.snapshot_date) + 1     
+    FLOOR((DATEDIFF(day, dim_date.first_day_of_fiscal_quarter, fct_crm_opportunity.snapshot_date) / 7)) 
                                                                     AS snapshot_week_of_fiscal_quarter,
 
     --additive fields
+    fct_crm_opportunity.positive_booked_deal_count_in_snapshot_quarter,
+    fct_crm_opportunity.positive_booked_net_arr_in_snapshot_quarter,
+    fct_crm_opportunity.positive_open_deal_count_in_snapshot_quarter,
+    fct_crm_opportunity.positive_open_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_1plus_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_3plus_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_4plus_net_arr_in_snapshot_quarter,

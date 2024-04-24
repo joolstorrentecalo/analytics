@@ -33,6 +33,7 @@ from utils_update_roles import (
     USERS_KEY,
     get_roles_from_yaml,
     save_roles_to_yaml,
+    get_valid_users,
     get_snowflake_usernames,
 )
 from render_templates import concat_template_values
@@ -49,14 +50,18 @@ def configure_logging():
 def process_args() -> Tuple[list, list, str, str, str]:
     """returns command line args passed in by user"""
     args = parse_arguments()
-    return (
-        args.users_to_remove,
-        args.users_to_add,
+    valid_users_to_add = get_valid_users(args.users_to_add)
+    valid_users_to_remove = get_valid_users(args.users_to_remove)
+
+    parsed_args = (
+        valid_users_to_add,
+        valid_users_to_remove,
         args.databases_template,
         args.roles_template,
         args.users_template,
         args.test_run,
     )
+    return parsed_args
 
 
 def add_username_values(
@@ -108,8 +113,8 @@ def main():
     configure_logging()
     roles_data = get_roles_from_yaml()
     (
-        users_to_remove,
         users_to_add,
+        users_to_remove,
         databases_template,
         roles_template,
         users_template,
@@ -123,6 +128,9 @@ def main():
     time.sleep(5)  # give user a chance to abort
     logging.info(f"usernames_to_add: {usernames_to_add}")
     logging.info(f"usernames_to_remove: {usernames_to_remove}\n")
+    logging.info(f"databases_template: {databases_template}")
+    logging.info(f"roles_template: {roles_template}")
+    logging.info(f"users_template: {users_template}")
 
     if usernames_to_add:
         add_usernames(

@@ -12,19 +12,25 @@ day_7_list AS (
 
 ),
 
-aggregate_data AS (
+final AS (
 
   SELECT
-    {{ dbt_utils.generate_surrogate_key(['snapshot_last_day_of_fiscal_quarter', 'dim_sales_qualified_source_id', 'dim_crm_user_hierarchy_sk', 'dim_order_type_id','dim_order_type_live_id','dim_crm_current_account_set_hierarchy_sk','dim_crm_opp_owner_stamped_hierarchy_sk', 'deal_path_name','sales_type', 'stage_name','order_type', 'order_type_live', 'order_type_grouped', 'sales_qualified_source_name', 'sales_qualified_source_grouped']) }} AS unique_key,
-    -- keys
+    -- keys and attributes
     dim_sales_qualified_source_id,
     dim_order_type_id,
     dim_order_type_live_id,
-    dim_crm_user_hierarchy_sk,
     dim_crm_current_account_set_hierarchy_sk,
-    dim_crm_opp_owner_stamped_hierarchy_sk,
-
-    -- attributes
+    crm_current_account_set_sales_segment_live AS crm_current_account_set_sales_segment,
+    crm_current_account_set_geo_live AS crm_current_account_set_geo,
+    crm_current_account_set_region_live AS crm_current_account_set_region,
+    crm_current_account_set_area_live AS crm_current_account_set_area,
+    crm_current_account_set_business_unit_live AS crm_current_account_set_business_unit,
+    crm_current_account_set_role_name,
+    crm_current_account_set_role_level_1,
+    crm_current_account_set_role_level_2,
+    crm_current_account_set_role_level_3,
+    crm_current_account_set_role_level_4,
+    crm_current_account_set_role_level_5,
     order_type,
     order_type_live,
     order_type_grouped,
@@ -46,6 +52,11 @@ aggregate_data AS (
     snapshot_last_day_of_fiscal_quarter,
 
     -- Running sum of metrics
+
+    SUM(positive_booked_deal_count_in_snapshot_quarter)                AS positive_booked_deal_count_in_snapshot_quarter,
+    SUM(positive_booked_net_arr_in_snapshot_quarter)                   AS positive_booked_net_arr_in_snapshot_quarter,
+    SUM(positive_open_deal_count_in_snapshot_quarter)                  AS positive_open_deal_count_in_snapshot_quarter,
+    SUM(positive_open_net_arr_in_snapshot_quarter)                     AS positive_open_net_arr_in_snapshot_quarter,
     SUM(created_arr_in_snapshot_quarter)                               AS created_arr_in_snapshot_quarter,
     SUM(closed_won_opps_in_snapshot_quarter)                           AS closed_won_opps_in_snapshot_quarter,
     SUM(closed_opps_in_snapshot_quarter)                               AS closed_opps_in_snapshot_quarter,
@@ -114,45 +125,7 @@ aggregate_data AS (
     ON actuals.snapshot_date = day_7_list.day_7
   GROUP BY ALL
 
-),
-
-quarterly_totals AS (
-
-  -- Add the totals to each row as attributes to aid with pipeline coverage and pacing calculations
-
-  SELECT 
-    snapshot_fiscal_quarter_name,
-    SUM(created_arr_in_snapshot_quarter)             AS created_arr_quarter_total,
-    SUM(closed_won_opps_in_snapshot_quarter)         AS closed_won_opps_quarter_total,
-    SUM(closed_opps_in_snapshot_quarter)             AS closed_opps_quarter_total,
-    SUM(closed_net_arr_in_snapshot_quarter)          AS closed_net_arr_quarter_total,
-    SUM(booked_net_arr_in_snapshot_quarter)          AS booked_net_arr_quarter_total,
-    SUM(created_deals_in_snapshot_quarter)           AS created_deals_quarter_total,
-    SUM(cycle_time_in_days_in_snapshot_quarter)      AS cycle_time_in_days_quarter_total,
-    SUM(booked_deal_count_in_snapshot_quarter)       AS booked_deal_count_quarter_total,
-  FROM aggregate_data
-  WHERE snapshot_date = snapshot_last_day_of_fiscal_quarter
-  GROUP BY snapshot_fiscal_quarter_name
-
-),
-
-combined AS (
-
-  SELECT 
-    aggregate_data.*,
-    quarterly_totals.created_arr_quarter_total,
-    quarterly_totals.closed_won_opps_quarter_total,
-    quarterly_totals.closed_opps_quarter_total,
-    quarterly_totals.closed_net_arr_quarter_total,
-    quarterly_totals.cycle_time_in_days_quarter_total,
-    quarterly_totals.booked_deal_count_quarter_total,
-    quarterly_totals.booked_net_arr_quarter_total,
-    quarterly_totals.created_deals_quarter_total
-  FROM aggregate_data
-  LEFT JOIN quarterly_totals 
-    ON aggregate_data.snapshot_fiscal_quarter_name = quarterly_totals.snapshot_fiscal_quarter_name
-    
 )
 
 SELECT *
-FROM combined
+FROM final

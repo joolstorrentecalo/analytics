@@ -170,16 +170,20 @@ suggestion_level AS (
     cancelled.behavior_at                                                                           AS cancelled_at,
     not_provided.behavior_at                                                                        AS not_provided_at,
     error.behavior_at                                                                               AS error_at,
+    stream_started.behavior_at                                                                      AS stream_started_at,
+    stream_completed.behavior_at                                                                    AS stream_completed_at,
 
     --Time calculations
     DATEDIFF('milliseconds', requested_at, loaded_at)                                               AS load_time_in_ms,
     DATEDIFF('milliseconds', shown_at, COALESCE(accepted_at, rejected_at))                          AS display_time_in_ms,
+    DATEDIFF('milliseconds', requested_at, stream_started_at)                                       AS stream_start_time_in_ms,
 
     --Outcome/end result of suggestion
     COALESCE(accepted.event_action, rejected.event_action,
       cancelled.event_action, not_provided.event_action,
-      shown.event_action, loaded.event_action,
-      error.event_action, requested.event_action)                                                   AS suggestion_outcome,
+      stream_completed.event_action, error.event_action, 
+      shown.event_action, loaded.event_action, 
+      stream_started.event_action, requested.event_action)                                          AS suggestion_outcome,
 
     --Junk dimensions
     IFF(requested.event_label IS NOT NULL, TRUE, FALSE)                                             AS was_requested,
@@ -220,8 +224,8 @@ suggestion_level AS (
 {{ dbt_audit(
     cte_ref="suggestion_level",
     created_by="@michellecooper",
-    updated_by="@michellecooper",
+    updated_by="@mdrussell",
     created_date="2024-04-09",
-    updated_date="2024-04-09"
+    updated_date="2024-04-12"
 ) }}
 

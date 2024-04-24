@@ -214,6 +214,13 @@ models:
         tests:
           - unique
           - not_null
+  - name: wk_fct_crm_opportunity_daily_snapshot
+    columns:
+      - name: crm_opportunity_snapshot_id
+        description: Unique identifier of a crm opportunity in the daily snapshot models
+        tests:
+          - not_null
+          - unique
   - name: wk_fct_crm_opportunity_7th_day_weekly_snapshot
     description: >
       Derived fact table from `fct_crm_opportunity_daily_snapshot`.
@@ -221,6 +228,12 @@ models:
       Instead, it will feature a snapshot once every week — specifically, one snapshot every 7 days 
       throughout each quarter. This approach is designed to observe and analyze the key trends and
       activities occurring each week within the quarter.
+    columns:
+      - name: crm_opportunity_snapshot_id
+        description: Unique identifier of a crm opportunity in the daily snapshot models
+        tests:
+          - not_null
+          - unique
   - name: wk_fct_crm_opportunity_7th_day_weekly_snapshot_aggregate
     description: >
       Derived fact table from `fct_crm_opportunity_daily_snapshot`.

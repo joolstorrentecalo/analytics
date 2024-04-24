@@ -210,6 +210,10 @@ models:
           description: Shows if the person record is a lead or contact in SFDC.
         - name: is_high_priority
           description: A person-level flag to indicate if the person is a high prioirty person, according to Salesforce field logic. 
+        - name: lead_score_classification
+          description: The Salesforce grade of the lead score for a lead/contact. 
+        - name: is_defaulted_trial
+          description: Boolean value of whether or not a lead/contact was defaulted to a trial.
 
     - name: mart_marketing_contact_no_pii
       description: Non sensitive version of the mart_marketing_contact model.
@@ -251,6 +255,10 @@ models:
           description: The sum of SAOs by the various dimensions.
         - name: touchpoint_sales_stage
           description: The Salesforce Opportunity stage at which the Bizible touchpoint occurred.
+        - name: lead_score_classification
+          description: The Salesforce grade of the lead score for a lead/contact. 
+        - name: is_defaulted_trial
+          description: Boolean value of whether or not a lead/contact was defaulted to a trial. 
 
 
     - name: rpt_lead_to_revenue
@@ -628,6 +636,10 @@ models:
           description: The XDR influenced value of an Opportunity's Net ARR as of Stage 1 in SFDC.
         - name: xdr_net_arr_stage_3
           description: The XDR influenced value of an Opportunity's Net ARR as of Stage 3 in SFDC.
+        - name: lead_score_classification
+          description: The Salesforce grade of the lead score for a lead/contact. 
+        - name: is_defaulted_trial
+          description: Boolean value of whether or not a lead/contact was defaulted to a trial.
 
     - name: rpt_l2r_campaign_interactions
       description: Tableau-specific table that unions `mart_crm_touchpoint` with person, campaign data joined on and `mart_crm_attribution_touchpoint` with person, campaign and oppunitiy data 
@@ -686,8 +698,10 @@ models:
           description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
         - name: campaign_owner_manager
           description: The name of the campaign owners manager from SFDC.
-
-
+        - name: lead_score_classification
+          description: The Salesforce grade of the lead score for a lead/contact. 
+        - name: is_defaulted_trial
+          description: Boolean value of whether or not a lead/contact was defaulted to a trial.
 
     - name: rpt_l2r_community_data
       description: Tableau-specific table that joins Zuora, Opportunity, and Lead To Revenue data to hone in on the community-owned opportunities and their related data points. 
@@ -778,4 +792,185 @@ models:
           description: T/F Flag to indicate if an Opportunity is the first subscription for a given account hierarchy. 
 
     - name: rpt_l2r_campaign_interactions_paid_account
-      description: filtered version of rpt_l2r_campaign_interactions on current paying accounts only          
+      description: filtered version of rpt_l2r_campaign_interactions on current paying accounts only  
+
+    - name: mart_marketo_person
+      description: The core Mart table of Marketo's person data.  
+      columns:
+        - name: dim_marketo_person_id
+          description: The Unique person ID from Marketo
+          tests:
+          - not_null
+          - unique
+        - name: dim_crm_person_id
+          description: The Unique person ID from Salesforce.
+        - name: email_hash
+          description: The hashed version of the person's email address.
+        - name: acquisition_program_id
+          description: Unique ID for the program the Marketo Person is assigned too.
+        - name: gitlabdotcom_user_id
+          description: Unique user ID from GitLab product.
+        - name: dim_crm_account_id
+          description: The Unique account ID from Salesforce.
+        - name: marketo_email_bounced_date
+          description: The Date that the Marketo person record bounced.
+        - name: marketo_acquisition_date
+          description: The Date the Marketo person was first attributable to a specific program.  
+        - name: marketo_opt_in_date
+          description: The Date that the Marketo person record opted in to communication.
+        - name: marketo_created_date_time
+          description: The Date that the Marketo person record was created in Marketo.
+        - name: sign_up_date
+          description: The Date that the Marketo person signed up to a specific list. MOPs to review description.
+        - name: opt_out_date
+          description: The Date that the Marketo person record opted out of communication.
+        - name: email_suspended_date
+          description: The Date that the Marketo person record had their emailing suspended.
+        - name: initial_start_date
+          description: The Date of initial start. MOPs to review description.
+        - name: customer_health_score_date
+          description: The Date that the Marketo person record had their customer health score applied.
+        - name: double_opt_in_date
+          description: The Date that the Marketo person record double-opted in to communication.
+        - name: title
+          description: The Marketo person's title.
+        - name: country
+          description: The Marketo person's country.
+        - name: sfdc_record_type
+          description: The Marketo person's salesforce record type.
+        - name: original_source_type
+          description: The Marketo person's original source type in Marketo.
+        - name: registration_source_type
+          description: The Marketo person's registration source type. 
+        - name: tech_stack
+          description: The Marketo person's tech stack. 
+        - name: original_source_info
+          description: The Marketo person's original source information. 
+        - name: marketo_person_type
+          description: The Marketo person's record type in Marketo.
+        - name: email_bounced_reason
+          description: The reason for the Marketo person's bounced email.
+        - name: compliance_segment_value
+          description: Source of truth field for opt in logic. Values of 'do not email' and 'default' indicate Opt Out. 
+        - name: marketo_person_region
+          description: The Marketo person's region.
+        - name: marketo_account_region
+          description: The Marketo person's account's region from Salesforce.
+        - name: preferred_language
+          description: The Marketo person's preferred language.
+        - name: marketo_account_tier
+          description: The Marketo person's Account tier.
+        - name: marketo_account_tier_notes
+          description: The Marketo person's Account tier notes. 
+        - name: marketo_abm_tier
+          description: The Marketo person's ABM tier.
+        - name: account_demographics_upa_country
+          description: The Marketo person's account's UPA country.
+        - name: account_demographics_upa_country_name
+          description: The Marketo person's account's UPA country name. 
+        - name: product_category
+          description: Aggregated label for product purchased. e.g. 1-Ultimate, 2-Premium. 
+        - name: marketo_priority
+          description: Numeric label setting the Marketo person's score in relative context of the rest of our database. Shows as Stars in Marketo UI. 
+        - name: marketo_urgency
+          description: A measure of recency to add context to the Marketo person's behaviour score. 
+        - name: marketo_relative_urgency
+          description: A 1-3 label to contrast the urgency score to others. Shows as Flames in Marketo UI.
+        - name: marketo_lead_source
+          description: The Marketo person's lead source.
+        - name: marketo_lead_status
+          description: The Marketo person's lead status.
+        - name: marketo_newsletter_segment
+          description: The Marketo person's newsletter segment in Marketo
+        - name: email_suspended_cause
+          description: The Marketo person's reason for having their email suspended.
+        - name: products_purchased
+          description: The Marketo person's list of purchased products.
+        - name: marketo_rating_scale
+          description: The Marketo person's rating scale in Marketo. 
+        - name: is_email_bounced
+          description: Boolean Flag - Whether or not the person's email has bounced.
+        - name: is_unsubscribed
+          description: Boolean Flag - Whether or not the person is unsubscribed.
+        - name: is_opt_in
+          description: Boolean Flag - Whether or not the person is opted in.
+        - name: is_pql_marketo
+          description: Boolean Flag - Whether or not the person is a PQL in Marketo.
+        - name: is_paid_tier_marketo
+          description: Boolean Flag - Whether or not the person is on a paid tier.
+        - name: is_ptpt_contact_marketo
+          description: Boolean Flag - Whether or not the person is the PTPT contact.
+        - name: is_ptp_contact_marketo
+          description: Boolean Flag - Whether or not the person is the PTP contact.
+        - name: is_impacted_by_user_limit_marketo
+          description: Boolean Flag - Whether or not the person is impacted by user limits in Marketo.
+        - name: is_currently_in_trial_marketo
+          description: Boolean Flag - Whether or not the person is currently in a trial in Marketo.
+        - name: is_active_user
+          description: Boolean Flag - Whether or not the person is an active user.
+        - name: is_subscribed_webcast
+          description: Boolean Flag - Whether or not the person is subscribed to webcasts.
+        - name: is_subscribed_live_events
+          description: Boolean Flag - Whether or not the person is subscribed to live events.
+        - name: is_gdpr_compliant
+          description: Boolean Flag - Whether or not the person is GDPR compliant.
+        - name: is_email_suspended
+          description: Boolean Flag - Whether or not the person has a suspended email.
+        - name: has_requested_migration_services
+          description: Boolean Flag - Whether or not the person has requested migration services.
+        - name: has_requested_implementation_services
+          description: Boolean Flag - Whether or not the person has requested implementation services.
+        - name: has_requested_specialized_trainings
+          description: Boolean Flag - Whether or not the person has requested specialized training.
+        - name: is_core_user
+          description: Boolean Flag - Whether or not the person is a core user.
+        - name: is_active_plan
+          description: Boolean Flag - Whether or not the person is on an active plan.
+        - name: is_secure_active
+          description: Boolean Flag - Whether or not the person has secure active.
+        - name: is_marketing_suspended
+          description: Boolean Flag - Whether or not the person is suspended from marketing activities.
+        - name: is_email_opt_out
+          description: Boolean Flag - Whether or not the person is opted out of email.
+        - name: is_events_segment
+          description: Boolean Flag - Whether or not the person is in the events segment.
+        - name: is_black_listed
+          description: Boolean Flag - Whether or not the person is black listed.
+        - name: is_do_not_route
+          description: Boolean Flag - Whether or not the person should not be routed.
+        - name: is_double_opt_in
+          description: Boolean Flag - Whether or not the person is double opted in.
+        - name: has_requested_education
+          description: Boolean Flag - Whether or not the person has requested educational material.
+        - name: is_30_day_opt_out
+          description: Boolean Flag - Whether or not the person opted out in last 30 days.
+        - name: is_marketing_comm_opt_out
+          description: Boolean Flag - Whether or not the person is opted out from marketing communications.
+        - name: is_using_ce
+          description: Boolean Flag - Whether or not the person is using CE.
+        - name: is_do_not_contact
+          description: Boolean Flag - Whether or not the person should not be contacted.
+        - name: is_invalid_email
+          description: Boolean Flag - Whether or not the person's email is invalid.
+        - name: is_high_priority
+          description: Boolean Flag - Whether or not the person is high prioirty.
+        - name: is_unsubscribe_all_marketing
+          description: Boolean Flag - Whether or not the person is unsubscribed from all marketing communication.
+        - name: marketo_relative_person_score
+          description: The Marketo person's relative person score.
+        - name: marketo_demographic_score
+          description: The Marketo person's demographic score.
+        - name: marketo_behavior_score
+          description: The Marketo person's Behavior score.
+        - name: license_user_count
+          description: The Marketo person's licensed user count.
+        - name: marketo_health_score
+          description: The Marketo person's health score.
+        - name: engagio_pipeline_predict_score
+          description: The Marketo person's Engagio predict score.
+        - name: infer_score
+          description: The Marketo person's Infer score.
+        - name: data_quality_score
+          description: The Marketo person's data quality score.
+        - name: marketo_lead_score_2
+          description: The Marketo person's Lead Score.

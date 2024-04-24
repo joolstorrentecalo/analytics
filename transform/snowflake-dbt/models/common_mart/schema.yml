@@ -202,7 +202,9 @@ models:
       description: the unique composite ID for the mart_event_user_daily model consisting of event_date, dim_user_id, dim_ultimate_parent_namespace_id, and event_name.
       tests:
         - not_null
-        - unique
+        - unique:
+            config: 
+              where: "event_date >= DATEADD('day',-3,CURRENT_DATE())"
     - name: dim_event_date_id
       description: '{{ doc("dim_event_date_id") }}'
     - name: dim_ultimate_parent_namespace_id

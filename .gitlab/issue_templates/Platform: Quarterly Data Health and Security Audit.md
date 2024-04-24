@@ -178,13 +178,6 @@ Below checklist of activities would be run once for quarter to validate security
 				
      ```
 
-
-3. [ ] Generate a report of all changes to the TD: Sales Funnel dashboard in the quarter.
-
-    <details>
-
-     * [ ]  Pull the report for business logic changes made to the `mart_crm_opportunity` model from the link (https://gitlab.com/gitlab-data/analytics/-/commits/master/transform/snowflake-dbt/models/marts/sales_funnel/restricted_safe/mart_crm_opportunity.sql?search=) by filtering on label “Business logic change”.
-
 ## DBT Execution
 1. [ ] Generate report on top 25 long running dbt models
 

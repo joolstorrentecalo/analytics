@@ -1233,3 +1233,9 @@ models:
 
   - name: wk_rpt_accounting_period_balance_monthly 
     description: Billing accounting period balances monthly
+
+  - name: wk_rpt_dso_cei_monthly 
+    description: Days Sales Outstanding and Collections Effectiveness Index metrics
+
+  - name: wk_mart_current_ar_by_aging_payment_terms_monthly
+    description: Analysis of currently open invoice balances by payment terms and aging buckets

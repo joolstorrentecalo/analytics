@@ -2,8 +2,7 @@
     ('fct_crm_opportunity','wk_fct_crm_opportunity_7th_day_weekly_snapshot_aggregate'),
     ('dim_crm_account','dim_crm_account_daily_snapshot'),
     ('dim_crm_user', 'wk_prep_crm_user_daily_snapshot'),
-    ('dim_date', 'dim_date'),
-    ('dim_crm_user_hierarchy','wk_dim_crm_user_hierarchy')
+    ('dim_date', 'dim_date')
 ]) }},
 
 
@@ -14,25 +13,18 @@ final AS (
     fct_crm_opportunity.dim_sales_qualified_source_id,
     fct_crm_opportunity.dim_order_type_id,
     fct_crm_opportunity.dim_order_type_live_id,
-    fct_crm_opportunity.dim_crm_user_hierarchy_sk,
     fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
-    fct_crm_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk,
-
-    -- crm owner/sales rep live fields
-    dim_crm_user_hierarchy.crm_user_sales_segment,
-    dim_crm_user_hierarchy.crm_user_geo,
-    dim_crm_user_hierarchy.crm_user_region,
-    dim_crm_user_hierarchy.crm_user_area,
-    dim_crm_user_hierarchy.crm_user_business_unit,
-    dim_crm_user_hierarchy.crm_user_sales_segment_grouped,
-    dim_crm_user_hierarchy.crm_user_sales_segment_region_grouped,
-
-    dim_crm_user_hierarchy.crm_user_role_name,
-    dim_crm_user_hierarchy.crm_user_role_level_1,
-    dim_crm_user_hierarchy.crm_user_role_level_2,
-    dim_crm_user_hierarchy.crm_user_role_level_3,
-    dim_crm_user_hierarchy.crm_user_role_level_4,
-    dim_crm_user_hierarchy.crm_user_role_level_5,
+    fct_crm_opportunity.crm_current_account_set_sales_segment,
+    fct_crm_opportunity.crm_current_account_set_geo,
+    fct_crm_opportunity.crm_current_account_set_region,
+    fct_crm_opportunity.crm_current_account_set_area,
+    fct_crm_opportunity.crm_current_account_set_business_unit,
+    fct_crm_opportunity.crm_current_account_set_role_name,
+    fct_crm_opportunity.crm_current_account_set_role_level_1,
+    fct_crm_opportunity.crm_current_account_set_role_level_2,
+    fct_crm_opportunity.crm_current_account_set_role_level_3,
+    fct_crm_opportunity.crm_current_account_set_role_level_4,
+    fct_crm_opportunity.crm_current_account_set_role_level_5,
 
     fct_crm_opportunity.sales_qualified_source_name,
     fct_crm_opportunity.sales_qualified_source_grouped,
@@ -63,10 +55,11 @@ final AS (
     dim_date.current_day_of_fiscal_quarter,
     dim_date.current_day_of_fiscal_year,
     CASE WHEN current_day_name = 'Sun' THEN dim_date.current_date_actual
-      ELSE DATEADD('day', -1, DATE_TRUNC('week', dim_date.current_date_actual)) END     AS current_first_day_of_week,--n--need to add this field to date_details
+      ELSE DATEADD('day', -1, DATE_TRUNC('week', dim_date.current_date_actual)) END     
+                                                                    AS current_first_day_of_week,
     FLOOR((DATEDIFF(day, dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) / 7))                   
                                                                     AS current_week_of_fiscal_quarter_normalised,
-    DATEDIFF('week',dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) + 1     
+    FLOOR((DATEDIFF(day, dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) / 7)) 
                                                                     AS current_week_of_fiscal_quarter,
     dim_date.date_day                                               AS snapshot_day,
     dim_date.day_name                                               AS snapshot_day_name, 
@@ -109,28 +102,20 @@ final AS (
     dim_date.week_of_fiscal_quarter_normalised                      AS snapshot_week_of_fiscal_quarter_normalised,
     dim_date.is_first_day_of_fiscal_quarter_week                    AS snapshot_is_first_day_of_fiscal_quarter_week,
     dim_date.days_until_last_day_of_month                           AS snapshot_days_until_last_day_of_month,
-    DATEDIFF('week',dim_date.first_day_of_fiscal_quarter, snapshot_date) + 1     
+    FLOOR((DATEDIFF(day, dim_date.first_day_of_fiscal_quarter, fct_crm_opportunity.snapshot_date) / 7)) 
                                                                     AS snapshot_week_of_fiscal_quarter,
-    
-    -- Total actuals quarter
 
-    
-    fct_crm_opportunity.created_arr_quarter_total,
-    fct_crm_opportunity.closed_won_opps_quarter_total,
-    fct_crm_opportunity.closed_opps_quarter_total,
-    fct_crm_opportunity.closed_net_arr_quarter_total,
-    fct_crm_opportunity.cycle_time_in_days_quarter_total,
-    fct_crm_opportunity.booked_deal_count_quarter_total,
-    fct_crm_opportunity.booked_net_arr_quarter_total,
-    fct_crm_opportunity.created_deals_quarter_total,
+    --additive fields
     fct_crm_opportunity.open_1plus_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_3plus_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_4plus_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_1plus_deal_count_in_snapshot_quarter,
     fct_crm_opportunity.open_3plus_deal_count_in_snapshot_quarter,
     fct_crm_opportunity.open_4plus_deal_count_in_snapshot_quarter,
-
-    --additive fields
+    fct_crm_opportunity.positive_booked_deal_count_in_snapshot_quarter,
+    fct_crm_opportunity.positive_booked_net_arr_in_snapshot_quarter,
+    fct_crm_opportunity.positive_open_deal_count_in_snapshot_quarter,
+    fct_crm_opportunity.positive_open_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.created_arr_in_snapshot_quarter,
     fct_crm_opportunity.closed_won_opps_in_snapshot_quarter,
     fct_crm_opportunity.closed_opps_in_snapshot_quarter,
@@ -191,8 +176,6 @@ final AS (
   FROM fct_crm_opportunity
   LEFT JOIN dim_date 
     ON fct_crm_opportunity.snapshot_date = dim_date.date_actual
-  LEFT JOIN dim_crm_user_hierarchy
-    ON dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk = fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk
 
 
 )

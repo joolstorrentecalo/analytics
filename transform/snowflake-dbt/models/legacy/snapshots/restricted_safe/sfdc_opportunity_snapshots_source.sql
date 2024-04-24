@@ -60,9 +60,6 @@ WITH source AS (
         BDR_LU__c                                                                           AS opportunity_business_development_representative_lookup,
         BDR_SDR__c                                                                          AS opportunity_development_representative,
 
-
-        account_owner_team_o__c                                                             AS account_owner_team_stamped,
-
         sales_accepted_date__c                                                              AS sales_accepted_date,
         engagement_type__c                                                                  AS sales_path,
         sales_qualified_date__c                                                             AS sales_qualified_date,
@@ -267,7 +264,6 @@ WITH source AS (
         -- command plan fields
         fm_champion__c                                                                      AS cp_champion,
         fm_close_plan__c                                                                    AS cp_close_plan,
-        fm_competition__c                                                                   AS cp_competition,
         fm_decision_criteria__c                                                             AS cp_decision_criteria,
         fm_decision_process__c                                                              AS cp_decision_process,
         fm_economic_buyer__c                                                                AS cp_economic_buyer,

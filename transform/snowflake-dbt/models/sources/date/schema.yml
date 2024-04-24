@@ -172,6 +172,10 @@ models:
             description: '{{ doc("date_snapshot_date_fpa") }}'
             tests:
               - not_null
+          - name: snapshot_date_fpa_fifth
+            description: '{{ doc("date_snapshot_date_fpa_fifth") }}'
+            tests:
+              - not_null
           - name: snapshot_date_billings
             description: '{{ doc("date_snapshot_date_billings") }}'
             tests:

@@ -133,7 +133,7 @@ The DRI for this incident is `@username`.
 
 The link to the Data Team Incident issue is <link>
 
-`CC @Jake Bielecki, @Jack, @Craig Mestel @product-analysts @datateam`
+`CC @jakebielecki, @leework, @Jack, @mvilain, @gtmanalyticstriage, @product-analysts @datateam`
 
 #### Zuora
 
@@ -145,7 +145,7 @@ The DRI for this incident is `@username`.
 
 The link to the Data Team Incident issue is <link>
 
-`CC @Jake Bielecki,  @Jack, @Craig Mestel @product-analysts @datateam`
+`CC @jakebielecki, @leework, @Jack, @mvilain, @gtmanalyticstriage, @product-analysts @datateam`
 
 #### General
 

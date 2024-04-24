@@ -644,7 +644,7 @@ models:
   description: A list updated by the DevRel team of blog posts they worked on.
 - name: sheetload_pagerslack_stats_source
   description: Temporary data source for Pagerslack dashboard in Tableau
-- name: fy25_yearlies_target_source
+- name: sheetload_fy25_yearlies_target_source
   description: The raw values for yearly targets published in the internal handbook - includes MNPI 
   columns:
     - name: yearly_name
@@ -657,3 +657,7 @@ models:
     - name: FY25-Q3
     - name: FY25-Q2
     - name: FY25-Q1
+- name: sheetload_ta_team_assignment_source
+  description: The list of department, team and recruiter data 
+- name: sheetload_job_profiles_historical_source
+  description: This is the historical dataload to the datasource that captures changes to the Job Profiles

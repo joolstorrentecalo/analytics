@@ -133,6 +133,8 @@ renamed AS (
     ptp_namespace_id__c AS ptp_namespace_id,
     ptp_past_insights__c AS ptp_past_insights,
     ptp_past_score_group__c AS ptp_past_score_group,
+    lead_score_classification__c AS lead_score_classification,
+    is_defaulted_trial__c as is_defaulted_trial,
     {{ sfdc_source_buckets('leadsource') }}
 
 

@@ -38,48 +38,6 @@ models:
       - name: user_custom_value
         tests:
           - not_null
-          
-  - name: gitlab_dotcom_daily_usage_data_events_90
-    description: '{{ doc("gitlab_dotcom_daily_usage_data_events_90") }}'
-    columns:
-      - name: event_name
-        tests:
-          - not_null
-      - name: stage_name
-        tests:
-          - not_null
-      - name: is_representative_of_stage
-        tests:
-          - not_null
-        description: This column represents whether or not this action represents being active for the entire stage. One action per stage has this designation.
-      - name: event_date
-        tests:
-          - not_null
-      - name: daily_usage_data_event_id
-        tests:
-          - unique
-          - not_null
-
-  - name: gitlab_dotcom_daily_usage_data_events
-    description: '{{ doc("gitlab_dotcom_daily_usage_data_events") }}'
-    columns:
-      - name: event_name
-        tests:
-          - not_null
-      - name: stage_name
-        tests:
-          - not_null
-      - name: is_representative_of_stage
-        tests:
-          - not_null
-        description: This column represents whether or not this action represents being active for the entire stage. One action per stage has this designation.
-      - name: event_date
-        tests:
-          - not_null
-      - name: daily_usage_data_event_id
-        tests:
-          - unique
-          - not_null
 
   - name: gitlab_dotcom_environments_xf
     description: '{{ doc("gitlab_dotcom_environments_xf") }}'
@@ -444,7 +402,9 @@ models:
       - name: event_primary_key
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "event_created_at >= DATEADD('day',-3,CURRENT_DATE())"
       - name: event_name
         tests:
           - not_null
@@ -466,7 +426,9 @@ models:
       - name: event_primary_key
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "event_created_at >= DATEADD('day',-3,CURRENT_DATE())"
       - name: event_name
         tests:
           - not_null

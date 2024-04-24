@@ -2225,6 +2225,18 @@ The surrogate key of `prep_namespace_order_trial` model. Currently identified by
 
 {% enddocs %}
 
+{% docs trial_type %}
+
+Indicates the type of trial offering, such as Premium/Ultimate subscription or GitLab Duo Pro add-on. The default value is 1 for both Premium and Ultimate trials, and 2 for GitLab DuoPro trials.
+
+{% enddocs %}
+
+{% docs trial_type_name %}
+
+Specifies the name of the trial offering type. The value 1 corresponds to Premium/Ultimate trials, while 2 corresponds to GitLab Duo Pro trials.
+
+{% enddocs %}
+
 {% docs dim_trial_latest_sk %}
 
 The surrogate key of `dim_trial_latest` model. Currently identified by hashing the `order_snapshot_id` field that is being sourced from Snapshotted Orders model.

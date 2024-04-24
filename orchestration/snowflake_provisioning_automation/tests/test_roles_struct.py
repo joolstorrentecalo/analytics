@@ -1,6 +1,9 @@
 import os
+import sys
 import yaml
+import logging
 import pytest
+
 import roles_struct
 
 
@@ -117,6 +120,19 @@ def test_pop_values(my_roles_struct):
     # check that key has been now removed
     for key_to_remove in keys_to_remove:
         assert key_to_remove not in remaining_value_keys
+
+
+def test_filter_keys_to_remove(my_roles_struct):
+    """
+    Test that for keys that don't exist
+    Skip trying to pop them from the roles data struct
+    """
+    yaml_key = "roles"
+    keys_to_remove = ["user1", "user_not_exist"]
+    keys_to_remove_filtered = my_roles_struct._filter_keys_to_remove(
+        yaml_key, keys_to_remove
+    )
+    assert keys_to_remove_filtered == ["user1"]
 
 
 def test_get_existing_value_keys(my_roles_struct):

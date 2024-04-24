@@ -355,3 +355,11 @@ sheets:
     owner: '@nmcavinue'
     tabs: 
       - fy25_yearlies_target
+  - name: ta_team_assignment
+    owner: '@rakhireddy'
+    tabs: 
+      - ta_team_assignment
+  - name: job_profiles_historical
+    owner: '@rakhireddy'
+    tabs: 
+      - job_profiles_historical

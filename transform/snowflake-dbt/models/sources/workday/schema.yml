@@ -573,5 +573,11 @@ models:
       - name: suporg_current
       - name: team_id_past
       - name: team_id_current
+      - name: job_workday_id_past
+      - name: job_workday_id_current
+      - name: job_title_past
+      - name: job_title_current
+      - name: business_title_past
+      - name: business_title_current
       - name: date_time_initiated
       - name: effective_date

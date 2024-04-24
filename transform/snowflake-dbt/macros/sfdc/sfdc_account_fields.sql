@@ -233,6 +233,8 @@ WITH map_merged_crm_account AS (
       --descriptive attributes
       sfdc_account.account_name                                           AS crm_account_name,
       sfdc_account.account_sales_segment                                  AS parent_crm_account_sales_segment,
+      -- Add legacy field to support public company metrics reporting: https://gitlab.com/gitlab-data/analytics/-/issues/20290
+      sfdc_account.account_sales_segment_legacy                           AS parent_crm_account_sales_segment_legacy,
       sfdc_account.account_geo                                            AS parent_crm_account_geo,
       sfdc_account.account_region                                         AS parent_crm_account_region,
       sfdc_account.account_area                                           AS parent_crm_account_area,

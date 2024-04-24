@@ -1206,24 +1206,6 @@ LEFT JOIN cw_base
         'other'
       ) AS sales_team_asm_level,
       CASE
-        WHEN
-          sfdc_opportunity.account_owner_team_stamped IN (
-            'Commercial - SMB', 'SMB', 'SMB - US', 'SMB - International'
-          )
-          THEN 'SMB'
-        WHEN
-          sfdc_opportunity.account_owner_team_stamped IN (
-            'APAC', 'EMEA', 'Channel', 'US West', 'US East', 'Public Sector'
-          )
-          THEN 'Large'
-        WHEN
-          sfdc_opportunity.account_owner_team_stamped IN (
-            'MM - APAC', 'MM - East', 'MM - EMEA', 'Commercial - MM', 'MM - West', 'MM-EMEA'
-          )
-          THEN 'Mid-Market'
-        ELSE 'SMB'
-      END AS account_owner_team_stamped_cro_level,
-      CASE
         WHEN sfdc_opportunity.close_date < '2023-02-01'
           THEN CONCAT(
                     UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
@@ -1335,7 +1317,7 @@ LEFT JOIN cw_base
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@rkohnke",
+    updated_by="@snalamaru",
     created_date="2022-02-23",
-    updated_date="2024-03-18"
+    updated_date="2024-04-16"
 ) }}

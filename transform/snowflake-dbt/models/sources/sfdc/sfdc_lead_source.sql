@@ -127,10 +127,6 @@ renamed AS (
     high_priority_timestamp__c AS high_priority_datetime,
     ptp_score_date__c AS ptp_score_date,
     ptp_score_group__c AS ptp_score_group,
-    NULL AS pql_namespace_creator_job_description,
-    NULL AS pql_namespace_id,
-    NULL AS pql_namespace_name,
-    NULL AS pql_namespace_users,
     pql_product_qualified_lead__c AS is_product_qualified_lead,
     ptp_days_since_trial_start__c AS ptp_days_since_trial_start,
     ptp_insights__c AS ptp_insights,
@@ -138,6 +134,12 @@ renamed AS (
     ptp_namespace_id__c AS ptp_namespace_id,
     ptp_past_insights__c AS ptp_past_insights,
     ptp_past_score_group__c AS ptp_past_score_group,
+    is_defaulted_trial__c as is_defaulted_trial,
+    pqlnamespacecreatorjobdescription__c AS pql_namespace_creator_job_description,
+    pql_namespace_id__c AS pql_namespace_id,
+    pql_namespace_name__c AS pql_namespace_name,
+    pqlnamespaceusers__c AS pql_namespace_users,
+    lead_score_classification__c AS lead_score_classification,
 
     {{ sfdc_source_buckets('leadsource') }}
 

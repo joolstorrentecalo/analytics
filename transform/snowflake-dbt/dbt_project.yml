@@ -126,7 +126,7 @@ models:
   # dbt Artifacts Package https://hub.getdbt.com/brooklyn-data/dbt_artifacts
   # ------------------
   dbt_artifacts:
-    
+
     +database: "{{ env_var('SNOWFLAKE_PROD_DATABASE') }}" # PROD
     +schema: workspace_data
     staging:
@@ -272,6 +272,10 @@ models:
 
       iterable:
         +schema: iterable
+
+      just_global_campaigns:
+        +materialized: table
+        +schema: just_global_campaigns
 
       level_up:
         +schema: level_up

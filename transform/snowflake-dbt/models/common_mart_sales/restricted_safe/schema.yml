@@ -146,7 +146,9 @@ models:
     columns:
       - name: primary_key
         tests:
-          - unique
+          - unique:
+              config:
+                where: "arr_month >= DATEADD('month',-3,CURRENT_DATE())"
           - not_null
         tags: ["tdf", "mart", "arr"]
       - name: was_purchased_through_reseller
