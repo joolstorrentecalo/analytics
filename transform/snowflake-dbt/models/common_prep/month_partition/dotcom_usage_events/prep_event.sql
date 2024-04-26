@@ -456,6 +456,16 @@
     "primary_key": "cluster_agent_id",
     "plan_column_name": "dim_plan_id",
     "created_date_name": "created_date_id"
+  },
+  {
+    "event_name": "accept_invite",
+    "source_cte_name": "prep_member_accepted_invites",
+    "user_column_name": "dim_user_id",
+    "ultimate_parent_namespace_column_name": "ultimate_parent_namespace_id",
+    "project_column_name": "NULL",
+    "primary_key": "dim_member_id",
+    "plan_column_name": "dim_plan_id",
+    "created_date_name": "created_date_id"
   }
 ]
 
@@ -495,7 +505,8 @@
     ('prep_snippet', 'prep_snippet'),
     ('prep_project', 'prep_project'),
     ('prep_ci_trigger', 'prep_ci_trigger'),
-    ('prep_cluster_agent', 'prep_cluster_agent')
+    ('prep_cluster_agent', 'prep_cluster_agent'),
+    ('prep_member_accepted_invites', 'prep_member_accepted_invites')
 ]) }}
 
 , dast_jobs AS (

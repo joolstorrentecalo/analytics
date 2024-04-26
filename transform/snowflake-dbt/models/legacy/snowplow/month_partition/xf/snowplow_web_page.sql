@@ -2,7 +2,7 @@ WITH events AS (
 
 	 SELECT *
 	 FROM {{ref('snowplow_unnested_events')}}
-     WHERE is_staging_url = FALSE
+     WHERE is_staging_event = FALSE
 
 )
 

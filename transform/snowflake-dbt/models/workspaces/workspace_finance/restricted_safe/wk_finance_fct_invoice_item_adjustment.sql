@@ -25,15 +25,15 @@ SELECT
       zuora_invoice_item_adjustment.id                          		AS invoice_item_adjustment_id,
 
    -- keys
-     zuora_invoice_item_adjustment.adjustmentnumber                 AS invoice_item_adjustment_number,
+      zuora_invoice_item_adjustment.adjustmentnumber                AS invoice_item_adjustment_number,
       zuora_invoice_item_adjustment.accountid                  		  AS account_id,
       zuora_invoice_item_adjustment.invoiceid                  		  AS invoice_id,
       zuora_invoice_item_adjustment.accountingperiodid              AS accounting_period_id,
 
 
    -- invoice item adjustment dates
-      zuora_invoice_item_adjustment.createddate                     AS invoice_item_adjustment_date,
-     {{ get_date_id('zuora_invoice_item_adjustment.createddate') }} AS invoice_item_adjustment_date_id,
+      zuora_invoice_item_adjustment.adjustmentdate                  AS invoice_item_adjustment_date,
+     {{ get_date_id('zuora_invoice_item_adjustment.adjustmentdate') }} AS invoice_item_adjustment_date_id,
 
    -- additive fields
       zuora_invoice_item_adjustment.amount                        	AS invoice_item_adjustment_amount,
@@ -53,5 +53,5 @@ cte_ref="final_invoice_item_adjustment",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-02-28",
-updated_date="2024-02-28"
+updated_date="2024-03-26"
 ) }}

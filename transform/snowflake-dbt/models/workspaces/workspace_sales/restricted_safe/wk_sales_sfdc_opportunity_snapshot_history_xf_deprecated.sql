@@ -152,7 +152,6 @@ WITH date_details AS (
       sfdc_opportunity_snapshot_history.order_type_stamped AS snapshot_order_type_stamped,
       --sfdc_opportunity_snapshot_history.order_type,
       --sfdc_opportunity_snapshot_history.opportunity_owner_manager,
-      --sfdc_opportunity_snapshot_history.account_owner_team_stamped,
       --sfdc_opportunity_snapshot_history.parent_segment,
       sfdc_opportunity_snapshot_history.sales_accepted_date,
       sfdc_opportunity_snapshot_history.sales_path,
@@ -239,7 +238,6 @@ WITH date_details AS (
       
       sfdc_opportunity_snapshot_history.cp_champion,
       sfdc_opportunity_snapshot_history.cp_close_plan,
-      sfdc_opportunity_snapshot_history.cp_competition,
       sfdc_opportunity_snapshot_history.cp_decision_criteria,
       sfdc_opportunity_snapshot_history.cp_decision_process,
       sfdc_opportunity_snapshot_history.cp_economic_buyer,

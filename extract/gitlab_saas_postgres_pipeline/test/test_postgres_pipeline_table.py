@@ -1,6 +1,7 @@
 """
 Test the functions in postgres_pipeline_table.py
 """
+
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 from sqlalchemy.engine.base import Engine

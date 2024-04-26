@@ -241,6 +241,10 @@ sheets:
   #     - sales_funnel_targets_kpi_values
   #     - sales_funnel_targets_opportunity
   #     - sales_funnel_targets_matrix
+  - name: sales_dev_targets_fy25
+    owner: '@dmicovic'
+    tabs:
+      - sales_dev_targets_fy25
   - name: sales_training_completion_dates
     owner: '@paul_armstrong'
     tabs:
@@ -351,3 +355,15 @@ sheets:
     owner: '@jameslopez'
     tabs: 
       - pagerslack_stats
+  - name: fy25_yearlies_target
+    owner: '@nmcavinue'
+    tabs: 
+      - fy25_yearlies_target
+  - name: ta_team_assignment
+    owner: '@rakhireddy'
+    tabs: 
+      - ta_team_assignment
+  - name: job_profiles_historical
+    owner: '@rakhireddy'
+    tabs: 
+      - job_profiles_historical

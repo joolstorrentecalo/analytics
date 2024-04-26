@@ -2,7 +2,7 @@
  ('dim_date', 'dim_date'),
  ('dim_crm_account_daily_snapshot', 'dim_crm_account_daily_snapshot'),
  ('dim_crm_account', 'dim_crm_account'),
- ('rpt_arr', 'rpt_arr_snapshot_combined_8th_calendar_day')
+ ('rpt_arr', 'rpt_arr_snapshot_combined')
 ]) }},
 
 dim_crm_account_live AS (
@@ -42,24 +42,36 @@ child_account_arrs AS (
 
 ),
 
+snapshot_dates AS (
+    -- Use the 8th calendar day up to 2024-03-01 and 5th calendar day after
+    SELECT DISTINCT
+      first_day_of_month,
+      CASE WHEN first_day_of_month < '2024-03-01'
+        THEN snapshot_date_fpa
+      ELSE snapshot_date_fpa_fifth 
+      END                                   AS snapshot_date
+    FROM dim_date
+
+),
+
 py_arr_with_cy_parent AS (
 
   SELECT
     child_account_arrs.arr_month                                AS py_arr_month,
     DATEADD('year', 1, child_account_arrs.arr_month)            AS retention_month,
     dim_crm_account_daily_snapshot.dim_parent_crm_account_id    AS parent_account_id_in_retention_month,
-    DATEADD('year', 1, dim_date.snapshot_date_fpa)              AS retention_period_snapshot_date,
+    DATEADD('year', 1, snapshot_dates.snapshot_date)            AS retention_period_snapshot_date,
     ARRAY_AGG(product_category)                                 AS py_product_category,
     MAX(product_ranking)                                        AS py_product_ranking,
     SUM(ZEROIFNULL(child_account_arrs.mrr))                     AS py_mrr,
     SUM(ZEROIFNULL(child_account_arrs.arr))                     AS py_arr,
     SUM(ZEROIFNULL(child_account_arrs.quantity))                AS py_quantity
   FROM child_account_arrs
-  LEFT JOIN dim_date
-    ON child_account_arrs.arr_month::DATE = dim_date.date_day
+  LEFT JOIN snapshot_dates
+    ON child_account_arrs.arr_month::DATE = snapshot_dates.first_day_of_month
   LEFT JOIN dim_crm_account_daily_snapshot
     ON child_account_arrs.child_account_id = dim_crm_account_daily_snapshot.dim_crm_account_id
-      AND dim_crm_account_daily_snapshot.snapshot_date = DATEADD('year', 1, dim_date.snapshot_date_fpa)
+      AND dim_crm_account_daily_snapshot.snapshot_date = DATEADD('year', 1, snapshot_dates.snapshot_date)
   WHERE retention_month > '2020-03-01'
   -- this is when we started doing daily snapshots for dim_crm_account_daily_snapshot
   {{ dbt_utils.group_by(n=4) }}
@@ -138,5 +150,5 @@ final AS (
  created_by="@nmcavinue",
  updated_by="@chrissharp",
  created_date="2023-11-03",
- updated_date="2023-11-08"
+ updated_date="2024-04-24"
 ) }}

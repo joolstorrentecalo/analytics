@@ -1,6 +1,7 @@
 """
 Module is used to transform SQL syntax from Postgres to Snowflake style
 """
+
 from logging import info
 from typing import Any, Callable, Dict, List
 

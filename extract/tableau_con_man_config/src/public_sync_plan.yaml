@@ -8,6 +8,8 @@ target:
   token_name: TABLEAU_API_PUBLIC_TOKEN_NAME
   token_secret: TABLEAU_API_PUBLIC_TOKEN_SECRET
   server_url: TABLEAU_API_PUBLIC_URL
+  default_workbook_owner: TABLEAU_DEFAULT_WORKBOOK_OWNER
+  deleted_user_archive_project: TABLEAU_USER_ARCHIVE_PROJECT
 reference:
   name: gitlab
   type: server

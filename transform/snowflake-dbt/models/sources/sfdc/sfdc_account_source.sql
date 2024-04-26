@@ -37,6 +37,7 @@ renamed AS (
     account_manager__c AS account_manager,
     account_owner_calc__c AS account_owner,
     account_owner_team__c AS account_owner_team,
+    account_owner_role__c AS account_owner_role,
     proposed_account_owner__c AS proposed_account_owner,
     business_development_rep__c AS business_development_rep,
     dedicated_service_engineer__c AS dedicated_service_engineer,
@@ -98,7 +99,8 @@ renamed AS (
     -- account demographics fields
 
     -- Add sales_segment_cleaning macro to avoid duplication in downstream models
-    {{sales_segment_cleaning('old_segment__c')}} AS account_sales_segment,
+    {{sales_segment_cleaning('account_demographics_sales_segment__c')}} AS account_sales_segment,
+    {{sales_segment_cleaning('old_segment__c')}} AS account_sales_segment_legacy,
     account_demographics_geo__c AS account_geo,
     account_demographics_region__c AS account_region,
     account_demographics_area__c AS account_area,
@@ -168,12 +170,11 @@ renamed AS (
     x6sense_segments__c AS six_sense_segments,
 
     -- sales segment fields
-    old_segment__c AS ultimate_parent_sales_segment,
+    account_demographics_sales_segment__c AS ultimate_parent_sales_segment,
     sales_segmentation_new__c AS division_sales_segment,
     account_owner_user_segment__c AS account_owner_user_segment,
     ultimate_parent_sales_segment_employees__c AS sales_segment,
     sales_segmentation_new__c AS account_segment,
-    {{sales_segment_cleaning('account_demographics_sales_segment__c')}} AS ultimate_parent_sales_segment_new,
 
     NULL AS is_locally_managed_account,
     strategic__c AS is_strategic_account,

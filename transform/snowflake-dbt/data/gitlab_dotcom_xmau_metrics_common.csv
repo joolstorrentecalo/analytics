@@ -1,4 +1,5 @@
 common_events_to_include,stage_name,smau,group_name,gmau,section_name,is_umau
+accept_invite,growth,FALSE,acquisition,FALSE,growth,FALSE
 action,manage,FALSE,manage,FALSE,dev,TRUE
 action_monthly_active_users_design_management,create,FALSE,product_planning,FALSE,dev,FALSE
 action_monthly_active_users_project_repo,create,TRUE,source_code,TRUE,dev,FALSE

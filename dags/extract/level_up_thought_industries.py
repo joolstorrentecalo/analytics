@@ -1,6 +1,7 @@
 """
 Run daily Level Up extract
 """
+
 import os
 from datetime import datetime, timedelta
 

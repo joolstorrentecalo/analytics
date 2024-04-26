@@ -14,7 +14,7 @@ sheets:
   - name: credit_card_adoption_rate_by_country
     owner: '@nraisinghani'
     tabs:
-      - credit_card_adoption_rate     
+      - credit_card_adoption_rate
   - name: crm_accounts_pricing_eoa
     owner: '@jeanpeguero'
     tabs:
@@ -40,14 +40,18 @@ sheets:
     owner: '@kwiebers'
     tabs:
       - gitlab_product_mrs_size
+  - name: level_up_sqs_completion
+    owner: '@jngCES'
+    tabs:
+      - SQS_2024_04_18
   - name: low_touch_targets_fy23
     owner: '@mfleisher'
     tabs:
-      - low_touch_targets_fy23 
+      - low_touch_targets_fy23
   - name: opportunity_forecasts
     owner: '@kdietz'
     tabs:
-      - opportunity_forecasts_202311   
+      - opportunity_forecasts_202311
   - name: opt_out_contacts
     owner: '@Jean Peguero'
     tabs:
@@ -59,7 +63,7 @@ sheets:
   - name: pnps_2023_respondents
     owner: '@moliver28'
     tabs:
-      - pnps_2023_respondents 
+      - pnps_2023_respondents
   - name: q4fy2021_system_usability_scale_results
     owner: '@rbacovic'
     tabs:
@@ -67,7 +71,7 @@ sheets:
   - name: registry_transfer_namespaces
     owner: '@joshua'
     tabs:
-      - registry_transfer_namespaces 
+      - registry_transfer_namespaces
   - name: test_sheet
     owner: '@taylormurphy'
     tabs:
@@ -89,4 +93,3 @@ sheets:
     owner: '@kmagda1'
     tabs:
       - downtier_20230117
-

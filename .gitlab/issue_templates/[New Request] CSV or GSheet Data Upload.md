@@ -11,23 +11,23 @@ If none, please include a description
 
 **Editor Slack Handle**: @`handle`
 
-**Business Use Case** (Please explain what this data will be used for): 
+**Business Use Case** (Please explain what this data will be used for):
 
 
 ### DRI/Prioritization Owner Checklist
 * [ ]  Provide link to CSV/GSheet data. Link: ____
-* [ ]  Does this data live in the Data team's data warehouse? (https://dbt.gitlabdata.com) 
-  - [ ] Yes 
-  - [ ] No 
+* [ ]  Does this data live in the Data team's data warehouse? (https://dbt.gitlabdata.com)
+  - [ ] Yes
+  - [ ] No
 * [ ]  Does this data need to be linked to other data in the Data team's data warehouse?
-  - [ ] Yes 
+  - [ ] Yes
   - [ ] No
 * [ ] Does this data contain anything that is sensitive (Classified as Red or Orange in our [Data Classification Policy](https://about.gitlab.com/handbook/engineering/security/data-classification-standard.html#data-classification-levels))?
-  - [ ] Yes 
+  - [ ] Yes
   - [ ] No
   - [ ] I don't know
-* [ ]  How long will this data need to reside in the Data team's data warehouse? Expiration Date: ______ 
-* [ ]  How do you want to name the table? Table Name: ______ 
+* [ ]  How long will this data need to reside in the Data team's data warehouse? Expiration Date: ______
+* [ ]  How do you want to name the table? Table Name: ______
 * [ ]  Update the due date on this issue for when you want this data in Sisense. (Note: The airflow job for sheetload runs every night and is immediately followed by a sheetload-specific dbt run)
 * [ ]  Provide who will be the owner of the file to fix potential data issues. @____
 
@@ -35,15 +35,15 @@ If none, please include a description
 
 - [ ] Do **NOT** need to link it to other data
     * [ ]  Submitter please follow steps in [CSV Upload Sisense](https://doc.periscopedata.com/article/csv-upload)
-    * [ ]  Submitter to close issue if this data will not be used again. 
+    * [ ]  Submitter to close issue if this data will not be used again.
 
 ---
 
 - [ ] **DO** need to link it to other data AND this is a one-off analysis (Boneyard)
     * [ ] Submitter to put spreadsheet data into a new file into the [Sheetload > Boneyard GDrive Folder](https://drive.google.com/open?id=1NdA5CDy2kT653qUdqtCiq_RkmRa-LKqs).
     * [ ] Submitter to share it with the required service account - [Email Address to share with](https://docs.google.com/document/d/1m8kky3DPv2yvH63W4NDYFURrhUwRiMKHI-himxn1r7k/edit?usp=sharing) (GitLab Internal)
-    * [ ] Submitter to make an MR to [this file](https://gitlab.com/gitlab-data/analytics/-/blob/master/extract/sheetload/boneyard/sheets.yml) adding the new sheet in alphabetical order. 
-    * [ ]  Submitter to run the following CI Jobs on the MR: 
+    * [ ] Submitter to make an MR to [this file](https://gitlab.com/gitlab-data/analytics/-/blob/master/extract/sheetload/boneyard/sheets.yml) adding the new sheet in alphabetical order. Sheet and tab names are *case-sensitive*.
+    * [ ]  Submitter to run the following CI Jobs on the MR:
          - [ ] `clone_prod_real`
          - [ ] `boneyard_sheetload` (wait until `clone_prod_real` has finished)
     * [ ] Submitter to assign MR to member of the Data Team
@@ -63,15 +63,15 @@ If none, please include a description
       - [ ] [Edit the schema.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/models/sources/sheetload/schema.yml)
       - [ ] [Edit the sources.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/models/sources/sheetload/sources.yml)
       - [ ] Add a new base model under [sources-->sheetload repo](https://gitlab.com/gitlab-data/analytics/-/tree/master/transform/snowflake-dbt/models/sources/sheetload)
-      - **If the the data is required in SiSense** 
+      - **If the the data is required in SiSense**
          - [ ] Add a new staging model under [staging-->sheetload repo](https://gitlab.com/gitlab-data/analytics/-/tree/master/transform/snowflake-dbt/models/staging/sheetload)
-         - [ ] [Edit the schema.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/models/staging/sheetload/schema.yml) 
-    * [ ]  Data Team member to run the following CI Jobs on the MR: 
+         - [ ] [Edit the schema.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/models/staging/sheetload/schema.yml)
+    * [ ]  Data Team member to run the following CI Jobs on the MR:
          - [ ] `clone_raw`
          - [ ] `sheetload`
          - [ ] `specify_raw_model` (here you need to specify which dbt-models you want to run/test, just as if it was specify_model)
     * [ ]  Data Analyst to assign MR to project maintainer for review (iterate until model is complete).
-    * [ ]  Data Team project maintainers/owners to merge in dbt models 
+    * [ ]  Data Team project maintainers/owners to merge in dbt models
     * [ ]  If not urgent, data will be availble within 24 hours. If urgent, Data Engineer to run full refresh and inform when available.
     * [ ]  Submitter to query in Sisense for table: ``` SELECT * FROM [new-dbt-model-name] LIMIT 10 ```.
 

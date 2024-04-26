@@ -25,15 +25,15 @@ SELECT
       zuora_credit_balance_adjustment.id                          		AS credit_balance_adjustment_id,
 
    -- keys
-      zuora_credit_balance_adjustment.number                AS credit_balance_adjustment_number,
+      zuora_credit_balance_adjustment.number                          AS credit_balance_adjustment_number,
       zuora_credit_balance_adjustment.accountid                  		  AS account_id,
       zuora_credit_balance_adjustment.invoiceid                  		  AS invoice_id,
       zuora_credit_balance_adjustment.accountingperiodid              AS accounting_period_id,
 
 
    -- credit balance adjustment dates
-      zuora_credit_balance_adjustment.createddate                     AS credit_balance_adjustment_date,
-     {{ get_date_id('zuora_credit_balance_adjustment.createddate') }} AS credit_balance_adjustment_date_id,
+      zuora_credit_balance_adjustment.adjustmentdate                     AS credit_balance_adjustment_date,
+     {{ get_date_id('zuora_credit_balance_adjustment.adjustmentdate') }} AS credit_balance_adjustment_date_id,
 
    -- additive fields
       zuora_credit_balance_adjustment.amount                        	AS credit_balance_adjustment_amount,
@@ -53,5 +53,5 @@ cte_ref="final_credit_balance_adjustment",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-02-28",
-updated_date="2024-02-28"
+updated_date="2024-03-26"
 ) }}

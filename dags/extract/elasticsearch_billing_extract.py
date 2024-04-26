@@ -1,6 +1,7 @@
 """
 Run daily elastic search billing extract
 """
+
 import os
 from datetime import datetime, timedelta
 

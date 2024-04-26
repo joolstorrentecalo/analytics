@@ -177,7 +177,6 @@ tables:
       , mirror
       , mirror_user_id
       , shared_runners_enabled
-      , NULL AS build_coverage_regex
       , build_allow_git_fetch
       , build_timeout
       , mirror_trigger_builds

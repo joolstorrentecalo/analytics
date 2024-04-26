@@ -156,8 +156,6 @@ models:
         description: '{{ doc("visibility_documentation") }}'
       - name: project_issues_template
         description: '{{ doc("visibility_documentation") }}'
-      - name: project_build_coverage_regex
-        description: '{{ doc("visibility_documentation") }}'
       - name: project_name
         description: '{{ doc("visibility_documentation") }}'
       - name: project_path

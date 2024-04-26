@@ -29,3 +29,9 @@ This report model focuses exclusively on filtering out Renewal Opportunities fro
 
 {% enddocs %}
 
+
+{% docs rpt_crm_opportunity_open %}
+
+This report model focuses exclusively on filtering out all Open Opportunities from `mart_crm_opportunity`.
+
+{% enddocs %}

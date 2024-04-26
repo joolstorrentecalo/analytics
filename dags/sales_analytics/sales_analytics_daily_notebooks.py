@@ -2,7 +2,6 @@
 Daily Dag for Sales Analytics notebooks
 """
 
-
 import os
 from datetime import datetime, timedelta
 import pathlib

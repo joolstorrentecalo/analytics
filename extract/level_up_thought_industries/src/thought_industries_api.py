@@ -11,6 +11,7 @@ a corresponding child class.
 
 The parent class contains the bulk of the logic as the endpoints are very similiar.
 """
+
 import os
 
 from logging import info

@@ -7,13 +7,6 @@
     tags=["product"]
 ) }}
 
-{{ config({
-    "materialized": "incremental",
-    "unique_key": "dim_issue_sk",
-    "on_schema_change": "sync_all_columns"
-    })
-}}
-
 {{ simple_cte([
     ('prep_date', 'prep_date'),
     ('prep_namespace_plan_hist', 'prep_namespace_plan_hist'),
@@ -36,11 +29,6 @@
 
     SELECT *
     FROM {{ ref('gitlab_dotcom_issues_source')}}
-    {% if is_incremental() %}
-
-      WHERE updated_at > (SELECT MAX(updated_at) FROM {{this}})
-
-    {% endif %}
 
 ), issue_metrics AS (
 
@@ -272,7 +260,7 @@
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet_",
-    updated_by="@annapiaseczna",
+    updated_by="@michellecooper",
     created_date="2021-06-17",
-    updated_date="2023-12-11"
+    updated_date="2024-03-27"
 ) }}

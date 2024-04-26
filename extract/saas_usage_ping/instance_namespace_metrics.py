@@ -4,6 +4,7 @@ Namespace module for support instance_namespace_ping pipeline
 instance_namespace_metrics.py is responsible for uploading the following into Snowflake:
 - usage ping namespace
 """
+
 import datetime
 import math
 import os

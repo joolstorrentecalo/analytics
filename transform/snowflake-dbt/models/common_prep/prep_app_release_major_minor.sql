@@ -20,7 +20,7 @@ WITH prep_app_release AS (
         release_date,
         release_manager_americas,
         release_manager_emea
-    FROM {{ ref('release_managers_source') }}
+    FROM {{ ref('releases_source') }}
     QUALIFY ROW_NUMBER() OVER (PARTITION BY major_minor_version ORDER BY snapshot_date DESC, rank DESC) = 1
 
 ), joined AS (
@@ -92,7 +92,7 @@ WITH prep_app_release AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@jpeguero",
-    updated_by="@jpeguero",
+    updated_by="@michellecooper",
     created_date="2023-04-04",
-    updated_date="2023-04-20"
+    updated_date="2024-03-07"
 ) }}

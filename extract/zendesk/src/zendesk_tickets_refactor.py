@@ -1,6 +1,7 @@
 """
 Extracts data from GCP bucket, refactors tickets and uploads it snowflake.
 """
+
 import io
 import json
 import os

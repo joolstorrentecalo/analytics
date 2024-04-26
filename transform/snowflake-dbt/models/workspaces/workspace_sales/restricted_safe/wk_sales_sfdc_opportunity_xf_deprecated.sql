@@ -192,7 +192,6 @@ we can delete this connection and use the mart table directly.
       sfdc_opportunity_xf.stage_6_closed_lost_date,
       sfdc_opportunity_xf.cp_champion,
       sfdc_opportunity_xf.cp_close_plan,
-      sfdc_opportunity_xf.cp_competition,
       sfdc_opportunity_xf.cp_decision_criteria,
       sfdc_opportunity_xf.cp_decision_process,
       sfdc_opportunity_xf.cp_economic_buyer,
@@ -208,9 +207,6 @@ we can delete this connection and use the mart table directly.
 
       -----------------------------------------------------------
       -----------------------------------------------------------
-
-      -- used for segment reporting in FY21 and before
-      sfdc_opportunity_xf.account_owner_team_stamped,
 
       -- NF: why do we need these fields now?
       -- sfdc_opportunity_xf.division_sales_segment_stamped,
@@ -748,22 +744,6 @@ WHERE o.order_type_stamped IN ('4. Contraction','5. Churn - Partial','6. Churn -
         ELSE '3. Other'
       END                                                                   AS deal_group,
 
-      ----------------------------------------------------------------
-      ----------------------------------------------------------------
-      -- Temporary, to deal with global Bookings FY21 reports that use account_owner_team_stamp field
-      -- NF 2022-01-28 TO BE REMOVED
-      CASE 
-        WHEN sfdc_opportunity_xf.account_owner_team_stamped IN ('Commercial - SMB','SMB','SMB - US','SMB - International')
-          THEN 'SMB'
-        WHEN sfdc_opportunity_xf.account_owner_team_stamped IN ('APAC','EMEA','Channel','US West','US East','Public Sector')
-          THEN 'Large'
-        WHEN sfdc_opportunity_xf.account_owner_team_stamped IN ('MM - APAC','MM - East','MM - EMEA','Commercial - MM','MM - West','MM-EMEA')
-          THEN 'Mid-Market'
-        ELSE 'SMB'
-      END                                                                   AS account_owner_team_stamped_cro_level,   
-
-      ----------------------------------------------------------------
-      ----------------------------------------------------------------
 
       -- fields for counting new logos, these fields count refund as negative
       CASE 

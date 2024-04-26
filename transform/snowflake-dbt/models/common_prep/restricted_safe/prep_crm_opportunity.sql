@@ -220,7 +220,7 @@
       sfdc_opportunity_source.sales_accepted_date::DATE                                                     AS sales_accepted_date,
       sfdc_opportunity_source.close_date::DATE                                                              AS close_date,
       sfdc_opportunity_source.net_arr                                                                       AS raw_net_arr,
-      {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity_source.opportunity_id',"'99991231'"])}}                 AS crm_opportunity_snapshot_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity_source.opportunity_id',"'99991231'"])}}        AS crm_opportunity_snapshot_id,
       '99991231'                                                                                            AS snapshot_id,
       live_date.date_actual                                                                                 AS snapshot_date,
       live_date.first_day_of_month                                                                          AS snapshot_month,
@@ -1206,24 +1206,6 @@ LEFT JOIN cw_base
         'other'
       ) AS sales_team_asm_level,
       CASE
-        WHEN
-          sfdc_opportunity.account_owner_team_stamped IN (
-            'Commercial - SMB', 'SMB', 'SMB - US', 'SMB - International'
-          )
-          THEN 'SMB'
-        WHEN
-          sfdc_opportunity.account_owner_team_stamped IN (
-            'APAC', 'EMEA', 'Channel', 'US West', 'US East', 'Public Sector'
-          )
-          THEN 'Large'
-        WHEN
-          sfdc_opportunity.account_owner_team_stamped IN (
-            'MM - APAC', 'MM - East', 'MM - EMEA', 'Commercial - MM', 'MM - West', 'MM-EMEA'
-          )
-          THEN 'Mid-Market'
-        ELSE 'SMB'
-      END AS account_owner_team_stamped_cro_level,
-      CASE
         WHEN sfdc_opportunity.close_date < '2023-02-01'
           THEN CONCAT(
                     UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
@@ -1337,5 +1319,5 @@ LEFT JOIN cw_base
     created_by="@michellecooper",
     updated_by="@snalamaru",
     created_date="2022-02-23",
-    updated_date="2024-01-24"
+    updated_date="2024-04-16"
 ) }}

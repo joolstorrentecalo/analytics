@@ -13,7 +13,8 @@ WITH target_geos AS (
     ('APAC'),
     ('JAPAN'),
     ('PUBSEC'),
-    ('SMB')
+    ('SMB'),
+    ('CHANNEL')
   ) AS geos (target_geos)
 ),
 
@@ -36,7 +37,6 @@ target_user_roles AS (
     ('VP Sales Development', TRUE),
     ('VPSA', TRUE),
     ('Executive - Global Minus Pubsec', FALSE),
-    ('Executive - No View All', FALSE),
     ('Implementation Engineers - Global (with/without Pubsec)', FALSE),
     ('Marketing Operations Manager', FALSE),
     ('Marketing Program Manager', FALSE)
@@ -139,6 +139,17 @@ non_pubsec AS (
     AND LOWER(geo_list.crm_user_geo) != LOWER('PUBSEC')
 ),
 
+channel_sfdc_users AS (
+  SELECT
+    sfdc_user_source.user_email,
+    target_geos.target_geos AS crm_geo,
+    'all_sfdc_users' AS entitlement_basis
+  FROM sfdc_user_source
+  LEFT JOIN target_geos
+    ON target_geos.target_geos = 'CHANNEL'
+  WHERE sfdc_user_source.is_active = TRUE 
+),
+
 combined AS (
   SELECT 
     crm_geo,
@@ -161,6 +172,14 @@ combined AS (
     geo_users.user_email,
     entitlement_basis
   FROM geo_users
+
+  UNION ALL
+
+  SELECT DISTINCT
+    channel_sfdc_users.crm_geo,
+    channel_sfdc_users.user_email,
+    entitlement_basis
+  FROM channel_sfdc_users
 )
 
 SELECT *

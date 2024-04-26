@@ -1,4 +1,4 @@
-{% set sensitive_fields = ['project_description', 'project_import_source', 'project_issues_template', 'project_build_coverage_regex',
+{% set sensitive_fields = ['project_description', 'project_import_source', 'project_issues_template',
                            'project_name', 'project_path', 'project_import_url', 'project_merge_requests_template'] %}
 
 WITH projects AS (
@@ -151,7 +151,7 @@ joined AS (
         AND projects.created_at BETWEEN gitlab_subscriptions.valid_from AND {{ coalesce_to_infinity("gitlab_subscriptions.valid_to") }}
       LEFT JOIN active_services
         ON projects.project_id = active_services.project_id
-    {{ dbt_utils.group_by(n=70) }}
+    {{ dbt_utils.group_by(n=69) }}
 )
 
 SELECT *

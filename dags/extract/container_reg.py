@@ -1,6 +1,7 @@
 """
 DAG for gcs container registry logs
 """
+
 import os
 from datetime import datetime, timedelta
 

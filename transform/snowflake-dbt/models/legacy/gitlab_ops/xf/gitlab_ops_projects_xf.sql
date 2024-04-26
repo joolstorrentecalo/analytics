@@ -1,4 +1,4 @@
-{% set sensitive_fields = ['project_description', 'project_import_source', 'project_issues_template', 'project_build_coverage_regex',
+{% set sensitive_fields = ['project_description', 'project_import_source', 'project_issues_template',
                            'project_name', 'project_path', 'project_import_url', 'project_merge_requests_template'] %}
 
 WITH projects AS (
@@ -81,7 +81,7 @@ joined AS (
       LEFT JOIN members
         ON projects.project_id = members.source_id
         AND members.member_source_type = 'Project'
-    {{ dbt_utils.group_by(n=57) }}
+    {{ dbt_utils.group_by(n=56) }}
 )
 
 SELECT *

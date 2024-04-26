@@ -96,3 +96,8 @@ models:
       - name: updated_at
       - name: state_reason
         description: Reason to justify the set status after auditing
+  - name: gitlab_dotcom_zoekt_enabled_namespaces
+    description: Workspace model of the source data (deduplicated).
+  - name: gitlab_dotcom_zoekt_indices
+    description: Workspace model of the source data (deduplicated).
+

@@ -86,6 +86,7 @@ class Utils:
     METRICS_EXCEPTION_INSTANCE_SQL = (
         "counts.clusters_platforms_eks",
         "counts.clusters_platforms_gke",
+        "counts.geo_nodes",
         "counts.issues_created_from_alerts",
         "counts.requirement_test_reports_manual",
         "counts.requirement_test_reports_ci",
@@ -97,9 +98,12 @@ class Utils:
         "usage_activity_by_stage_monthly.configure.clusters_platforms_eks",
     )
 
-    # Map table which are renamed on the source side
+    # Map table which are partioned at the source side but still has same name in snowflake
 
-    RENAMED_TABLE_MAPPING = {"p_ci_builds": "ci_builds"}
+    RENAMED_TABLE_MAPPING = {
+        "p_ci_builds": "ci_builds",
+        "p_ci_job_artifacts": "ci_job_artifacts",
+    }
 
     def __init__(self):
         config_dict = env.copy()

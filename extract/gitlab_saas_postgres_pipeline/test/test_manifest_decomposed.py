@@ -1,6 +1,7 @@
 """
 Testing routine for manifest decomposition
 """
+
 import os
 import pytest
 import yaml

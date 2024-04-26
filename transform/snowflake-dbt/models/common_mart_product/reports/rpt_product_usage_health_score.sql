@@ -8,7 +8,7 @@
 {{ simple_cte([
     ('paid_user_metrics', 'mart_product_usage_paid_user_metrics_monthly'),
     ('dim_crm_account', 'dim_crm_account'),
-    ('mart_arr', 'mart_arr')
+    ('mart_arr_all', 'mart_arr_with_zero_dollar_charges')
 ])}}
 
 , joined AS (
@@ -28,7 +28,8 @@
         paid_user_metrics.subscription_name,
         paid_user_metrics.dim_subscription_id_original,
         paid_user_metrics.dim_subscription_id,
-        IFF(mart_arr.product_tier_name ILIKE '%Ultimate%', 1, 0)                                                        AS ultimate_subscription_flag,
+        IFF(mart_arr_all.product_tier_name ILIKE '%Ultimate%', 1, 0)                                                        AS ultimate_subscription_flag,
+        IFF(mart_arr_all.product_rate_plan_name ILIKE '%OSS Program%', true, false)                                                        AS is_oss_program,
         paid_user_metrics.delivery_type,
         paid_user_metrics.deployment_type,
         paid_user_metrics.instance_type,
@@ -266,20 +267,15 @@
                 IFF(cd_adopted = 1, 'CD', NULL),
                 IFF(security_adopted = 1, 'Security', NULL)
             ) AS adopted_use_case_names_array,
-        ARRAY_TO_STRING(adopted_use_case_names_array, ', ') AS adopted_use_case_names_string,
-        CASE WHEN ROW_NUMBER() OVER (PARTITION BY snapshot_month, paid_user_metrics.dim_subscription_id_original, delivery_type, instance_type ORDER BY billable_user_count desc nulls last, ping_created_at desc nulls last) = 1
-              and instance_type = 'Production' 
-             THEN True 
-             ELSE False 
-        END AS is_primary_instance_subscription 
+        ARRAY_TO_STRING(adopted_use_case_names_array, ', ') AS adopted_use_case_names_string
 
 FROM paid_user_metrics
 LEFT JOIN dim_crm_account
     ON paid_user_metrics.dim_crm_account_id = dim_crm_account.dim_crm_account_id
-LEFT JOIN mart_arr
-    ON paid_user_metrics.dim_subscription_id_original = mart_arr.dim_subscription_id_original
-    AND paid_user_metrics.snapshot_month = mart_arr.arr_month
-    AND paid_user_metrics.delivery_type = mart_arr.product_delivery_type
+LEFT JOIN mart_arr_all
+    ON paid_user_metrics.dim_subscription_id_original = mart_arr_all.dim_subscription_id_original
+    AND paid_user_metrics.snapshot_month = mart_arr_all.arr_month
+    AND paid_user_metrics.delivery_type = mart_arr_all.product_delivery_type
 WHERE paid_user_metrics.license_user_count != 0
 qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instance_identifier ORDER BY paid_user_metrics.ping_created_at DESC NULLs last) = 1
 
@@ -289,6 +285,11 @@ final as (
 
 select
    *,
+   CASE WHEN ROW_NUMBER() OVER (PARTITION BY snapshot_month, dim_subscription_id_original, delivery_type, instance_type ORDER BY billable_user_count desc nulls last, ping_created_at desc nulls last) = 1
+              and instance_type = 'Production' and is_oss_program = false
+             THEN True 
+             ELSE False 
+        END AS is_primary_instance_subscription, 
    lag(ci_pipeline_utilization_color) over (partition by hostname_or_namespace_id 
 order by
    snapshot_month) as ci_color_previous_month,
@@ -335,5 +336,5 @@ from
     created_by="@snalamaru",
     updated_by="@jonglee1218",
     created_date="2023-12-10",
-    updated_date="2024-02-26"
+    updated_date="2024-04-15"
 ) }}

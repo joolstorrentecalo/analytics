@@ -2,6 +2,7 @@
 Test unit to ensure quality of transformation algorithm
 from Postgres to Snowflake
 """
+
 import pytest
 import sqlparse
 from extract.saas_usage_ping.transform_postgres_to_snowflake import (

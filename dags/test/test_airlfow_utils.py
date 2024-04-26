@@ -1,4 +1,5 @@
 """ This file contains common operators/functions to be used across multiple DAGs """
+
 import os
 import urllib.parse
 import pathlib

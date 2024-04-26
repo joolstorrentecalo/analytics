@@ -1,58 +1,198 @@
 {{ simple_cte([
-    ('sales_qualified_source', 'prep_sales_qualified_source'),
+    ('crm_account_dimensions', 'map_crm_account'),
+    ('prep_crm_account', 'wk_prep_crm_account'),
     ('order_type', 'prep_order_type'),
-    ('dim_date', 'dim_date'),
-    ('prep_crm_user', 'wk_prep_crm_user_daily_snapshot'),
-    ('prep_crm_account', 'prep_crm_account_daily_snapshot'),
+    ('sales_qualified_source', 'prep_sales_qualified_source'),
+    ('deal_path', 'prep_deal_path'),
+    ('sales_rep', 'wk_prep_crm_user'),
+    ('prep_crm_user', 'wk_prep_crm_user'),
+    ('sales_segment', 'prep_sales_segment'),
+    ('sfdc_campaigns', 'prep_campaign'),
+    ('dr_partner_engagement', 'prep_dr_partner_engagement'),
+    ('alliance_type', 'prep_alliance_type_scd'),
+    ('channel_type', 'prep_channel_type'),
     ('sfdc_opportunity', 'wk_prep_crm_opportunity_fy25'),
-    ('deal_path', 'prep_deal_path')
+    ('prep_crm_user_hierarchy', 'wk_prep_crm_user_hierarchy'),
+    ('prep_date', 'prep_date')
+
 ]) }},
 
-
-
- final AS (
+final AS (
 
   SELECT
-    {{ dbt_utils.generate_surrogate_key(['prep_crm_user.dim_crm_user_hierarchy_sk',
-                                 'dim_date.fiscal_year', 
-                                 'dim_date.first_day_of_month', 
-                                 'sales_qualified_source.dim_sales_qualified_source_id',
-                                 'order_type.dim_order_type_id',
-                                 'dim_date.date_day'
-                                 ]) }}                                                                                          AS actuals_targets_pk,
+    sfdc_opportunity.crm_opportunity_snapshot_id, 
     sfdc_opportunity.dim_crm_opportunity_id,
-    
-
-    --Common dimension keys
-    {{ get_keyed_nulls('sales_qualified_source.dim_sales_qualified_source_id') }}                                               AS dim_sales_qualified_source_id,
-    {{ get_keyed_nulls('order_type.dim_order_type_id') }}                                                                       AS dim_order_type_id,
-    {{ get_keyed_nulls('order_type_live.dim_order_type_id') }}                                                                  AS dim_order_type_live_id,
-    {{ get_keyed_nulls('prep_crm_user.dim_crm_user_hierarchy_sk') }}                                                            AS dim_crm_user_hierarchy_sk,
-    prep_crm_user.crm_user_business_unit,
-    prep_crm_user.crm_user_sales_segment,
-    prep_crm_user.crm_user_geo,
-    prep_crm_user.crm_user_region,
-    prep_crm_user.crm_user_area,
-    prep_crm_user.crm_user_role_name,
-    prep_crm_user.crm_user_role_level_1,
-    prep_crm_user.crm_user_role_level_2,
-    prep_crm_user.crm_user_role_level_3,
-    prep_crm_user.crm_user_role_level_4,
-    prep_crm_user.crm_user_role_level_5,
-    prep_crm_user.crm_user_sales_segment_grouped,
-    prep_crm_user.crm_user_sales_segment_region_grouped,
-    
+    sfdc_opportunity.snapshot_id,
     sfdc_opportunity.merged_opportunity_id                                                                              AS merged_crm_opportunity_id,
     sfdc_opportunity.dim_crm_account_id,
     sfdc_opportunity.dim_crm_person_id,
     sfdc_opportunity.sfdc_contact_id,
     sfdc_opportunity.record_type_id,
 
+  -- common dimension keys
+    {{ get_keyed_nulls('sfdc_opportunity.dim_crm_user_id') }}                                                                   AS dim_crm_user_id,
+    {{ get_keyed_nulls('prep_crm_account.dim_crm_user_id') }}                                                                   AS dim_crm_account_user_id,
+    {{ get_keyed_nulls('order_type.dim_order_type_id') }}                                                                       AS dim_order_type_id,
+    {{ get_keyed_nulls('order_type_live.dim_order_type_id') }}                                                                  AS dim_order_type_live_id,
+    {{ get_keyed_nulls('dr_partner_engagement.dim_dr_partner_engagement_id') }}                                                 AS dim_dr_partner_engagement_id,
+    {{ get_keyed_nulls('alliance_type.dim_alliance_type_id') }}                                                                 AS dim_alliance_type_id,
+    {{ get_keyed_nulls('alliance_type_current.dim_alliance_type_id') }}                                                         AS dim_alliance_type_current_id,
+    {{ get_keyed_nulls('channel_type.dim_channel_type_id') }}                                                                   AS dim_channel_type_id,
+    {{ get_keyed_nulls('sales_qualified_source.dim_sales_qualified_source_id') }}                                               AS dim_sales_qualified_source_id,
+    {{ get_keyed_nulls('deal_path.dim_deal_path_id') }}                                                                         AS dim_deal_path_id,
+    {{ get_keyed_nulls('crm_account_dimensions.dim_parent_sales_segment_id,sales_segment.dim_sales_segment_id') }}              AS dim_parent_sales_segment_id,
+    crm_account_dimensions.dim_parent_sales_territory_id,
+    crm_account_dimensions.dim_parent_industry_id,
+    {{ get_keyed_nulls('crm_account_dimensions.dim_account_sales_segment_id,sales_segment.dim_sales_segment_id') }}             AS dim_account_sales_segment_id,
+    crm_account_dimensions.dim_account_sales_territory_id,
+    crm_account_dimensions.dim_account_industry_id,
+    crm_account_dimensions.dim_account_location_country_id,
+    crm_account_dimensions.dim_account_location_region_id,
+    {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_hierarchy_id') }}                                                  AS dim_crm_opp_owner_user_hierarchy_id,
+    sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk,
+    {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity.crm_opp_owner_business_unit_stamped']) }}                            AS dim_crm_opp_owner_business_unit_stamped_id,
+    {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity.crm_opp_owner_sales_segment_stamped']) }}                            AS dim_crm_opp_owner_sales_segment_stamped_id,
+    {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity.crm_opp_owner_geo_stamped']) }}                                      AS dim_crm_opp_owner_geo_stamped_id,
+    {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity.crm_opp_owner_region_stamped']) }}                                   AS dim_crm_opp_owner_region_stamped_id,
+    {{ dbt_utils.generate_surrogate_key(['sfdc_opportunity.crm_opp_owner_area_stamped']) }}                                     AS dim_crm_opp_owner_area_stamped_id,
+    {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_role_name_id') }}                                                  AS dim_crm_opp_owner_role_name_id,
+    {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_role_level_1_id') }}                                               AS dim_crm_opp_owner_role_level_1_id,
+    {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_role_level_2_id') }}                                               AS dim_crm_opp_owner_role_level_2_id,
+    {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_role_level_3_id') }}                                               AS dim_crm_opp_owner_role_level_3_id,
+    {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_role_level_4_id') }}                                               AS dim_crm_opp_owner_role_level_4_id,
+    {{ get_keyed_nulls('prep_crm_user_hierarchy.dim_crm_user_role_level_5_id') }}                                               AS dim_crm_opp_owner_role_level_5_id,
+    {{ get_keyed_nulls('sales_rep.dim_crm_user_hierarchy_sk') }}                                                                AS dim_crm_user_hierarchy_live_sk,
+    {{ get_keyed_nulls('sales_rep.dim_crm_user_business_unit_id') }}                                                            AS dim_crm_user_business_unit_id,
+    {{ get_keyed_nulls('sales_rep.dim_crm_user_sales_segment_id') }}                                                            AS dim_crm_user_sales_segment_id,
+    {{ get_keyed_nulls('sales_rep.dim_crm_user_geo_id') }}                                                                      AS dim_crm_user_geo_id,
+    {{ get_keyed_nulls('sales_rep.dim_crm_user_region_id') }}                                                                   AS dim_crm_user_region_id,
+    {{ get_keyed_nulls('sales_rep.dim_crm_user_area_id') }}                                                                     AS dim_crm_user_area_id,
+    {{ get_keyed_nulls('sales_rep_account.dim_crm_user_hierarchy_sk') }}                                                        AS dim_crm_user_hierarchy_account_user_sk,
+    {{ get_keyed_nulls('sales_rep_account.dim_crm_user_business_unit_id') }}                                                    AS dim_crm_account_user_business_unit_id,
+    {{ get_keyed_nulls('sales_rep_account.dim_crm_user_sales_segment_id') }}                                                    AS dim_crm_account_user_sales_segment_id,
+    {{ get_keyed_nulls('sales_rep_account.dim_crm_user_geo_id') }}                                                              AS dim_crm_account_user_geo_id,
+    {{ get_keyed_nulls('sales_rep_account.dim_crm_user_region_id') }}                                                           AS dim_crm_account_user_region_id,
+    {{ get_keyed_nulls('sales_rep_account.dim_crm_user_area_id') }}                                                             AS dim_crm_account_user_area_id,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN dim_crm_user_hierarchy_account_user_sk  -- live account owner hierarchy
+      ELSE {{ get_keyed_nulls('sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk') }} -- stamped opp owner hierarchy
+    END                                                                                                                         AS dim_crm_current_account_set_hierarchy_sk,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN dim_crm_account_user_sales_segment_id
+      ELSE dim_crm_opp_owner_sales_segment_stamped_id
+    END                                                                                                                         AS dim_crm_current_account_set_sales_segment_id,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_sales_segment
+      ELSE sfdc_opportunity.crm_opp_owner_sales_segment_stamped
+    END                                                                                                                         AS crm_current_account_set_sales_segment,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN dim_crm_account_user_geo_id
+      ELSE  dim_crm_opp_owner_geo_stamped_id
+    END                                                                                                                         AS dim_crm_current_account_set_geo_id,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_geo
+      ELSE  sfdc_opportunity.crm_opp_owner_geo_stamped
+    END                                                                                                                         AS crm_current_account_set_geo,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN dim_crm_account_user_region_id
+      ELSE dim_crm_opp_owner_region_stamped_id
+    END                                                                                                                         AS dim_crm_current_account_set_region_id,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_region
+      ELSE sfdc_opportunity.crm_opp_owner_region_stamped
+    END                                                                                                                         AS crm_current_account_set_region,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN dim_crm_account_user_area_id
+      ELSE dim_crm_opp_owner_area_stamped_id
+    END                                                                                                                         AS dim_crm_current_account_set_area_id,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_area
+      ELSE sfdc_opportunity.crm_opp_owner_area_stamped
+    END                                                                                                                         AS crm_current_account_set_area,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN dim_crm_account_user_business_unit_id
+      ELSE dim_crm_opp_owner_business_unit_stamped_id
+    END                                                                                                                         AS dim_crm_current_account_set_business_unit_id,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_business_unit
+      ELSE sfdc_opportunity.crm_opp_owner_business_unit_stamped
+    END                                                                                                                         AS crm_current_account_set_business_unit,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.user_role_name
+      ELSE sales_rep.user_role_name
+    END                                                                                                                         AS crm_current_account_set_role_name,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.user_role_level_1
+      ELSE sales_rep.user_role_level_1
+    END                                                                                                                         AS crm_current_account_set_role_level_1,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.user_role_level_2
+      ELSE sales_rep.user_role_level_2
+    END                                                                                                                         AS crm_current_account_set_role_level_2,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.user_role_level_3
+      ELSE sales_rep.user_role_level_3
+    END                                                                                                                         AS crm_current_account_set_role_level_3,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.user_role_level_4
+      ELSE sales_rep.user_role_level_4
+    END                                                                                                                         AS crm_current_account_set_role_level_4,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.user_role_level_5
+      ELSE sales_rep.user_role_level_5
+    END                                                                                                                         AS crm_current_account_set_role_level_5,
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_sales_segment
+      ELSE sfdc_opportunity.crm_opp_owner_sales_segment_stamped_live
+    END                                                                                                                         AS crm_current_account_set_sales_segment_live,
+
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_geo
+      ELSE  sfdc_opportunity.crm_opp_owner_geo_stamped_live
+    END                                                                                                                         AS crm_current_account_set_geo_live,
+
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_region
+      ELSE sfdc_opportunity.crm_opp_owner_region_stamped_live
+    END                                                                                                                         AS crm_current_account_set_region_live,
+
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_area
+      ELSE sfdc_opportunity.crm_opp_owner_area_stamped_live
+    END                                                                                                                         AS crm_current_account_set_area_live,
+
+    CASE
+      WHEN close_fiscal_year < close_date.current_fiscal_year
+        THEN sales_rep_account.crm_user_business_unit
+      ELSE sfdc_opportunity.crm_opp_owner_business_unit_stamped_live
+    END                                                                                                                         AS crm_current_account_set_business_unit_live,
     --attributes
     sfdc_opportunity.opportunity_name,
     sfdc_opportunity.report_user_segment_geo_region_area_sqs_ot,
     prep_crm_user.user_name                                           AS opp_owner_name,
     sales_qualified_source.sales_qualified_source_name,
+    sfdc_opportunity.sales_qualified_source_grouped,
     order_type.order_type_name AS order_type,
     order_type_live.order_type_name AS order_type_live,
     sfdc_opportunity.order_type_grouped,
@@ -68,6 +208,7 @@
     sfdc_opportunity.snapshot_fiscal_quarter_date,
     sfdc_opportunity.snapshot_day_of_fiscal_quarter_normalised,
     sfdc_opportunity.snapshot_day_of_fiscal_year_normalised,
+    sfdc_opportunity.snapshot_last_day_of_fiscal_quarter,
     sfdc_opportunity.created_date,
     sfdc_opportunity.created_date_id,
     sfdc_opportunity.sales_accepted_date,
@@ -108,8 +249,9 @@
     sfdc_opportunity.sales_last_activity_date,
     sfdc_opportunity.sales_last_activity_date_id,
     sfdc_opportunity.technical_evaluation_date,
-    sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk,
     sfdc_opportunity.technical_evaluation_date_id,
+
+   
     sfdc_opportunity.ssp_id,
     sfdc_opportunity.ga_client_id,
 
@@ -183,6 +325,28 @@
     sfdc_opportunity.comp_channel_neutral,
 
     -- additive fields
+    sfdc_opportunity.positive_booked_deal_count_in_snapshot_quarter,
+    sfdc_opportunity.positive_booked_net_arr_in_snapshot_quarter,
+    sfdc_opportunity.positive_open_deal_count_in_snapshot_quarter,
+    sfdc_opportunity.positive_open_net_arr_in_snapshot_quarter,
+    sfdc_opportunity.open_1plus_net_arr_in_snapshot_quarter,
+    sfdc_opportunity.open_3plus_net_arr_in_snapshot_quarter,
+    sfdc_opportunity.open_4plus_net_arr_in_snapshot_quarter,
+    sfdc_opportunity.open_1plus_deal_count_in_snapshot_quarter,
+    sfdc_opportunity.open_3plus_deal_count_in_snapshot_quarter,
+    sfdc_opportunity.open_4plus_deal_count_in_snapshot_quarter,
+    sfdc_opportunity.created_arr_in_snapshot_quarter,
+    sfdc_opportunity.closed_won_opps_in_snapshot_quarter,
+    sfdc_opportunity.closed_opps_in_snapshot_quarter,
+    sfdc_opportunity.closed_net_arr_in_snapshot_quarter,
+    sfdc_opportunity.booked_net_arr_in_snapshot_quarter,
+    sfdc_opportunity.created_deals_in_snapshot_quarter,
+    sfdc_opportunity.cycle_time_in_days_in_snapshot_quarter,
+    sfdc_opportunity.booked_deal_count_in_snapshot_quarter,
+    sfdc_opportunity.created_arr,
+    sfdc_opportunity.closed_won_opps,
+    sfdc_opportunity.closed_opps,
+    sfdc_opportunity.closed_net_arr,
     sfdc_opportunity.segment_order_type_iacv_to_net_arr_ratio,
     sfdc_opportunity.calculated_from_ratio_net_arr,
     sfdc_opportunity.net_arr,
@@ -224,36 +388,57 @@
     sfdc_opportunity.arr_basis_for_clari,
     sfdc_opportunity.forecasted_churn_for_clari,
     sfdc_opportunity.override_arr_basis_clari,
+    sfdc_opportunity.cycle_time_in_days,
     sfdc_opportunity.vsa_start_date_net_arr,
-    sfdc_opportunity.cycle_time_in_days_combined,
-    dim_date.day_of_week,
-    dim_date.first_day_of_week,
-    dim_date.date_id,
-    dim_date.fiscal_month_name_fy,
-    dim_date.fiscal_quarter_name_fy,
-    dim_date.first_day_of_fiscal_quarter,
-    dim_date.first_day_of_fiscal_year,
-    dim_date.last_day_of_week,
-    dim_date.last_day_of_month,
-    dim_date.last_day_of_fiscal_quarter,
-    dim_date.last_day_of_fiscal_year
+    prep_date.day_of_week,
+    prep_date.first_day_of_week,
+    prep_date.date_id,
+    prep_date.fiscal_month_name_fy,
+    prep_date.fiscal_quarter_name_fy,
+    prep_date.first_day_of_fiscal_quarter,
+    prep_date.first_day_of_fiscal_year,
+    prep_date.last_day_of_week,
+    prep_date.last_day_of_month,
+    prep_date.last_day_of_fiscal_quarter,
+    prep_date.last_day_of_fiscal_year
   FROM sfdc_opportunity
-  INNER JOIN dim_date
-    ON sfdc_opportunity.snapshot_date = dim_date.date_actual
+  INNER JOIN prep_date
+    ON sfdc_opportunity.snapshot_date = prep_date.date_actual
+  LEFT JOIN crm_account_dimensions
+      ON sfdc_opportunity.dim_crm_account_id = crm_account_dimensions.dim_crm_account_id
   LEFT JOIN prep_crm_account
-    ON sfdc_opportunity.dim_crm_account_id = prep_crm_account.dim_crm_account_id
-      AND sfdc_opportunity.snapshot_id = prep_crm_account.snapshot_id
-  LEFT JOIN sales_qualified_source
-    ON sfdc_opportunity.sales_qualified_source = sales_qualified_source.sales_qualified_source_name
-  LEFT JOIN order_type
-    ON sfdc_opportunity.order_type = order_type.order_type_name
-  LEFT JOIN order_type AS order_type_live
-    ON sfdc_opportunity.order_type_live = order_type_live.order_type_name
+      ON sfdc_opportunity.dim_crm_account_id = prep_crm_account.dim_crm_account_id
+    LEFT JOIN sales_qualified_source
+      ON sfdc_opportunity.sales_qualified_source = sales_qualified_source.sales_qualified_source_name
+    LEFT JOIN order_type
+      ON sfdc_opportunity.order_type = order_type.order_type_name
+    LEFT JOIN order_type AS order_type_live
+      ON sfdc_opportunity.order_type_live = order_type_live.order_type_name
+
   LEFT JOIN prep_crm_user
     ON sfdc_opportunity.dim_crm_user_id = prep_crm_user.dim_crm_user_id
-      AND sfdc_opportunity.snapshot_id = prep_crm_user.snapshot_id
-  LEFT JOIN deal_path
-    ON sfdc_opportunity.deal_path = deal_path.deal_path_name
+    LEFT JOIN deal_path
+      ON sfdc_opportunity.deal_path = deal_path.deal_path_name
+    LEFT JOIN sales_segment
+      ON sfdc_opportunity.sales_segment = sales_segment.sales_segment_name
+    LEFT JOIN prep_crm_user_hierarchy
+      ON sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk = prep_crm_user_hierarchy.dim_crm_user_hierarchy_sk
+    LEFT JOIN prep_crm_user_hierarchy AS account_hierarchy
+      ON prep_crm_account.dim_crm_parent_account_hierarchy_sk = account_hierarchy.dim_crm_user_hierarchy_sk
+    LEFT JOIN dr_partner_engagement
+      ON sfdc_opportunity.dr_partner_engagement = dr_partner_engagement.dr_partner_engagement_name
+    LEFT JOIN alliance_type
+      ON sfdc_opportunity.alliance_type = alliance_type.alliance_type_name
+    LEFT JOIN alliance_type AS alliance_type_current
+      ON sfdc_opportunity.alliance_type_current = alliance_type_current.alliance_type_name
+    LEFT JOIN channel_type
+      ON sfdc_opportunity.channel_type = channel_type.channel_type_name
+    LEFT JOIN sales_rep
+      ON sfdc_opportunity.dim_crm_user_id = sales_rep.dim_crm_user_id
+    LEFT JOIN sales_rep AS sales_rep_account
+      ON prep_crm_account.dim_crm_user_id = sales_rep_account.dim_crm_user_id
+    LEFT JOIN prep_date close_date
+      ON close_date.date_id = sfdc_opportunity.close_date_id
   WHERE is_live = 0
 
   {% if is_incremental() %}

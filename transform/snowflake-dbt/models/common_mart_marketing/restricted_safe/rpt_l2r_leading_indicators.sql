@@ -23,6 +23,8 @@
         lead_source,
         inquiry_sum,
         mql_sum,
+        lead_score_classification,
+        is_defaulted_trial,
 
     --Person Dates
         true_inquiry_date,
@@ -320,5 +322,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-06-21",
-    updated_date="2023-08-10",
+    updated_date="2024-03-12",
   ) }}

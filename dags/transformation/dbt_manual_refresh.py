@@ -8,6 +8,7 @@ Before running this DAG fill the variables for the refresh:
 
 **All variables should be populated, or job will not start.**
 """
+
 from datetime import datetime
 
 from airflow import DAG

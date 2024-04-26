@@ -662,10 +662,6 @@ models:
       description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
       tests:
         - dbt_utils.at_least_one
-    - name: coverage_fuzzing_pipeline_usage_28_days_event
-      description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
     - name: environments_all_time_event
       description: '{{ doc("environments_all_time_event_desc") }}'
       tests:
@@ -1038,10 +1034,6 @@ models:
         - dbt_utils.at_least_one
     - name: projects_with_repositories_enabled_all_time_user
       description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
-    - name: coverage_fuzzing_pipeline_usage_28_days_event
-      description: '{{ doc("coverage_fuzzing_pipeline_usage_28_days_event_desc") }}'
       tests:
         - dbt_utils.at_least_one
     - name: environments_all_time_event
@@ -1511,12 +1503,16 @@ models:
 
 - name: rpt_namespace_onboarding
   description: '{{ doc("rpt_namespace_onboarding") }}'
+  tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ultimate_parent_namespace_id
+            - trial_type
   columns:
     - name: ultimate_parent_namespace_id
       description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
       tests:
         - not_null
-        - unique
     - name: namespace_created_at
       description: '{{ doc("namespace_created_at") }}'
     - name: namespace_created_date
@@ -1549,6 +1545,10 @@ models:
       description: Creator invite accepted at timestamp within 2min of creating the ultimate parent namespace. This can be used to filter out namespaces that may have lower intent to purchase.
     - name: trial_start_date
       description: First trial start date associated with the ultimate parent namespace from customers_db_trial_histories.
+    - name: trial_type
+      description: '{{ doc("trial_type") }}'
+    - name: trial_type_name
+      description: '{{ doc("trial_type_name") }}'
     - name: days_since_namespace_creation_at_trial
       description: Date difference in days between ultimate parent namespace creation and trial start.
     - name: first_paid_subscription_start_date
@@ -1612,6 +1612,10 @@ models:
       description: First date any team activation event was triggered.
     - name: dbt_updated_at
     - name: dbt_created_at
+    - name: lead_score_classification
+      description: The Salesforce grade of the lead score for a lead/contact. 
+    - name: is_defaulted_trial
+      description: Boolean value of whether or not a lead/contact was defaulted to a trial.
 
 - name: rpt_product_usage_health_score
   description: '{{ doc("rpt_product_usage_health_score") }}'
@@ -1657,6 +1661,8 @@ models:
       description: Unique identifier of a version of a subscription
     - name: ultimate_subscription_flag
       description: This field is a flag that designates if a subscription is an ultimate subscription or not. 1 = Ultimate subscription, 0 = Non-Ultimate subscription
+    - name: is_oss_program
+      description: This field is a flag that designates if a subscription is an OSS program or not. True = OSS Subscription, False = Not an OSS Subscription
     - name: delivery_type 
       tests: 
         - not_null
@@ -1923,3 +1929,27 @@ models:
       description: The date of the most recent update to this model
     - name: dbt_updated_at 
       description: The timestamp of when this model was last built/refreshed      
+
+- name: rpt_user_based_metric_counts_namespace_monthly
+  description: '{{ doc("rpt_user_based_metric_counts_namespace_monthly") }}'
+  tests:
+    - dbt_utils.expression_is_true:
+        expression: "distinct_users_whole_month >= distinct_users_last_28d_month"
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - date_month
+          - ultimate_parent_namespace_id
+          - metrics_path
+  columns:
+    - name: ultimate_parent_namespace_id
+      description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+    - name: metrics_path
+      description: '{{ doc("metrics_path") }}'
+
+- name: rpt_event_based_metric_counts_namespace_all_time
+  description: '{{ doc("rpt_event_based_metric_counts_namespace_all_time") }}'
+  columns:
+    - name: ultimate_parent_namespace_id
+      description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
+    - name: metrics_path
+      description: '{{ doc("metrics_path") }}'

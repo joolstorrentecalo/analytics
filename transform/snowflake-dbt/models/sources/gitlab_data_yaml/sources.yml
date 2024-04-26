@@ -38,7 +38,7 @@ sources:
       - name: product_pi 
       - name: quality_department_pi
       - name: recruiting_pi
-      - name: release_managers
+      - name: releases
       - name: roles
       - name: sales_pi
       - name: security_department_pi

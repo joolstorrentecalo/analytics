@@ -15,8 +15,8 @@
     ('charges', 'mart_charge'),
     ('dates', 'dim_date'),
     ('aggregated_metrics', 'redis_namespace_snowplow_clicks_aggregated_workspace'),
-    ('redis_metrics_28d_user', 'wk_rpt_user_based_metric_counts_namespace_monthly'),
-    ('redis_metrics_all_time_event', 'wk_rpt_event_based_metric_counts_namespace_all_time')
+    ('redis_metrics_28d_user', 'rpt_user_based_metric_counts_namespace_monthly'),
+    ('redis_metrics_all_time_event', 'rpt_event_based_metric_counts_namespace_all_time')
 ]) }}
 
 
@@ -728,7 +728,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mdrussell",
-    updated_by="@annapiaseczna",
+    updated_by="@utkarsh060",
     created_date="2022-10-12",
-    updated_date="2023-12-07"
+    updated_date="2024-03-13"
 ) }}

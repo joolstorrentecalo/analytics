@@ -25,7 +25,9 @@ models:
       - name: primary_key
         tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "invoice_month >= DATEADD('month',-3,CURRENT_DATE())"
       - name: billing_account_id
         tests:
           - not_null

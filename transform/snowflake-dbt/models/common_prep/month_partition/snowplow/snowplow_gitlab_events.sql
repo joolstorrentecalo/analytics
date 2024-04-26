@@ -4,7 +4,9 @@
 {% set end_date = (start_date + modules.datetime.timedelta(days=31)).strftime('%Y-%m-01') %}
 
 {{config({
-    "unique_key":"event_id"
+    "materialized":"incremental",
+    "unique_key":"event_id",
+    "on_schema_change":"sync_all_columns"
   })
 }}
 
@@ -164,6 +166,7 @@ WITH filtered_source as (
       AND TRY_TO_TIMESTAMP(derived_tstamp) IS NOT NULL
       AND derived_tstamp >= '{{ start_date }}'
       AND derived_tstamp < '{{ end_date }}'
+      AND uploaded_at < '{{ run_started_at }}'
       AND 
         (
           (
@@ -198,6 +201,11 @@ WITH filtered_source as (
         AND IFF(event_name IN ('submit_form', 'focus_form', 'change_form') AND TRY_TO_TIMESTAMP(derived_tstamp) < '2021-05-26'
             , FALSE
             , TRUE)
+    {% if is_incremental() %}
+
+      AND TRY_TO_TIMESTAMP(derived_tstamp) > (SELECT MAX(derived_tstamp) FROM {{this}})
+
+    {% endif %}
 
 )
 
@@ -354,10 +362,11 @@ WITH filtered_source as (
       base.uploaded_at,
       base.infra_source,
       CASE
+        WHEN app_id = 'gitlab-staging' THEN TRUE
         WHEN LOWER(page_url) LIKE 'https://staging.gitlab.com/%' THEN TRUE
         WHEN LOWER(page_url) LIKE 'https://customers.stg.gitlab.com/%' THEN TRUE
         ELSE FALSE
-      END AS is_staging_url,
+      END AS is_staging_event,
       events_with_flattened_context.web_page_context,
       events_with_flattened_context.has_web_page_context,
       events_with_flattened_context.web_page_id,
@@ -372,6 +381,7 @@ WITH filtered_source as (
       events_with_flattened_context.pseudonymized_user_id      AS gsc_pseudonymized_user_id,
       events_with_flattened_context.source                     AS gsc_source,
       events_with_flattened_context.is_gitlab_team_member      AS gsc_is_gitlab_team_member,
+      events_with_flattened_context.feature_enabled_by_namespace_ids AS gsc_feature_enabled_by_namespace_ids,
       events_with_flattened_context.gitlab_experiment_context,
       events_with_flattened_context.has_gitlab_experiment_context,
       events_with_flattened_context.experiment_name,
@@ -396,9 +406,13 @@ WITH filtered_source as (
       events_with_flattened_context.user_agent,
       events_with_flattened_context.delivery_type,
       events_with_flattened_context.api_status_code,
+      events_with_flattened_context.duo_namespace_ids,
+      events_with_flattened_context.saas_namespace_ids,
       events_with_flattened_context.namespace_ids,
       events_with_flattened_context.instance_id,
       events_with_flattened_context.host_name,
+      events_with_flattened_context.is_streaming,
+      events_with_flattened_context.gitlab_global_user_id,
       events_with_flattened_context.gitlab_service_ping_context,
       events_with_flattened_context.has_gitlab_service_ping_context,
       events_with_flattened_context.redis_event_name,

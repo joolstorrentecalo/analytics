@@ -1,6 +1,7 @@
 """
 Run each class (which requests from its respective endpoint) from the command line
 """
+
 import os
 import logging
 from typing import Type

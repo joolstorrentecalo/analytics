@@ -36,6 +36,7 @@ structured_behavior AS (
     gsc_plan,
     gsc_source,
     gsc_is_gitlab_team_member,
+    gsc_feature_enabled_by_namespace_ids,
     event_value,
     session_index,
     session_id,
@@ -50,14 +51,15 @@ structured_behavior AS (
     dim_behavior_browser_sk,
     dim_plan_sk
   FROM {{ ref('fct_behavior_structured_event') }}
+  WHERE is_staging_event = FALSE
   {% if is_incremental() %}
 
-    WHERE behavior_at > (SELECT MAX({{ var('incremental_backfill_date', 'behavior_at') }}) FROM {{ this }})
+      AND behavior_at > (SELECT MAX({{ var('incremental_backfill_date', 'behavior_at') }}) FROM {{ this }})
       AND behavior_at <= (SELECT DATEADD(MONTH, 1, MAX({{ var('incremental_backfill_date', 'behavior_at') }})) FROM {{ this }})
 
   {% else %}
   -- This will cover the first creation of the table or a full refresh and requires that the table be backfilled
-  WHERE behavior_at > DATEADD('day', -30 ,CURRENT_DATE())
+  AND behavior_at > DATEADD('day', -30 ,CURRENT_DATE())
 
   {% endif %}
 
@@ -79,6 +81,7 @@ report AS (
     structured_behavior.gsc_plan,
     structured_behavior.gsc_source,
     structured_behavior.gsc_is_gitlab_team_member,
+    structured_behavior.gsc_feature_enabled_by_namespace_ids,
     structured_behavior.event_value,
     structured_behavior.session_index,
     structured_behavior.session_id,
@@ -125,7 +128,7 @@ report AS (
 {{ dbt_audit(
     cte_ref="report",
     created_by="@pempey",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2023-02-22",
-    updated_date="2024-01-25"
+    updated_date="2024-04-12"
 ) }}

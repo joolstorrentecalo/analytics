@@ -1,6 +1,7 @@
 """
 Extract and load elasticsearch billing itemized costs by deployment
 """
+
 import os
 from datetime import date, datetime, timedelta
 from logging import info

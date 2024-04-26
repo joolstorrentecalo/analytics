@@ -1,11 +1,7 @@
-{{ config(
-    tags=["mnpi_exception"]
-) }}
-
 {{ config({
+    "tags": ["mnpi_exception"],
     "post-hook": "{{ missing_member_column(primary_key = 'dim_crm_user_hierarchy_sk') }}"
-    })
-}}
+}) }}
 
 {{ simple_cte([
     ('dim_date', 'dim_date'),

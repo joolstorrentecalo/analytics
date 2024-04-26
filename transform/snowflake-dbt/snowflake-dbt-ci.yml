@@ -85,127 +85,6 @@
   - export SNOWFLAKE_TRANSFORM_WAREHOUSE=$SNOWFLAKE_MR_XS_WAREHOUSE
   - echo $SNOWFLAKE_TRANSFORM_WAREHOUSE
 
-🐭specify_model:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *deps_and_seed
-    - echo $DBT_MODELS
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --models $DBT_MODELS || FAILED=true
-    - dbt test $CI_PROFILE_TARGET --models $DBT_MODELS || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-🦖specify_l_model:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *l_warehouse
-    - *deps_and_seed
-    - echo $DBT_MODELS
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --models $DBT_MODELS || FAILED=true
-    - *xs_warehouse
-    - dbt test $CI_PROFILE_TARGET --models $DBT_MODELS || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-specify_dbt_parameters:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *deps_and_seed
-    - echo $DBT_PARAMETERS
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} $DBT_PARAMETERS || FAILED=true
-    - dbt test $CI_PROFILE_TARGET $DBT_PARAMETERS || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-🐘specify_xl_model:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *xl_warehouse
-    - *deps_and_seed
-    - echo $DBT_MODELS
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --models $DBT_MODELS || FAILED=true
-    - *xs_warehouse
-    - dbt test $CI_PROFILE_TARGET --models $DBT_MODELS || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-🐭🥩specify_raw_model:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *deps_and_seed
-    - *clone_raw # Reads from raw clone
-    - *set_snapshot
-    - echo $DBT_MODELS
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --models $DBT_MODELS || FAILED=true
-    - dbt test $CI_PROFILE_TARGET --models $DBT_MODELS || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-🌱specify_csv_seed:
-  <<: *snowflake_dbt_jobs
-  script:
-    - python3 macro_name_check.py
-    - dbt deps $CI_PROFILE_TARGET
-    - echo $DBT_MODELS
-    - dbt seed --full-refresh $CI_PROFILE_TARGET --select $DBT_MODELS
-
-📸🥩specify_snapshot:
-  <<: *snowflake_dbt_jobs
-  script:
-    - echo $DBT_MODELS
-    - *set_snapshot
-    - *clone_raw # Reads from raw clone
-    - *deps_and_seed
-    - dbt snapshot $CI_PROFILE_TARGET --select $DBT_MODELS
-
-📸🥩🦖specify_l_snapshot:
-  <<: *snowflake_dbt_jobs
-  script:
-    - echo $DBT_MODELS
-    - *set_snapshot
-    - *clone_raw # Reads from raw clone
-    - *l_warehouse
-    - *deps_and_seed
-    - dbt snapshot $CI_PROFILE_TARGET --select $DBT_MODELS
-
-🏗️🛺run_changed_models_sql:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *deps_and_seed
-    - CHANGED_FILES=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD | xargs -n1 basename | grep '\.sql'  | sed "s/^/$ANCESTOR_TYPE/g" | sed "s/.sql/$DEPENDENT_TYPE/g" )
-    - echo $CHANGED_FILES
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --models $CHANGED_FILES || FAILED=true
-    - dbt test $CI_PROFILE_TARGET --models $CHANGED_FILES || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-🏗️🛺🦖run_changed_models_sql_l:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *l_warehouse
-    - *deps_and_seed
-    - CHANGED_FILES=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD | xargs -n1 basename | grep '\.sql'  | sed "s/^/$ANCESTOR_TYPE/g" | sed "s/.sql/$DEPENDENT_TYPE/g" )
-    - echo $CHANGED_FILES
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --models $CHANGED_FILES || FAILED=true
-    - dbt test $CI_PROFILE_TARGET --models $CHANGED_FILES || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-🏗️🛺🐘run_changed_models_sql_xl:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *xl_warehouse
-    - *deps_and_seed
-    - CHANGED_FILES=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD | xargs -n1 basename | grep '\.sql'  | sed "s/^/$ANCESTOR_TYPE/g" | sed "s/.sql/$DEPENDENT_TYPE/g" )
-    - echo $CHANGED_FILES
-    - dbt run $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --models $CHANGED_FILES || FAILED=true
-    - dbt test $CI_PROFILE_TARGET --models $CHANGED_FILES || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
-🐘🏭⛏specify_selector_build_xl:
-  <<: *snowflake_dbt_jobs
-  script:
-    - *xl_warehouse
-    - *set_snapshot
-    - *clone_raw # Reads from raw clone
-    - dbt deps $CI_PROFILE_TARGET
-    - echo $DBT_SELECTOR
-    - dbt build $CI_PROFILE_TARGET ${REFRESH:-"--full-refresh"} --selector $DBT_SELECTOR || FAILED=true
-    - if [ $FAILED ]; then exit 1; fi
-
 
 🏗️🏭build_changes:
   <<: *snowflake_dbt_jobs
@@ -215,6 +94,8 @@ specify_dbt_parameters:
     - echo $SNOWFLAKE_TRANSFORM_WAREHOUSE
     - export SNOWFLAKE_SNAPSHOT_DATABASE="${CI_COMMIT_REF_NAME^^}_RAW" # Build can execute snapshots
     - echo $SNOWFLAKE_SNAPSHOT_DATABASE
+    - if [ ! -z "$RAW_DB" ]; then SNOWFLAKE_LOAD_DATABASE="${CI_COMMIT_REF_NAME^^}_RAW"; fi
+    - echo $SNOWFLAKE_LOAD_DATABASE
     - export DBT_CI_STATE="--state reference_state"
     - echo $DBT_CI_STATE
     - DBT_CI_CHANGES=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD | xargs -n1 basename | grep '\.sql\|\.csv'  | sed -E "s/(.sql|.csv)/$DOWNSTREAM/g" )
@@ -222,17 +103,17 @@ specify_dbt_parameters:
     # If we can get the reference from the HEAD of the branch this could be solved.
     # - export DBT_CI_SELECTION="state:modified."${STATE_MODIFIED:-"body"}${DOWNSTREAM:-""}
     - export DBT_CI_SELECTION=""
-    - if [ -z $SELECTION ]; then DBT_CI_SELECTION=$DBT_CI_CHANGES; else DBT_CI_SELECTION=$SELECTION; fi
+    - if [ -z "$SELECTION" ]; then DBT_CI_SELECTION=$DBT_CI_CHANGES; else DBT_CI_SELECTION=$SELECTION; fi
     - echo $DBT_CI_SELECTION
-    - if [ -z $DBT_CI_SELECTION ]; then echo "No models selected." && exit 3; fi 
+    - if [ -z "$DBT_CI_SELECTION" ]; then echo "No models selected." && exit 3; fi 
     - export DBT_CI_FAIL_FAST=""
-    - if [ -z $FAIL_FAST ]; then DBT_CI_FAIL_FAST="--fail-fast"; fi
+    - if [ -z "$FAIL_FAST" ]; then DBT_CI_FAIL_FAST="--fail-fast"; fi
     - echo $DBT_CI_FAIL_FAST
     - export DBT_CI_EXCLUDE=""
-    - if [ ! -z $EXCLUDE ]; then DBT_CI_EXCLUDE="--exclude $EXCLUDE"; fi
+    - if [ ! -z "$EXCLUDE" ]; then DBT_CI_EXCLUDE="--exclude $EXCLUDE"; fi
     - echo $DBT_CI_EXCLUDE
     - export DBT_CI_FULL_REFRESH=""
-    - if [ ! -z $FULL_REFRESH ]; then DBT_CI_FULL_REFRESH="--full-refresh"; fi
+    - if [ ! -z "$FULL_REFRESH" ]; then DBT_CI_FULL_REFRESH="--full-refresh"; fi
     - echo $DBT_CI_FULL_REFRESH
     # VARS format "key":"value","key":"value"
     - export DBT_CI_VARS=""
@@ -259,39 +140,6 @@ specify_dbt_parameters:
     - dbt $DBT_CI_STATEMENT $CI_PROFILE_TARGET || FAILED=true
     - if [ $FAILED ]; then echo "Invocation process failed" && exit 5; fi
   
-
-
-# ======
-# DBT cloning
-# ======
-
-🏗️🔆run_changed_️clone_model_dbt_select:
-  <<: *snowflake_dbt_jobs
-  variables:
-    LOGURU_COLORIZE: "true"
-  script:
-    - *dbt_deps
-    - export SNOWFLAKE_PREP_DATABASE="PREP"
-    - export SNOWFLAKE_PROD_DATABASE="PROD"
-    - export GIT_BRANCH=$BRANCH_NAME
-    - CHANGED_FILES=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD | xargs -n1 basename | grep '\.sql'  | sed "s/^/$ANCESTOR_TYPE/g" | sed "s/.sql/$DEPENDENT_TYPE/g" )
-    - echo $CHANGED_FILES
-    - INPUT=$(dbt --quiet ls --models $CHANGED_FILES --output json --output-keys "database schema name depends_on unique_id alias" --profiles-dir profile --target prod)
-    - ../../orchestration/clone_dbt_models_select.py $INPUT
-
-
-🔆⚡️clone_model_dbt_select:
-  <<: *snowflake_dbt_jobs
-  variables:
-    LOGURU_COLORIZE: "true"
-  script:
-    - *dbt_deps
-    - export SNOWFLAKE_PREP_DATABASE="PREP"
-    - export SNOWFLAKE_PROD_DATABASE="PROD"
-    - export GIT_BRANCH=$BRANCH_NAME
-    - echo $DBT_MODELS
-    - INPUT=$(dbt --quiet ls --models $DBT_MODELS --output json --output-keys "database schema name depends_on unique_id alias" --profiles-dir profile --target prod)
-    - ../../orchestration/clone_dbt_models_select.py $INPUT
 
 📚✏️generate_dbt_docs:
   image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
@@ -449,6 +297,7 @@ specify_dbt_parameters:
         config.schema:restricted_safe_workspace_finance
         config.schema:restricted_safe_workspace_sales 
         config.schema:restricted_safe_workspace_marketing
+        config.schema:restricted_safe_workspace_engineering
       --output json > safe_models.json
     - python3 safe_model_check.py
 
@@ -476,12 +325,12 @@ specify_dbt_parameters:
     - python3 macro_name_check.py
 
 # ======
-# Periscope Model Check
+# Tableau Model Check
 # ======
 
-.periscope_check: &periscope_check
+.tableau_direct_dependencies_query: &tableau_direct_dependencies_query
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/data-image/data-image:v0.0.13
+  image: registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.7
   tags:
     - analytics
   only:
@@ -491,15 +340,14 @@ specify_dbt_parameters:
       - merge_request
   allow_failure: true
 
-🔍periscope_query:
-  <<: *periscope_check
+🔍tableau_direct_dependencies_query:
+  <<: *tableau_direct_dependencies_query
   script:
-    - git clone -b periscope/master --single-branch https://gitlab-data-ci:$PERISCOPE_REPO_TOKEN@gitlab.com/gitlab-data/periscope.git --depth 1
-    - git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME...HEAD --name-only | grep -iEo "(.*)\.sql" | sed -E 's/\.sql//' | awk -F '/' '{print tolower($NF)}' | sort | uniq > diff.txt
-    - touch comparison.txt
-    - python3 transform/periscope_check.py
-    - if (( $(cat comparison.txt | wc -l | tr -d ' ') > 0 )); then echo "Check these!" && cat comparison.txt && exit 1; else echo "All good" && exit 0; fi;
-
+    - DIFF=$(git diff origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME...HEAD --name-only | grep -iEo "(.*)\.sql" | sed -E 's/\.sql//' | awk -F '/' '{print tolower($NF)}' | sort | uniq )
+    - echo $DIFF
+    - python3 orchestration/tableau_dependency_query/src/tableau_query.py $DIFF
+  variables:
+    LOGURU_COLORIZE: "true"
 
 # ======
 # Lint dbt SQL

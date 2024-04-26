@@ -157,10 +157,12 @@ tables:
       , entity_id
       , entity_type
       , CASE
-            WHEN details ilike '%%custom_message: Added group%%' THEN 'custom_message: Added group'
-            WHEN details ilike '%%add: group%%' THEN 'add: group'
-            WHEN details ilike '%%remove: group%%' THEN 'remove: group'
-            ELSE NULL
+          WHEN details ILIKE '%%custom_message: Added group%%' THEN 'custom_message: Added group'
+          WHEN details ILIKE '%%add: group%%' THEN 'add: group'
+          WHEN details ILIKE '%%remove: group%%' THEN 'remove: group'
+          WHEN details ILIKE '%%banned%%' THEN 'banned'
+          WHEN details ILIKE '%%blocked%%' THEN 'blocked'
+          ELSE NULL
         END as details
       , created_at
       FROM audit_events
@@ -538,6 +540,7 @@ tables:
       , updated_at
       , NULL AS environment_type
       , state
+      , tier
       FROM environments
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
@@ -1049,6 +1052,20 @@ tables:
       , updated_at
       , base_access_level
       , read_code
+      , read_vulnerability
+      , admin_vulnerability
+      , read_dependency
+      , admin_merge_request
+      , admin_group_member
+      , manage_project_access_tokens
+      , archive_project
+      , manage_group_access_tokens
+      , remove_project
+      , admin_terraform_state
+      , admin_cicd_variables
+      , remove_group
+      , occupies_seat
+      , permissions
       FROM member_roles
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
@@ -1490,7 +1507,7 @@ tables:
   notes_internal_only:
     additional_filtering: |-
       AND created_at NOT IN ( '2746-07-23 18:16:42.925+00 BC')
-      AND project_id in {INTERNAL_PROJECT_IDS}
+      AND (namespace_id in {INTERNAL_NAMESPACE_IDS} OR project_id in {INTERNAL_PROJECT_IDS})
     dbt_source_model: true
     deletes_exempt: True
     export_schema: 'gitlab_com'
@@ -1728,7 +1745,6 @@ tables:
       , mirror
       , mirror_user_id
       , shared_runners_enabled
-      , NULL AS build_coverage_regex
       , build_allow_git_fetch
       , build_timeout
       , mirror_trigger_builds
@@ -2333,7 +2349,6 @@ tables:
         AND '{END_TIMESTAMP}'::timestamp
   subscription_user_add_on_assignments:
     dbt_source_model: true
-    deletes_exempt: True
     export_schema: 'gitlab_com'
     export_table: 'subscription_user_add_on_assignments'
     export_table_primary_key: id
@@ -2402,6 +2417,7 @@ tables:
       , note_id
       , commit_id
       , group_id
+      , resolved_by_action
       FROM todos
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
@@ -2686,6 +2702,38 @@ tables:
       , created_at
       , updated_at
       FROM workspaces
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  zoekt_enabled_namespaces:
+    deletes_exempt: True
+    export_schema: 'gitlab_com'
+    export_table: zoekt_enabled_namespaces
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , root_namespace_id
+      , search
+      , created_at
+      , updated_at
+      FROM zoekt_enabled_namespaces
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  zoekt_indices:
+    deletes_exempt: True
+    export_schema: 'gitlab_com'
+    export_table: zoekt_indices
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , zoekt_enabled_namespace_id
+      , zoekt_node_id
+      , namespace_id
+      , created_at
+      , updated_at
+      , state
+      FROM zoekt_indices
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
   zoom_meetings:

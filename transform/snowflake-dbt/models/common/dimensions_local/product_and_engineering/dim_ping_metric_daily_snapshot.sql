@@ -50,6 +50,8 @@ ping_metric_hist AS (
       || REPLACE(metrics_path, '.', '''][''')
       || ''']'                                              AS sql_friendly_path,
     data_source                                             AS data_source,
+    LOWER(data_category)                                    AS data_category,
+    distribution                                            AS distribution,
     description                                             AS description,
     IFF(SUBSTRING(product_group, 0, 5) = 'group',
       SPLIT_PART(REPLACE(product_group, ' ', '_'), ':', 3),
@@ -61,6 +63,7 @@ ping_metric_hist AS (
     time_frame                                              AS time_frame,
     value_type                                              AS value_type,
     instrumentation_class                                   AS instrumentation_class,
+    performance_indicator_type                              AS performance_indicator_type,
     is_gmau                                                 AS is_gmau,
     is_smau                                                 AS is_smau,
     is_paid_gmau                                            AS is_paid_gmau,
@@ -80,6 +83,8 @@ ping_metric_spined AS (
     ping_metric_hist.metrics_path,
     ping_metric_hist.sql_friendly_path,
     ping_metric_hist.data_source,
+    ping_metric_hist.data_category,
+    ping_metric_hist.distribution,
     ping_metric_hist.description,
     ping_metric_hist.instrumentation_class,
     group_section_stage_source.group_name,
@@ -91,6 +96,7 @@ ping_metric_spined AS (
     ping_metric_hist.tier,
     ping_metric_hist.time_frame,
     ping_metric_hist.value_type,
+    ping_metric_hist.performance_indicator_type,
     ping_metric_hist.is_gmau,
     ping_metric_hist.is_smau,
     ping_metric_hist.is_paid_gmau,
@@ -110,5 +116,5 @@ ping_metric_spined AS (
     created_by="@chrissharp",
     updated_by="@utkarsh060",
     created_date="2022-05-13",
-    updated_date="2024-02-22"
+    updated_date="2024-03-12"
 ) }}

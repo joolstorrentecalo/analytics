@@ -1,4 +1,5 @@
 """ Main class for zuora revenue api report"""
+
 import logging
 import sys
 import json

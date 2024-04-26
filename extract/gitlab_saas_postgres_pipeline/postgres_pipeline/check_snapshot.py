@@ -1,6 +1,7 @@
 """
     This module is used to check the connectivity of the database and also check the health of the database.
 """
+
 import logging
 import sys
 import os

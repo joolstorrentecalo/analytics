@@ -1,4 +1,5 @@
 """ This file contains common operators/functions to be used across multiple DAGs """
+
 import os
 import urllib.parse
 import pathlib
@@ -21,7 +22,7 @@ DATA_IMAGE_3_10 = "registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.5"
 DBT_IMAGE = "registry.gitlab.com/gitlab-data/dbt-image:v0.0.3"
 PERMIFROST_IMAGE = "registry.gitlab.com/gitlab-data/permifrost:v0.15.4"
 ANALYST_IMAGE = "registry.gitlab.com/gitlab-data/analyst-image:v0.0.2"
-TABLEAU_CONFIG_IMAGE = "registry.gitlab.com/gitlab-data/tableauconman:v0.1.12"
+TABLEAU_CONFIG_IMAGE = "registry.gitlab.com/gitlab-data/tableauconman:v0.1.18"
 
 SALES_ANALYTICS_NOTEBOOKS_PATH = "analytics/sales_analytics_notebooks"
 # Needed to find the correct drives as the path when running in cloud in the latest Airflow is different
@@ -55,17 +56,6 @@ analytics_pipelines_dag = [
     "dbt_snowplow_full_refresh",
     "t_prep_dotcom_usage_events_backfill",
     "dbt_six_hourly",
-]
-
-
-data_science_pipelines_dag = [
-    "ds_propensity_to_expand",
-    "ds_propensity_to_contract",
-    "ds_propensity_to_purchase_trial",
-    "ds_namespace_segmentation",
-    "ds_propensity_to_purchase_free",
-    "ds_churn_forecasting",
-    "ds_propensity_to_purchase_leads",
 ]
 
 sales_analytics_pipelines_dag = [
@@ -174,8 +164,6 @@ def slack_defaults(context, task_type):
     if task_type == "failure":
         if dag_id in analytics_pipelines_dag:
             slack_channel = "#analytics-pipelines"
-        elif dag_id in data_science_pipelines_dag:
-            slack_channel = "#data-science-pipelines"
         elif dag_id in sales_analytics_pipelines_dag:
             slack_channel = "#sales-analytics-pipelines"
         else:
@@ -290,21 +278,23 @@ gitlab_pod_env_vars = {
     "CI_PROJECT_DIR": "/analytics",
     "EXECUTION_DATE": "{{ next_execution_date }}",
     "SNOWFLAKE_PREPARATION_SCHEMA": "preparation",
-    "SNOWFLAKE_SNAPSHOT_DATABASE": "RAW"
-    if GIT_BRANCH == "master"
-    else f"{GIT_BRANCH.upper()}_RAW",
-    "SNOWFLAKE_LOAD_DATABASE": "RAW"
-    if GIT_BRANCH == "master"
-    else f"{GIT_BRANCH.upper()}_RAW",
-    "SNOWFLAKE_PREP_DATABASE": "PREP"
-    if GIT_BRANCH == "master"
-    else f"{GIT_BRANCH.upper()}_PREP",
-    "SNOWFLAKE_PROD_DATABASE": "PROD"
-    if GIT_BRANCH == "master"
-    else f"{GIT_BRANCH.upper()}_PROD",
-    "DBT_RUNNER": "{{ task_instance_key_str }}__{{ run_id }}__{{ task_instance.try_number }}"
-    if GIT_BRANCH == "master"
-    else f"{GIT_BRANCH.upper()}",
+    "SNOWFLAKE_SNAPSHOT_DATABASE": (
+        "RAW" if GIT_BRANCH == "master" else f"{GIT_BRANCH.upper()}_RAW"
+    ),
+    "SNOWFLAKE_LOAD_DATABASE": (
+        "RAW" if GIT_BRANCH == "master" else f"{GIT_BRANCH.upper()}_RAW"
+    ),
+    "SNOWFLAKE_PREP_DATABASE": (
+        "PREP" if GIT_BRANCH == "master" else f"{GIT_BRANCH.upper()}_PREP"
+    ),
+    "SNOWFLAKE_PROD_DATABASE": (
+        "PROD" if GIT_BRANCH == "master" else f"{GIT_BRANCH.upper()}_PROD"
+    ),
+    "DBT_RUNNER": (
+        "{{ task_instance_key_str }}__{{ run_id }}__{{ task_instance.try_number }}"
+        if GIT_BRANCH == "master"
+        else f"{GIT_BRANCH.upper()}"
+    ),
 }
 
 # git commands

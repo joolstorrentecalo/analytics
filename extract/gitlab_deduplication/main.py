@@ -1,6 +1,7 @@
 """
 This the transformation code for deduplication of data of postgres
 """
+
 import logging
 from datetime import datetime
 from os import environ as env

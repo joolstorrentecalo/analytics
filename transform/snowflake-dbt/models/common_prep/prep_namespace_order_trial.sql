@@ -15,6 +15,8 @@ WITH trial_histories AS (
     glm_source,
     glm_content,
     trial_entity,
+    trial_type,
+    trial_type_name,
     'trial_histories'                                      AS record_source
 
   FROM {{ ref('customers_db_trial_histories_source') }} 
@@ -43,11 +45,11 @@ WITH trial_histories AS (
 
 
 ), final AS (
-  
+
     SELECT 
 
     --Surrogate Key
-    {{ dbt_utils.generate_surrogate_key(['COALESCE(trial_histories.gl_namespace_id, trial_orders.gitlab_namespace_id)']) }}   AS dim_namespace_order_trial_sk,
+    {{ dbt_utils.generate_surrogate_key(['COALESCE(trial_histories.gl_namespace_id, trial_orders.gitlab_namespace_id)','trial_histories.trial_type']) }}   AS dim_namespace_order_trial_sk,
 
     --Natural Key
       COALESCE(trial_histories.gl_namespace_id, trial_orders.gitlab_namespace_id)                                    AS dim_namespace_id, 
@@ -60,19 +62,21 @@ WITH trial_histories AS (
       COALESCE(trial_histories.glm_source, trial_orders.order_source)                                                AS glm_source,   
       trial_histories.glm_content,
       trial_histories.trial_entity,
+      trial_histories.trial_type,
+      trial_histories.trial_type_name,
       COALESCE(trial_histories.record_source, trial_orders.record_source)                                            AS record_source
-      
-          
+
+
     FROM trial_histories
     FULL JOIN trial_orders
       ON  trial_histories.gl_namespace_id = trial_orders.gitlab_namespace_id
-  
+
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@snalamaru",
-    updated_by="@chrissharp",
+    updated_by="@utkarsh060",
     created_date="2023-06-19",
-    updated_date="2023-09-29"
+    updated_date="2024-04-12"
 ) }}

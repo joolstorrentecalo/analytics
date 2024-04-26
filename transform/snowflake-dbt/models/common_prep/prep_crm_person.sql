@@ -260,6 +260,8 @@ WITH biz_person AS (
       ptp_namespace_id                               AS propensity_to_purchase_namespace_id,
       ptp_past_insights                              AS propensity_to_purchase_past_insights,
       ptp_past_score_group                           AS propensity_to_purchase_past_score_group,
+      lead_score_classification,
+      is_defaulted_trial,
       NULL                                           AS zoominfo_company_employee_count,
       zoominfo_contact_id,
       NULL                                           AS is_partner_recalled,
@@ -425,6 +427,8 @@ WITH biz_person AS (
       ptp_namespace_id                               AS propensity_to_purchase_namespace_id,
       ptp_past_insights                              AS propensity_to_purchase_past_insights,
       ptp_past_score_group                           AS propensity_to_purchase_past_score_group,
+      lead_score_classification,
+      is_defaulted_trial,
       zoominfo_company_employee_count,
       NULL AS zoominfo_contact_id,
       is_partner_recalled,
@@ -495,5 +499,5 @@ WITH biz_person AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-12-08",
-    updated_date="2024-01-19"
+    updated_date="2024-03-12"
 ) }}

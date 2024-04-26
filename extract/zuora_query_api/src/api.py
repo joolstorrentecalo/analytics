@@ -1,6 +1,7 @@
 """
     API class file for zuora data query
 """
+
 import json
 import logging
 import time

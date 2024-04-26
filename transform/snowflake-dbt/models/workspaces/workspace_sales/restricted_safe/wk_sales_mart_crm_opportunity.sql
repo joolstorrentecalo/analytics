@@ -88,7 +88,6 @@ WITH sfdc_users_xf AS (
        net_new_source_categories,
        invoice_number,
        opportunity_term,
-       account_owner_team_stamped,
        stage_name_3plus,
        stage_name_4plus,
        stage_category,
@@ -244,7 +243,6 @@ WITH sfdc_users_xf AS (
        sales_team_avp_rd_level,
        sales_team_asm_level,       
 
-       account_owner_team_stamped_cro_level,
        account_owner_user_segment,
        account_owner_user_geo,
        account_owner_user_region,
@@ -285,7 +283,6 @@ WITH sfdc_users_xf AS (
        cp_review_notes,
        cp_champion,
        cp_close_plan,
-       cp_competition,
        cp_decision_criteria,
        cp_decision_process,
        cp_economic_buyer,

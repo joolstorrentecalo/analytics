@@ -14,7 +14,12 @@
 ), final AS (
 
     SELECT
-      sheetload_sales_targets_source.kpi_name,
+      CASE WHEN sheetload_sales_targets_source.kpi_name = 'Net ARR Company'
+        THEN 'Net ARR'
+      WHEN fiscal_months.fiscal_year = 2024 AND sheetload_sales_targets_source.kpi_name = 'Net ARR'
+        THEN 'Net ARR - Stretch' 
+      ELSE sheetload_sales_targets_source.kpi_name
+      END                                                      AS kpi_name,
       sheetload_sales_targets_source.month,
       sheetload_sales_targets_source.sales_qualified_source,
       sheetload_sales_targets_source.order_type,

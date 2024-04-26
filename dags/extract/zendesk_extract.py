@@ -1,6 +1,7 @@
 """
 Run daily Zendesk extract for tickets and ticket_audits tables
 """
+
 import os
 from datetime import datetime, timedelta
 

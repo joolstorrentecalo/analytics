@@ -24,6 +24,7 @@ Note that all GCS / Gitlab DB components still need to be mocked
 6. Don't backfill if above conditions aren't met
 
 """
+
 import os
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch

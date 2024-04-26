@@ -661,6 +661,14 @@ models:
         description: The linked GitLab SFDC Marketing Campaign for distributors
       - name: linked_opportunity_id
         description: The linked Opp on the Deal Registration
+      - name: deal_registration_name
+        description: The name of the deal - often matches the Opp name
+      - name: partner_manager_denial_reason
+        description: The reason the deal was rejected
+      - name: distributor_account_id
+        description: The SFDC account id of the distributor for the deal
+      - name: deal_submitter_type
+        description: The account type of the submitter (Partner, Distributor, etc...)
 
   - name: sfdc_permission_set_assignment_source
     description: '{{ doc("sfdc_permission_set_assignment_source") }}'

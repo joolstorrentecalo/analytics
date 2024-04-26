@@ -60,22 +60,13 @@ folder_pl AS (
   CROSS JOIN {{ ref ('folder_pl') }}
 ),
 
-repo_storage_pl_daily AS (
-
-  WITH sku_list AS (SELECT 'SSD backed PD Capacity' AS sku
-    UNION ALL
-    SELECT 'Balanced PD Capacity'
-    UNION ALL
-    SELECT 'Storage PD Snapshot in US'
-    UNION ALL
-    SELECT 'Storage PD Capacity'
-  )
+repo_storage_pl_daily AS ( -- gitaly costs in production project
 
   SELECT
     snapshot_day                               AS date_day,
     'gitlab-production'                        AS gcp_project_id,
-    'Compute Engine'                           AS gcp_service_description,
-    sku_list.sku                               AS gcp_sku_description,
+    NULL                                       AS gcp_service_description,
+    NULL                                       AS gcp_sku_description,
     'gitaly'                                   AS infra_label,
     NULL                                       AS env_label,
     NULL                                       AS runner_label,
@@ -84,14 +75,13 @@ repo_storage_pl_daily AS (
     repo_storage_pl_daily.percent_repo_size_gb AS pl_percent,
     'repo_storage_pl_daily'                    AS from_mapping
   FROM {{ ref ('repo_storage_pl_daily') }}
-  CROSS JOIN sku_list
 ),
 
-repo_storage_pl_daily_ext AS (
+repo_storage_pl_daily_ext AS ( -- gitaly costs in gitlab-gitaly-gprd-* projects
 
   SELECT
     snapshot_day                               AS date_day,
-    'gitlab-production'                        AS gcp_project_id,
+    'gitlab-gitaly-gprd-%'                     AS gcp_project_id,
     NULL                                       AS gcp_service_description,
     NULL                                       AS gcp_sku_description,
     'gitaly'                                   AS infra_label,

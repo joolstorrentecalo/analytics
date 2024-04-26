@@ -94,6 +94,7 @@ WITH date_spine AS (
       DATE_TRUNC('month', last_day_of_fiscal_year)                                            AS last_month_of_fiscal_year,
       IFF(DATE_TRUNC('month', last_day_of_fiscal_year) = date_actual, TRUE, FALSE)            AS is_first_day_of_last_month_of_fiscal_year,
       DATEADD('day',7,DATEADD('month',1,first_day_of_month))                                  AS snapshot_date_fpa,
+      DATEADD('day',4,DATEADD('month',1,first_day_of_month))                                  AS snapshot_date_fpa_fifth,
       DATEADD('day',44,DATEADD('month',1,first_day_of_month))                                 AS snapshot_date_billings,
       COUNT(date_actual) OVER (PARTITION BY first_day_of_month)                               AS days_in_month_count,
       
@@ -181,6 +182,7 @@ WITH date_spine AS (
       calculated.last_month_of_fiscal_year,
       calculated.is_first_day_of_last_month_of_fiscal_year,
       calculated.snapshot_date_fpa,
+      calculated.snapshot_date_fpa_fifth,
       calculated.snapshot_date_billings,
       calculated.days_in_month_count,
       calculated.week_of_month_normalised,
