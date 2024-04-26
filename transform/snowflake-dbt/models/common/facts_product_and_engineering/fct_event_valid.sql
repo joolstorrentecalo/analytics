@@ -1,9 +1,9 @@
-{{ config(
-    materialized='incremental',
-    tags=["mnpi_exception", "product"],
-    "unique_key":"event_pk",
-    "on_schema_change":"sync_all_columns"
-) }}
+{{ config({
+    materialized: "incremental",
+    "unique_key": "event_pk",
+    "on_schema_change": "sync_all_columns"
+    })
+}}
 
 {{ simple_cte([
     ('fct_event', 'fct_event'),

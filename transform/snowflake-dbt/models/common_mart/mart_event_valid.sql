@@ -1,8 +1,6 @@
 {{ config(
+    materialized='table',
     tags=["mnpi_exception", "product"]
-    "materialized":"incremental",
-    "unique_key":"event_pk",
-    "on_schema_change":"sync_all_columns"
 ) }}
 
 {{ simple_cte([
@@ -23,11 +21,7 @@ fact AS (
         "UPDATED_BY","CREATED_DATE","UPDATED_DATE","MODEL_CREATED_DATE","MODEL_UPDATED_DATE","DBT_UPDATED_AT","DBT_CREATED_AT"]) }}
   FROM fct_event_valid
   WHERE event_date >= DATEADD('month', -24, DATE_TRUNC('month',CURRENT_DATE))
-  {% if is_incremental() %}
 
-      AND event_created_at > (SELECT MAX(event_created_at) FROM {{this}})
-
-  {% endif %}
 ), 
 
 fact_with_dims AS (
