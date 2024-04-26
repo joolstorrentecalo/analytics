@@ -3,6 +3,7 @@
 {{ simple_cte([
     ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
     ('dim_crm_user','dim_crm_user'),
+    ('dim_crm_user_daily_snapshot','dim_crm_user_daily_snapshot'),
     ('mart_crm_person','mart_crm_person'),
     ('sfdc_lead','sfdc_lead'),
     ('mart_crm_event','mart_crm_event'),
@@ -18,6 +19,8 @@
     dim_crm_account_id,
     dim_crm_opportunity_id,
     net_arr,
+    xdr_net_arr_stage_1,
+    xdr_net_arr_stage_3,
     sales_accepted_date AS sales_accepted_date,
     sales_accepted_fiscal_quarter_name,
     dim_date.day_of_fiscal_quarter AS sao_day_of_fiscal_quarter,
@@ -29,6 +32,12 @@
     report_opportunity_user_region,
     report_opportunity_user_area,
     report_user_segment_geo_region_area,
+    parent_crm_account_territory,
+    parent_crm_account_sales_segment,
+    parent_crm_account_geo,
+    parent_crm_account_region,
+    parent_crm_account_area,
+    deal_path_name,
     created_date AS opp_created_date,
     close_date,
     pipeline_created_date,
@@ -76,46 +85,16 @@
     sales_dev_rep.crm_user_region,
     sales_dev_rep.crm_user_area,
     sales_dev_rep.crm_user_business_unit,
-    sales_dev_rep.employee_number AS sales_dev_rep_employee_number,
-    sales_dev_rep.snapshot_date
-  FROM
-  dim_crm_user_daily_snapshot AS sales_dev_rep
-  INNER JOIN sales_dev_opps
-    ON sales_dev_rep.dim_crm_user_id = sales_dev_opps.sdr_bdr_user_id 
-  LEFT JOIN dim_crm_user_daily_snapshot AS manager
-    ON sales_dev_rep.manager_id = manager.dim_crm_user_id AND sales_dev_rep.snapshot_date = manager.snapshot_date
-  LEFT JOIN dim_crm_user_daily_snapshot AS leader
-    ON manager.manager_id = leader.dim_crm_user_id AND manager.snapshot_date = leader.snapshot_date
-),
-
-
-sales_dev_hierarchy AS (
-  SELECT
-    sales_dev_rep_user_id,
-    sales_dev_rep_role_name,
-    --sales_dev_rep_user_name,
-    COALESCE(rep.full_name, sales_dev_rep_user_name)               AS sales_dev_rep_full_name,
-    sales_dev_rep_user_email,
-    COALESCE(manager.full_name, sales_dev_rep_direct_manager_name) AS sales_dev_manager_full_name,
-    sales_dev_rep_manager_email,
-    COALESCE(leader.full_name, sales_dev_leader_name)              AS sales_dev_leader_full_name,
-    CASE
-      WHEN sales_dev_leader_full_name = 'Meaghan Leonard' THEN 'Meaghan Thatcher'
-      WHEN sales_dev_leader_full_name = 'Jean-Baptiste Larramendy' AND sales_dev_manager_full_name = 'Brian Tabbert' THEN 'Brian Tabbert'
-      WHEN sales_dev_leader_full_name = 'Jean-Baptiste Larramendy' AND sales_dev_manager_full_name = 'Elsje Smart' THEN 'Elsje Smart'
-      WHEN sales_dev_leader_full_name = 'Jean-Baptiste Larramendy' AND sales_dev_manager_full_name = 'Robin Falkowski' THEN 'Robin Falkowski'
-      ELSE sales_dev_leader_full_name
-    END                                                            AS sales_dev_leader,
-    sales_dev_leader_email,
-    MIN(snapshot_date)                                             AS valid_from,
-    MAX(snapshot_date)                                             AS valid_to
-  FROM sales_dev_hierarchy_prep
-  LEFT JOIN mart_team_member_directory AS rep ON sales_dev_rep_user_email = rep.work_email
-  LEFT JOIN mart_team_member_directory AS manager ON sales_dev_rep_manager_email = manager.work_email
-  LEFT JOIN mart_team_member_directory AS leader ON sales_dev_leader_email = leader.work_email
-  --where sales_dev_rep_direct_manager_name is not null
-  {{ dbt_utils.group_by(n=9)}}
-
+  
+  --Manager Data
+    manager.user_role_name AS sales_dev_rep_manager_role_name,
+    manager.manager_id AS sales_dev_rep_manager_id,
+    manager.manager_name AS sales_dev_rep_manager_name
+  FROM dim_crm_user sales_dev_rep
+  INNER JOIN sales_dev_opps 
+    ON sales_dev_rep.dim_crm_user_id = sales_dev_opps.sdr_bdr_user_id
+  LEFT JOIN dim_crm_user manager 
+    ON sales_dev_rep.manager_id = manager.dim_crm_user_id  
 
 ), merged_person_base AS (
 
@@ -246,6 +225,7 @@ sales_dev_hierarchy AS (
     ON sales_dev_opps.dim_crm_account_id = activity_summarised.dim_crm_account_id 
       AND activity_summarised.activity_date <= sales_dev_opps.sales_accepted_date 
       AND sales_dev_opps.sdr_bdr_user_id = activity_summarised.dim_crm_user_id
+
 ), opps_missing_link AS (
 
   SELECT * 
@@ -267,9 +247,12 @@ sales_dev_hierarchy AS (
     dim_inquiry_date.fiscal_quarter_name_fy as inquiry_fiscal_quarter_name,
     mart_crm_person.account_demographics_sales_segment AS person_sales_segment,
     mart_crm_person.account_demographics_sales_segment_grouped AS person_sales_segment_grouped,
+    mart_crm_person.account_demographics_geo as person_first_geo,
     mart_crm_person.is_mql,
     mart_crm_person.is_first_order_person,
     mart_crm_person.person_first_country,
+    mart_crm_person.lead_score_classification,
+    mart_crm_person.is_defaulted_trial,
     CASE 
       WHEN mart_crm_person.propensity_to_purchase_score_group IS NULL 
         THEN 'No PTP Score' 
@@ -295,6 +278,8 @@ sales_dev_hierarchy AS (
     opp_to_lead.dim_crm_opportunity_id,
     opp_to_lead.sdr_bdr_user_id,
     opp_to_lead.net_arr,
+    opp_to_lead.xdr_net_arr_stage_1,
+    opp_to_lead.xdr_net_arr_stage_3,
     opp_to_lead.sales_accepted_date,
     opp_to_lead.sales_accepted_fiscal_quarter_name,
     opp_to_lead.sao_day_of_fiscal_quarter,
@@ -306,6 +291,12 @@ sales_dev_hierarchy AS (
     opp_to_lead.report_opportunity_user_region,
     opp_to_lead.report_opportunity_user_area,
     opp_to_lead.report_user_segment_geo_region_area,
+    opp_to_lead.parent_crm_account_territory,
+    opp_to_lead.parent_crm_account_sales_segment,
+    opp_to_lead.parent_crm_account_geo,
+    opp_to_lead.parent_crm_account_region,
+    opp_to_lead.parent_crm_account_area,
+    opp_to_lead.deal_path_name,
     opp_to_lead.opp_created_date,
     opp_to_lead.close_date,
     opp_to_lead.pipeline_created_date,
@@ -351,7 +342,7 @@ sales_dev_hierarchy AS (
   LEFT JOIN opp_to_lead 
     ON mart_crm_person.dim_crm_person_id = opp_to_lead.waterfall_person_id
   LEFT JOIN sales_dev_hierarchy 
-  ON COALESCE(opp_to_lead.sdr_bdr_user_id,activity_summarised.dim_crm_user_id) = sales_dev_hierarchy.sales_dev_rep_user_id
+  ON COALESCE(opp_to_lead.sdr_bdr_user_id,activity_summarised.dim_crm_user_id) = sales_dev_hierarchy.sales_dev_rep_user_id 
   WHERE activity_to_sao_days <= 90 OR activity_to_sao_days IS NULL 
   UNION 
   SELECT DISTINCT -- distinct is necessary in order to not duplicate rows as addition of the rule above of activity_to_sao_days >90 might create multiple rows if there are multiple leads that satisfy the condition per opp which is not ideal. 
@@ -367,9 +358,12 @@ sales_dev_hierarchy AS (
     NULL AS inquiry_fiscal_quarter_name,
     NULL AS person_sales_segment,
     NULL AS person_sales_segment_grouped,
+    NULL AS person_first_geo,
     NULL AS is_mql,
     NULL AS is_first_order_person,
     NULL AS person_first_country,
+    NULL AS lead_score_classification,
+    NULL AS is_defaulted_trial,
     NULL AS propensity_to_purchase_score_group,
     NULL AS is_high_ptp_lead,
     NULL AS marketo_last_interesting_moment,
@@ -383,6 +377,8 @@ sales_dev_hierarchy AS (
     opps_missing_link.dim_crm_opportunity_id,
     opps_missing_link.sdr_bdr_user_id,
     opps_missing_link.net_arr,
+    opps_missing_link.xdr_net_arr_stage_1,
+    opps_missing_link.xdr_net_arr_stage_3,
     opps_missing_link.sales_accepted_date,
     opps_missing_link.sales_accepted_fiscal_quarter_name,
     opps_missing_link.sao_day_of_fiscal_quarter,
@@ -394,6 +390,12 @@ sales_dev_hierarchy AS (
     opps_missing_link.report_opportunity_user_region,
     opps_missing_link.report_opportunity_user_area,
     opps_missing_link.report_user_segment_geo_region_area,
+    opps_missing_link.parent_crm_account_territory,
+    opps_missing_link.parent_crm_account_sales_segment,
+    opps_missing_link.parent_crm_account_geo,
+    opps_missing_link.parent_crm_account_region,
+    opps_missing_link.parent_crm_account_area,
+    opps_missing_link.deal_path_name,
     opps_missing_link.opp_created_date,
     opps_missing_link.close_date,
     opps_missing_link.pipeline_created_date,
@@ -440,5 +442,5 @@ sales_dev_hierarchy AS (
     created_by="@rkohnke",
     updated_by="@dmicovic",
     created_date="2023-09-06",
-    updated_date="2023-12-08",
+    updated_date="2024-03-29",
   ) }}
