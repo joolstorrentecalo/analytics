@@ -1,8 +1,10 @@
-{{ config({
-    materialized: "incremental",
-    "unique_key": "event_pk",
-    "on_schema_change": "sync_all_columns"
-    })
+{{
+    config(
+        materialized='incremental',
+        tags=['mnpi_exception', 'product'],
+        unique_key='event_pk',
+        on_schema_change='sync_all_columns'
+    )
 }}
 
 {{ simple_cte([
@@ -43,16 +45,15 @@ fct_event_valid AS (
     LEFT JOIN dim_user
       ON fct_event.dim_user_sk = dim_user.dim_user_sk
     WHERE event_created_at >= DATEADD(MONTH, -36, DATE_TRUNC(MONTH,CURRENT_DATE))
-      {% if is_incremental() %}
-
-      AND event_created_at > (SELECT MAX(event_created_at) FROM {{this}})
-
-      {% endif %}
       AND (fct_event.days_since_user_creation_at_event_date >= 0
            OR fct_event.days_since_user_creation_at_event_date IS NULL)
       AND (dim_user.is_blocked_user = FALSE 
            OR dim_user.is_blocked_user IS NULL)
+    {% if is_incremental() %}
 
+      AND event_created_at > (SELECT MAX(event_created_at) FROM {{this}})
+
+    {% endif %}
 ),
 
 deduped_namespace_bdg AS (
