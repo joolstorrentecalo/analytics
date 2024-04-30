@@ -4,8 +4,9 @@
         config(
           unique_key='namespace_id',
           strategy='check',
+          updated_at='updated_at',
           check_cols=[
-              'updated_at', 
+              'updated_at',
               'max_seats_used',
               'seats',
               'seats_in_use',
