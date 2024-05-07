@@ -2651,6 +2651,23 @@ tables:
       FROM vulnerability_occurrences
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
+  vulnerability_scanners:
+    deletes_exempt: True
+    export_schema: 'gitlab_com'
+    export_table: 'vulnerability_scanners'
+    export_table_primary_key: 'id'
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      , external_id
+      , name
+      , vendor
+      FROM vulnerability_scanners
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
   vulnerability_state_transitions:
     deletes_exempt: True
     export_schema: 'gitlab_com'
