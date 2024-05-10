@@ -77,3 +77,14 @@ The variance between Ending Accounts Receivable and Total Invoice Aging Balance 
 
 {% enddocs %}
 
+{% docs rpt_booking_billing_collections_monthly %}
+
+Booking - total booking amount of booked opportunities in the month
+
+Billing - total billing, billing exclusive the tax amount and tax amount of the invoicing in the month
+
+Collections - total of payments applied to invoices in the month
+
+{% enddocs %}
+
+
