@@ -114,6 +114,6 @@ fct_event_project_monthly AS (
     cte_ref="fct_event_project_monthly",
     created_by="@dpeterson",
     updated_by="@dpeterson",
-    created_date="2023-09-06",
-    updated_date="2023-09-06"
+    created_date="2024-05-09",
+    updated_date="2024-05-09"
 ) }}
