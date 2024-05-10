@@ -67,3 +67,15 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: rpt_accounting_period_balance_monthly 
+    description: ' {{ doc("rpt_accounting_period_balance_monthly") }} '
+    columns:
+      - name: period
+        description: Calendar month and year when the transactions took place
+        tests:
+          - not_null
+          - unique
+     - name: starting accounts receivable
+       description: all columns described in ' {{ doc("rpt_accounting_period_balance_monthly") }} '
+        

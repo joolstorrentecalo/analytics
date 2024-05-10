@@ -23,3 +23,57 @@ The inverse of the above. The `is_available_to_renew` flag went from true to fal
 A new `subscription_name` has appeared this month, limited to top 10 by arr.
 
 {% enddocs %}
+
+{% docs rpt_accounting_period_balance_monthly %}
+
+The report mirrors Zuora accounting period monthly balances.
+
+The  following columns are included:
+
+### Fiscal Year
+
+### Fiscal Quarter
+
+### Period
+
+### Starting Accounts Receivable 
+Ending Accounts Receivable from previous month
+
+### Total Billings 
+Total billed in a month including tax
+
+### Payments
+All payments received in the month regardless whether applied or not applied to invoices. The amount may vary from Zuora if payments were backdated as Zuora takes a snapshot of this information for the accounting period but if payments are made after the snapshot was taken the payments will not flow in. The variance will be in favor of GitLab
+
+### Overpayments 
+Payments that were not applied to invoices
+
+### Refunds 
+All refunds made from invoices and accounts
+
+### Adjustments 
+Invoice item adjustments made to invoices
+
+### Ending Accounts Receivable = Starting Accounts Receivable + Total Billings - Payments minus Overpayments + Refunds - Adjustments
+
+### Invoice Aging Buckets which are as follows:
+
+Current - current due date open invoices balances
+
+Further buckets: 1 to 30 days past due, 31 to 60 days past due, 61 to 90 days past due, 91 to 120 days past due, more than 120 days past due
+
+### Total Invoice Aging Balance 
+Total of all aging buckets
+
+### Variance between Ending Accounts Receivable and Total Invoice Aging Balance
+
+### Credit Balance (Customer Refunds) 
+Credit balance adjustments running total for the month
+
+### Payments or Refunds on Future Dated Invoices
+
+### Final Check 
+The variance between Ending Accounts Receivable and Total Invoice Aging Balance is taken less Credit Balance and Payments or Refunds on Future Dated Invoices - this should show a 0 variance however it is possible that due to backdated payment application this amount will not balance out to 0
+
+{% enddocs %}
+
