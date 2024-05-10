@@ -76,6 +76,6 @@ models:
         tests:
           - not_null
           - unique
-     - name: starting accounts receivable
+     - name: starting_accounts_receivable
        description: all columns described in ' {{ doc("rpt_accounting_period_balance_monthly") }} '
         
