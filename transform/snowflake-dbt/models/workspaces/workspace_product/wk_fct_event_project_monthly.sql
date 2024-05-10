@@ -6,7 +6,7 @@
 {{ simple_cte([
     ('fct_event_valid', 'fct_event_valid'),
     ('dim_date', 'dim_date'),
-    ('dim_project','dim_project')
+    ('dim_project','dim_project'),
     ('dim_crm_accounts', 'dim_crm_account')
     ])
 }},
