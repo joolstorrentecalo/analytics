@@ -6,8 +6,7 @@
 {{ simple_cte([
     ('fct_event_valid', 'fct_event_valid'),
     ('dim_date', 'dim_date'),
-    ('dim_project','dim_project'),
-    ('dim_crm_accounts', 'dim_crm_account')
+    ('dim_project','dim_project')
     ])
 }},
 
@@ -72,7 +71,6 @@ fct_event_project_monthly AS (
       fact_with_month.dim_latest_product_tier_id,
       fact_with_month.dim_latest_subscription_id,
       fact_with_month.dim_crm_account_id,
-      dim_crm_account.crm_account_name,
       fact_with_month.dim_billing_account_id,
       project.project_created_month,
       project.project_creator_id,
@@ -102,11 +100,9 @@ fct_event_project_monthly AS (
     INNER JOIN project
       ON fact_with_month.dim_project_id = project.dim_project_id
       AND fact_with_month.dim_ultimate_parent_namespace_id = project.ultimate_parent_namespace_id
-    LEFT JOIN dim_crm_account --To include the crm_account_name field
-      ON dim_crm_account.dim_crm_account_id = fact_with_month.dim_crm_account_id
     WHERE fact_with_month.dim_ultimate_parent_namespace_id IS NOT NULL
       AND fact_with_month.dim_project_id IS NOT NULL
-    {{ dbt_utils.group_by(n=22) }}
+    {{ dbt_utils.group_by(n=21) }}
         
 )
 
