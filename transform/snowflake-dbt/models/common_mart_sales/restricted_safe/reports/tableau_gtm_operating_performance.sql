@@ -20,7 +20,6 @@
       rpt_scaffold.dim_order_type_id,
       rpt_scaffold.dim_sales_qualified_source_id,
       fct_sales_funnel_actual.dim_crm_opportunity_id,
-      fct_sales_funnel_actual.email_hash,
       fct_sales_funnel_actual.net_arr,
       fct_sales_funnel_actual.new_logo_count,
       fct_sales_funnel_target_daily.daily_allocated_target
@@ -73,7 +72,6 @@
       scaffold.net_arr,
       scaffold.new_logo_count,
       scaffold.daily_allocated_target,
-      scaffold.email_hash,
       scaffold.dim_crm_opportunity_id
 FROM scaffold
 INNER JOIN dim_sales_funnel_kpi
