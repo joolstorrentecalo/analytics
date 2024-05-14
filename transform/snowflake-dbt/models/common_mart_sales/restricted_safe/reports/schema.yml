@@ -21,5 +21,5 @@ models:
   - name: rpt_crm_opportunity_open
     description: '{{ doc("rpt_crm_opportunity_open") }}'
 
-  - name: tableau_gtm_operating_performance
+  - name: rpt_gtm_operating_performance
     description: Reporting model which drives the GTM Operating Performance dashboard.
