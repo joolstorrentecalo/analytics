@@ -21,18 +21,6 @@ GitLab Infrastructure,CI/CD,Runners,SaaS,windows,,gitlab.com/Infrastructure,ci_r
 GitLab Infrastructure,CI/CD,Runners,Internal,linux private internal,,gitlab.com/Infrastructure,ci_runner_pl_daily - 6,
 GitLab Infrastructure,CI/CD,Runners,Shared org,linux small ,,gitlab.com/Infrastructure,ci_runner_pl_daily - 1,
 GitLab Infrastructure,CI/CD,Runners,Omnibus,,,gitlab.com/Distribution,folder_pl,
-GitLab Infrastructure,CI/CD,Runners,Shared CUDs costs,,,gitlab.com/Infrastructure/Environments/Production,continuous_integration_lookback,continuous_integration
-GitLab Infrastructure,CI/CD,Container Registry,Production,,,gitlab.com/Infrastructure/Environments/Production,t2d_cud_lookback,registry
-GitLab Infrastructure,CI/CD,Container Registry,Production,,,gitlab.com/Infrastructure/Environments/Production,folder_pl,registry
-GitLab Infrastructure,CI/CD,Container Registry,Production,,,gitlab.com/Infrastructure/Environments/Production,infralabel_pl,registry
-GitLab Infrastructure,CI/CD,Container Registry,Production,,,gitlab.com/Infrastructure/Environments/Production,container_registry_pl_daily,registry
-GitLab Infrastructure,CI/CD,Container Registry,Staging,,,gitlab.com/Infrastructure/Environments/Staging,folder_pl,registry
-GitLab Infrastructure,CI/CD,Build Artifacts,,,,gitlab.com/Infrastructure/Environments/Production,build_artifacts_pl_daily,build_artifacts
-GitLab Infrastructure,CI/CD,Build Artifacts,,,,gitlab.com/Infrastructure/Environments/Production,build_artifacts_pl_dev_daily,build_artifacts
-GitLab Infrastructure,CI/CD,Build Artifacts,,,,gitlab.com/Infrastructure/Environments/Production,folder_pl,build_artifacts
-GitLab Infrastructure,CI/CD,gitlab-production costs,,,,gitlab.com/Infrastructure/Environments/Production,,continuous_integration
-GitLab Infrastructure,CI/CD,Staging,,,,gitlab.com/Infrastructure/Environments/Staging,continuous_integration_lookback,continuous_integration
-GitLab Infrastructure,CI/CD,Other costs,,,,gitlab.com/Infrastructure/Environments/Production,t2d_cud_lookback,continuous_integration
 GitLab Infrastructure,Gitaly,HAProxy,Carrier Peering Network,HTTPs Git Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-HTTPs Git Data Transfer,
 GitLab Infrastructure,Gitaly,HAProxy,Carrier Peering Network,SSH Data Transfer,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-SSH Data Transfer,
 GitLab Infrastructure,HAProxy,Carrier Peering Network,API Data Transfer,,,gitlab.com/Infrastructure/Environments/Production,haproxy-cpn-API Data Transfer,
