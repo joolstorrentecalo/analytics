@@ -57,7 +57,7 @@
       dim_crm_user_hierarchy.crm_user_geo,
       dim_crm_user_hierarchy.crm_user_region,
       dim_crm_user_hierarchy.crm_user_sales_segment,
-      dim_order_type.order_type_name,
+      dim_order_type.order_type_grouped,
       dim_sales_qualified_source.sales_qualified_source_name,
       CASE WHEN mart_crm_opportunity.product_category = 'Dedicated - Ultimate' THEN 'Dedicated - Ultimate'
         WHEN mart_crm_opportunity.product_category IN ('Self-Managed - Premium', 'SaaS - Premium','Premium - 1 Year','Premium') THEN 'Premium'
