@@ -24,7 +24,8 @@
       fct_sales_funnel_actual.new_logo_count,
       fct_sales_funnel_target_daily.daily_allocated_target
     FROM rpt_scaffold
-    INNER JOIN dim_date on rpt_scaffold.date_id = dim_date.date_id
+    INNER JOIN dim_date 
+      ON rpt_scaffold.date_id = dim_date.date_id
     LEFT JOIN fct_sales_funnel_actual
       ON rpt_scaffold.date_id = fct_sales_funnel_actual.actual_date_id
       AND rpt_scaffold.dim_hierarchy_sk = fct_sales_funnel_actual.dim_hierarchy_sk
