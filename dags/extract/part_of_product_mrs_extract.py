@@ -45,7 +45,7 @@ default_args = {
 # Set the command for the container
 container_cmd = f"""
     {clone_and_setup_extraction_cmd} &&
-    python gitlab_api_mrs/src/execute.py part_of_product
+    python gitlab_api_mrs/src/execute.py part_of_product_graphql
 """
 
 # Create the DAG
@@ -53,7 +53,8 @@ dag = DAG(
     "part_of_product_mrs",
     default_args=default_args,
     schedule_interval="0 4 * * *",
-    catchup=False,
+    catchup=True,
+    max_active_runs=4,
 )
 
 # Task 1

@@ -21,6 +21,7 @@
     mart_crm_account.bdr_prospecting_status,
     mart_crm_opportunity_stamped_hierarchy_hist.dim_crm_opportunity_id,
     mart_crm_opportunity_stamped_hierarchy_hist.net_arr,
+    mart_crm_opportunity_stamped_hierarchy_hist.net_arr_stage_1,
     mart_crm_opportunity_stamped_hierarchy_hist.xdr_net_arr_stage_1,
     mart_crm_opportunity_stamped_hierarchy_hist.xdr_net_arr_stage_3,
     mart_crm_opportunity_stamped_hierarchy_hist.sales_accepted_date AS sales_accepted_date,
@@ -313,6 +314,7 @@
     opp_to_lead.dim_crm_opportunity_id,
     opp_to_lead.sdr_bdr_user_id,
     opp_to_lead.net_arr,
+    opp_to_lead.net_arr_stage_1,
     opp_to_lead.xdr_net_arr_stage_1,
     opp_to_lead.xdr_net_arr_stage_3,
     opp_to_lead.sales_accepted_date,
@@ -422,6 +424,7 @@ LEFT JOIN sales_dev_hierarchy
     opps_missing_link.dim_crm_opportunity_id,
     opps_missing_link.sdr_bdr_user_id,
     opps_missing_link.net_arr,
+    opps_missing_link.net_arr_stage_1,
     opps_missing_link.xdr_net_arr_stage_1,
     opps_missing_link.xdr_net_arr_stage_3,
     opps_missing_link.sales_accepted_date,
@@ -487,7 +490,7 @@ LEFT JOIN sales_dev_hierarchy
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@dmicovic",
+    updated_by="@rkohnke",
     created_date="2023-09-06",
-    updated_date="2024-05-02",
+    updated_date="2024-05-07",
   ) }}

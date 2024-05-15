@@ -95,14 +95,12 @@ Aggregate mart_charge information (used as the basis of truth), this gets rid of
 ), mart_charge_cleaned AS (
 
   SELECT
-       dim_date.date_actual               AS arr_month,
-       fct_charge.dim_subscription_id     AS dim_subscription_id,
-       dim_product_detail.product_delivery_type
-                                          AS product_delivery_type,
-       dim_product_detail.product_deployment_type
-                                          AS product_deployment_type,
-       SUM(quantity)                      AS licensed_user_count,
-       IFF(SUM(arr) > 0, TRUE, FALSE)     AS is_paid_subscription
+       dim_date.date_actual                         AS arr_month,
+       fct_charge.dim_subscription_id               AS dim_subscription_id,
+       dim_product_detail.product_delivery_type     AS product_delivery_type,
+       dim_product_detail.product_deployment_type   AS product_deployment_type,
+       SUM(quantity)                                AS licensed_user_count,
+       IFF(SUM(arr) > 0, TRUE, FALSE)               AS is_paid_subscription
      FROM fct_charge
      INNER JOIN dim_date
         ON effective_start_month <= dim_date.date_actual
@@ -116,7 +114,7 @@ Aggregate mart_charge information (used as the basis of truth), this gets rid of
        ON fct_charge.dim_product_detail_id = dim_product_detail.dim_product_detail_id
       WHERE dim_product_detail.product_deployment_type IN ('Self-Managed', 'Dedicated')
         AND subscription_status IN ('Active','Cancelled')
-        AND dim_product_detail.product_tier_name != 'Storage'
+        AND dim_product_detail.product_tier_name NOT IN ('Not Applicable', 'Storage')
         -- filter added to fix https://gitlab.com/gitlab-data/analytics/-/issues/19656
         AND NOT (dim_product_detail.product_rate_plan_name = 'True-Up (Annual) - Dedicated - Ultimate'
                 AND arr = 0)

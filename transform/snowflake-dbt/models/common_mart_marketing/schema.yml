@@ -640,6 +640,9 @@ models:
           description: The Salesforce grade of the lead score for a lead/contact. 
         - name: is_defaulted_trial
           description: Boolean value of whether or not a lead/contact was defaulted to a trial.
+        - name: net_arr_stage_1
+          description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
+
 
     - name: rpt_l2r_campaign_interactions
       description: Tableau-specific table that unions `mart_crm_touchpoint` with person, campaign data joined on and `mart_crm_attribution_touchpoint` with person, campaign and oppunitiy data 

@@ -7,13 +7,13 @@
 
 {{ simple_cte([
     ('zuora_invoice_payment_source', 'zuora_invoice_payment_source'),
-    ('prep_billing_account', 'prep_billing_account')
+    ('zuora_account_source', 'zuora_account_source')
 ]) }},
 
 zuora_account AS (
 
   SELECT *
-  FROM prep_billing_account
+  FROM zuora_account_source
   WHERE is_deleted = FALSE
 
 ),
@@ -30,7 +30,7 @@ final AS (
     --Foreign keys
     zuora_invoice_payment_source.invoice_id                                                         AS dim_invoice_id,
     zuora_invoice_payment_source.payment_id,
-    zuora_account.dim_billing_account_id,
+    zuora_account.account_id                                                                        AS dim_billing_account_id,
     zuora_invoice_payment_source.accounting_period_id,
 
 
@@ -45,7 +45,7 @@ final AS (
 
   FROM zuora_invoice_payment_source
   INNER JOIN zuora_account
-    ON zuora_invoice_payment_source.account_id = zuora_account.dim_billing_account_id
+    ON zuora_invoice_payment_source.account_id = zuora_account.account_id
 )
 
 {{ dbt_audit(
@@ -53,5 +53,5 @@ cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-05-01",
-updated_date="2024-05-01"
+updated_date="2024-05-14"
 ) }}

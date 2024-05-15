@@ -22,10 +22,6 @@ databases:
       shared: false
   - abright_prep:
       shared: false
-  - airbyteevaluation_prod:
-      shared: false
-  - airbyteevaluation_prep:
-      shared: false
   - akapungu_prod:
       shared: false
   - akapungu_prep:
@@ -494,6 +490,7 @@ roles:
         - gitlab_data_yaml
         - google_ads
         - google_analytics_360
+        - google_analytics_4
         - google_search_console
         - netsuite
         - marketo
@@ -2052,6 +2049,19 @@ roles:
           read:
             - prep.google_analytics_360.*
             - raw.google_analytics_360_fivetran.*
+  - google_analytics_4:
+      warehouses:
+        - dev_xs
+      privileges:
+        databases:
+          read:
+            - raw
+        schemas:
+          read:
+            - raw.google_analytics_4_bigquery
+        tables:
+          read:
+            - raw.google_analytics_4_bigquery.*
   - google_search_console:
       privileges:
         databases:
@@ -2138,6 +2148,7 @@ roles:
             - prod.legacy
             - prod.workspace_marketing
             - prod.workspace_product
+            - prod.restricted_safe_workspace_marketing
         tables:
           read:
             - prep.gitlab_dotcom.gitlab_dotcom_users_source
@@ -2151,6 +2162,7 @@ roles:
             - prod.workspace_marketing.user_history
             - prod.workspace_marketing.user_unsubscribed_channel
             - prod.workspace_marketing.user_unsubscribed_message_type
+            - prod.restricted_safe_workspace_marketing.rpt_create_partner_touchpoints
   - influx_db:
       privileges:
         databases:
@@ -2913,41 +2925,6 @@ roles:
         - xactly
       warehouses:
         - dev_xs
-  - airbyteevaluation:
-      warehouses:
-        - loading
-      owns:
-        databases:
-          - airbyteevaluation_prep
-          - airbyteevaluation_prod
-        schemas:
-          - airbyteevaluation_prep.*
-          - airbyteevaluation_prod.*
-        tables:
-          - airbyteevaluation_prep.*.*
-          - airbyteevaluation_prod.*.*
-      privileges:
-        databases:
-          read:
-            - airbyteevaluation_prep
-            - airbyteevaluation_prod
-          write:
-            - airbyteevaluation_prep
-            - airbyteevaluation_prod
-        schemas:
-          read:
-            - airbyteevaluation_prep.*
-            - airbyteevaluation_prod.*
-          write:
-            - airbyteevaluation_prep.*
-            - airbyteevaluation_prod.*
-        tables:
-          read:
-            - airbyteevaluation_prep.*.*
-            - airbyteevaluation_prod.*.*
-          write:
-            - airbyteevaluation_prep.*.*
-            - airbyteevaluation_prod.*.*
   - airflow:
       warehouses:
         - dev_l
@@ -3212,6 +3189,16 @@ roles:
         - static_sensitive
       warehouses:
         - reporting
+      privileges:
+        databases:
+          read:
+            - prep
+        schemas:
+          read:
+            - prep.sensitive
+        tables:
+          read:
+            - prep.sensitive.mart_marketing_contact
   - bmandavia:
       member_of: []
       warehouses: []
@@ -6443,6 +6430,26 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - aspringfield:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - kkloss:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - mdunleavy:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - fmcwilliams:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
 users:
   - aadesanya:
       can_login: true
@@ -6452,10 +6459,6 @@ users:
       can_login: true
       member_of:
         - aarts
-  - airbyteevaluation:
-      can_login: true
-      member_of:
-        - airbyteevaluation
   - airflow:
       can_login: true
       member_of:
@@ -7457,6 +7460,22 @@ users:
       can_login: true
       member_of:
         - sguyon
+  - aspringfield:
+      can_login: true
+      member_of:
+        - aspringfield
+  - kkloss:
+      can_login: true
+      member_of:
+        - kkloss
+  - mdunleavy:
+      can_login: true
+      member_of:
+        - mdunleavy
+  - fmcwilliams:
+      can_login: true
+      member_of:
+        - fmcwilliams
 warehouses:
   - admin:
       size: x-small

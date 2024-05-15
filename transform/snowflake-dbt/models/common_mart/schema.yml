@@ -1530,4 +1530,5 @@ models:
       description: '{{ doc("code_suggestions_dim_installation_id") }}'
     - name: installation_host_name
       description: '{{ doc("code_suggestions_installation_host_name") }}'
-
+    - name: namespace_is_internal
+      description: '{{ doc("code_suggestions_namespace_is_internal") }}'

@@ -132,6 +132,7 @@ WITH source AS (
         arr__c                                          AS arr,
         stage_3_net_arr__c                              AS xdr_net_arr_stage_3,
         stage_1_xdr_net_arr__c                          AS xdr_net_arr_stage_1,
+        stage_1_net_arr__c                              AS net_arr_stage_1,
         enterprise_agile_planning_net_arr__c            AS enterprise_agile_planning_net_arr,
         duo_net_arr__c                                  AS duo_net_arr,
         days_in_sao__c                                  AS days_in_sao,

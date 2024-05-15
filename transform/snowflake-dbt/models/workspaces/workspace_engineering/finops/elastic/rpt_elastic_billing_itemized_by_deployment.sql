@@ -84,5 +84,4 @@ SELECT
   usage AS monthly_accumulated_usage,
   details
 FROM transformed
-WHERE daily_usage IS NOT NULL
-  AND daily_cost IS NOT NULL
+

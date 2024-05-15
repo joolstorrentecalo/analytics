@@ -1450,14 +1450,6 @@ LEFT JOIN cw_base
             THEN calculated_deal_count
         ELSE NULL
       END                                                         AS closed_opps_in_snapshot_quarter,
-
-      CASE
-        WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
-          AND is_win_rate_calc = TRUE
-            THEN calculated_deal_count * net_arr
-        ELSE NULL
-      END                                                         AS closed_net_arr_in_snapshot_quarter,
-
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
           AND is_booked_net_arr = TRUE
@@ -1558,7 +1550,20 @@ LEFT JOIN cw_base
 	            AND net_arr > 0
           THEN net_arr
         ELSE NULL
-      END                                               AS positive_open_net_arr_in_snapshot_quarter
+      END                                               AS positive_open_net_arr_in_snapshot_quarter,
+      CASE 
+        WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+          AND sfdc_opportunity.is_closed = 'TRUE' 
+            THEN calculated_deal_count 
+          ELSE NULL
+      END                                               AS closed_deals_in_snapshot_quarter,
+      CASE 
+        WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+          AND sfdc_opportunity.is_closed = 'TRUE' 
+            THEN net_arr 
+        ELSE NULL
+      END                                               AS closed_net_arr_in_snapshot_quarter
+
     FROM sfdc_opportunity
     INNER JOIN sfdc_opportunity_stage
       ON sfdc_opportunity.stage_name = sfdc_opportunity_stage.primary_label

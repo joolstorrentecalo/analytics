@@ -4339,6 +4339,8 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
+      - name: uploaded_at
+        description: '{{ doc("uploaded_at") }}'
 
   - name: fct_ping_instance_metric_weekly
     description: ' {{ doc("fct_ping_instance_metric_weekly") }} '
@@ -5488,6 +5490,8 @@ models:
         description: The net arr related to the GitLab Duo element of the opportunity.
       - name: partner_margin_percentage
         description: The percentage of the opportunity net arr to which the partner is entitled.
+      - name: net_arr_stage_1
+        description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
       
 
   - name: fct_crm_opportunity_daily_snapshot

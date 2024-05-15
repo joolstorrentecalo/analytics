@@ -77,5 +77,4 @@ SELECT
   usage,
   details
 FROM transformed
-WHERE daily_usage IS NOT NULL
-  AND daily_cost IS NOT NULL
+
