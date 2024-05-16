@@ -1,25 +1,147 @@
 version: 2
-
 models:
   - name: rpt_delta_arr_parent_month_8th_calendar_day
     description: '{{ doc("rpt_delta_arr_parent_month_8th_calendar_day") }}'
-
   - name: rpt_delta_arr_parent_product_month_8th_calendar_day
     description: '{{ doc("rpt_delta_arr_parent_product_month_8th_calendar_day") }}'
-
   - name: rpt_crm_opportunity_snapshot_8th_calendar_day
-    description: Snapshot of mart_crm_opportunity_daily_snapshot taken on the 8th calendar day after month-end close.
+    description: Snapshot of mart_crm_opportunity_daily_snapshot taken on the 8th
+      calendar day after month-end close.
     columns:
       - name: crm_opportunity_snapshot_id
         tests:
           - not_null
           - unique
-    
   - name: rpt_crm_opportunity_renewal
     description: '{{ doc("rpt_crm_opportunity_renewal") }}'
-
   - name: rpt_crm_opportunity_open
     description: '{{ doc("rpt_crm_opportunity_open") }}'
-
   - name: rpt_gtm_operating_performance
     description: Reporting model which drives the GTM Operating Performance dashboard.
+    columns:
+      - name: date_actual
+        description: The actual date of the sales transaction. This field is of DATE
+          data type.
+        data_type: DATE
+      - name: fiscal_year
+        description: The fiscal year in which the sales transaction occurred. This field
+          is of NUMBER data type.
+        data_type: NUMBER
+      - name: fiscal_quarter_name_fy
+        description: The name of the fiscal quarter in the fiscal year when the sales
+          transaction occurred. This field is of VARCHAR data type.
+        data_type: VARCHAR
+      - name: first_day_of_year
+        description: This column represents the first day of the fiscal year. It is of
+          DATE data type.
+        data_type: DATE
+      - name: sales_funnel_kpi_name
+        description: This column represents the name of the Key Performance Indicator
+          (KPI) in the sales funnel. It is of VARCHAR data type.
+        data_type: VARCHAR
+      - name: crm_user_role_name
+        description: This column represents the name of the user role in the Customer
+          Relationship Management (CRM) system. It is of VARCHAR data type.
+        data_type: VARCHAR
+      - name: crm_user_role_level_1
+        description: This column represents the first level of the user role hierarchy
+          in the CRM system. It is a VARCHAR type and can contain any string
+          value that represents a user role.
+        data_type: VARCHAR
+      - name: crm_user_role_level_2
+        description: This column represents the second level of the user role hierarchy
+          in the CRM system. It is a VARCHAR type and can contain any string
+          value that represents a user role.
+        data_type: VARCHAR
+      - name: crm_user_role_level_3
+        description: This column represents the third level of the user role hierarchy
+          in the CRM system. It is a VARCHAR type and can contain any string
+          value that represents a user role.
+        data_type: VARCHAR
+      - name: crm_user_role_level_4
+        description: This column represents the fourth level in the hierarchy of the
+          user roles in the CRM system. It provides more granular information
+          about the user's role within the organization.
+        data_type: VARCHAR
+      - name: crm_user_role_level_5
+        description: This column represents the fifth and typically the most specific
+          level in the hierarchy of the user roles in the CRM system. It
+          provides the most detailed information about the user's role within
+          the organization.
+        data_type: VARCHAR
+      - name: crm_user_area
+        description: This column represents the geographical area that the CRM user is
+          responsible for. This could be a country, a region, or a specific
+          city, depending on the organization's structure.
+        data_type: VARCHAR
+      - name: crm_user_business_unit
+        description: This column represents the business unit of the CRM user. It is a
+          VARCHAR type and can contain any alphanumeric characters. The business
+          unit is a division or segment of the company that is responsible for a
+          specific set of tasks, services, or products.
+        data_type: VARCHAR
+      - name: crm_user_geo
+        description: This column represents the geographical location of the CRM user.
+          It is a VARCHAR type and can contain any alphanumeric characters. The
+          geographical location can be a country, region, or city where the CRM
+          user is located or operates.
+        data_type: VARCHAR
+      - name: crm_user_region
+        description: This column represents the regional division of the CRM user. It is
+          a VARCHAR type and can contain any alphanumeric characters. The
+          regional division can be a specific area or territory within a country
+          or geographical location where the CRM user is located or operates.
+        data_type: VARCHAR
+      - name: crm_user_sales_segment
+        description: This column represents the sales segment of the CRM user. It is a
+          categorical variable that indicates the specific segment of the sales
+          team to which the CRM user belongs.
+        data_type: VARCHAR
+      - name: order_type_grouped
+        description: This column represents the grouped order type. It is a categorical
+          variable that indicates the type of order, grouped into broader
+          categories for easier analysis and reporting.
+        data_type: VARCHAR
+      - name: sales_qualified_source_name
+        description: This column represents the name of the sales qualified source. It
+          is a categorical variable that indicates the source from which a sales
+          lead or opportunity was qualified.
+        data_type: VARCHAR
+      - name: product_category_modified
+        description: This column represents the modified product category. The original
+          product category is modified based on certain conditions. For example,
+          if the original product category is 'Dedicated - Ultimate', it remains
+          the same in the modified category. If it falls under 'Self-Managed -
+          Premium', 'SaaS - Premium', 'Premium - 1 Year', or 'Premium', it is
+          categorized as 'Premium' in the modified category. If it falls under
+          'Ultimate', 'Self-Managed - Ultimate', or 'SaaS - Ultimate', it is
+          categorized as 'Ultimate' in the modified category. Any other
+          categories are labeled as 'Other'.
+        data_type: VARCHAR
+      - name: first_number_deals
+        description: This column represents the ID of the CRM opportunity for the first
+          number of deals. It is populated only when the new logo count is
+          greater than or equal to 0.
+        data_type: VARCHAR
+      - name: second_number_deals
+        description: This column represents the ID of the CRM opportunity for the second
+          number of deals. It is populated only when the new logo count is -1.
+        data_type: VARCHAR
+      - name: net_arr
+        description: This column represents the Net Annual Recurring Revenue. It is a
+          measure of the predictable and recurring revenue components of your
+          subscription business. It is a float data type.
+        data_type: FLOAT
+      - name: new_logo_count
+        description: This column represents the count of new logos or new customers
+          acquired. It is a float data type.
+        data_type: FLOAT
+      - name: daily_allocated_target
+        description: This column represents the daily allocated target for the sales
+          team. It is a float data type.
+        data_type: FLOAT
+      - name: dim_crm_opportunity_id
+        description: This column represents the unique identifier for each CRM
+          opportunity. It is used to link the opportunity data with other
+          related data in the database.
+        data_type: VARCHAR
