@@ -15,6 +15,7 @@
       dim_date.date_actual,
       dim_date.fiscal_year,
       dim_date.fiscal_quarter_name_fy,
+dim_date.first_day_of_year,
       rpt_scaffold.dim_sales_funnel_kpi_sk,
       rpt_scaffold.dim_hierarchy_sk,
       rpt_scaffold.dim_order_type_id,
