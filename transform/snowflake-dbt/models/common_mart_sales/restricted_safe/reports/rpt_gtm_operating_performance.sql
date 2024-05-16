@@ -46,6 +46,7 @@
       scaffold.date_actual,
       scaffold.fiscal_year,
       scaffold.fiscal_quarter_name_fy,
+      scaffold.first_day_of_year,
       dim_sales_funnel_kpi.sales_funnel_kpi_name,
       dim_crm_user_hierarchy.crm_user_role_name,
       dim_crm_user_hierarchy.crm_user_role_level_1,
