@@ -854,6 +854,8 @@ models:
     - name: billable_user_count
     - name: license_utilization
     - name: max_historical_user_count
+    - name: active_user_count
+      description: '{{ doc("instance_user_count") }}'
     - name: included_in_health_measures_str
       description: '{{ doc("included_in_health_measures_str") }}'
     - name: ping_delivery_type

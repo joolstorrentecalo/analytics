@@ -626,7 +626,7 @@ The [time frame](https://docs.gitlab.com/ee/development/service_ping/metrics_dic
 
 {% docs instance_user_count %}
 
-The number of active users existing in the installation. In this case "active" is referring to a user's state (ex. not blocked) as opposed to an indication of user activity with the product
+The number of active users existing in the installation. In this case "active" is referring to a user's state (ex. not blocked) as opposed to an indication of user activity with the product. Based on the `active_user_count` Service Ping metric.[link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/license/20210204124829_active_user_count.yml)
 
 {% enddocs %}
 
