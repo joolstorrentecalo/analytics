@@ -811,7 +811,8 @@ The md5 hash of the license file.
 
 {% docs license_billable_users %}
 
-The count of active users who can be billed for. Guest users and bots are not included. This value comes from the ping payload.
+The count of active users who can be billed for. Guest users and bots are not included. This value comes from the ping payload. 
+Based on the [`license_billable_users`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/license/20210531204603_license_billable_users.yml) Service Ping metric.
 
 {% enddocs %}
 

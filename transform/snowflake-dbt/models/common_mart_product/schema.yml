@@ -564,6 +564,8 @@ models:
         description: '{{ doc("dim_installation_id") }}'
       - name: instance_user_count
         description: '{{ doc("instance_user_count") }}'
+      - name: license_billable_users
+        description: '{{ doc("license_billable_users") }}'
 
   - name: mart_ping_namespace_metric_health_score_saas
     description: '{{ doc("mart_ping_namespace_metric_health_score_saas") }}'

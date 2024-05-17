@@ -478,6 +478,7 @@ models:
       description: Type of instance (Production/Non-Production)
     - name: subscription_seats
     - name: billable_user_count
+      description: '{{ doc("license_billable_users") }}'
     - name: license_utilization
     - name: max_historical_user_count
     - name: included_in_health_measures_str

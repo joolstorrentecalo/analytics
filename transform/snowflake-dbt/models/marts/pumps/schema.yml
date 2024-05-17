@@ -74,6 +74,8 @@ models:
         description: Indicates if the product usage came from a SaaS or Self-Managed user.
         tests:
           - not_null
+      - name: billable_user_count
+        tests: '{{ doc("license_billable_users") }}'
       - name: active_user_count
         description: '{{ doc("instance_user_count") }}'
       - name: umau_28_days_user
