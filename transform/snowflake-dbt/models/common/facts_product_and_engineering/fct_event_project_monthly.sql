@@ -63,7 +63,7 @@ fct_event_project_monthly AS (
     
     SELECT
       --Primary Key 
-      {{ dbt_utils.surrogate_key(['fact_with_month.event_calendar_month', 'fact_with_month.event_name', 'fact_with_month.dim_ultimate_parent_namespace_id','fact_with_month.dim_project_id']) }}       
+      {{ dbt_utils.generate_surrogate_key(['fact_with_month.event_calendar_month', 'fact_with_month.event_name', 'fact_with_month.dim_ultimate_parent_namespace_id','fact_with_month.dim_project_id']) }}       
                                                    AS event_project_monthly_pk,
                                             
       --Foreign Keys
