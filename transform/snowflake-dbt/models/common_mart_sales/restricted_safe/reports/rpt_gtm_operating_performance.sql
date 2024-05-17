@@ -23,7 +23,12 @@
       fct_sales_funnel_actual.dim_crm_opportunity_id,
       fct_sales_funnel_actual.net_arr,
       fct_sales_funnel_actual.new_logo_count,
-      fct_sales_funnel_target_daily.daily_allocated_target
+      fct_sales_funnel_target_daily.daily_allocated_target,
+fct_sales_funnel_target_daily.mtd_allocated_target,
+fct_sales_funnel_target_daily.qtd_allocated_target,
+fct_sales_funnel_target_daily.ytd_allocated_target,
+fct_sales_funnel_target_daily.target_date,
+fct_sales_funnel_target_daily.report_target_date
     FROM rpt_scaffold
     INNER JOIN dim_date 
       ON rpt_scaffold.date_id = dim_date.date_id
@@ -75,6 +80,11 @@
       scaffold.net_arr,
       scaffold.new_logo_count,
       scaffold.daily_allocated_target,
+scaffold.mtd_allocated_target,
+scaffold.qtd_allocated_target,
+scaffold.ytd_allocated_target,
+scaffold.report_date,
+scaffold.report_target_date,
       scaffold.dim_crm_opportunity_id
 FROM scaffold
 INNER JOIN dim_sales_funnel_kpi
