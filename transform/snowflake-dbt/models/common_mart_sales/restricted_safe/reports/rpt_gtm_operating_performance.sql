@@ -10,6 +10,12 @@
     ('mart_crm_opportunity', 'mart_crm_opportunity')
 ]) }}
 
+, target_qtd AS (
+    SELECT *
+    FROM fct_sales_funnel_target_daily
+    WHERE report_target_date = CURRENT_DATE
+)
+
 , scaffold AS (
     SELECT
       dim_date.date_actual,
@@ -24,11 +30,17 @@
       fct_sales_funnel_actual.net_arr,
       fct_sales_funnel_actual.new_logo_count,
       fct_sales_funnel_target_daily.daily_allocated_target,
-fct_sales_funnel_target_daily.mtd_allocated_target,
-fct_sales_funnel_target_daily.qtd_allocated_target,
-fct_sales_funnel_target_daily.ytd_allocated_target,
-fct_sales_funnel_target_daily.target_date,
-fct_sales_funnel_target_daily.report_target_date
+      fct_sales_funnel_target_daily.mtd_allocated_target,
+      fct_sales_funnel_target_daily.qtd_allocated_target,
+      fct_sales_funnel_target_daily.ytd_allocated_target,
+      fct_sales_funnel_target_daily.target_date,
+      fct_sales_funnel_target_daily.report_target_date,
+      target_qtd.daily_allocated_target                     AS ttd_daily_allocated_target,
+      target_qtd.mtd_allocated_target                       AS ttd_mtd_allocated_target,
+      target_qtd.qtd_allocated_target                       AS ttd_qtd_allocated_target,
+      target_qtd.ytd_allocated_target                       AS ttd_ytd_allocated_target,
+      target_qtd.target_date                                AS ttd_target_date,
+      target_qtd.report_target_date                         AS ttd_report_target_date,
     FROM rpt_scaffold
     INNER JOIN dim_date 
       ON rpt_scaffold.date_id = dim_date.date_id
@@ -44,6 +56,12 @@ fct_sales_funnel_target_daily.report_target_date
       AND rpt_scaffold.dim_order_type_id = fct_sales_funnel_target_daily.dim_order_type_id
       AND rpt_scaffold.dim_sales_qualified_source_id = fct_sales_funnel_target_daily.dim_sales_qualified_source_id
       AND rpt_scaffold.dim_sales_funnel_kpi_sk = fct_sales_funnel_target_daily.dim_sales_funnel_kpi_sk
+    LEFT JOIN target_qtd
+      ON dim_date.date_actual = target_qtd.report_target_date
+      AND rpt_scaffold.dim_hierarchy_sk = target_qtd.dim_crm_user_hierarchy_sk
+      AND rpt_scaffold.dim_order_type_id = target_qtd.dim_order_type_id
+      AND rpt_scaffold.dim_sales_qualified_source_id = target_qtd.dim_sales_qualified_source_id
+      AND rpt_scaffold.dim_sales_funnel_kpi_sk = target_qtd.dim_sales_funnel_kpi_sk
 )
 
 , granular AS (
@@ -80,11 +98,17 @@ fct_sales_funnel_target_daily.report_target_date
       scaffold.net_arr,
       scaffold.new_logo_count,
       scaffold.daily_allocated_target,
-scaffold.mtd_allocated_target,
-scaffold.qtd_allocated_target,
-scaffold.ytd_allocated_target,
-scaffold.report_date,
-scaffold.report_target_date,
+      scaffold.mtd_allocated_target,
+      scaffold.qtd_allocated_target,
+      scaffold.ytd_allocated_target,
+      scaffold.target_date,
+      scaffold.report_target_date,
+      scaffold.ttd_daily_allocated_target,
+      scaffold.ttd_mtd_allocated_target,
+      scaffold.ttd_qtd_allocated_target,
+      scaffold.ttd_ytd_allocated_target,
+      scaffold.ttd_target_date,
+      scaffold.ttd_report_target_date,
       scaffold.dim_crm_opportunity_id
 FROM scaffold
 INNER JOIN dim_sales_funnel_kpi
