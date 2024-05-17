@@ -24,54 +24,45 @@ models:
     description: Reporting model which drives the GTM Operating Performance dashboard.
     columns:
       - name: date_actual
-        description: The actual date of the sales transaction. This field is of DATE
-          data type.
+        description: The actual date of the sales transaction.
         data_type: DATE
       - name: fiscal_year
-        description: The fiscal year in which the sales transaction occurred. This field
-          is of NUMBER data type.
+        description: The fiscal year in which the sales transaction occurred.
         data_type: NUMBER
       - name: fiscal_quarter_name_fy
         description: The name of the fiscal quarter in the fiscal year when the sales
-          transaction occurred. This field is of VARCHAR data type.
+          transaction occurred.
         data_type: VARCHAR
       - name: first_day_of_year
-        description: This column represents the first day of the fiscal year. It is of
-          DATE data type.
+        description: This column represents the first day of the fiscal year.
         data_type: DATE
       - name: sales_funnel_kpi_name
         description: This column represents the name of the Key Performance Indicator
-          (KPI) in the sales funnel. It is of VARCHAR data type.
+          (KPI) in the sales funnel.
         data_type: VARCHAR
       - name: crm_user_role_name
         description: This column represents the name of the user role in the Customer
-          Relationship Management (CRM) system. It is of VARCHAR data type.
+          Relationship Management (CRM) system.
         data_type: VARCHAR
       - name: crm_user_role_level_1
         description: This column represents the first level of the user role hierarchy
-          in the CRM system. It is a VARCHAR type and can contain any string
-          value that represents a user role.
+          in the CRM system.
         data_type: VARCHAR
       - name: crm_user_role_level_2
         description: This column represents the second level of the user role hierarchy
-          in the CRM system. It is a VARCHAR type and can contain any string
-          value that represents a user role.
+          in the CRM system.
         data_type: VARCHAR
       - name: crm_user_role_level_3
         description: This column represents the third level of the user role hierarchy
-          in the CRM system. It is a VARCHAR type and can contain any string
-          value that represents a user role.
+          in the CRM system.
         data_type: VARCHAR
       - name: crm_user_role_level_4
         description: This column represents the fourth level in the hierarchy of the
-          user roles in the CRM system. It provides more granular information
-          about the user's role within the organization.
+          user roles in the CRM system.
         data_type: VARCHAR
       - name: crm_user_role_level_5
         description: This column represents the fifth and typically the most specific
-          level in the hierarchy of the user roles in the CRM system. It
-          provides the most detailed information about the user's role within
-          the organization.
+          level in the hierarchy of the user roles in the CRM system.
         data_type: VARCHAR
       - name: crm_user_area
         description: This column represents the geographical area that the CRM user is
@@ -79,20 +70,17 @@ models:
           city, depending on the organization's structure.
         data_type: VARCHAR
       - name: crm_user_business_unit
-        description: This column represents the business unit of the CRM user. It is a
-          VARCHAR type and can contain any alphanumeric characters. The business
+        description: This column represents the business unit of the CRM user. The business
           unit is a division or segment of the company that is responsible for a
           specific set of tasks, services, or products.
         data_type: VARCHAR
       - name: crm_user_geo
-        description: This column represents the geographical location of the CRM user.
-          It is a VARCHAR type and can contain any alphanumeric characters. The
+        description: This column represents the geographical location of the CRM user. The
           geographical location can be a country, region, or city where the CRM
           user is located or operates.
         data_type: VARCHAR
       - name: crm_user_region
-        description: This column represents the regional division of the CRM user. It is
-          a VARCHAR type and can contain any alphanumeric characters. The
+        description: This column represents the regional division of the CRM user. The
           regional division can be a specific area or territory within a country
           or geographical location where the CRM user is located or operates.
         data_type: VARCHAR
@@ -123,29 +111,29 @@ models:
           categories are labeled as 'Other'.
         data_type: VARCHAR
       - name: first_number_deals
-        description: This column represents the ID of the CRM opportunity for the first
+        description: This column is used to calculate deal_count and represents the ID of the CRM opportunity for the first
           number of deals. It is populated only when the new logo count is
           greater than or equal to 0.
         data_type: VARCHAR
       - name: second_number_deals
-        description: This column represents the ID of the CRM opportunity for the second
+        description: This column is used to calculate deal_count and represents the ID of the CRM opportunity for the second
           number of deals. It is populated only when the new logo count is -1.
         data_type: VARCHAR
       - name: net_arr
         description: This column represents the Net Annual Recurring Revenue. It is a
           measure of the predictable and recurring revenue components of your
-          subscription business. It is a float data type.
+          subscription business.
         data_type: FLOAT
       - name: new_logo_count
         description: This column represents the count of new logos or new customers
-          acquired. It is a float data type.
+          acquired.
         data_type: FLOAT
       - name: daily_allocated_target
         description: This column represents the daily allocated target for the sales
-          team. It is a float data type.
+          team.
         data_type: FLOAT
       - name: dim_crm_opportunity_id
         description: This column represents the unique identifier for each CRM
           opportunity. It is used to link the opportunity data with other
-          related data in the database.
+          related data in the database and for counting distinct opportunities.
         data_type: VARCHAR
