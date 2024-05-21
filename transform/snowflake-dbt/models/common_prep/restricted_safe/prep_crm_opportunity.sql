@@ -743,8 +743,6 @@ LEFT JOIN cw_base
           THEN '5. 100k+'
       END                                                 AS churn_contraction_net_arr_bucket,
       CASE
-        WHEN sfdc_opportunity.created_date < '2022-02-01'
-          THEN 'Legacy'
         WHEN sfdc_opportunity.opportunity_sales_development_representative IS NOT NULL AND sfdc_opportunity.opportunity_business_development_representative IS NOT NULL
           THEN 'SDR & BDR'
         WHEN sfdc_opportunity.opportunity_sales_development_representative IS NOT NULL
