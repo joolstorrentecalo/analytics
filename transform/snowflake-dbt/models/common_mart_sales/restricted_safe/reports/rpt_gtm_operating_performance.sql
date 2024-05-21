@@ -98,7 +98,7 @@
         WHEN mart_crm_opportunity.product_category IN ('Ultimate' , 'Self-Managed - Ultimate' , 'SaaS - Ultimate') THEN 'Ultimate'
         ELSE 'Other' 
       END                                                           AS product_category_modified,
-mart_crm_opportunity.deal_size,
+      mart_crm_opportunity.deal_size,
       CASE WHEN scaffold.new_logo_count >= 0
         THEN scaffold.dim_crm_opportunity_id 
       END                                                           AS first_number_deals,
