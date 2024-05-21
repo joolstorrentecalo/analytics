@@ -22,6 +22,11 @@ models:
 
   - name: rpt_gtm_operating_performance
     description: Reporting model which drives the GTM Operating Performance dashboard.
+    tests:
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - dim_crm_opportunity_id
+          - sales_funnel_kpi_name
     columns:
       - name: date_actual
         description: The actual date of the sales transaction.
