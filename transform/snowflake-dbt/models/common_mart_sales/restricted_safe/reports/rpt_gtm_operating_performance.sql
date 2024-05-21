@@ -33,7 +33,7 @@
       fct_sales_funnel_actual.dim_crm_opportunity_id,
       fct_sales_funnel_actual.net_arr,
       fct_sales_funnel_actual.new_logo_count,
-fct_sales_funnel_actual.email_hash,
+      fct_sales_funnel_actual.email_hash,
       fct_sales_funnel_target_daily.daily_allocated_target,
       fct_sales_funnel_target_daily.mtd_allocated_target,
       fct_sales_funnel_target_daily.qtd_allocated_target,
