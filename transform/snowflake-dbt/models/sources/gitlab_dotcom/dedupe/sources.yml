@@ -407,6 +407,8 @@ sources:
         identifier: gitlab_db_vulnerability_occurrences
       - name: vulnerability_reads
         identifier: gitlab_db_vulnerability_reads
+      - name: vulnerability_scanners
+        identifier: gitlab_db_vulnerability_scanners
       - name: vulnerability_state_transitions
         identifier: gitlab_db_vulnerability_state_transitions
       - name: alert_management_http_integrations
