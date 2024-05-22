@@ -101,9 +101,10 @@
                         '-',
                         UPPER(sheetload_sales_targets_source.user_geo), 
                         '-',
-                        'UNKNOWN',
+                        UPPER(sheetload_sales_targets_source.user_region),
                         '-',
-                        'UNKNOWN')),
+                        UPPER(sheetload_sales_targets_source.user_area))
+                        ),
                     '-',
                     fiscal_months.fiscal_year
                     )
