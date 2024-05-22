@@ -93,7 +93,7 @@
                       fiscal_months.fiscal_year
                       )
         WHEN fiscal_months.fiscal_year >= 2025
-          THEN CONCAT( -- some targets don't use the role hierarchy so we still need to generate a geo key when role_name is null.
+          THEN CONCAT( -- some targets don't use the role hierarchy so we still need to generate a geo key when role_name is null. They only provide mappings for segment and geo so fill in the rest as 'UNKNOWN'
                     COALESCE(
                     UPPER(sheetload_sales_targets_source.user_role_name),
                     CONCAT( 
@@ -101,10 +101,9 @@
                         '-',
                         UPPER(sheetload_sales_targets_source.user_geo), 
                         '-',
-                        UPPER(sheetload_sales_targets_source.user_region),
+                        'UNKNOWN',
                         '-',
-                        UPPER(sheetload_sales_targets_source.user_area))
-                        ),
+                        'UNKNOWN')),
                     '-',
                     fiscal_months.fiscal_year
                     )
