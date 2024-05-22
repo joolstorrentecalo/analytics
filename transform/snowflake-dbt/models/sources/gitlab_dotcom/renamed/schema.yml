@@ -1990,6 +1990,14 @@ models:
         tests:
           - not_null
           - unique
+  
+  - name: gitlab_dotcom_vulnerability_scanners_source
+    description: A base model for Gitlab.com vulnerability_scanners.
+    columns:
+      - name: id
+        tests:
+          - not_null
+          - unique
 
   - name: gitlab_dotcom_vulnerability_state_transitions_source
     description: A base model for Gitlab.com vulnerability_state_transitions.
