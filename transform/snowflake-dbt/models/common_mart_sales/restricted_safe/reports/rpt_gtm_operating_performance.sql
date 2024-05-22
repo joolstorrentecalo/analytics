@@ -10,12 +10,6 @@
     ('mart_crm_opportunity', 'mart_crm_opportunity')
 ]) }}
 
-, target_qtd AS (
-    SELECT *
-    FROM fct_sales_funnel_target_daily
-    WHERE report_target_date = CURRENT_DATE
-)
-
 , scaffold AS (
     SELECT
       dim_date.date_actual,
@@ -63,7 +57,7 @@
       AND rpt_scaffold.dim_order_type_id = fct_sales_funnel_target_daily.dim_order_type_id
       AND rpt_scaffold.dim_sales_qualified_source_id = fct_sales_funnel_target_daily.dim_sales_qualified_source_id
       AND rpt_scaffold.dim_sales_funnel_kpi_sk = fct_sales_funnel_target_daily.dim_sales_funnel_kpi_sk
-    LEFT JOIN target_qtd
+    LEFT JOIN fct_sales_funnel_target_daily AS target_qtd
       ON dim_date.date_actual = target_qtd.report_target_date
       AND rpt_scaffold.dim_hierarchy_sk = target_qtd.dim_crm_user_hierarchy_sk
       AND rpt_scaffold.dim_order_type_id = target_qtd.dim_order_type_id
@@ -134,7 +128,7 @@ INNER JOIN dim_order_type
   ON scaffold.dim_order_type_id = dim_order_type.dim_order_type_id
 INNER JOIN dim_sales_qualified_source
   ON scaffold.dim_sales_qualified_source_id = dim_sales_qualified_source.dim_sales_qualified_source_id
-INNER JOIN mart_crm_opportunity
+LEFT JOIN mart_crm_opportunity
   ON scaffold.dim_crm_opportunity_id = mart_crm_opportunity.dim_crm_opportunity_id
 )
 
