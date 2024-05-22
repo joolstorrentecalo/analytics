@@ -2663,30 +2663,12 @@ tables:
       , updated_at
       , project_id
       , external_id
-      , NULL AS name
-      , NULL AS vendor
-      FROM vulnerability_scanners
-      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
-        AND '{END_TIMESTAMP}'::timestamp
-  vulnerability_scanners_internal_only:
-    additional_filtering: AND project_id in {INTERNAL_PROJECT_IDS}
-    dbt_source_model: true
-    deletes_exempt: True
-    export_schema: 'gitlab_com'
-    export_table: 'vulnerability_scanners_internal_only'
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , created_at
-      , updated_at
-      , project_id
-      , external_id
       , name
       , vendor
       FROM vulnerability_scanners
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
+
   vulnerability_state_transitions:
     deletes_exempt: True
     export_schema: 'gitlab_com'
