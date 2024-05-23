@@ -336,19 +336,19 @@ roles:
         - zuora_query_api
         - sensitive_marketing
   - sensitive_marketing:
-        privileges:
-          databases:
-            read:
-              - prep
-          schemas:
-            read:
-              - prep.*
-          tables:
-            read:
-              - prep.sensitive.bdg_marketing_contact_role
-              - prep.sensitive.dim_marketing_contact
-              - prep.sensitive.bdg_marketing_contact_order
-              - prep.sensitive.mart_marketing_contact
+      privileges:
+        databases:
+          read:
+            - prep
+        schemas:
+          read:
+            - prep.*
+        tables:
+          read:
+            - prep.sensitive.bdg_marketing_contact_role
+            - prep.sensitive.dim_marketing_contact
+            - prep.sensitive.bdg_marketing_contact_order
+            - prep.sensitive.mart_marketing_contact
   - analyst_core:
       warehouses:
         - dev_xs
@@ -6393,11 +6393,6 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
-  - bleducmills:
-      member_of:
-        - snowflake_analyst
-      warehouses:
-        - dev_xs
   - aregnery:
       member_of:
         - snowflake_analyst
@@ -6461,6 +6456,11 @@ roles:
       warehouses:
         - dev_xs
   - seanhall:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - testuser1:
       member_of:
         - snowflake_analyst
       warehouses:
@@ -7443,10 +7443,6 @@ users:
       can_login: true
       member_of:
         - dbernardi
-  - bleducmills:
-      can_login: true
-      member_of:
-        - bleducmills
   - aregnery:
       can_login: true
       member_of:
@@ -7495,6 +7491,10 @@ users:
       can_login: true
       member_of:
         - seanhall
+  - testuser1:
+      can_login: true
+      member_of:
+        - testuser1
 warehouses:
   - admin:
       size: x-small
