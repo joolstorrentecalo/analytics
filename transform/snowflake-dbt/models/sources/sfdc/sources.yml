@@ -144,4 +144,12 @@ sources:
         identifier: opportunityshare
       - name: user_territory_association
         identifier: userterritory2association
+      - name: zqu_product_rate_plan
+        identifier: zqu__productrateplan__c
+        description: '{{ doc("sfdc_zqu_product_rate_plan_source")}}'
+      - name: zqu_zproduct
+        identifier: zqu__zproduct__c
+        description: '{{ doc("sfdc_zqu_zproduct_source")}}'
+    
+
 

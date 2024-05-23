@@ -76,16 +76,33 @@ models:
             sensitive: true
         - name: first_name
           meta:
-            sensitive: true       
+            sensitive: true
         - name: middle_name
           meta:
-            sensitive: true   
+            sensitive: true
         - name: last_name
           meta:
             sensitive: true
         - name: salary
           meta:
-            sensitive: true   
+            sensitive: true
         - name: employee_id
           meta:
-            sensitive: true   
+            sensitive: true
+    - name: xactly_commission_source
+      columns:
+        - name: amount
+          meta:
+            sensitive: true
+        - name: rate_amount
+          meta:
+            sensitive: true
+        - name: released_amount
+          meta:
+            sensitive: true
+        - name: held_amount
+          meta:
+            sensitive: true
+        - name: pending_commission_amount
+          meta:
+            sensitive: true

@@ -2,10 +2,9 @@ WITH source AS (
 
   SELECT
     *,
-    code_suggestions_context['data']['gitlab_global_user_id']::VARCHAR AS gitlab_global_user_id,
-    code_suggestions_context['data']['gitlab_instance_id']::VARCHAR    AS gitlab_instance_id,
-    gitlab_instance_id || '-' || gitlab_global_user_id                 AS instance_user_id
-  FROM {{ ref('wk_mart_behavior_structured_event_code_suggestion') }}
+    instance_id                                              AS gitlab_instance_id,
+    instance_id || '-' || gitlab_global_user_id              AS instance_user_id
+  FROM {{ ref('mart_behavior_structured_event_code_suggestion') }}
   WHERE app_id = 'gitlab_ai_gateway'
     AND gitlab_global_user_id != ''
 

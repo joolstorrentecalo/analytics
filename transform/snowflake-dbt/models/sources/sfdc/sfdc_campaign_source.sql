@@ -44,6 +44,8 @@ WITH source AS (
         sales_play__c                                                       AS sales_play,
         gtm_motion__c                                                       AS gtm_motion,
         total_planned_mql__c                                                AS total_planned_mqls,
+        registration_goal__c                                                AS registration_goal,
+        attendance_goal__c                                                  AS attendance_goal,
 
         --results
         actualcost                                                          AS actual_cost,

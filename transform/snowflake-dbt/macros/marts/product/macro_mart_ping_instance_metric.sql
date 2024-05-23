@@ -122,6 +122,7 @@ joined AS (
     license_subscriptions.license_id                                                                           AS license_id,
     license_subscriptions.license_company_name                                                                 AS license_company_name,
     license_subscriptions.latest_subscription_id                                                               AS latest_subscription_id,
+    license_subscriptions.subscription_name                                                                    AS subscription_name,
     license_subscriptions.original_subscription_name_slugify                                                   AS original_subscription_name_slugify,
     license_subscriptions.product_category_array                                                               AS product_category_array,
     license_subscriptions.product_rate_plan_name_array                                                         AS product_rate_plan_name_array,
@@ -259,6 +260,7 @@ sorted AS (
     instance_user_count,
 
     --metadata subscription
+    subscription_name,
     original_subscription_name_slugify,
     subscription_start_month,
     subscription_end_month,
@@ -292,9 +294,9 @@ sorted AS (
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@pempey",
+    updated_by="@utkarsh060",
     created_date="2022-03-11",
-    updated_date="2024-02-13"
+    updated_date="2024-04-18"
 ) }}
 
 {% endmacro %}

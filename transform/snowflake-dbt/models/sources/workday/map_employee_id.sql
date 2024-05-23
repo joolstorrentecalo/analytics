@@ -9,6 +9,7 @@ renamed AS (
     employee_id AS bhr_employee_id,
     employee_number AS wk_employee_id
   FROM source
+  QUALIFY ROW_NUMBER() OVER(PARTITION BY employee_id ORDER BY uploaded_at DESC) = 1
 
 )
 

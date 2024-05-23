@@ -165,3 +165,14 @@ Count of subscriptions sending a ping from a version of GitLab with the metric i
 Count of licensed users (seats) associated with subscriptions sending a ping from a version of GitLab with the metric instrumented
 
 {% enddocs %}
+
+{% docs zoekt_rollout_categories %}
+
+The zoekt_rollout_categories column categorizes namespaces based on their indexing and search capabilities within the GitLab platform. It reflects the rollout status of the "Zoekt" search feature.
+
+**The values in the zoekt_rollout_categories column are determined based on specific criteria related to the indexing and search status of namespaces:**
+- `not indexed`: Indicates namespaces that are not yet indexed for search purposes.
+- `indexed` - search disabled': Represents namespaces that are indexed but have search functionality disabled.
+- `indexed` - search enabled': Denotes namespaces that are indexed and have search functionality enabled.
+
+{% enddocs %}

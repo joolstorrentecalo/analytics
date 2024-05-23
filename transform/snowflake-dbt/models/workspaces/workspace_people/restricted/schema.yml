@@ -290,3 +290,8 @@ models:
       - name: referral
       - name: preferred_first
       - name: referral_notes
+  - name: wk_sheetload_ta_team_assignment
+    columns: 
+      - name: Department
+      - name: Team
+      - name: Recruiter

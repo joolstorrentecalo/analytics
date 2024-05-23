@@ -1,4 +1,3 @@
--- unused currently
 -- connection uses SECURITYADMIN role and ADMIN warehouse
 set username = (select upper(:username));
 

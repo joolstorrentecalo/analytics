@@ -280,6 +280,11 @@ Below checklist of activities would be run once for quarter to validate security
 1. [ ] Validate off-boarded employees have been removed from Monte Carlo access.
 1. [ ] Deprovision access if an account has not logged-in within the past 90 days from the moment of performing audit.
 
+## Tableau
+1. [ ] Validate offboarded employess have been removed from Tableau Cloud
+1. [ ] Deprovision access if a user has had access for >=90 days, but have not logged in during the past 90 days from the moment of performing audit. 
+  - [Deprovision Check](https://10az.online.tableau.com/t/gitlab/views/UserDeprovisionCheck/UserDeprovisionCheck)
+
 ## Package version inventory
 
 1. Python libraries inventory:

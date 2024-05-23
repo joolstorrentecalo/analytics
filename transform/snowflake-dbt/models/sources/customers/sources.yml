@@ -109,11 +109,64 @@ sources:
           - name: subscription_id
             tests:
               - not_null
+      - name: customers_db_self_managed_instance_activations
+        columns:
+          - name: id
+            tests:
+              - not_null
+          - name: created_at
+            tests:
+              - not_null
+          - name: updated_at
+          - name: activated_at
+          - name: self_managed_instance_id
+          - name: cloud_activation_id
+          - name: subscription_id
       - name: customers_db_billing_account_contacts
         columns:
           - name: id
             tests:
               - not_null
+          - name: created_at
+            tests:
+              - not_null
+          - name: updated_at
+            tests:
+              - not_null
+      - name: customers_db_trials
+        columns:
+          - name: id
+            tests:
+              - not_null
+          - name: trial_account_id
+          - name: quantity
+          - name: product_rate_plan_id
+          - name: subscription_name
+            tests:
+              - not_null
+          - name: start_date
+          - name: end_date
+          - name: created_at
+            tests:
+              - not_null
+          - name: updated_at
+            tests:
+              - not_null
+      - name: customers_db_trial_accounts
+        columns:
+          - name: id
+            tests:
+              - not_null
+          - name: billing_account_id
+            tests:
+              - not_null
+          - name: company
+            tests:
+              - not_null
+          - name: name
+            tests:
+              - not_null
+          - name: email
           - name: created_at
             tests:
               - not_null

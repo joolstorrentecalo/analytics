@@ -83,6 +83,9 @@ models:
         tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
+      - name: product_category
+        description: Categorizes Zuora products as either Add On Services or Base Products.
+
 
   - name: map_namespace_internal
     description: '{{ doc("map_namespace_internal") }}'

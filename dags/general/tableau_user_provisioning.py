@@ -130,4 +130,4 @@ tableau_provision_users = KubernetesPodOperator(
 )
 
 
-tableau_user_provision_settings >> tableau_provision_users
+tableau_provision_users >> tableau_provision_settings

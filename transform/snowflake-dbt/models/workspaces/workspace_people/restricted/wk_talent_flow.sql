@@ -345,8 +345,14 @@ listing AS (
     listing_stage.employee_id,
     listing_stage.reports_to,
     listing_stage.full_name,
-    listing_stage.country,
-    listing_stage.region,
+    CASE COALESCE(staff_hist.country_current, listing_stage.country)
+      WHEN 'United States' THEN 'United States of America'
+      ELSE COALESCE(staff_hist.country_current, listing_stage.country)
+    END                                                                                                          AS country,
+    CASE COALESCE(staff_hist.region_current, listing_stage.region)
+      WHEN 'NORAM' THEN 'Americas'
+    ELSE COALESCE(staff_hist.region_current, listing_stage.region)
+    END                                                                                                          AS region,
     listing_stage.cost_center,
     CASE listing_stage.division
       WHEN 'Legal'
@@ -401,8 +407,14 @@ listing AS (
     listing_stage.employee_id,
     listing_stage.reports_to,
     listing_stage.full_name,
-    listing_stage.country,
-    listing_stage.region,
+    CASE COALESCE(staff_hist.country_current, listing_stage.country)
+      WHEN 'United States' THEN 'United States of America'
+      ELSE COALESCE(staff_hist.country_current, listing_stage.country)
+    END                                                                                                          AS country,
+    CASE COALESCE(staff_hist.region_current, listing_stage.region)
+      WHEN 'NORAM' THEN 'Americas'
+    ELSE COALESCE(staff_hist.region_current, listing_stage.region)
+    END                                                                                                          AS region,
     listing_stage.cost_center,
     CASE listing_stage.division
       WHEN 'Legal'

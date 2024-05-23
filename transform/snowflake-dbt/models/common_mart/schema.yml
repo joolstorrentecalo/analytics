@@ -368,6 +368,8 @@ models:
       description: '{{ doc("time_frame") }}'
     - name: instance_user_count
       description: '{{ doc("instance_user_count") }}'
+    - name: subscription_name
+      description: '{{ doc("subscription_name") }}'
     - name: original_subscription_name_slugify
       description: '{{ doc("original_subscription_name_slugify") }}'
     - name: subscription_start_month
@@ -501,6 +503,8 @@ models:
       description: '{{ doc("iso_2_country_code_ping_model") }}'
     - name: installation_type
       description: '{{ doc("installation_type") }}'
+    - name: subscription_name
+      description: '{{ doc("subscription_name") }}'
     - name: original_subscription_name_slugify
       description: '{{ doc("original_subscription_name_slugify") }}'
     - name: subscription_start_month
@@ -631,6 +635,8 @@ models:
       description: '{{ doc("time_frame") }}'
     - name: instance_user_count
       description: '{{ doc("instance_user_count") }}'
+    - name: subscription_name
+      description: '{{ doc("subscription_name") }}'
     - name: original_subscription_name_slugify
       description: '{{ doc("original_subscription_name_slugify") }}'
     - name: subscription_start_month
@@ -763,6 +769,8 @@ models:
       description: '{{ doc("time_frame") }}'
     - name: instance_user_count
       description: '{{ doc("instance_user_count") }}'
+    - name: subscription_name
+      description: '{{ doc("subscription_name") }}'
     - name: original_subscription_name_slugify
       description: '{{ doc("original_subscription_name_slugify") }}'
     - name: subscription_start_month
@@ -903,6 +911,8 @@ models:
       description: '{{ doc("time_frame") }}'
     - name: instance_user_count
       description: '{{ doc("instance_user_count") }}'
+    - name: subscription_name
+      description: '{{ doc("subscription_name") }}'
     - name: original_subscription_name_slugify
       description: '{{ doc("original_subscription_name_slugify") }}'
     - name: subscription_start_month
@@ -1043,6 +1053,8 @@ models:
       description: '{{ doc("time_frame") }}'
     - name: instance_user_count
       description: '{{ doc("instance_user_count") }}'
+    - name: subscription_name
+      description: '{{ doc("subscription_name") }}'
     - name: original_subscription_name_slugify
       description: '{{ doc("original_subscription_name_slugify") }}'
     - name: subscription_start_month
@@ -1183,6 +1195,8 @@ models:
       description: '{{ doc("time_frame") }}'
     - name: instance_user_count
       description: '{{ doc("instance_user_count") }}'
+    - name: subscription_name
+      description: '{{ doc("subscription_name") }}'
     - name: original_subscription_name_slugify
       description: '{{ doc("original_subscription_name_slugify") }}'
     - name: subscription_start_month
@@ -1353,6 +1367,8 @@ models:
       description: '{{ doc("gsc_source") }}'
     - name: gsc_is_gitlab_team_member
       description: '{{ doc("gsc_is_gitlab_team_member") }}'
+    - name: gsc_feature_enabled_by_namespace_ids
+      description: '{{ doc("gsc_feature_enabled_by_namespace_ids") }}'
     - name: event_value
       description: '{{ doc("event_value") }}'
     - name: event_action
@@ -1478,6 +1494,8 @@ models:
       description: '{{ doc("host_name") }}'
     - name: is_streaming
       description: '{{ doc("code_suggestions_is_streaming") }}'
+    - name: gitlab_global_user_id
+      description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
     - name: namespace_ids
       description: '{{ doc("code_suggestions_namespace_ids") }}'
     - name: ultimate_parent_namespace_ids
@@ -1512,4 +1530,5 @@ models:
       description: '{{ doc("code_suggestions_dim_installation_id") }}'
     - name: installation_host_name
       description: '{{ doc("code_suggestions_installation_host_name") }}'
-
+    - name: namespace_is_internal
+      description: '{{ doc("code_suggestions_namespace_is_internal") }}'

@@ -1,38 +1,80 @@
-WITH data_transfer_source as (
+WITH data_transfer_source AS (
 
-SELECT * FROM {{ ref ('elastic_billing_data_transfer_source')}}
-
-),
-
-resource_source as (
-
-SELECT * FROM {{ ref ('elastic_billing_resources_source')}}
+  SELECT * FROM {{ ref ('elastic_billing_data_transfer_source') }}
 
 ),
 
-renamed as (
+resource_source AS (
 
-SELECT 
+  SELECT * FROM {{ ref ('elastic_billing_resources_source') }}
+
+),
+
+renamed AS (
+
+  SELECT
     extraction_start_date,
     extraction_end_date,
-    'data_transfer' as charge_type,
+    'data_transfer'                      AS charge_type,
     sku,
     cost,
-    resource_quantity_value as usage,
-    formated_quantity_value as usage_unit,
-    ARRAY_CONSTRUCT(type, resource_name) as details
-FROM data_transfer_source
-UNION ALL
-SELECT
+    resource_quantity_value              AS usage,
+    CASE WHEN formated_quantity_value LIKE '%GB%' THEN 'bytes'
+      WHEN formated_quantity_value LIKE '%requests%' THEN 'requests'
+    END                                  AS usage_unit,
+    ARRAY_CONSTRUCT(type, resource_name) AS details
+  FROM data_transfer_source
+  UNION ALL
+  SELECT
     extraction_start_date,
     extraction_end_date,
-    'capacity' as charge_type,
+    'capacity' AS charge_type,
     sku,
     cost,
-    hours as usage,
-    'hours' as usage_unit,
+    hours      AS usage,
+    'hours'    AS usage_unit,
     ARRAY_CONSTRUCT(resource_start_date, resource_end_date, instance_count, price_per_hour, name)
- FROM resource_source
+  FROM resource_source
+),
+
+
+transformed AS (
+  SELECT
+    extraction_end_date AS day,
+    charge_type,
+    sku,
+    usage_unit,
+    CASE WHEN day = DATE_TRUNC('month', DAY) THEN cost ELSE -- handle first day of the month where cost and usage would be null without case statement
+        cost - LAG(cost, 1) OVER (PARTITION BY
+          DATE_TRUNC('month', extraction_end_date),
+          charge_type,
+          sku,
+          usage_unit
+        ORDER BY extraction_end_date)
+    END                 AS daily_cost,
+    CASE WHEN day = DATE_TRUNC('month', DAY) THEN usage ELSE -- handle first day of the month where cost and usage would be null without case statement
+        usage - LAG(usage, 1) OVER (PARTITION BY
+          DATE_TRUNC('month', extraction_end_date),
+          charge_type,
+          sku,
+          usage_unit
+        ORDER BY extraction_end_date)
+    END                 AS daily_usage,
+    cost,
+    usage,
+    details
+  FROM renamed
 )
 
-SELECT * FROM renamed
+SELECT
+  day,
+  charge_type,
+  sku,
+  usage_unit,
+  daily_cost,
+  cost,
+  daily_usage,
+  usage,
+  details
+FROM transformed
+

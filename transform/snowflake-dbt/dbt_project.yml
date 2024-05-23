@@ -267,6 +267,12 @@ models:
       handbook:
         +schema: handbook
 
+      hyperproof:
+        +schema: hyperproof
+        sensitive:
+          +schema: sensitive
+          secure: true
+
       influx_db:
         +schema: influx_db
 
@@ -314,6 +320,12 @@ models:
         +materialized: table
         +schema: qualtrics
 
+      rally_initial_export:
+        +schema: rally_initial_export
+
+      rally_webhook_stitch:
+        +schema: rally_initial_export
+
       rspec:
         +schema: rspec
 
@@ -332,6 +344,10 @@ models:
 
       sheetload:
         +schema: sheetload
+
+      sirt_alertapp:
+        +materialized: table
+        +schema: sirt_alertapp
 
       snowflake:
         +schema: snowflake

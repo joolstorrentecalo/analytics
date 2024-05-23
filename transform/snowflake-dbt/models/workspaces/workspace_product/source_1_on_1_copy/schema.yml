@@ -5,6 +5,12 @@ models:
   - name: customers_db_reconciliations
     description: Workspace model of the source data (deduplicated).
 
+  - name: customers_db_trials
+    description: Workspace model of the source data (deduplicated).
+
+  - name: customers_db_trial_accounts
+    description: Workspace model of the source data (deduplicated).
+
   - name: gitlab_dotcom_fork_network_members
     description: Workspace model of the source data (deduplicated).
 
@@ -70,6 +76,9 @@ models:
       - name: user_id
         description: '{{ doc("dim_user_id") }}'
       - name: deleted_on
+
+  - name: gitlab_dotcom_notification_settings
+    description: Workspace model of the source data (deduplicated).
   
   - name: gitlab_dotcom_vulnerability_reads
     description: Workspace model of the source data (deduplicated).

@@ -274,6 +274,7 @@ LEFT JOIN mart_arr
     ON paid_user_metrics.dim_subscription_id_original = mart_arr.dim_subscription_id_original
     AND paid_user_metrics.snapshot_month = mart_arr.arr_month
     AND paid_user_metrics.delivery_type = mart_arr.product_delivery_type
+    AND mart_arr.product_tier_name NOT IN ('Storage','Not Applicable')
 WHERE paid_user_metrics.license_user_count != 0
 qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instance_identifier ORDER BY paid_user_metrics.ping_created_at DESC NULLs last) = 1
 
@@ -282,7 +283,7 @@ qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instan
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@jngCES",
-    updated_by="@bbutterfield",
+    updated_by="@jonglee1218",
     created_date="2023-03-30",
-    updated_date="2023-08-05"
+    updated_date="2024-05-16"
 ) }}

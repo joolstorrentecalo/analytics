@@ -6,12 +6,12 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests: 
+        tests:
           - unique
           - not_null
       - name: email_address
         description: Email address for the marketing contact
-        tests: 
+        tests:
           - unique
           - not_null
       - name: first_name
@@ -33,17 +33,17 @@ models:
       - name: is_sfdc_lead_contact
         description: Flags whether or not marketing contact is a Salesforce contact/lead
       - name: sfdc_lead_contact
-        description: Lists whether marketing contact is a Lead or a Contact in Salesforce. 
+        description: Lists whether marketing contact is a Lead or a Contact in Salesforce.
       - name: sfdc_created_date
         description: Date that the Salesforce record was created for marketing contact.
       - name: is_sfdc_opted_out
-        description: Flags whether or not contact is opted out of Salesforce. 
+        description: Flags whether or not contact is opted out of Salesforce.
       - name: is_gitlab_com_user
         description: Flags whether or not marketing contact is in Gitlab.com
       - name: gitlab_com_user_id
         description: Gitlab.com user id of the marketing contact.
       - name: gitlab_com_created_date
-        description: Date that the GitLab.com record was created for marketing contact. 
+        description: Date that the GitLab.com record was created for marketing contact.
       - name: gitlab_com_confirmed_date
         description: Date that the GitLab.com record was confirmed for marketing contact.
       - name: gitlab_com_active_state
@@ -51,7 +51,7 @@ models:
       - name: gitlab_com_last_login_date
         description: Most recent date that marketing contact logged into gitlab.com
       - name: gitlab_com_email_opted_in
-        description: Flags whether or not contact is opted out of Gitlab.com. 
+        description: Flags whether or not contact is opted out of Gitlab.com.
       - name: days_since_saas_signup
         description: Number of days since gitlab_com_confirmed_date
       - name: is_customer_db_user
@@ -69,14 +69,14 @@ models:
       - name: zuora_contact_id
         description: Zuora contact id of the marketing contact.
       - name: zuora_created_date
-        description: Date that Zuora record was created for marketing contact. 
+        description: Date that Zuora record was created for marketing contact.
       - name: zuora_active_state
         description: Lists if marketing contact is active in Zuora.
       - name: wip_is_email_address_valid
         description: Flags if the email address is valid. Work in progress - full list of invalid emails is not loaded
       - name: wip_invalid_email_address_reason
         description: Reason why the email address is invalid. Work in progress - full list of invalid emails is not loaded
-      
+
 
   - name: bdg_marketing_contact_role
     description: '{{ doc("bdg_marketing_contact_role") }}'
@@ -92,10 +92,10 @@ models:
       - name: zuora_billing_account_id
         description: Zuora billing account id (if applicable) of the marketing contact.
       - name: namespace_id
-        description: Gitlab.com namespace id associated to the user_id. 
+        description: Gitlab.com namespace id associated to the user_id.
       - name: marketing_contact_role
         description: Role of the marketing contact. A marketing contact can have many roles. Could be 'Personal Namespace Owner', Group Namespace Owner', 'Group Namespace Member', 'Group Namespace Maintainer', 'Customer DB Owner', 'Zuora Billing Contact'
-     
+
   - name: bdg_marketing_contact_order
     description: '{{ doc("bdg_marketing_contact_order") }}'
     columns:
@@ -104,7 +104,7 @@ models:
       - name: email_address
         description: Email address for the marketing contact.
       - name: dim_namespace_id
-        description: Namespace id associated to the user_id. 
+        description: Namespace id associated to the user_id.
       - name: namespace_path
         description: Namespace path associated to the user
       - name: is_individual_namespace
@@ -153,7 +153,7 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests: 
+        tests:
           - unique
           - not_null
       - name: is_group_namespace_owner
@@ -271,17 +271,17 @@ models:
       - name: is_sfdc_lead_contact
         description: Flags whether or not marketing contact is a Salesforce contact/lead
       - name: sfdc_lead_contact
-        description: Lists whether marketing contact is a Lead or a Contact in Salesforce. 
+        description: Lists whether marketing contact is a Lead or a Contact in Salesforce.
       - name: sfdc_created_date
         description: Date that the Salesforce record was created for marketing contact.
       - name: is_sfdc_opted_out
-        description: Flags whether or not contact is opted out of Salesforce. 
+        description: Flags whether or not contact is opted out of Salesforce.
       - name: is_gitlab_com_user
         description: Flags whether or not marketing contact is in Gitlab.com
       - name: gitlab_com_user_id
         description: Gitlab.com user id of the marketing contact.
       - name: gitlab_com_created_date
-        description: Date that the GitLab.com record was created for marketing contact. 
+        description: Date that the GitLab.com record was created for marketing contact.
       - name: gitlab_com_confirmed_date
         description: Date that the GitLab.com record was confirmed for marketing contact.
       - name: gitlab_com_active_state
@@ -289,7 +289,7 @@ models:
       - name: gitlab_com_last_login_date
         description: Most recent date that marketing contact logged into gitlab.com
       - name: gitlab_com_email_opted_in
-        description: Flags whether or not contact is opted out of Gitlab.com. 
+        description: Flags whether or not contact is opted out of Gitlab.com.
       - name: days_since_saas_signup
         description: Number of days since gitlab_com_confirmed_date
       - name: is_customer_db_user
@@ -307,7 +307,7 @@ models:
       - name: zuora_contact_id
         description: Zuora contact id of the marketing contact.
       - name: zuora_created_date
-        description: Date that Zuora record was created for marketing contact. 
+        description: Date that Zuora record was created for marketing contact.
       - name: zuora_active_state
         description: Lists if marketing contact is active in Zuora.
       - name: wip_is_email_address_valid
@@ -323,13 +323,13 @@ models:
       - name: pql_product_interaction
         description: Type of product interaction that the PQL had. As of now, it can either be SaaS Trial or Hand Raise PQL.
       - name: pql_list_stages
-        description: List of product stages adopted by the PQL namespace. It only counts the events done before any conversion was done (if any), SMAU events and events done in the first year of the creation of the namespace. 
+        description: List of product stages adopted by the PQL namespace. It only counts the events done before any conversion was done (if any), SMAU events and events done in the first year of the creation of the namespace.
       - name: pql_nbr_stages
         description: Number of product stages adopted by the PQL namespace.
       - name: pql_nbr_namespace_users
         description: Current member count of the PQL namespace. This is calculated using the data in the Gitlab.com members table based on the number of accepted invites. If this number is zero, this is replaced to be 1 as all namespaces have at least one member, the creator.
       - name: pql_trial_start_date
-        description: Trial start date of the PQL namespace. 
+        description: Trial start date of the PQL namespace.
       - name: pql_event_created_at
         description: Date that the PQL lead was created.
       - name: pql_nbr_integrations_installed
@@ -390,17 +390,31 @@ models:
   - name: pump_marketing_contact_namespace_detail
     description: >-
       This table contains information of the marketing contact (email address) and namespace information for Gitlab.com users. The grain of the table is one row per email address, the namespace details are then stored in an array
-      of JSON objects. 
+      of JSON objects.
       Only the ultimate parent namespaces are being synced into the namespace details array. If an user has access only to a subgroup of a ultimate parent namespace, the ultimate namespace is not linked to the ultimate namespace.
       For example, user A is a member of the sub group namespace 2. The ultimate parent namespace of namespace 2 is namespace 1. Since user A is only a direct member of namespace 2 and namespace 2 is not an ultimate namespace,
-      user A has no namespaces listed in the namespace array list.  
+      user A has no namespaces listed in the namespace array list.
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests: 
+        tests:
           - unique
           - not_null
       - name: max_trial_start_date
         description: The most recent trial start date across all the namespaces associated with the marketing_contact.
       - name: namespaces_array
         description: '{{ doc("namespaces_array") }}'
+  - name: rally_optouts
+    description: Captures email optout status for each Rally member
+    columns:
+      - name: email
+        description: The email of the Rally user
+        tests:
+          - unique
+          - not_null
+      - name: opted_out
+        description: If the Rally user opted out from emails
+      - name: updated_at
+        description: When the the user was last updated. A value of `1970-01-01` reflects the user hasn't been updated since iniital export in May, 2024
+        tests:
+          - not_null

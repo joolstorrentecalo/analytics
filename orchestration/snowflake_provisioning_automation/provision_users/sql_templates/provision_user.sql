@@ -1,9 +1,10 @@
 -- assumes securityadmin role and admin warehouse are being used
 SET username = (select upper(:username));
-SET email = (select :email);
+SET email = (select lower(:email));
 
-CREATE USER
-  identifier($username)
+CREATE USER identifier($username)
+  LOGIN_NAME = $email
+  DISPLAY_NAME = $username
   EMAIL = $email
   DEFAULT_WAREHOUSE = 'DEV_XS';
 

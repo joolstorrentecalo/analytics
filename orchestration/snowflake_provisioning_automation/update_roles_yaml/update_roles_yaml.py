@@ -35,16 +35,10 @@ from utils_update_roles import (
     save_roles_to_yaml,
     get_valid_users,
     get_snowflake_usernames,
+    configure_logging,
 )
 from render_templates import concat_template_values
 from roles_struct import RolesStruct
-
-
-def configure_logging():
-    """configure logger"""
-    logging.basicConfig(
-        level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
 
 
 def process_args() -> Tuple[list, list, str, str, str]:

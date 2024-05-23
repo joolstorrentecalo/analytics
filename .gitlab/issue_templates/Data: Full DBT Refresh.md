@@ -13,4 +13,4 @@
 
 * [ ] For dbt models need to be refreshed, follow the [instructions](https://internal.gitlab.com/handbook/enterprise-data/platform/infrastructure/#dbt-model-manual-refresh).
 
-cc @gitlab-data/analytics-engineers 
+/label ~"Full dbt refresh" 

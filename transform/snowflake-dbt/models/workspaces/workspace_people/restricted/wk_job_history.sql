@@ -206,14 +206,14 @@ eda AS (
       ELSE reports_to_id
     END AS reports_to_id,
     full_name,
-    CASE country
+    CASE COALESCE(staff_hist.country_current, country)
       WHEN 'United States' THEN 'United States of America'
-      ELSE country
-    END AS country,
-    CASE region_modified
+      ELSE COALESCE(staff_hist.country_current,country)
+    END as country,
+    CASE COALESCE(staff_hist.region_current, region_modified)
       WHEN 'NORAM' THEN 'Americas'
-      ELSE region_modified
-    END AS region,
+    ELSE COALESCE(staff_hist.region_current, region_modified)
+    END as region,
     location_factor,
     is_hire_date,
     is_termination_date,
@@ -287,14 +287,14 @@ eda AS (
       ELSE reports_to_id
     END AS reports_to_id,
     full_name,
-    CASE country
+    CASE COALESCE(staff_hist.country_current, country)
       WHEN 'United States' THEN 'United States of America'
-      ELSE country
-    END AS country,
-    CASE region_modified
+      ELSE COALESCE(staff_hist.country_current,country)
+    END as country,
+    CASE COALESCE(staff_hist.region_current, region_modified)
       WHEN 'NORAM' THEN 'Americas'
-      ELSE region_modified
-    END AS region,
+    ELSE COALESCE(staff_hist.region_current, region_modified)
+    END as region,
     location_factor,
     is_hire_date,
     is_termination_date,

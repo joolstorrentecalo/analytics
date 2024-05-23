@@ -87,6 +87,8 @@
 
       -- Attributes
       page_views_w_clean_url.page_url_path,
+      page_views_w_clean_url.page_url,
+      page_views_w_clean_url.page_url_host,
       page_views_w_clean_url.referer_url_path,
       page_views_w_clean_url.event_name,
       NULL                                                                          AS sf_formid,
@@ -101,7 +103,7 @@
 {{ dbt_audit(
     cte_ref="page_views_w_dim",
     created_by="@chrissharp",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2022-07-22",
-    updated_date="2024-01-25"
+    updated_date="2024-05-03"
 ) }}

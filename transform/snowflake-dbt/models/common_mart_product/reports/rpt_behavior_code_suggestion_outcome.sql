@@ -177,6 +177,7 @@ suggestion_level AS (
     DATEDIFF('milliseconds', requested_at, loaded_at)                                               AS load_time_in_ms,
     DATEDIFF('milliseconds', shown_at, COALESCE(accepted_at, rejected_at))                          AS display_time_in_ms,
     DATEDIFF('milliseconds', requested_at, stream_started_at)                                       AS stream_start_time_in_ms,
+    DATEDIFF('milliseconds', requested_at, shown_at)                                                AS time_to_show_in_ms,
 
     --Outcome/end result of suggestion
     COALESCE(accepted.event_action, rejected.event_action,
@@ -224,8 +225,8 @@ suggestion_level AS (
 {{ dbt_audit(
     cte_ref="suggestion_level",
     created_by="@michellecooper",
-    updated_by="@mdrussell",
+    updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-04-12"
+    updated_date="2024-05-15"
 ) }}
 

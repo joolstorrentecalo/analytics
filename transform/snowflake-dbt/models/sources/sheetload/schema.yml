@@ -337,6 +337,8 @@ models:
   description: This is the model that captures sales data for rep quotas for professional services the full fy2020.
 - name: sheetload_sales_capacity_kpi_source
   description: This is the model captures sales capacity kpis target and actual
+- name: sheetload_sales_dev_targets_fy25_sources
+  description: The FY25 targets for the sales dev org. 
 - name: sheetload_scalable_employment_values_source
   description: Source model for Scalable Employment Solution Data
   columns:
@@ -661,3 +663,5 @@ models:
   description: The list of department, team and recruiter data 
 - name: sheetload_job_profiles_historical_source
   description: This is the historical dataload to the datasource that captures changes to the Job Profiles
+- name: sheetload_ci_runner_machine_type_mapping_source
+  description: Mapping of CI Runner descriptions to CI runner machine types

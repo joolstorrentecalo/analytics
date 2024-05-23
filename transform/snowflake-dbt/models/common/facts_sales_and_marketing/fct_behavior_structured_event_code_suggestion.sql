@@ -37,7 +37,8 @@ code_suggestion_context AS (
     fct_behavior_structured_event.namespace_ids,
     fct_behavior_structured_event.instance_id,
     fct_behavior_structured_event.host_name,
-    fct_behavior_structured_event.is_streaming
+    fct_behavior_structured_event.is_streaming,
+    fct_behavior_structured_event.gitlab_global_user_id
   FROM fct_behavior_structured_event
   WHERE behavior_at >= '2023-08-01' -- no events added to context before Aug 2023
     AND has_code_suggestions_context = TRUE
@@ -242,5 +243,5 @@ code_suggestion_context AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-04-09"
+    updated_date="2024-04-23"
 ) }}

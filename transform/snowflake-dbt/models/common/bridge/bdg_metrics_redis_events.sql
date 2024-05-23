@@ -11,8 +11,6 @@ final AS (
       TRIM(options_events.value, '"'),
       TRIM(events.value['name'], '"')
     ) AS redis_event,
-    metrics.data_by_row['options']['aggregate']['operator']::VARCHAR AS aggregate_operator,
-    metrics.data_by_row['options']['aggregate']['attribute']::VARCHAR AS aggregate_attribute,
     metrics.metrics_status,
     metrics.time_frame,
     metrics.data_source
@@ -24,7 +22,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mdrussell",
-    updated_by="@mdrussell",
+    updated_by="@utkarsh060",
     created_date="2022-12-02",
-    updated_date="2023-12-14"
+    updated_date="2024-04-30"
 ) }}

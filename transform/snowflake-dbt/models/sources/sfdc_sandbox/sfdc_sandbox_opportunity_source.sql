@@ -71,7 +71,6 @@ WITH source AS (
         incremental_acv_2__c                            AS forecasted_iacv,
         iacv_created_date__c                            AS iacv_created_date,
         incremental_acv__c                              AS incremental_acv,
-        pre_covid_iacv__c                               AS pre_covid_iacv,
         invoice_number__c                               AS invoice_number,
         is_refund_opportunity__c                        AS is_refund,
         is_downgrade_opportunity__c                     AS is_downgrade,

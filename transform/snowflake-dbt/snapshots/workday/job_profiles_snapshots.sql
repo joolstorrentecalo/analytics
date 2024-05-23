@@ -2,7 +2,7 @@
 
     {{
         config(
-          unique_key='job_code',
+          unique_key="job_code||'-'||job_workday_id",
           strategy='check',
           check_cols=[
             'job_code',

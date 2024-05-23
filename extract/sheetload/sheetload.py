@@ -264,7 +264,6 @@ def s3_loader(bucket: str, schema: str, conn_dict: Dict[str, str] = None) -> Non
         if (
             file != "application_question_answers.csv"
         ):  # Temporary hotfix to address https://gitlab.com/gitlab-data/analytics/-/issues/19972#note_1806135779
-
             info(f"Working on {file}...")
 
             if re.search(r"\.csv", file):

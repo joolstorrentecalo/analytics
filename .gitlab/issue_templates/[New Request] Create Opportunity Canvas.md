@@ -1,5 +1,10 @@
 <!-- This issue template is to be used for any large-scale, multi-milestone initiatives within the Data Team (i.e. OKR-level work). Upon review and prioritization with the Data Team, it can be promoted to an epic. -->
 
+-  **Business Sponsor:** <!-- main stakeholder(s) of the project -->
+-  **Business DRI:** <!-- expert who understands how processes work in stakeholder(s) division or team -->
+-  **Data Sponsor:** <!-- data leader under whom project will be undertaken, if you dont know leave empty -->
+-  **Data DRI:** <!-- directly responsible individual (DRI) from data team who will be responsible for delivery of the project, if you dont know leave empty -->
+
 # Problem Statement
 - <!-- What specific problem or opportunity are you aiming to address with this project? -->
 - <!-- What are the current challenges or limitations that prompted this project request? -->

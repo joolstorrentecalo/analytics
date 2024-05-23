@@ -4,6 +4,7 @@ import logging
 import sys
 from os import environ as env
 from typing import Dict, Any, List
+from datetime import datetime
 
 import pandas as pd
 import requests
@@ -16,36 +17,20 @@ from gitlabdata.orchestration_utils import (
     snowflake_stage_load_copy_remove,
 )
 
+PROJECT_ID_KEY = "project_id"
+PROJECT_PATH_KEY = "project_path"
 
-def get_product_project_ids() -> List[str]:
+
+def get_product_project_list() -> List[str]:
     """
     Extracts the part of product CSV and returns the unique project_ids listed in the CSV.
     """
     url = "https://gitlab.com/gitlab-data/analytics/raw/master/transform/snowflake-dbt/data/projects_part_of_product.csv"
-    csv_bytes = requests.get(url).content
-    csv = pd.read_csv(io.StringIO(csv_bytes.decode("utf-8")))
-    return csv["project_id"].unique()
-
-
-def verify_mr_information(
-    pulled_mrs: int, project_id: int, snowflake_engine: Engine, start: str, end: str
-) -> None:
-    """
-    Gets number of MRs present from gitlab_db for the same timeframe.
-    If that number doesn't match the number passed in, a warning is logged.
-    """
-    count_query = f"""
-        SELECT count(distinct id) 
-        FROM RAW.TAP_POSTGRES.GITLAB_DB_MERGE_REQUESTS 
-        WHERE updated_at BETWEEN '{start}' AND '{end}'
-        AND target_project_id = {project_id}
-    """
-    result_set = query_executor(snowflake_engine, count_query)
-    checked_mr_count = result_set[0][0]
-    if checked_mr_count != pulled_mrs:
-        logging.warn(
-            f"Project {project_id} MR counts didn't match: pulled {pulled_mrs}, see {checked_mr_count} in database."
-        )
+    csv_bytes = requests.get(url, timeout=20).content
+    df = pd.read_csv(io.StringIO(csv_bytes.decode("utf-8")))
+    df = df.drop_duplicates(subset=[PROJECT_ID_KEY])
+    project_list = df[[PROJECT_ID_KEY, PROJECT_PATH_KEY]].to_dict(orient="records")
+    return project_list
 
 
 if __name__ == "__main__":
@@ -59,22 +44,32 @@ if __name__ == "__main__":
         sys.exit(1)
 
     start = config_dict["START"]
+    logging.info(f"\nstart: {start}")
     end = config_dict["END"]
+    logging.info(f"\nend: {end}")
 
     extract_name = sys.argv[1]
 
     configurations_dict: Dict[str, Any] = {
-        "part_of_product": {
+        "part_of_product_graphql": {
             "file_name": "part_of_product_mrs.json",
-            "project_ids": get_product_project_ids(),
+            "project_list": get_product_project_list(),
             "schema": "engineering_extracts",
             "stage": "part_of_product_merge_request_extracts",
+            "mr_attribute_key": "iid",
         },
         "handbook": {
             "file_name": "handbook_mrs.json",
-            "project_ids": ["7764"],
+            "project_list": [
+                {PROJECT_ID_KEY: 7764, PROJECT_PATH_KEY: "gitlab-com/www-gitlab-com"},
+                {
+                    PROJECT_ID_KEY: 42817607,
+                    PROJECT_PATH_KEY: "gitlab-com/content-sites/handbook",
+                },
+            ],
             "schema": "handbook",
             "stage": "handbook_load",
+            "mr_attribute_key": "web_url",
         },
     }
 
@@ -84,24 +79,38 @@ if __name__ == "__main__":
 
     configuration = configurations_dict[extract_name]
 
-    file_name: str = configuration["file_name"]  # type: ignore
+    # to make filename unique
+    current_ts = str(int(datetime.now().timestamp() * 1000))
+    file_name: str = f"{current_ts}_{configuration['file_name']}"  # type: ignore
     schema: str = configuration["schema"]
     stage: str = configuration["stage"]
+    # mr_attributes is either a list of mr_iid or mr_web_url
+    mr_attribute_key = configuration["mr_attribute_key"]
 
-    api_token = env["GITLAB_COM_API_TOKEN"]
+    api_token = config_dict["GITLAB_COM_API_TOKEN"]
     api_client = GitLabAPI(api_token)
 
-    for project_id in configuration["project_ids"]:
-        logging.info(f"Extracting project {project_id}.")
-        mr_urls = api_client.get_urls_for_mrs_for_project(project_id, start, end)
+    for project_list_d in configuration["project_list"]:
+        project_id = project_list_d[PROJECT_ID_KEY]
+        project_path = project_list_d[PROJECT_PATH_KEY]
+        logging.info(f"Extracting project {project_id}, {project_path}.")
 
-        verify_mr_information(len(mr_urls), project_id, snowflake_engine, start, end)
+        mr_attributes = api_client.get_attributes_for_mrs_for_project(
+            project_id, start, end, mr_attribute_key
+        )
 
         wrote_to_file = False
 
-        with open(file_name, "w") as out_file:
-            for mr_url in mr_urls:
-                mr_information = api_client.get_mr_json(mr_url)
+        with open(file_name, "w", encoding="utf-8") as out_file:
+            for mr_attribute in mr_attributes:
+                if extract_name == "handbook":
+                    # mr_attribute=mr_web_url
+                    mr_information = api_client.get_mr_webpage(mr_attribute)
+                else:
+                    # mr_attribute=mr_iid
+                    mr_information = api_client.get_mr_graphql(
+                        project_path, mr_attribute
+                    )
                 if mr_information:
                     out_file.write(json.dumps(mr_information))
                     wrote_to_file = True

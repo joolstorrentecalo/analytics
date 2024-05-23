@@ -775,6 +775,12 @@ A surrogate key for the attributes of the user location.  This is built as a con
 
 {% enddocs %}
 
+{% docs prep_snowplow_unnested_events_all %}
+
+This is the primary events view which is the union of the Fishtown and GitLab tables across the last 25 months of snowplow_YYYY_MM schemas. All of the unstructured including both staging and non-staging events are unpacked - [link click tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#39-link-click-tracking), [form tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#3101-enableformtracking), and [time tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#timing).
+
+{% enddocs %}
+
 {% docs prep_billing_account %}
 
 Prep model for merging the billing accounts data from both Zuora and CDot sources. This model will be used as a source model for creating `dim_billing_account` core business data object downstream.
@@ -858,3 +864,10 @@ All milestones created within a namespace, with details including the start date
 Contains the latest Seat Link record for every installation in the source Seat Link model.
 
 {% enddocs %}
+
+{% docs prep_snowplow_sessions_all %}
+
+Unioned monthly partitions for all Snowplow sessions.
+
+{% enddocs %}
+

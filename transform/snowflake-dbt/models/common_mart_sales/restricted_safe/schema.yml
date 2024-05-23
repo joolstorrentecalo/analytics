@@ -73,6 +73,10 @@ models:
         description: Flag to identify licensed users. It works by excluding `Storage` product_tier
       - name: is_arpu
         description: Flag to identify what counts towards Annual Revenue Per User (ARPU). It works by excluding `Storage` product_tier and `EDU` product_rate_plan.
+      - name: product_deployment_type
+        description: How a product is deployed to the customer; Self-Managed, GitLab.com or Dedicated (or Other).
+      - name: product_category
+        description: Categorizes Zuora products as either Add On Services or Base Products
 
   - name: mart_arr_jihu
     description: '{{ doc("mart_arr_jihu") }}'
@@ -318,6 +322,10 @@ models:
       - name: delta_quantity
       - name: delta_tcv
       - name: estimated_total_future_billings
+      - name: product_deployment_type
+        description: How a product is deployed to the customer; Self-Managed, GitLab.com or Dedicated (or Other)
+      - name: product_category
+        description: Categorizes Zuora products as either Add On Services or Base Products
 
   - name: mart_crm_account
     description: Model containing Salesforce crm accounts details for existing and historical customers.
@@ -391,7 +399,7 @@ models:
 
   - name: mart_crm_opportunity
     description:  >-
-      Model with single pane of glass over the sales and marketing metrics. Depeding on your use case, you might use  `mart_crm_opportunity_stamped_hierarchy_hist` or `mart_crm_opportunity.`
+      Model with single pane of glass over the sales and marketing metrics. Depending on your use case, you might use  `mart_crm_opportunity_stamped_hierarchy_hist` or `mart_crm_opportunity.`
       `mart_crm_opportunity_stamped_hierarchy_hist` should be used for year-over-year comparisons as it accounts for yearly changes in the sales hierarchy, views all account hierarchies through the lens of the current year hierarchy, and it reflects how the sales hierarchy is applied in practice (ie. Hybrid users are assigned to the account's hierarchy)
     columns:
       - name: dim_crm_opportunity_id
@@ -466,6 +474,14 @@ models:
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 1 in SFDC.
       - name: xdr_net_arr_stage_3
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 3 in SFDC.
+      - name: enterprise_agile_planning_net_arr
+        description: The net arr related to the Enterprise Agile Planning element of the opportunity.
+      - name: duo_net_arr
+        description: The net arr related to the GitLab Duo element of the opportunity.
+      - name: partner_margin_percentage
+        description: The percentage of the opportunity net arr to which the partner is entitled.
+      - name: net_arr_stage_1
+        description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
 
 
   - name: mart_crm_opportunity_daily_snapshot
@@ -526,6 +542,8 @@ models:
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 1 in SFDC.
       - name: xdr_net_arr_stage_3
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 3 in SFDC.
+      - name: net_arr_stage_1
+        description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
           
 
   - name: mart_crm_opportunity_stamped_hierarchy_hist
@@ -595,6 +613,8 @@ models:
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 1 in SFDC.
       - name: xdr_net_arr_stage_3
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 3 in SFDC.
+      - name: net_arr_stage_1
+        description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
 
   - name: mart_sales_funnel_target
     description: Model with Sales targets used for planning the go to market Sales and Marketing motion.
@@ -843,4 +863,8 @@ models:
         description: Flag to identify licensed users. It works by excluding `Storage` product_tier
       - name: is_arpu
         description: Flag to identify what counts towards Annual Revenue Per User (ARPU). It works by excluding `Storage` product_tier and `EDU` product_rate_plan.
+      - name: product_deployment_type
+        description: How a product is deployed to the customer; Self-Managed, GitLab.com or Dedicated (or Other).
+      - name: product_category
+        description: Categorizes Zuora products as either Add On Services or Base Products
 

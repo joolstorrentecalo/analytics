@@ -228,9 +228,9 @@ department AS (
   SELECT
     job_departments.job_id,
     job_departments.department_id,
-    level_1 AS cost_center_name,
-    level_2 AS department_name,
-    level_3 AS sub_department_name
+    level_1                                                                       AS cost_center_name,
+    IFF(level_2 ILIKE 'inactive - %', RIGHT(level_2, LEN(level_2) - 11), level_2) AS department_name,
+    level_3                                                                       AS sub_department_name
   FROM job_departments
   LEFT JOIN departments
     ON job_departments.department_id = departments.department_id

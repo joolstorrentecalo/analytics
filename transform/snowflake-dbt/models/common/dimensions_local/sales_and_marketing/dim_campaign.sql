@@ -26,6 +26,8 @@ WITH sfdc_campaign_info AS (
       sales_play,
       gtm_motion,
       total_planned_mqls,
+      registration_goal,
+      attendance_goal,
       will_there_be_mdf_funding,
       mdf_request_id,
       campaign_partner_crm_id
@@ -38,5 +40,5 @@ WITH sfdc_campaign_info AS (
     created_by="@paul_armstrong",
     updated_by="@degan",
     created_date="2020-1-13",
-    updated_date="2023-12-15"
+    updated_date="2023-05-06"
 ) }}

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow_utils import (
-    DATA_IMAGE,
+    DATA_IMAGE_3_10,
     clone_and_setup_extraction_cmd,
     gitlab_defaults,
     slack_failed_task,
@@ -60,7 +60,7 @@ dag = DAG(
 # Task 1
 part_of_product_mrs_run = KubernetesPodOperator(
     **gitlab_defaults,
-    image=DATA_IMAGE,
+    image=DATA_IMAGE_3_10,
     task_id="handbook-mrs",
     name="handbook-mrs",
     secrets=[

@@ -58,8 +58,7 @@ WITH date_details AS (
              WHEN h.stage_name IN ('Closed Won')                                                THEN h.forecasted_iacv
              ELSE 0
            END)                             AS net_iacv,
-       SUM(h.forecasted_IACV)               AS forecasted_iacv,
-       SUM(o.pre_covid_iacv)                AS pre_covid_iacv
+       SUM(h.forecasted_IACV)               AS forecasted_iacv
      FROM sfdc_opportunity_snapshot_history h
      LEFT JOIN sfdc_opportunity_xf o
        ON h.opportunity_id = o.opportunity_id
@@ -110,8 +109,7 @@ WITH date_details AS (
             WHEN h.stage_name IN ('Closed Won')                                                     THEN h.forecasted_iacv
             ELSE 0
           END)                                  AS net_iacv,
-      SUM(h.forecasted_iacv)                    AS forecasted_iacv,
-      SUM(o.pre_covid_iacv)                     AS pre_covid_iacv
+      SUM(h.forecasted_iacv)                    AS forecasted_iacv
     FROM sfdc_opportunity_snapshot_history h
     LEFT JOIN sfdc_opportunity_xf o
       ON h.opportunity_id = o.opportunity_id
@@ -148,8 +146,6 @@ WITH date_details AS (
       e.close_date                                                              AS close_date_ending,
       SUM(b.opps)                                                               AS opps,
       SUM(e.opps)                                                               AS opps_ending,
-      SUM(b.pre_covid_iacv)                                                     AS c19,
-      SUM(e.pre_covid_iacv)                                                     AS c19_ending,
       SUM(b.net_iacv)                                                           AS net_iacv,
       SUM(e.net_iacv)                                                           AS net_iacv_ending,
       SUM(b.forecasted_iacv)                                                    AS forecasted_iacv,
@@ -216,8 +212,6 @@ WITH date_details AS (
       close_date_ending,
       opps,
       opps_ending,
-      c19,
-      c19_ending,
       net_iacv,
       net_iacv_ending,
       forecasted_iacv,

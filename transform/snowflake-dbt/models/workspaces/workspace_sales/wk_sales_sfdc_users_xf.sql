@@ -76,7 +76,7 @@ WITH source_user AS (
 
       IFNULL(edm_user.crm_user_area, 'Other')          AS user_area,
       IFNULL(edm_user.user_role_name, 'Other')         AS role_name,
-      IFNULL(edm_user.crm_user_role_type, 'Other')     AS role_type,
+      IFNULL(edm_user.user_role_type, 'Other')         AS role_type,
       edm_user.start_date,
       edm_user.is_active,
       edm_user.employee_number,

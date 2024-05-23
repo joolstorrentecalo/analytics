@@ -157,6 +157,7 @@ final AS (
     issues.is_milestone_issue_reporting,
     issues.is_customer_related,
     issues.issue_type,
+    issues.due_date,
     MAX(dates.date_actual) OVER ()                                                                                         AS last_updated_at,
     COALESCE(date_actual = last_updated_at, FALSE)                                                                         AS most_recent,
     ROW_NUMBER() OVER (

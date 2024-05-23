@@ -74,7 +74,6 @@ WITH source AS (
         incremental_acv_2__c                            AS forecasted_iacv,
         iacv_created_date__c                            AS iacv_created_date,
         incremental_acv__c                              AS incremental_acv,
-        pre_covid_iacv__c                               AS pre_covid_iacv,
         invoice_number__c                               AS invoice_number,
         is_refund_opportunity__c                        AS is_refund,
         is_downgrade_opportunity__c                     AS is_downgrade,
@@ -132,6 +131,9 @@ WITH source AS (
         arr__c                                          AS arr,
         stage_3_net_arr__c                              AS xdr_net_arr_stage_3,
         stage_1_xdr_net_arr__c                          AS xdr_net_arr_stage_1,
+        stage_1_net_arr__c                              AS net_arr_stage_1,
+        enterprise_agile_planning_net_arr__c            AS enterprise_agile_planning_net_arr,
+        duo_net_arr__c                                  AS duo_net_arr,
         days_in_sao__c                                  AS days_in_sao,
         new_logo_count__c                               AS new_logo_count,
         {{ sales_hierarchy_sales_segment_cleaning('user_segment_o__c') }}
@@ -255,6 +257,7 @@ WITH source AS (
         calculated_discount__c                          AS calculated_discount,
         partner_discount__c                             AS partner_discount,
         partner_discount_calc__c                        AS partner_discount_calc,
+        partner_margin__c                               AS partner_margin_percentage,
         NULL                                            AS comp_channel_neutral,
 
         -- command plan fields

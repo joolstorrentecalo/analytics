@@ -6,6 +6,7 @@ import logging
 from typing import Union
 
 import yaml
+import requests
 
 # needed to import shared utils module
 abs_path = os.path.dirname(os.path.realpath(__file__))
@@ -17,6 +18,7 @@ from utils_snowflake_provisioning import (
     USERS_FILE_NAME,
     get_valid_users,
     get_snowflake_usernames,
+    configure_logging,
 )
 
 # imported by other modules
@@ -37,6 +39,16 @@ class IndentDumper(yaml.Dumper):
         return super().increase_indent(flow, False)
 
 
+def get_roles_from_url(branch: str = "master") -> Union[dict, list]:
+    """Read roles.yml from repo url"""
+    url = f"https://gitlab.com/gitlab-data/analytics/-/raw/{branch}/permissions/snowflake/roles.yml?ref_type=heads"
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an exception for bad status codes
+    yaml_content = response.text
+    yaml.safe_load(yaml_content)
+    return yaml.safe_load(yaml_content)
+
+
 def get_roles_from_yaml() -> Union[dict, list]:
     """read in roles.yml file as python data structure"""
     roles_file_name = "roles.yml"
@@ -51,9 +63,7 @@ def get_roles_from_yaml() -> Union[dict, list]:
 
 
 def save_roles_to_yaml(data: Union[dict, list]):
-    """
-    Save data structure as YAML
-    """
+    """Save data structure as YAML"""
     roles_file_name = "roles.yml"
     roles_file_path = os.path.join(YAML_PATH, roles_file_name)
     with open(roles_file_path, "w", encoding="utf-8") as file:

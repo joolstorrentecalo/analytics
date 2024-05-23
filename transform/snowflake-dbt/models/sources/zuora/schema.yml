@@ -24,12 +24,18 @@ models:
           - unique
   - name: zuora_contact_source
     description: Source layer for Zuora Contacts for cleaning and renaming
+  - name: zuora_credit_balance_adjustment_source
+    description: Source layer for Zuora Contacts for renaming
   - name: zuora_discount_applied_metrics_source
     description: Source layer for Zuora Discount Applied Metrics  for cleaning and renaming
   - name: zuora_invoice_source
     description: Source layer for Zuora Invoices for cleaning and renaming
+  - name: zuora_invoice_aging_detail_source
+    description: Source layer for Zuora Invoice Items for cleaning and renaming
   - name: zuora_invoice_item_source
     description: Source layer for Zuora Invoice Items for cleaning and renaming
+  - name: zuora_invoice_item_adjustment_source
+    description: Source layer for Zuora Contacts for cleaning and renaming
   - name: zuora_invoice_payment_source
     description: Source layer for Zuora Products for cleaning and renaming
     columns:
@@ -50,6 +56,8 @@ models:
         tests:
           - not_null
           - unique
+  - name: zuora_payment_source
+    description: Source layer for Zuora Payment for renaming
   - name: zuora_product_rate_plan_charge_source
     description: Source layer for Zuora Product Rate Plan Charges
   - name: zuora_product_rate_plan_charge_tier_source
@@ -90,6 +98,8 @@ models:
           - not_null
   - name: zuora_refund_source
     description: Source layer for Zuora Refunds for cleaning and renaming
+  - name: zuora_refund_invoice_payment_source
+    description: Source layer for Zuora Refunds for renaming
   - name: zuora_subscription_source
     description: Source layer for Zuora Subscriptions for cleaning and renaming
     columns:

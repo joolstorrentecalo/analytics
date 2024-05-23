@@ -276,7 +276,9 @@ renamed AS (
     scale_top_25_gc::VARCHAR                                                                                                    AS scale_top_25_gc,
     manage_appetite_for_replacement_2_gc::VARCHAR                                                                                                    AS manage_appetite_for_replacement_2_gc,
     scale_top_25_yyyyqq_gc::VARCHAR                                                                                                    AS scale_top_25_yyyyqq_gc,
-    proposed_renewal_manager_gc::VARCHAR                                                                                                    AS proposed_renewal_manager_gc
+    proposed_renewal_manager_gc::VARCHAR                                                                                                    AS proposed_renewal_manager_gc,
+    lack_of_security_adoption_reason_gc::VARCHAR                                                                                            AS lack_of_security_adoption_reason_gc,
+    lack_of_ci_adoption_reason_gc::VARCHAR                                                                                                  AS lack_of_ci_adoption_reason_gc
   FROM source
 )
 

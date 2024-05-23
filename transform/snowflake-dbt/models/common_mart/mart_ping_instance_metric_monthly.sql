@@ -52,6 +52,7 @@
       dim_license.company                                                         AS license_company_name,
       subscription_source.subscription_name_slugify                               AS original_subscription_name_slugify,
       dim_subscription.dim_subscription_id                                        AS dim_subscription_id,
+      dim_subscription.subscription_name                                          AS subscription_name,
       dim_subscription.subscription_start_date                                    AS subscription_start_date,
       dim_subscription.subscription_end_date                                      AS subscription_end_date,
       dim_subscription.subscription_start_month                                   AS subscription_start_month,
@@ -95,7 +96,7 @@
       ON dim_billing_account.dim_crm_account_id = dim_crm_accounts.dim_crm_account_id
     INNER JOIN dim_date
       ON fct_charge.effective_start_month <= dim_date.date_day AND fct_charge.effective_end_month > dim_date.date_day
-    {{ dbt_utils.group_by(n=21)}}
+    {{ dbt_utils.group_by(n=22)}}
 
 
   ), latest_subscription AS (
@@ -144,6 +145,7 @@
         COALESCE(license_sha256.original_subscription_name_slugify, license_md5.original_subscription_name_slugify)                     AS original_subscription_name_slugify,
         COALESCE(license_sha256.product_category_array, license_md5.product_category_array)                                             AS product_category_array,
         COALESCE(license_sha256.product_rate_plan_name_array, license_md5.product_rate_plan_name_array)                                 AS product_rate_plan_name_array,
+        COALESCE(license_sha256.subscription_name, license_md5.subscription_name)                                                       AS subscription_name,
         COALESCE(license_sha256.subscription_start_month, license_md5.subscription_start_month)                                         AS subscription_start_month,
         COALESCE(license_sha256.subscription_end_month, license_md5.subscription_end_month)                                             AS subscription_end_month,
         COALESCE(license_sha256.dim_billing_account_id, license_md5.dim_billing_account_id)                                             AS dim_billing_account_id,
@@ -270,6 +272,7 @@
 
       --metadata subscription
       original_subscription_name_slugify,
+      subscription_name,
       subscription_start_month,
       subscription_end_month,
       product_category_array,
@@ -300,7 +303,7 @@
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2022-03-11",
-    updated_date="2023-06-30"
+    updated_date="2024-04-18"
 ) }}

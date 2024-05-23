@@ -37,8 +37,6 @@ joined AS (
     service_ping_events.ultimate_parent_namespace_id,
     service_ping_events.redis_event_name,
     metric_bridge.metrics_path,
-    metric_bridge.aggregate_operator,
-    metric_bridge.aggregate_attribute,
     metric_bridge.metrics_status,
     metric_bridge.time_frame,
     metric_bridge.data_source
@@ -57,5 +55,5 @@ joined AS (
     created_by="@mdrussell",
     updated_by="@utkarsh060",
     created_date="2022-12-21",
-    updated_date="2024-03-13"
+    updated_date="2024-04-30"
 ) }}

@@ -64,7 +64,8 @@ renamed AS (
     current_entitled_solutions_gc::VARCHAR            AS current_entitled_solutions_gc,
     highlights_string_gc::VARCHAR                     AS highlights_string_gc,
     closed_date::TIMESTAMP                            AS closed_date,
-    _fivetran_synced::TIMESTAMP                       AS _fivetran_synced
+    _fivetran_synced::TIMESTAMP                       AS _fivetran_synced,
+    success_plan_link_gc                              AS success_plan_link_gc
   FROM source
 )
 

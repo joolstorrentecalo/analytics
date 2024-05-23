@@ -20,8 +20,6 @@ import logging
 
 import time
 from typing import Tuple
-from sqlalchemy.engine.base import Engine
-from jinja2 import Template
 
 from args_provision_users import parse_arguments
 from snowflake_connection import SnowflakeConnection
@@ -35,14 +33,8 @@ from utils_snowflake_provisioning import (
     get_snowflake_usernames,
     get_emails,
     get_valid_users,
+    configure_logging,
 )
-
-
-def configure_logging():
-    """configure logger"""
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-    )
 
 
 def process_args() -> Tuple[list, bool, bool]:
@@ -76,7 +68,10 @@ def get_sysadmin_connection(is_test_run: bool):
 
 
 def _provision(
-    connection: Engine, template_filename: str, usernames: list, emails: list = None
+    connection: SnowflakeConnection,
+    template_filename: str,
+    usernames: list,
+    emails: list = None,
 ):
     """
     All provision types (new users, new databases, deprovision users)
@@ -96,27 +91,17 @@ def _provision(
         connection.run_sql_statements(sql_statements, query_params)
 
 
-def provision_users(connection: Engine, usernames: list, emails: list):
+def provision_users(connection: SnowflakeConnection, usernames: list, emails: list):
     """provision user in Snowflake"""
     template_filename = "provision_user.sql"
     logging.info("#### Provisioning users ####")
     _provision(connection, template_filename, usernames, emails)
 
 
-def provision_databases(connection: Engine, usernames: list):
+def provision_databases(connection: SnowflakeConnection, usernames: list):
     """provision personal databases in Snowflake"""
     template_filename = "provision_database.sql"
     logging.info("#### Provisioning user databases ####")
-    _provision(connection, template_filename, usernames)
-
-
-def deprovision_users(connection: Engine, usernames: list):
-    """
-    Deprovision users in Snowflake
-    Currently unused, will do Snowflake deprovision in separate process
-    """
-    template_filename = "deprovision_user.sql"
-    logging.info("#### Deprovisioning users ####")
     _provision(connection, template_filename, usernames)
 
 

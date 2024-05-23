@@ -9,7 +9,7 @@ from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 
 from airflow_utils import (
-    DATA_IMAGE,
+    DATA_IMAGE_3_10,
     clone_and_setup_extraction_cmd,
     gitlab_defaults,
     slack_failed_task,
@@ -59,7 +59,7 @@ clari_extract_command = (
 
 clari_task_previous_quarter = KubernetesPodOperator(
     **gitlab_defaults,
-    image=DATA_IMAGE,
+    image=DATA_IMAGE_3_10,
     task_id=f"clari_extract_{TASK_SCHEDULE}_previous_quarter",
     name=f"clari_extract_{TASK_SCHEDULE}_previous_quarter",
     secrets=[
@@ -83,7 +83,7 @@ clari_task_previous_quarter = KubernetesPodOperator(
 
 clari_task_new_quarter = KubernetesPodOperator(
     **gitlab_defaults,
-    image=DATA_IMAGE,
+    image=DATA_IMAGE_3_10,
     task_id=f"clari_extract_{TASK_SCHEDULE}_new_quarter",
     name=f"clari_extract_{TASK_SCHEDULE}_new_quarter",
     secrets=[

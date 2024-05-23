@@ -49,6 +49,7 @@ WITH zuora_product AS (
       common_product_tier.product_tier_name_short                                       AS product_tier_name_short,
       common_product_tier_mapping.product_delivery_type                                 AS product_delivery_type,
       common_product_tier_mapping.product_deployment_type                               AS product_deployment_type,
+      common_product_tier_mapping.product_category                                      AS product_category,
       CASE
         WHEN LOWER(zuora_product_rate_plan.product_rate_plan_name) LIKE '%support%'
           THEN 'Support Only'
@@ -93,7 +94,7 @@ WITH zuora_product AS (
     WHERE zuora_product.is_deleted = FALSE
       AND zuora_product_rate_plan_charge_tier.currency = 'USD'
       AND zuora_product_rate_plan_charge_tier.active = TRUE
-    {{ dbt_utils.group_by(n=20) }}
+    {{ dbt_utils.group_by(n=21) }}
     ORDER BY 1, 3
 
 ), final AS (--add annualized billing list price
@@ -130,7 +131,7 @@ WITH zuora_product AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@ischweickartDD",
-    updated_by="@jpeguero",
+    updated_by="@snalamaru",
     created_date="2020-12-16",
-    updated_date="2023-05-25"
+    updated_date="2024-04-11"
 ) }}

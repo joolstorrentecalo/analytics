@@ -600,6 +600,8 @@ models:
         tests:
           - not_null:
               severity: warn
+      - name: product_category
+        description: Categorizes Zuora Products as either Add On Services or Base Products
   - name: prep_product_tier_central_sandbox
     columns:
       - name: dim_product_tier_id
@@ -631,6 +633,8 @@ models:
         description: How a product is deployed to the customer; Self-Managed, GitLab.com or Dedicated (or Other).
       - name: product_ranking
         description: "Numeric product pricing tier, independent of delivery type"
+      - name: product_category
+        description: Categorizes Zuora Products as either Add On Services or Base Products
   - name: dim_billing_account_central_sandbox
     columns:
       - name: dim_billing_account_id
@@ -1239,3 +1243,9 @@ models:
 
   - name: wk_mart_current_ar_by_aging_payment_terms_monthly
     description: Analysis of currently open invoice balances by payment terms and aging buckets
+  
+  - name: wk_fct_available_to_renew
+    description: A new workspace model to capture the ATR for all Subsriptions.
+
+  - name: wk_fct_available_to_renew_subscription_linkage
+    description: A new workspace model with ATR for all Subsriptions and renewal subscription linkage IDs.

@@ -294,6 +294,22 @@ tables:
     import_query: |-
       SELECT version
       FROM schema_migrations
+  self_managed_instance_activations:
+    advanced_metadata: true
+    export_db: EXPORT_DB
+    export_schema: 'customers'
+    export_table: 'self_managed_instance_activations'
+    export_table_primary_key: id
+    import_db: CUSTOMERS_DB
+    import_query: |-
+      SELECT id
+           , created_at
+           , updated_at
+           , activated_at
+           , self_managed_instance_id
+           , cloud_activation_id
+           , subscription_id
+      FROM self_managed_instance_activations
   temporary_extension_histories:
     advanced_metadata: true
     export_db: EXPORT_DB
@@ -333,6 +349,40 @@ tables:
         , trial_entity
         , trial_type
       FROM trial_histories
+  trials:
+    advanced_metadata: true
+    export_db: EXPORT_DB
+    export_schema: 'customers'
+    export_table: 'trials'
+    export_table_primary_key: id
+    import_db: CUSTOMERS_DB
+    import_query: |-
+      SELECT id
+        , trial_account_id
+        , quantity
+        , product_rate_plan_id
+        , subscription_name
+        , start_date
+        , end_date
+        , created_at
+        , updated_at
+      FROM trials
+  trial_accounts:
+    advanced_metadata: true
+    export_db: EXPORT_DB
+    export_schema: 'customers'
+    export_table: 'trial_accounts'
+    export_table_primary_key: id
+    import_db: CUSTOMERS_DB
+    import_query: |-
+      SELECT id
+        , billing_account_id
+        , company
+        , name
+        , email
+        , created_at
+        , updated_at
+      FROM trial_accounts
   version_associations:
     export_db: EXPORT_DB
     export_schema: 'customers'

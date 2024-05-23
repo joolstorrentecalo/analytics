@@ -22,6 +22,18 @@ WITH source AS (
     dim_crm_user_area_id,
     crm_user_sales_segment_grouped,
     crm_user_sales_segment_region_grouped,
+    crm_user_role_name,
+    dim_crm_user_role_name_id,
+    crm_user_role_level_1,
+    dim_crm_user_role_level_1_id,
+    crm_user_role_level_2,
+    dim_crm_user_role_level_2_id,
+    crm_user_role_level_3,
+    dim_crm_user_role_level_3_id,
+    crm_user_role_level_4,
+    dim_crm_user_role_level_4_id,
+    crm_user_role_level_5,
+    dim_crm_user_role_level_5_id,
     is_current_crm_user_hierarchy
   FROM {{ ref('prep_crm_user_hierarchy') }}
 
@@ -30,7 +42,7 @@ WITH source AS (
 {{ dbt_audit(
     cte_ref="source",
     created_by="@mcooperDD",
-    updated_by="@michellecooper",
+    updated_by="@chrissharp",
     created_date="2021-01-05",
-    updated_date="2023-03-10"
+    updated_date="2024-04-23"
 ) }}

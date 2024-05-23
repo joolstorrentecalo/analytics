@@ -264,7 +264,8 @@ final AS (
     internal_issues.epic_state,
     internal_issues.issue_assignee_user_name,
     ARRAY_CONTAINS('customer'::VARIANT, internal_issues.labels)                                                                                                                                                                                                                                         AS is_customer_related,
-    internal_issues.issue_type
+    internal_issues.issue_type,
+    internal_issues.due_date
   FROM internal_issues
   LEFT JOIN {{ ref('dim_project') }} AS projects
     ON internal_issues.project_id = projects.dim_project_id

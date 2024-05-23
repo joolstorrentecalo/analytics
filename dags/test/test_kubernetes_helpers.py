@@ -57,4 +57,3 @@ def test_toleration():
     )
     assert get_toleration_name_from_value(test_toleration) == "test"
     assert get_toleration_name_from_value(dbt_toleration) == "dbt"
-    assert get_toleration_name_from_value(data_science_toleration) == "data_science"

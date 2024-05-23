@@ -113,6 +113,81 @@ first_commit AS (
 
 ),
 
+/*when mr author reassigns to someone other than themself, we recognize this as a review request*/
+first_non_author_assignment AS (
+
+  SELECT
+    mrs.merge_request_id,
+    0                    AS review_requests,
+    0                    AS reviewer_count,
+    MIN(note_created_at) AS first_review_date
+  FROM internal_merge_requests AS mrs
+  INNER JOIN {{ ref('gitlab_dotcom_merge_request_assignment_events') }} AS asevs ON mrs.merge_request_id = asevs.merge_request_id AND mrs.author_id != asevs.event_user_id
+  WHERE asevs.event IN ('assigned', 'reassigned')
+  GROUP BY 1
+
+),
+
+/*retrieve review dates from notes table*/
+notes AS (
+
+  SELECT
+    created_at                                           AS review_requested_at,
+    noteable_id                                          AS merge_request_id,
+    note,
+    MAX(created_at) OVER (PARTITION BY merge_request_id) AS last_note_date
+  FROM {{ ref('internal_notes') }} AS notes
+  WHERE notes.noteable_type = 'MergeRequest'
+--     and array_contains('reviewer'::variant, notes.action_type_array)
+
+),
+
+extracted_usernames AS (
+  SELECT
+    review_requested_at,
+    merge_request_id,
+    REPLACE(REGEXP_SUBSTR(TRIM(value), '@([^\\s,]+)'), '@', '') AS username,
+    last_note_date
+  FROM notes,
+    LATERAL SPLIT_TO_TABLE(note, ',')
+  WHERE notes.note LIKE '%requested review from%'
+
+),
+
+agg AS (
+
+  SELECT
+    mrs.merge_request_id,
+    GREATEST(COALESCE(COUNT(DISTINCT username), 0), COALESCE(MAX(first_non_author_assignment.reviewer_count), 0))                         AS reviewer_count,
+    GREATEST(COALESCE(COUNT(DISTINCT review_requested_at || username), 0), COALESCE(MAX(first_non_author_assignment.review_requests), 0)) AS review_requests,
+    LEAST(
+      COALESCE(MIN(extracted_usernames.review_requested_at), '9999-12-31'), COALESCE(MIN(first_non_author_assignment.first_review_date), '9999-12-31'),
+      COALESCE(MIN(reviewer_requested_at_creation.created_at), '9999-12-31')
+    )                                                                                                                                     AS first_review_date,
+    GREATEST(MAX(extracted_usernames.last_note_date), MAX(mrs.merged_at))                                                                 AS last_reported_date
+  FROM internal_merge_requests AS mrs
+  LEFT JOIN extracted_usernames ON mrs.merge_request_id = extracted_usernames.merge_request_id
+  LEFT JOIN first_non_author_assignment ON mrs.merge_request_id = first_non_author_assignment.merge_request_id
+  LEFT JOIN {{ ref('gitlab_dotcom_merge_request_reviewers') }} AS reviewer_requested_at_creation ON mrs.merge_request_id = reviewer_requested_at_creation.merge_request_id
+  GROUP BY 1
+
+),
+
+first_review_date AS (
+
+  SELECT DISTINCT
+    mrs.*,
+    reviewer_count,
+    review_requests,
+    first_review_date,
+    last_reported_date
+  FROM internal_merge_requests AS mrs
+  INNER JOIN agg ON mrs.merge_request_id = agg.merge_request_id
+  WHERE (merge_request_state = 'opened' AND mrs.merged_at IS NULL)
+    OR (merge_request_state != 'opened' AND last_reported_date IS NOT NULL)
+
+),
+
 base AS (
 
   SELECT
@@ -182,7 +257,8 @@ base AS (
     IFF(ARRAY_CONTAINS('infradev'::VARIANT, internal_merge_requests.labels), TRUE, FALSE)                                                                                                                                                                                                                               AS is_infradev,
     ARRAY_CONTAINS('customer'::VARIANT, internal_merge_requests.labels)                                                                                                                                                                                                                                                 AS is_customer_related,
     internal_merge_requests.is_part_of_product,
-    ROUND(TIMESTAMPDIFF(HOURS, first_commit.first_commit_created_at, internal_merge_requests.merged_at) / 24, 2)                                                                                                                                                                                                        AS days_from_first_commit_to_merge
+    ROUND(TIMESTAMPDIFF(HOURS, first_commit.first_commit_created_at, internal_merge_requests.merged_at) / 24, 2)                                                                                                                                                                                                        AS days_from_first_commit_to_merge,
+    ROUND(TIMESTAMPDIFF(HOURS, internal_merge_requests.created_at, first_review_date.first_review_date) / 24, 2)                                                                                                                                                                                                        AS days_from_creation_to_first_review_date
   FROM internal_merge_requests
   LEFT JOIN {{ ref('dim_project') }} AS projects
     ON internal_merge_requests.target_project_id = projects.dim_project_id
@@ -193,6 +269,7 @@ base AS (
   LEFT JOIN milestones
     ON internal_merge_requests.milestone_id = milestones.milestone_id
   LEFT JOIN first_commit ON internal_merge_requests.merge_request_id = first_commit.merge_request_id
+  LEFT JOIN first_review_date ON internal_merge_requests.merge_request_id = first_review_date.merge_request_id
 
 )
 

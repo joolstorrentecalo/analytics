@@ -78,20 +78,31 @@
       sfdc_users.ramping_quota,
       sfdc_users.user_timezone,
       sfdc_users.user_role_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_user_roles_source.name']) }}                                                         AS dim_crm_user_role_name_id,
       sfdc_user_roles_source.name                                                                                                     AS user_role_name,
-      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_segment']) }}                                                                      AS dim_crm_user_sales_segment_id,
+      sfdc_users.user_role_type                                                                                                       AS user_role_type,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_level_1']) }}                                                        AS dim_crm_user_role_level_1_id,
+      sfdc_users.user_role_level_1                                                                                                    AS user_role_level_1,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_level_2']) }}                                                        AS dim_crm_user_role_level_2_id,
+      sfdc_users.user_role_level_2                                                                                                    AS user_role_level_2,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_level_3']) }}                                                        AS dim_crm_user_role_level_3_id,
+      sfdc_users.user_role_level_3                                                                                                    AS user_role_level_3,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_level_4']) }}                                                        AS dim_crm_user_role_level_4_id,
+      sfdc_users.user_role_level_4                                                                                                    AS user_role_level_4,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_level_5']) }}                                                        AS dim_crm_user_role_level_5_id,
+      sfdc_users.user_role_level_5                                                                                                    AS user_role_level_5,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_segment']) }}                                                             AS dim_crm_user_sales_segment_id,
       sfdc_users.user_segment                                                                                                         AS crm_user_sales_segment,
       sfdc_users.user_segment_grouped                                                                                                 AS crm_user_sales_segment_grouped,
-      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_geo']) }}                                                                          AS dim_crm_user_geo_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_geo']) }}                                                                 AS dim_crm_user_geo_id,
       sfdc_users.user_geo                                                                                                             AS crm_user_geo,
-      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_region']) }}                                                                       AS dim_crm_user_region_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_region']) }}                                                              AS dim_crm_user_region_id,
       sfdc_users.user_region                                                                                                          AS crm_user_region,
-      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_area']) }}                                                                         AS dim_crm_user_area_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_area']) }}                                                                AS dim_crm_user_area_id,
       sfdc_users.user_area                                                                                                            AS crm_user_area,
-      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_business_unit']) }}                                                                AS dim_crm_user_business_unit_id,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_business_unit']) }}                                                       AS dim_crm_user_business_unit_id,
       sfdc_users.user_business_unit                                                                                                   AS crm_user_business_unit,
-      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_type']) }}                                                                    AS dim_crm_user_role_type_id,
-      sfdc_users.user_role_type                                                                                                       AS crm_user_role_type,
+      {{ dbt_utils.generate_surrogate_key(['sfdc_users.user_role_type']) }}                                                           AS dim_crm_user_role_type_id,
       CASE 
         WHEN sfdc_users.is_hybrid_user = 'Yes' 
           THEN 1
@@ -102,63 +113,11 @@
         ELSE 0 
       END                                                                                                                             AS is_hybrid_user,
       {%- if model_type == 'live' %}
-      CASE
-        WHEN LOWER(sfdc_users.user_business_unit) = 'comm'
-          THEN CONCAT(
-                      UPPER(sfdc_users.user_business_unit), 
-                      '-',
-                      UPPER(sfdc_users.user_geo), 
-                      '-',
-                      UPPER(sfdc_users.user_segment), 
-                      '-',
-                      UPPER(sfdc_users.user_region), 
-                      '-',
-                      UPPER(sfdc_users.user_area),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        WHEN LOWER(sfdc_users.user_business_unit) = 'entg'
-          THEN CONCAT(
-                      UPPER(sfdc_users.user_business_unit), 
-                      '-',
-                      UPPER(sfdc_users.user_geo), 
-                      '-',
-                      UPPER(sfdc_users.user_region), 
-                      '-',
-                      UPPER(sfdc_users.user_area), 
-                      '-',
-                      UPPER(sfdc_users.user_segment),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        WHEN sfdc_users.user_business_unit IS NOT NULL 
-          AND LOWER(sfdc_users.user_business_unit) NOT IN ('comm', 'entg') -- account for non-sales reps
-          THEN CONCAT(
-                      UPPER(sfdc_users.user_business_unit), 
-                      '-',
-                      UPPER(sfdc_users.user_segment), 
-                      '-',
-                      UPPER(sfdc_users.user_geo), 
-                      '-',
-                      UPPER(sfdc_users.user_region), 
-                      '-',
-                      UPPER(sfdc_users.user_area),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        WHEN sfdc_users.user_business_unit IS NULL -- account for nulls/possible data issues
-          THEN CONCAT(
-                      UPPER(sfdc_users.user_segment), 
-                      '-',
-                      UPPER(sfdc_users.user_geo), 
-                      '-',
-                      UPPER(sfdc_users.user_region), 
-                      '-',
-                      UPPER(sfdc_users.user_area),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        END                                                                                                                           AS dim_crm_user_hierarchy_sk,
+      CONCAT(
+             UPPER(sfdc_user_roles_source.name),
+             '-',
+             current_fiscal_year.fiscal_year
+            )                                                                                                                         AS dim_crm_user_hierarchy_sk,
       {%- elif model_type == 'snapshot' %}
       CASE
         WHEN sfdc_users.snapshot_fiscal_year < 2024
@@ -173,7 +132,7 @@
                       '-',
                       sfdc_users.snapshot_fiscal_year
                       )
-        WHEN sfdc_users.snapshot_fiscal_year >= 2024 AND LOWER(sfdc_users.user_business_unit) = 'comm'
+        WHEN sfdc_users.snapshot_fiscal_year = 2024 AND LOWER(sfdc_users.user_business_unit) = 'comm'
           THEN CONCAT(
                       UPPER(sfdc_users.user_business_unit), 
                       '-',
@@ -187,7 +146,7 @@
                       '-',
                       sfdc_users.snapshot_fiscal_year
                       )
-        WHEN sfdc_users.snapshot_fiscal_year >= 2024 AND LOWER(sfdc_users.user_business_unit) = 'entg'
+        WHEN sfdc_users.snapshot_fiscal_year = 2024 AND LOWER(sfdc_users.user_business_unit) = 'entg'
           THEN CONCAT(
                       UPPER(sfdc_users.user_business_unit), 
                       '-',
@@ -201,7 +160,7 @@
                       '-',
                       sfdc_users.snapshot_fiscal_year
                       )
-        WHEN sfdc_users.snapshot_fiscal_year >= 2024
+        WHEN sfdc_users.snapshot_fiscal_year = 2024
           AND (sfdc_users.user_business_unit IS NOT NULL AND LOWER(sfdc_users.user_business_unit) NOT IN ('comm', 'entg'))  -- account for non-sales reps
           THEN CONCAT(
                       UPPER(sfdc_users.user_business_unit), 
@@ -217,7 +176,7 @@
                       sfdc_users.snapshot_fiscal_year
                       )
 
-        WHEN sfdc_users.snapshot_fiscal_year >= 2024 AND sfdc_users.user_business_unit IS NULL -- account for nulls/possible data issues
+        WHEN sfdc_users.snapshot_fiscal_year = 2024 AND sfdc_users.user_business_unit IS NULL -- account for nulls/possible data issues
           THEN CONCAT(
                       UPPER(sfdc_users.user_segment), 
                       '-',
@@ -229,6 +188,12 @@
                       '-',
                       sfdc_users.snapshot_fiscal_year
                       )
+        WHEN sfdc_users.snapshot_fiscal_year >= 2025
+          THEN CONCAT(
+                      UPPER(sfdc_user_roles_source.name),
+                      '-',
+                      sfdc_users.snapshot_fiscal_year
+                      )        
         END                                                                                                                           AS dim_crm_user_hierarchy_sk,
       {%- endif %}
       COALESCE(

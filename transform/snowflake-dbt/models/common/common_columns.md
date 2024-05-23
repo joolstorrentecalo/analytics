@@ -232,6 +232,12 @@ Boolean flag set to True if the ultimate parent namespace creator is in a 'block
 
 {% enddocs %}
 
+{% docs gitlab_plan_is_paid %}
+
+Indicates whether or not the namespace is subscribed to a paid plan. This can be inherited from the namespace's ultimate parent. `NULL` if the namespace has been deleted.
+
+{% enddocs %}
+
 {% docs namespace_created_at %}
 
 The timestamp of the ultimate parent namespace creation
@@ -451,13 +457,13 @@ The main edition of GitLab on the installation (EE, CE), also referred to as dis
 
 {% docs ping_product_tier %}
 
-The product tier of the ping, inferred from the edition and the plan saved in the license (Core, Starter, Premium, Ultimate). `Core` is synonymous with `Free`
+The product tier of the ping, inferred from the edition and the plan saved in the license (Free, Starter, Premium, Ultimate).
 
 {% enddocs %}
 
 {% docs ping_edition_product_tier %}
 
-The concatenation of `ping_edition` and `ping_product_tier` (ex. `EE - Premium`, `EE - Ultimate`, `EE - Core`, etc). `Core` is synonymous with `Free`
+The concatenation of `ping_edition` and `ping_product_tier` (ex. `EE - Premium`, `EE - Ultimate`, `EE - Free`, etc).
 
 {% enddocs %}
 
@@ -621,6 +627,12 @@ The [time frame](https://docs.gitlab.com/ee/development/service_ping/metrics_dic
 {% docs instance_user_count %}
 
 The number of active users existing in the installation. In this case "active" is referring to a user's state (ex. not blocked) as opposed to an indication of user activity with the product
+
+{% enddocs %}
+
+{% docs subscription_name %}
+
+If a subscription is linked to the license, name of the subscription, easily joined to `dim_subscription`, etc
 
 {% enddocs %}
 
@@ -1500,6 +1512,20 @@ An optional string which identifies the specific object being actioned. Example:
 Note: 
 - It is only populated for strutured events (`event=struct`)
 - The value of this field is not standardized and depends on implementing engineer
+
+{% enddocs %}
+
+{% enddocs %}
+
+{% docs clean_event_label %}
+
+An optional string which identifies the specific object being actioned. Example: `invite_email`, `content_editor` etc. See [GitLab Event schema for more details](https://docs.gitlab.com/ee/development/snowplow/index.html#event-schema). 
+
+Note: 
+- It is only populated for strutured events (`event=struct`)
+- The value of this field is not standardized and depends on implementing engineer
+- It includes [REGEX logic](https://docs.snowflake.com/en/sql-reference/functions/regexp_like) to standardize the namespace identifiers in this field. 
+Example: If `REGEXP_LIKE(event_label, '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')` THEN `identifier_containing_numbers` ELSE `event_label`.
 
 {% enddocs %}
 
@@ -2684,6 +2710,12 @@ Name of the property that allows to distinguish between Gitlab Employees and non
 
 {% enddocs %}
 
+{% docs gsc_feature_enabled_by_namespace_ids %}
+
+List of namespaces that allow the user to use the tracked feature. This list does not have to be 1:1 with the event and does not necessarily correspond to where the event took place.
+
+{% enddocs %}
+
 {% docs web_page_context %}
 
 Web page fields added to Snowplow as defined in the [schema](https://github.com/snowplow/iglu-central/blob/master/schemas/com.snowplowanalytics.snowplow/web_page/jsonschema/1-0-0)
@@ -2831,6 +2863,12 @@ Coalesced list of namespace ids from `duo_namespace_ids` and `saas_namespace_ids
 {% docs code_suggestions_is_streaming %}
 
 Code suggestions can be returned to the user in a single response or as a stream (in chunks). This boolean field distinguishes between the streamed and non-streamed responses.
+
+{% enddocs %}
+
+{% docs code_suggestions_gitlab_global_user_id %}
+
+Pseudonymised combination of instance id and user id sent in Code Suggestions events.
 
 {% enddocs %}
 
@@ -3332,3 +3370,10 @@ A timestamp used for checking when the last time the dimensions for the record w
 Flag to indicate a project has turned on the [Merge Trains](https://docs.gitlab.com/ee/ci/pipelines/merge_trains.html) feature
 
 {% enddocs %}
+
+{% docs cost_factor %}
+ 
+For Shared Runners, whenever a user runs jobs on a specific machine type the cost to GitLab needs to be multiplied by a cost factor as the larger the machine the more expensive it is to run.
+
+{% enddocs %}
+

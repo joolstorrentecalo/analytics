@@ -7,7 +7,7 @@
     ('ga360_session_hit','ga360_session_hit'),
     ('ga360_session','ga360_session'),
     ('rpt_namespace_onboarding','rpt_namespace_onboarding'), 
-    ('snowplow_page_views_all','snowplow_page_views_all'),
+    ('fct_behavior_website_page_view','fct_behavior_website_page_view'),
     ('dim_date','dim_date')
 ]) }}
 
@@ -256,14 +256,14 @@
         session_id,
         user_snowplow_domain_id,
         gsc_namespace_id,
-        page_view_start,
+        page_view_start_at,
         gsc_plan,
         page_url,
-        page_view_id,
+        event_id        AS page_view_id,
         page_url_path,
         page_url_host
-    FROM snowplow_page_views_all
-    WHERE page_view_start >= '2022-01-01'  
+    FROM fct_behavior_website_page_view
+    WHERE page_view_start_at >= '2022-01-01'  
         -- marketing
         AND ((page_url_host = 'about.gitlab.com'
         AND page_url NOT LIKE '%/job%'
@@ -279,7 +279,7 @@
     SELECT
         session_id,
         user_snowplow_domain_id,
-        MIN(page_view_start) AS first_marketing_page_view
+        MIN(page_view_start_at) AS first_marketing_page_view
     FROM snowplow_page_views_base
     WHERE page_url_host = 'about.gitlab.com'
     GROUP BY 1,2
@@ -300,9 +300,9 @@
         ON snowplow_page_views_base.gsc_namespace_id = trials_base.ultimate_parent_namespace_id 
             AND page_url_host LIKE 'gitlab.com'
             -- trial date IS equal to or after the pageview date
-            AND trial_start_date >= DATE_TRUNC(DAY, page_view_start)
+            AND trial_start_date >= DATE_TRUNC(DAY, page_view_start_at)
             -- trial AND page views must have happened in the same month
-            AND DATE_TRUNC('month', trial_start_date) = DATE_TRUNC('month',page_view_start)
+            AND DATE_TRUNC('month', trial_start_date) = DATE_TRUNC('month',page_view_start_at)
 
 ), pages_per_trial_start AS (
 
@@ -319,7 +319,7 @@
         ON trial_namespace_ids_FROM_starts.user_snowplow_domain_id = snowplow_page_views_base.user_snowplow_domain_id
             -- trial AND page views have to have been in the same month
             AND DATE_TRUNC('month', trial_namespace_ids_FROM_starts.trial_start_date) 
-                = DATE_TRUNC('month',snowplow_page_views_base.page_view_start)
+                = DATE_TRUNC('month',snowplow_page_views_base.page_view_start_at)
     WHERE page_url_host = 'about.gitlab.com'
     GROUP BY 1,2,3
 
@@ -330,19 +330,19 @@
 ), snowplow_page_views_trials AS (
 
     SELECT 
-        DATE_TRUNC('month', page_view_start)         AS metric_time,
+        DATE_TRUNC('month', page_view_start_at)         AS metric_time,
         'saas_trial_pages_views_users'               AS metric_name,
         NULL                                         AS channel_grouping,
         COUNT(DISTINCT snowplow_page_views_base.user_snowplow_domain_id) AS metric_value
     FROM snowplow_page_views_base
     JOIN snowplow_page_views_marketing 
         ON snowplow_page_views_base.session_id = snowplow_page_views_marketing.session_id 
-    WHERE page_view_start >= '2022-01-01'  
+    WHERE page_view_start_at >= '2022-01-01'  
         AND (snowplow_page_views_base.page_url LIKE '%/trial_registrations/new%' 
             OR snowplow_page_views_base.page_url LIKE '%/trials/new%')
         -- start ON the marketing site, then move to the product
-        AND page_view_start >= first_marketing_page_view
-        AND DATE_TRUNC('month', page_view_start) = DATE_TRUNC('month', first_marketing_page_view)
+        AND page_view_start_at >= first_marketing_page_view
+        AND DATE_TRUNC('month', page_view_start_at) = DATE_TRUNC('month', first_marketing_page_view)
     GROUP BY 1,2,3
 
 --Saas Trial Signups
@@ -353,12 +353,12 @@
 
     SELECT DISTINCT
         gsc_namespace_id,
-        MIN(page_view_start) AS page_view_start
+        MIN(page_view_start_at) AS page_view_start_at
     FROM snowplow_page_views_base
     JOIN snowplow_page_views_marketing
         ON snowplow_page_views_base.session_id = snowplow_page_views_marketing.session_id
-            AND snowplow_page_views_base.page_view_start >= snowplow_page_views_marketing.first_marketing_page_view
-            AND DATE_TRUNC('month', snowplow_page_views_base.page_view_start) = DATE_TRUNC('month', snowplow_page_views_marketing.first_marketing_page_view)
+            AND snowplow_page_views_base.page_view_start_at >= snowplow_page_views_marketing.first_marketing_page_view
+            AND DATE_TRUNC('month', snowplow_page_views_base.page_view_start_at) = DATE_TRUNC('month', snowplow_page_views_marketing.first_marketing_page_view)
     WHERE gsc_plan LIKE '%trial%'
     GROUP BY 1
 
@@ -372,8 +372,8 @@
     FROM trials_base
     JOIN namespaces_in_trial_touched_marketing_site
         ON trials_base.ultimate_parent_namespace_id = namespaces_in_trial_touched_marketing_site.gsc_namespace_id
-    WHERE trial_start_date >= DATE_TRUNC(day, page_view_start)
-        AND DATE_TRUNC('month', trial_start_date) = DATE_TRUNC('month', page_view_start)
+    WHERE trial_start_date >= DATE_TRUNC(day, page_view_start_at)
+        AND DATE_TRUNC('month', trial_start_date) = DATE_TRUNC('month', page_view_start_at)
     GROUP BY 1,2,3
 
 ), snowplow_trial_signup_namespaces_vs AS (
@@ -386,8 +386,8 @@
     FROM rpt_namespace_onboarding
     JOIN namespaces_in_trial_touched_marketing_site
         ON rpt_namespace_onboarding.ultimate_parent_namespace_id = namespaces_in_trial_touched_marketing_site.gsc_namespace_id
-    WHERE trial_start_date >= DATE_TRUNC(DAY, page_view_start)
-        AND DATE_TRUNC('month', trial_start_date) = DATE_TRUNC('month', page_view_start)
+    WHERE trial_start_date >= DATE_TRUNC(DAY, page_view_start_at)
+        AND DATE_TRUNC('month', trial_start_date) = DATE_TRUNC('month', page_view_start_at)
         AND creator_is_valuable_signup
     GROUP BY 1,2,3
 
@@ -396,21 +396,21 @@
     --welcome page can come after standard or SSO steps, so including requirement for all users in subsequent steps to view users/sign_up Page prior to, but ON the same day as subsequent steps. 
 
    SELECT DISTINCT
-    snowplow_page_views_base.page_view_start,
+    snowplow_page_views_base.page_view_start_at,
     snowplow_page_views_base.user_snowplow_domain_id
   FROM snowplow_page_views_base
   JOIN snowplow_page_views_marketing
     ON snowplow_page_views_base.user_snowplow_domain_id = snowplow_page_views_marketing.user_snowplow_domain_id 
-        AND snowplow_page_views_base.page_view_start::DATE = snowplow_page_views_marketing.first_marketing_page_view::DATE
-        AND snowplow_page_views_base.page_view_start > snowplow_page_views_marketing.first_marketing_page_view
+        AND snowplow_page_views_base.page_view_start_at::DATE = snowplow_page_views_marketing.first_marketing_page_view::DATE
+        AND snowplow_page_views_base.page_view_start_at > snowplow_page_views_marketing.first_marketing_page_view
   WHERE snowplow_page_views_base.page_url LIKE '%users/sign_up/welcome'
-    AND page_view_start >= '2022-01-01'  
+    AND page_view_start_at >= '2022-01-01'  
 
 -- we should be able to make is_valuable_signup a real field
 ), sass_new_user AS (
 
     SELECT 
-        DATE_TRUNC(month, page_view_start)           AS metric_time,
+        DATE_TRUNC(month, page_view_start_at)           AS metric_time,
         'saas_new_user'                              AS metric_name,
         NULL                                         AS channel_grouping,
         COUNT(DISTINCT user_snowplow_domain_id)      AS metric_value
@@ -622,7 +622,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by ="@rkohnke",
-    updated_by ="@rkohnke",
+    updated_by ="@michellecooper",
     created_date="2024-03-01",
-    updated_date="2024-03-21",
+    updated_date="2024-05-03",
   ) }}

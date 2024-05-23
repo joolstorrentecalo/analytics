@@ -13,4 +13,5 @@ sources:
 
     tables:
       - name: itemized_costs
+      - name: itemized_costs_by_deployment
 

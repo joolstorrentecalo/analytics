@@ -67,7 +67,6 @@ for dt in rrule.rrule(rrule.MONTHLY, dtstart=starting_d, until=today_d):
     snowplow_prep_schemas.append(dt.strftime("SNOWPLOW_%Y_%m"))
 
 for schema in snowplow_prep_schemas:
-
     snowplow_tables.append(
         {
             "database": prep_db,

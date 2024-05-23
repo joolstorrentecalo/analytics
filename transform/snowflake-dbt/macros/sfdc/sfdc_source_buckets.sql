@@ -30,7 +30,7 @@
         THEN 'inbound'
       WHEN {{ lead_source }} in ('6sense', 'AE Generated', 'Clearbit','Datanyze','DiscoverOrg','Gemnasium','GitLab Hosted','Gitorious','gmail','GovWin IQ','Leadware','LinkedIn','Live Event','Prospecting','Prospecting - General','Prospecting - LeadIQ','SDR Generated','seamless.ai','Zoominfo')
         THEN 'outbound'
-      WHEN {{ lead_source }} in ('Advertisement', 'Conference', 'Executive Roundtable', 'Field Event', 'Owned Event','Promotion','Vendor Arranged Meetings','Virtual Sponsorship')
+      WHEN {{ lead_source }} in ('Advertisement', 'Conference', 'Content Syndication', 'Executive Roundtable', 'Field Event', 'Owned Event','Promotion','Vendor Arranged Meetings','Virtual Sponsorship')
         THEN 'paid demand gen'
       WHEN {{ lead_source }} in ('Purchased List')
         THEN 'purchased list'

@@ -1,3 +1,7 @@
+{{ config(
+    tags=["product"]
+) }}
+
 WITH prep_ci_runner AS (
 
   SELECT
@@ -31,37 +35,15 @@ WITH prep_ci_runner AS (
       WHEN ci_runner_description ILIKE '%.shared-gitlab-org.runners-manager.%'
         THEN 'shared-gitlab-org-runner-mgr'
       --- macOS Runners
-      WHEN ci_runner_description ILIKE '%macOS%'
+      WHEN LOWER(ci_runner_description) ILIKE '%macos%'
         THEN 'macos-runner-mgr'
       --- Other
       ELSE 'Other'
     END         AS ci_runner_manager,
 
     --- CI Runner Machine Type Mapping
-    CASE
-      --- SaaS Linux Runners
-      WHEN ci_runner_description ILIKE '%.shared.runners-manager.%'
-        THEN 'SaaS Runner Linux - Small'
-      WHEN ci_runner_description ILIKE '%.saas-linux-small-amd64.runners-manager.gitlab.com%'
-        THEN 'SaaS Runner Linux - Small'
-      WHEN ci_runner_description ILIKE '%green-4.saas-linux-medium-amd64.runners-manager%'
-        THEN 'SaaS Runner Linux - Medium'
-      WHEN ci_runner_description ILIKE '%saas-linux-medium-amd64-gpu-standard.runners-manager%'
-        THEN 'SaaS GPU-Enabled Runners'
-      WHEN ci_runner_description ILIKE '%saas-linux-large-amd64%'
-        THEN 'SaaS Runner Linux - Large'
-      WHEN ci_runner_description ILIKE '%saas-linux-xlarge-amd64%'
-        THEN 'SaaS Runner Linux - XLarge'
-      WHEN ci_runner_description ILIKE '%saas-linux-2xlarge-amd64%'
-        THEN 'SaaS Runner Linux - 2XLarge'
-      --- MacOS Runners
-      WHEN ci_runner_description ILIKE '%macos%'
-        THEN 'SaaS Runners macOS - Medium - amd64'
-      --- Window Runners 
-      WHEN ci_runner_description ILIKE 'windows-shared-runners-manager%'
-        THEN 'SaaS Runners Windows - Medium'
-      ELSE 'Other'
-    END         AS ci_runner_machine_type,
+    ci_runner_machine_type,
+    cost_factor,
     contacted_at,
     is_active,
     ci_runner_version,
@@ -87,7 +69,7 @@ WITH prep_ci_runner AS (
 {{ dbt_audit(
     cte_ref="prep_ci_runner",
     created_by="@snalamaru",
-    updated_by="@nhervas",
+    updated_by="@michellecooper",
     created_date="2021-06-23",
-    updated_date="2024-02-12"
+    updated_date="2024-05-17"
 ) }}

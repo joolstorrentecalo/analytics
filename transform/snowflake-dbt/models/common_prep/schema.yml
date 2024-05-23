@@ -134,6 +134,8 @@ models:
         description: The partner associated with this campaign through Vartopia.
       - name: mdf_request_id
         description: The ID MDF Request that funded the campaign for MDF Campaigns.
+      - name: resale_partner_name
+        description: The name of the resale partner on the opp. Often this will have a value for partner opps when the partner does not.
 
   - name: prep_crm_person
     description: '{{ doc("prep_crm_person") }}'
@@ -313,7 +315,7 @@ models:
       - name: gitlab_plan_title
         description: The `plan_title` associated with the namespace's _GitLab_ subscription. This can be inherited from the namespace's ultimate parent. `NULL` if the namespace has been deleted.
       - name: gitlab_plan_is_paid
-        description: Indicates whether or not the namespace is subscribed to a paid plan. This can be inherited from the namespace's ultimate parent. `NULL` if the namespace has been deleted.
+        description: '{{ doc("gitlab_plan_is_paid") }}'
       - name: dim_product_tier_id
       - name: gitlab_plan_seats
       - name: gitlab_plan_seats_in_use
@@ -1156,6 +1158,8 @@ models:
       - name: runner_type
       - name: public_projects_minutes_cost_factor
       - name: private_projects_minutes_cost_factor
+      - name: cost_factor
+        description: '{{ doc("cost_factor") }}'
 
   - name: prep_ci_stage
     description: '{{ doc("dim_ci_stage") }}'
@@ -2042,9 +2046,13 @@ models:
         description: '{{ doc("has_merge_trains_enabled") }}'
 
   - name: prep_snowplow_unnested_events_all
-    description: This is the primary events view which is the union of the Fishtown and GitLab tables across the last 25 months of snowplow_YYYY_MM schemas. All of the unstructured including both staging and non-staging events are unpacked - [link click tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#39-link-click-tracking), [form tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#3101-enableformtracking), and [time tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#timing).
+    description: '{{ doc("prep_snowplow_unnested_events_all") }}'
     columns:
-      - name: has_performance_timing_context 
+      - name: event_label
+        description: '{{ doc("event_label") }}'
+      - name: clean_event_label
+        description: '{{ doc("clean_event_label") }}'
+      - name: has_performance_timing_context
         description: '{{ doc("has_performance_timing_context") }}'
       - name: has_web_page_context
         description: '{{ doc("has_web_page_context") }}'
@@ -2090,6 +2098,10 @@ models:
         description: '{{ doc("link_click_element_id") }}'
       - name: is_staging_event
         description: '{{ doc("is_staging_event") }}'
+      - name: gitlab_global_user_id
+        description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+      - name: gsc_feature_enabled_by_namespace_ids
+        description: '{{ doc("gsc_feature_enabled_by_namespace_ids") }}'
 
   - name: prep_snowplow_page_views_all
     description: View combining all snowplow_page_view partitions.
@@ -2518,6 +2530,8 @@ models:
         description: '{{ doc("license_company_name") }}'
       - name: license_expire_date
         description: '{{ doc("license_expire_date") }}'
+      - name: subscription_name
+        description: '{{ doc("subscription_name") }}'
       - name: original_subscription_name_slugify
         description: '{{ doc("original_subscription_name_slugify") }}'
       - name: dim_subscription_id
@@ -2739,3 +2753,6 @@ models:
         description: The Marketo person's data quality score.
       - name: marketo_lead_score_2
         description: The Marketo person's Lead Score.
+
+  - name: prep_snowplow_sessions_all
+    description: '{{ doc("prep_snowplow_sessions_all") }}'

@@ -18,7 +18,6 @@ from extract.level_up_thought_industries.src.thought_industries_api import (
 from extract.level_up_thought_industries.src.thought_industries_api_helpers import (
     iso8601_to_epoch_ts_ms,
     epoch_ts_ms_to_datetime_str,
-    make_request,
     is_invalid_ms_timestamp,
 )
 
@@ -97,57 +96,3 @@ def test_is_invalid_ms_timestamp():
     # invalid start / valid end = invalid
     res = is_invalid_ms_timestamp(invalid_epoch_start_ms, invalid_epoch_end_ms)
     assert res
-
-
-@responses.activate
-def test_make_request():
-    """
-    Test requests using mock 'responses' library.
-    Four checks:
-        1. invalid request_type throws correct error
-        2. 200 error returns valid response
-        3. 404 returns 404 error
-        4. 429 too many requests is handled correctly
-    """
-    url = "http://fake_url.com"
-    # Test that an invalid request type throws an error
-    request_type = "nonexistent_request_type"
-    error_str = "Invalid request type"
-    with pytest.raises(ValueError) as exc:
-        make_request(request_type, url)
-    assert error_str in str(exc.value)
-
-    request_type = "GET"
-    # test 200 status
-    rsp1 = responses.Response(
-        method=request_type,
-        url=url,
-        status=200,
-    )
-    responses.add(rsp1)
-    resp1 = make_request(request_type, url)
-    assert resp1.status_code == 200
-
-    # Test HTTP error
-    rsp2 = responses.Response(
-        method=request_type,
-        url=url,
-        status=404,
-    )
-    responses.add(rsp2)
-    with pytest.raises(requests.exceptions.HTTPError) as exc:
-        make_request(request_type, url)
-    error_str = "404 Client Error"
-    assert error_str in str(exc.value)
-
-    # Test 429 error
-    rsp3 = responses.Response(
-        method=request_type,
-        url=url,
-        status=429,
-    )
-    responses.add(rsp3)
-    with pytest.raises(requests.exceptions.HTTPError) as exc:
-        make_request(request_type, url, max_retry_count=1)
-    error_str = "429 Client Error"
-    assert error_str in str(exc.value)

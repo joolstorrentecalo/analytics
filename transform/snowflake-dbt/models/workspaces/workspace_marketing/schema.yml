@@ -110,3 +110,7 @@ models:
 
   - name: ga_session_hit
     description: Joins Google Analytics 360 Session and Hit tables. Each row is a hit with the session data, which is repeated for each hit. 
+
+  - name: rpt_create_partner_touchpoints
+    description: A view used to find marketing ready partners and create touchpoints for them with hightouch
+    

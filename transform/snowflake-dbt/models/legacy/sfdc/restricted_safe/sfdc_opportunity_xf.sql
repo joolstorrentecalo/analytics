@@ -97,7 +97,6 @@ WITH sfdc_opportunity AS (
       sfdc_opportunity.forecasted_iacv,
       sfdc_opportunity.iacv_created_date,
       sfdc_opportunity.incremental_acv,
-      sfdc_opportunity.pre_covid_iacv,
       sfdc_opportunity.invoice_number,
       sfdc_opportunity.is_refund,
       sfdc_opportunity.is_downgrade,

@@ -1433,7 +1433,7 @@ LEFT JOIN cw_base
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = arr_created_fiscal_quarter_date
           AND is_net_arr_pipeline_created_combined = 1 -- use the flag that combines live and snapshot values instead of just snapshot 
             THEN net_arr
-        ELSE 0
+        ELSE NULL
       END                                                         AS created_arr_in_snapshot_quarter,
 
       CASE
@@ -1441,34 +1441,26 @@ LEFT JOIN cw_base
           AND is_closed_won = TRUE 
             AND is_win_rate_calc = TRUE
               THEN calculated_deal_count
-        ELSE 0
+        ELSE NULL
       END                                                         AS closed_won_opps_in_snapshot_quarter,
 
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
           AND is_win_rate_calc = TRUE
             THEN calculated_deal_count
-        ELSE 0
+        ELSE NULL
       END                                                         AS closed_opps_in_snapshot_quarter,
-
-      CASE
-        WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
-          AND is_win_rate_calc = TRUE
-            THEN calculated_deal_count * net_arr
-        ELSE 0
-      END                                                         AS closed_net_arr_in_snapshot_quarter,
-
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
           AND is_booked_net_arr = TRUE
             THEN net_arr
-        ELSE 0
+        ELSE NULL
       END                                                         AS booked_net_arr_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = arr_created_fiscal_quarter_date
           AND is_net_arr_pipeline_created_combined = 1 
             THEN calculated_deal_count 
-        ELSE 0
+        ELSE NULL
       END                                                         AS created_deals_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
@@ -1479,38 +1471,39 @@ LEFT JOIN cw_base
           AND is_renewal = 0 
             AND  is_eligible_age_analysis = 1
               THEN DATEDIFF(day, sfdc_opportunity.created_date, close_date.date_actual) 
+        ELSE NULL
       END                                                         AS cycle_time_in_days_in_snapshot_quarter, -- ensure only closed opps are used in the calculation
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
           AND is_booked_net_arr = TRUE 
           THEN calculated_deal_count
-        ELSE 0
+        ELSE NULL
       END                                               AS booked_deal_count_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
           AND is_eligible_open_pipeline_combined = 1
               THEN net_arr
-        ELSE 0
+        ELSE NULL
       END                                                AS open_1plus_net_arr_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
           AND is_eligible_open_pipeline_combined = 1
             AND is_stage_3_plus = 1
               THEN net_arr
-        ELSE 0
+        ELSE NULL
       END                                                AS open_3plus_net_arr_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
           AND is_eligible_open_pipeline_combined = 1
             AND is_stage_4_plus = 1
               THEN net_arr
-        ELSE 0
+        ELSE NULL
       END                                                AS open_4plus_net_arr_in_snapshot_quarter,
       CASE 
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date  
           AND is_eligible_open_pipeline_combined = 1
             THEN calculated_deal_count
-        ELSE 0
+        ELSE NULL
       END                                               AS open_1plus_deal_count_in_snapshot_quarter,
 
       CASE
@@ -1518,7 +1511,7 @@ LEFT JOIN cw_base
           AND is_eligible_open_pipeline_combined = 1
           AND is_stage_3_plus = 1
             THEN calculated_deal_count
-        ELSE 0
+        ELSE NULL
       END                                               AS open_3plus_deal_count_in_snapshot_quarter,
 
       CASE
@@ -1526,7 +1519,7 @@ LEFT JOIN cw_base
           AND is_eligible_open_pipeline_combined = 1
           AND is_stage_4_plus = 1
             THEN calculated_deal_count
-        ELSE 0
+        ELSE NULL
       END                                               AS open_4plus_deal_count_in_snapshot_quarter,
 
       -- Fields to calculate average deal size. Net arr in the numerator / deal count in the denominator
@@ -1535,29 +1528,42 @@ LEFT JOIN cw_base
           AND is_booked_net_arr = TRUE 
 	          AND net_arr > 0
           THEN 1
-        ELSE 0
+        ELSE NULL
       END                                               AS positive_booked_deal_count_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
           AND is_booked_net_arr = TRUE 
 	          AND net_arr > 0
           THEN net_arr
-        ELSE 0
+        ELSE NULL
       END                                               AS positive_booked_net_arr_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
           AND is_eligible_open_pipeline_combined = 1
 	            AND net_arr > 0
           THEN 1
-        ELSE 0
+        ELSE NULL
       END                                               AS positive_open_deal_count_in_snapshot_quarter,
       CASE
         WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
           AND is_eligible_open_pipeline_combined = 1
 	            AND net_arr > 0
           THEN net_arr
-        ELSE 0
-      END                                               AS positive_open_net_arr_in_snapshot_quarter
+        ELSE NULL
+      END                                               AS positive_open_net_arr_in_snapshot_quarter,
+      CASE 
+        WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+          AND sfdc_opportunity.is_closed = 'TRUE' 
+            THEN calculated_deal_count 
+          ELSE NULL
+      END                                               AS closed_deals_in_snapshot_quarter,
+      CASE 
+        WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+          AND sfdc_opportunity.is_closed = 'TRUE' 
+            THEN net_arr 
+        ELSE NULL
+      END                                               AS closed_net_arr_in_snapshot_quarter
+
     FROM sfdc_opportunity
     INNER JOIN sfdc_opportunity_stage
       ON sfdc_opportunity.stage_name = sfdc_opportunity_stage.primary_label

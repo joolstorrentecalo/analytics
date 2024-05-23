@@ -46,12 +46,20 @@ SELECT
       THEN 'Field Operations'
     WHEN department = 'Development'
       THEN 'Core Development'
-    WHEN department = 'Quality'
-      THEN 'Platforms'
+    WHEN department IN ('Quality', 'Platforms')
+      THEN 'Internal Infrastructure'
     WHEN department = 'Infrastructure'
       THEN 'Core Infrastructure'
     WHEN department = 'Incubation Engineering'
       THEN 'Expansion'
+    WHEN department = 'Product Management'
+      THEN 'Product Leadership'
+    WHEN department = 'Product Monetization'
+      THEN 'Monetization'
+    WHEN department = 'UX'
+      THEN 'UX Research'
+    WHEN department = 'Security'
+      THEN 'Office of CISO'
     ELSE department
   END AS modified_department,
   CASE

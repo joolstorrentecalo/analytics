@@ -169,7 +169,7 @@ ORDER BY 1
 - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')`
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `major_minor_version_id`, `version_is_prerelease`, and `instance_user_count` look at 'Last Ping of the Month' pings
 - Exclude the current month
 
@@ -196,7 +196,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated)` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include metrics for 28 Day and All-Time time frames
 - `Inherited` - Include metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude metrics that timed out during ping generation
@@ -231,7 +231,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited`- Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include metrics for 28 Day and All-Time time frames
 - `Inherited` - Include metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude metrics that timed out during ping generation
@@ -266,7 +266,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include metrics for 28 Day and All-Time time frames
 - `Inherited` - Include metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude metrics that timed out during ping generation
@@ -342,7 +342,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated)` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Exclude the current month
 
 **Business Logic in this Model:**
@@ -366,7 +366,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Subscriptions and seats are limited to:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include 28 Day and All-Time metrics  
 - `Inherited` - Include Metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude the current month
@@ -505,6 +505,7 @@ and `suggestion_rejected` events. The explanation is in [this issue comment](htt
 can be found [here](https://gitlab.com/gitlab-org/editor-extensions/gitlab-lsp/-/blob/main/docs/telemetry.md)
 
 {% enddocs %}
+
 {% docs rpt_user_based_metric_counts_namespace_monthly %}
 
 This model aggregates the SaaS-equivalent User-based Redis counters at the namespace level.
@@ -538,3 +539,17 @@ This model aggregates the SaaS-equivalent Event-based Redis counters at the name
 
 {% enddocs %}
 
+{% docs rpt_zoekt_code_search_rollout_daily %}
+
+This model categorizes GitLab namespaces based on their Zoekt search engine rollout status as of the report date by joining data from various source tables tracking Zoekt indexing and enablement status to monitor Zoekt rollout over time.
+
+**Note:** 
+- This model is set to never full refresh in order to prevent accidental loss of the [historical data](https://docs.getdbt.com/blog/change-data-capture) as there's no way to re-calculate prior versions without snapshots
+- This model's unique_key is set to report_date in order to capture the final version of each day
+
+**Intended Usage:**
+
+This model is intended to provide visibility into the state of the ongoing Zoekt adoption across all namespaces over time.
+_Note: Once the Zoekt rollout is complete, revisit the cadence of this model in FY26Q1 to determine if it needs to be rebuilt less frequently or retired._
+
+{% enddocs %}

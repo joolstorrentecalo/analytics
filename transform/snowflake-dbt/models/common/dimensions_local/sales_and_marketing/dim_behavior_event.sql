@@ -20,6 +20,7 @@
       event_category,
       event_action,
       event_label,
+      clean_event_label,
       event_property,
       MAX(behavior_at)   AS max_timestamp
     FROM events
@@ -30,13 +31,13 @@
     
     {% endif %}
 
-    {{ dbt_utils.group_by(n=9) }}
+    {{ dbt_utils.group_by(n=10) }}
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@chrissharp",
-    updated_by="@chrissharp",
+    updated_by="@utkarsh060",
     created_date="2022-09-20",
-    updated_date="2022-12-01"
+    updated_date="2024-05-08"
 ) }}

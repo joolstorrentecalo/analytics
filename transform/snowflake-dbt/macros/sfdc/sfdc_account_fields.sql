@@ -27,7 +27,7 @@ WITH map_merged_crm_account AS (
     {%- if model_type == 'live' %}
         {{ ref('prep_crm_user') }}
     {%- elif model_type == 'snapshot' %}
-        {{ ref('dim_crm_user_daily_snapshot') }}
+        {{ ref('prep_crm_user_daily_snapshot') }}
     {% endif %}
 
 {%- if model_type == 'live' %}
@@ -243,63 +243,11 @@ WITH map_merged_crm_account AS (
       sfdc_account.account_role_type                                      AS parent_crm_account_role_type,
 
       {%- if model_type == 'live' %}
-      CASE
-        WHEN LOWER(parent_crm_account_business_unit) = 'comm'
-          THEN CONCAT(
-                      UPPER(parent_crm_account_business_unit), 
-                      '-',
-                      UPPER(parent_crm_account_geo), 
-                      '-',
-                      UPPER(parent_crm_account_sales_segment), 
-                      '-',
-                      UPPER(parent_crm_account_region), 
-                      '-',
-                      UPPER(parent_crm_account_area),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        WHEN LOWER(parent_crm_account_business_unit) = 'entg'
-          THEN CONCAT(
-                      UPPER(parent_crm_account_business_unit), 
-                      '-',
-                      UPPER(parent_crm_account_geo), 
-                      '-',
-                      UPPER(parent_crm_account_region), 
-                      '-',
-                      UPPER(parent_crm_account_area), 
-                      '-',
-                      UPPER(parent_crm_account_sales_segment),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        WHEN parent_crm_account_business_unit IS NOT NULL 
-          AND LOWER(parent_crm_account_business_unit) NOT IN ('comm', 'entg') -- account for non-sales reps
-          THEN CONCAT(
-                      UPPER(parent_crm_account_business_unit), 
-                      '-',
-                      UPPER(parent_crm_account_sales_segment), 
-                      '-',
-                      UPPER(parent_crm_account_geo), 
-                      '-',
-                      UPPER(parent_crm_account_region), 
-                      '-',
-                      UPPER(parent_crm_account_area),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        WHEN parent_crm_account_business_unit IS NULL -- account for nulls/possible data issues
-          THEN CONCAT(
-                      UPPER(parent_crm_account_sales_segment), 
-                      '-',
-                      UPPER(parent_crm_account_geo), 
-                      '-',
-                      UPPER(parent_crm_account_region), 
-                      '-',
-                      UPPER(parent_crm_account_area),
-                      '-',
-                      current_fiscal_year.fiscal_year
-                      )
-        END                                                                                                                           AS dim_crm_parent_account_hierarchy_sk,
+        CONCAT(
+               UPPER(account_owner_role),
+               '-',
+               current_fiscal_year.fiscal_year
+               )                                                                                                                     AS dim_crm_parent_account_hierarchy_sk,
       {%- elif model_type == 'snapshot' %}
       CASE
         WHEN sfdc_account.snapshot_fiscal_year < 2024
@@ -314,7 +262,7 @@ WITH map_merged_crm_account AS (
                       '-',
                       sfdc_account.snapshot_fiscal_year
                       )
-        WHEN sfdc_account.snapshot_fiscal_year >= 2024 AND LOWER(parent_crm_account_business_unit) = 'comm'
+        WHEN sfdc_account.snapshot_fiscal_year = 2024 AND LOWER(parent_crm_account_business_unit) = 'comm'
           THEN CONCAT(
                       UPPER(parent_crm_account_business_unit), 
                       '-',
@@ -328,7 +276,7 @@ WITH map_merged_crm_account AS (
                       '-',
                       sfdc_account.snapshot_fiscal_year
                       )
-        WHEN sfdc_account.snapshot_fiscal_year >= 2024 AND LOWER(parent_crm_account_business_unit) = 'entg'
+        WHEN sfdc_account.snapshot_fiscal_year = 2024 AND LOWER(parent_crm_account_business_unit) = 'entg'
           THEN CONCAT(
                       UPPER(parent_crm_account_business_unit), 
                       '-',
@@ -342,7 +290,7 @@ WITH map_merged_crm_account AS (
                       '-',
                       sfdc_account.snapshot_fiscal_year
                       )
-        WHEN sfdc_account.snapshot_fiscal_year >= 2024
+        WHEN sfdc_account.snapshot_fiscal_year = 2024
           AND (parent_crm_account_business_unit IS NOT NULL AND LOWER(parent_crm_account_business_unit) NOT IN ('comm', 'entg'))  -- account for non-sales reps
           THEN CONCAT(
                       UPPER(parent_crm_account_business_unit), 
@@ -358,7 +306,7 @@ WITH map_merged_crm_account AS (
                       sfdc_account.snapshot_fiscal_year
                       )
 
-        WHEN sfdc_account.snapshot_fiscal_year >= 2024 AND parent_crm_account_business_unit IS NULL -- account for nulls/possible data issues
+        WHEN sfdc_account.snapshot_fiscal_year = 2024 AND parent_crm_account_business_unit IS NULL -- account for nulls/possible data issues
           THEN CONCAT(
                       UPPER(parent_crm_account_sales_segment), 
                       '-',
@@ -370,6 +318,12 @@ WITH map_merged_crm_account AS (
                       '-',
                       sfdc_account.snapshot_fiscal_year
                       )
+        WHEN sfdc_account.snapshot_fiscal_year >= 2025
+          THEN CONCAT(
+                      UPPER(account_owner_role),
+                      '-',
+                      sfdc_account.snapshot_fiscal_year
+                      )  
         END                                                                                                                           AS dim_crm_parent_account_hierarchy_sk,
       {%- endif %}
 
@@ -611,7 +565,7 @@ WITH map_merged_crm_account AS (
       sfdc_account.number_of_licenses_this_account,
       sfdc_account.decision_maker_count_linkedin,
       sfdc_account.number_of_employees,
-      crm_user.crm_user_role_type                                         AS user_role_type,
+      crm_user.user_role_type                                             AS user_role_type,
       crm_user.user_role_name                                             AS owner_role,
       {%- if model_type == 'live' %}
       sfdc_account.lam                                                    AS parent_crm_account_lam,

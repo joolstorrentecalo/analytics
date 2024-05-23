@@ -13,7 +13,6 @@ from extract.clari.src.clari import (
     _get_previous_fiscal_quarter,
     get_fiscal_quarter,
     config_dict,
-    make_request,
     check_valid_quarter,
 )
 
@@ -136,60 +135,6 @@ def test_get_fiscal_quarter():
     res_q4 = get_fiscal_quarter()
     actual_q4 = "2021_Q4"
     assert res_q4 == actual_q4
-
-
-@responses.activate
-def test_make_request():
-    """
-    Test requests using mock 'responses' library.
-    Four checks:
-        1. invalid request_type throws correct error
-        2. 200 error returns valid response
-        3. 404 returns 404 error
-        4. 429 too many requests is handled correctly
-    """
-    url = "http://fake_url.com"
-    # Test that an invalid request type throws an error
-    request_type = "nonexistent_request_type"
-    error_str = "Invalid request type"
-    with pytest.raises(ValueError) as exc:
-        make_request(request_type, url)
-    assert error_str in str(exc.value)
-
-    request_type = "GET"
-    # test 200 status
-    rsp1 = responses.Response(
-        method=request_type,
-        url=url,
-        status=200,
-    )
-    responses.add(rsp1)
-    resp1 = make_request(request_type, url)
-    assert resp1.status_code == 200
-
-    # Test HTTP error
-    rsp2 = responses.Response(
-        method=request_type,
-        url=url,
-        status=404,
-    )
-    responses.add(rsp2)
-    with pytest.raises(requests.exceptions.HTTPError) as exc:
-        make_request(request_type, url)
-    error_str = "404 Client Error"
-    assert error_str in str(exc.value)
-
-    # Test 429 error
-    rsp3 = responses.Response(
-        method=request_type,
-        url=url,
-        status=429,
-    )
-    responses.add(rsp3)
-    with pytest.raises(requests.exceptions.HTTPError) as exc:
-        make_request(request_type, url, max_retry_count=1)
-    error_str = "429 Client Error"
-    assert error_str in str(exc.value)
 
 
 def test_check_valid_quarter():

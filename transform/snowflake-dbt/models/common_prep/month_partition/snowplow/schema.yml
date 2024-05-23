@@ -51,6 +51,8 @@ models:
           description: ' {{ doc("gsc_source") }} '
         - name: is_gitlab_team_member
           description: ' {{ doc("gsc_is_gitlab_team_member") }} '
+        - name: feature_enabled_by_namespace_ids
+          description: ' {{ doc("gsc_feature_enabled_by_namespace_ids") }}'
         - name: web_page_context
           description: ' {{ doc("web_page_context") }} '
         - name: web_page_context_schema
@@ -109,6 +111,8 @@ models:
           description: ' {{ doc("host_name") }} '
         - name: is_streaming
           description: ' {{ doc("code_suggestions_is_streaming") }} '
+        - name: gitlab_global_user_id
+          description: ' doc("code_suggestions_gitlab_global_user_id") }}'
         - name: ide_extension_version_context
           description: ' {{ doc("ide_extension_version_context") }} '
         - name: ide_extension_version_context_schema

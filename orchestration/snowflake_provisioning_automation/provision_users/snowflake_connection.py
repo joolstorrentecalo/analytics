@@ -22,7 +22,7 @@ class SnowflakeConnection:
                 URL(
                     user=config_dict["SNOWFLAKE_PROVISIONER_USER"],
                     password=config_dict["SNOWFLAKE_PROVISIONER_PASSWORD"],
-                    account=config_dict["SNOWFLAKE_PROVISIONER_ACCOUNT"],
+                    account=config_dict["SNOWFLAKE_ACCOUNT"],
                     role=role,  # needs to be passed in, can be securityadmin/sysadmin
                     warehouse=config_dict["SNOWFLAKE_PROVISIONER_WAREHOUSE"],
                 )
@@ -38,9 +38,10 @@ class SnowflakeConnection:
             results = connection.execute(query_text, query_params).fetchall()
         return results
 
-    def run_sql_statement(self, sql_statement: str, query_params: dict):
+    def run_sql_statement(self, sql_statement: str, query_params: dict = {}):
         """run individual sql statement"""
-        info(f"Running sql_statement: {sql_statement}")
+        action = "Printing" if self.is_test_run else "Running"
+        info(f"{action} sql_statement: {sql_statement}")
         if self.is_test_run:
             return
 
@@ -48,8 +49,13 @@ class SnowflakeConnection:
             self.engine, sql_statement, query_params
         )
         info(f"query_result: {query_result}")
+        return query_result
 
     def run_sql_statements(self, sql_statements: list, query_params: dict):
         """process all sql statements"""
         for sql_statement in sql_statements:
             self.run_sql_statement(sql_statement, query_params)
+
+    def dispose_engine(self):
+        if not self.is_test_run:
+            self.engine.dispose()

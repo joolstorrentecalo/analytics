@@ -1554,6 +1554,28 @@ tables:
       SELECT id
       , user_id
       , source_id
+      , source_type
+      , level
+      , new_note
+      , new_issue
+      , reopen_issue
+      , close_issue
+      , reassign_issue
+      , new_merge_request
+      , reopen_merge_request
+      , close_merge_request
+      , reassign_merge_request
+      , merge_merge_request
+      , failed_pipeline
+      , success_pipeline
+      , push_to_merge_request
+      , issue_due
+      , new_epic
+      , fixed_pipeline
+      , new_release
+      , moved_project
+      , change_reviewer_merge_request
+      , merge_when_pipeline_succeeds
       , created_at
       , updated_at
       FROM notification_settings

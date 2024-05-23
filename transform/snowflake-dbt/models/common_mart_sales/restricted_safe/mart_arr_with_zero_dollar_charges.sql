@@ -116,6 +116,8 @@
       dim_product_detail.dim_product_detail_id                                        AS dim_product_detail_id,
       dim_product_detail.product_tier_name                                            AS product_tier_name,
       dim_product_detail.product_delivery_type                                        AS product_delivery_type,
+      dim_product_detail.product_deployment_type                                      AS product_deployment_type,
+      dim_product_detail.product_category                                             AS product_category,
       dim_product_detail.product_ranking                                              AS product_ranking,
       dim_product_detail.service_type                                                 AS service_type,
       dim_product_detail.product_rate_plan_name                                       AS product_rate_plan_name,
@@ -226,6 +228,8 @@
     dim_product_detail_id,
     product_tier_name,
     product_delivery_type,
+    product_deployment_type,
+    product_category,
     product_ranking,
     service_type,
     product_rate_plan_name,
@@ -355,6 +359,8 @@
       --product info
       cohort_diffs.product_tier_name,
       cohort_diffs.product_delivery_type,
+      cohort_diffs.product_deployment_type,
+      cohort_diffs.product_category,
       cohort_diffs.product_ranking,
       cohort_diffs.service_type,
       cohort_diffs.product_rate_plan_name,
@@ -388,5 +394,5 @@
     created_by="@snalamaru",
     updated_by="@snalamaru",
     created_date="2023-12-01",
-    updated_date="2023-12-01"
+    updated_date="2024-04-10"
 ) }}

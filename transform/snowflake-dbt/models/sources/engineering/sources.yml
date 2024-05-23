@@ -5,7 +5,7 @@ sources:
     database: '{{ env_var("SNOWFLAKE_LOAD_DATABASE") }}'
     schema: engineering_extracts
     loader: Airflow
-    
+
     quoting:
       database: true
       schema: false
@@ -34,6 +34,6 @@ sources:
         description: '{{ doc("engineering_nvd_data") }}'
       - name: red_master_stats
         loaded_at_field: uploaded_at
-      - name: part_of_product_merge_requests
+      - name: part_of_product_graphql_merge_requests
         description: '{{ doc("engineering_product_merge_requests") }}'
         loaded_at_field: uploaded_at

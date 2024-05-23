@@ -142,3 +142,10 @@ def get_file_changes(yaml_path: str, file_name: str) -> Tuple[List[str], List[st
                 users_removed.append(user)
 
     return users_added, users_removed
+
+
+def configure_logging():
+    """configure logger"""
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )

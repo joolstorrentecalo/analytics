@@ -334,6 +334,16 @@ Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Billing/
 
 {% enddocs %}
 
+{% docs fct_invoice_aging_detail %}
+
+Fact table providing invoice aging details at the single transaction grain, e.g. payment, IIA, CBA.
+
+The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
+
+Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Payments/Zuora_Finance/E_Accounting_Periods/F_View_Accounting_Period_Balances/Accounts_Receivable_Aging#Invoice_Aging_Details).
+
+{% enddocs %}
+
 {% docs fct_invoice_item %}
 Fact table providing invoice line item details.
 
@@ -342,6 +352,66 @@ The invoicing to customers business process can be found in the [handbook](https
 Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Billing/Reporting_and_Analytics/D_Data_Sources_and_Exports/C_Data_Source_Reference/Invoice_Item_Data_Source).
 
 Information on the Enterprise Dimensional Model can be found in the [handbook](https://about.gitlab.com/handbook/business-ops/data-team/platform/edw/)
+
+{% enddocs %}
+
+{% docs fct_invoice_payment %}
+
+Fact table providing invoice payment details at the single grain of a payment applied to an invoice.
+
+The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
+
+Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Payments/Payment_Operations/AA_payment_operation_overview).
+
+{% enddocs %}
+
+{% docs fct_refund_invoice_payment %}
+
+Fact table providing refund invoice payment details at the single grain of a refund made on an invoice.
+
+The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
+
+Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Central_Platform/Reporting/D_Data_Sources_and_Exports/C_Data_Source_Reference/Refund_Invoice_Payment_Data_Source).
+
+{% enddocs %}
+
+{% docs fct_refund %}
+
+Fact table providing refund details made on an invoice or billing account.
+
+The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
+
+Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Payments/Payment_Operations/CC_Refunds).
+
+{% enddocs %}
+
+{% docs fct_credit_balance_adjustment %}
+
+Fact table providing credit balance adjustment details made on an invoice or billing account.
+
+The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
+
+Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Central_Platform/API/G_SOAP_API/E1_SOAP_API_Object_Reference/CreditBalanceAdjustment).
+
+{% enddocs %}
+
+{% docs fct_invoice_item_adjustment %}
+
+Fact table providing invoice item adjustment details. One invoice may have several invoice items. The grain is the item adjustment.
+
+The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
+
+Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Billing/Bill_your_customers/Adjust_invoice_amounts/Invoice_Item_Adjustments/AA_Overview_of_Invoice_Item_Adjustments).
+
+{% enddocs %}
+
+{% docs fct_payment %}
+
+Fact table providing payment details at the single grain of a payment received for a single invoice or multiple invoices.
+
+The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
+
+Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Payments/Payment_Operations/AA_payment_operation_overview).
 
 {% enddocs %}
 
@@ -1455,13 +1525,13 @@ Daily [snapshot](https://about.gitlab.com/handbook/business-technology/data-team
 {% docs bdg_metrics_redis_events %}
 ## Overview
 This model records the many-to-many relationship between Service Ping Metrics and Redis events. It pulls from the metrics dictionary yml files via `dim_ping_metric`, and contains the
-metric name, the Redis event name, and the aggregate operator and attribute. It will be joined to Snowplow events that contain the Service Ping Context to get SaaS product usage data at the namespace level.
+metric name, and the Redis event name. It will be joined to Snowplow events that contain the Service Ping Context to get SaaS product usage data at the namespace level.
 
 ## Aggregation Strategies
 [This thread](https://gitlab.com/gitlab-org/gitlab/-/issues/376244#note_1167575425) has a nice summary of the possible aggregation strategies. The important thing to know from an analyst perspective is that Redis-based metrics come in three basic varities:
-1. Have only one associated Redis event; if that event occurs, count the metric (will have NULL `aggregate_operator`)
-1. Have multiple associated Redis events; count the metric if _any_ Redis event in that list occurs (will have 'OR' `aggregate_operator`, also known as union)
-1. Have multiple associated Redis events; count the metric if _all_ Redis events in that list occur (will have 'AND' `aggregate_operator`, also known as intersection)
+1. Have only one associated Redis event; if that event occurs, count the metric
+1. Have multiple associated Redis events; count the metric if _any_ Redis event in that list occurs
+1. Have multiple associated Redis events; count the metric if _all_ Redis events in that list occur
 
 As a result, this bridge table will be used a bit differently to count intersection metrics compared to how it will be used to count union metrics.
 
@@ -1544,6 +1614,28 @@ This ID is generated using `event_id` from [prep_snowplow_unnested_events_all](h
 
 **Tips for use:**
 - There is a cluster key on `behavior_at::DATE`. Using `behavior_at` in a WHERE clause or INNER JOIN will improve query performance.
+- Join this model to `dim_behavior_event` using `dim_behavior_event_sk` in order to filter the fact on event_action, event_category, etc.
+- Join this model to `dim_behavior_website_page` using `dim_behavior_website_page_sk` in order to pull in information about the page URL
+- Join this model to `dim_behavior_website_page` using `dim_behavior_referrer_page_sk` in order to pull in information about the referring URL
+- Join this model to `dim_behavior_operating_system` using `dim_behavior_operating_system_sk` in order to pull in information about the user OS 
+- Join this model to `dim_behavior_browser` using `dim_behavior_browser_sk` in  order to pull in information about the user browser 
+
+{% enddocs %}
+
+{% docs fct_behavior_structured_event_30 %}
+
+**Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events for the **last 30 days**.
+
+**Data Grain:** behavior_structured_event_pk
+
+This ID is generated using event_id from [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all). 
+
+**Filters Applied to Model:**
+
+- This model only includes structured events for the last 30 days
+
+**Tips for use:**
+
 - Join this model to `dim_behavior_event` using `dim_behavior_event_sk` in order to filter the fact on event_action, event_category, etc.
 - Join this model to `dim_behavior_website_page` using `dim_behavior_website_page_sk` in order to pull in information about the page URL
 - Join this model to `dim_behavior_website_page` using `dim_behavior_referrer_page_sk` in order to pull in information about the referring URL

@@ -62,7 +62,9 @@ WITH sfdc_campaign_info AS (
       count_opportunities,
       count_responses,
       count_won_opportunities,
-      count_sent
+      count_sent,
+      registration_goal,
+      attendance_goal,
 
     FROM sfdc_campaign_info
 
@@ -73,5 +75,5 @@ WITH sfdc_campaign_info AS (
     created_by="@mcooperDD",
     updated_by="@degan",
     created_date="2021-03-01",
-    updated_date="2023-12-15"
+    updated_date="2024-05-06"
 ) }}

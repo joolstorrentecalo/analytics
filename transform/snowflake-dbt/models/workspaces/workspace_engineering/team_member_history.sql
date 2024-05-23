@@ -48,6 +48,18 @@ member_source AS (
 
 ),
 
+team_yml AS (
+
+  SELECT
+    gitlab_username,
+    departments                       AS teams,
+    ARRAY_TO_STRING(departments, '|') AS teams_list,
+    snapshot_date
+  FROM {{ ref('team_yaml_historical') }}
+  WHERE gitlab_username IS NOT NULL AND gitlab_username != 'TBD'
+
+),
+
 directory_mapping AS (
 
   SELECT
@@ -70,6 +82,7 @@ directory_mapping AS (
       WHEN LOWER(b.position) LIKE '%frontend%'
         THEN 'frontend'
     END                                                                                                                                                                 AS technology_group,
+    f.teams_list,
     MAX(IFF(CONTAINS(LOWER(job_specialty), c.group_name), c.group_name, NULL))                                                                                          AS user_group,
     MAX(IFF(CONTAINS(LOWER(job_specialty), c.group_name), c.stage_display_name, IFF(CONTAINS(LOWER(job_specialty), c.stage_display_name), c.stage_display_name, NULL))) AS user_stage,
     MAX(IFF(CONTAINS(LOWER(job_specialty), c.group_name), c.stage_section, IFF(CONTAINS(LOWER(job_specialty), c.stage_display_name), c.stage_section, NULL)))           AS user_section,
@@ -81,9 +94,10 @@ directory_mapping AS (
       AND a.date_actual >= b.valid_from
       AND a.date_actual < b.valid_to
   INNER JOIN category AS c ON a.date_actual BETWEEN c.valid_from AND c.valid_to
-  LEFT JOIN gitlab_dotcom_users AS d ON REPLACE(LOWER(b.gitlab_username),'@','') = LOWER(d.user_name)
+  LEFT JOIN gitlab_dotcom_users AS d ON REPLACE(LOWER(b.gitlab_username), '@', '') = LOWER(d.user_name)
   LEFT JOIN member_source AS e ON d.user_id = e.user_id AND a.date_actual >= DATE_TRUNC('day', e.invite_created_at)
-  {{ dbt_utils.group_by(n=10) }}
+  LEFT JOIN team_yml AS f ON a.date_actual = f.snapshot_date AND REPLACE(LOWER(b.gitlab_username), '@', '') = LOWER(f.gitlab_username)
+  {{ dbt_utils.group_by(n=11) }}
 
 )
 

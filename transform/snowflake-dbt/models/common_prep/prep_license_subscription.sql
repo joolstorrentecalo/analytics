@@ -55,6 +55,7 @@ license_subscriptions AS (
     dim_license.license_expire_date                                                               AS license_expire_date,
     subscription_source.subscription_name_slugify                                                 AS original_subscription_name_slugify,
     dim_subscription.dim_subscription_id                                                          AS dim_subscription_id,
+    subscription_source.subscription_name                                                            AS subscription_name,
     dim_subscription.subscription_start_month                                                     AS subscription_start_month,
     dim_subscription.subscription_end_month                                                       AS subscription_end_month,
     dim_subscription.dim_subscription_id_original                                                 AS dim_subscription_id_original,
@@ -93,7 +94,7 @@ license_subscriptions AS (
     ON fct_charge.effective_start_month <= dim_date.date_day
       AND fct_charge.effective_end_month > dim_date.date_day
       AND dim_date.date_day = dim_date.first_day_of_month -- This was added to improve the cross join performance
-  {{ dbt_utils.group_by(n=20) }}
+  {{ dbt_utils.group_by(n=21) }}
 
 
 
@@ -123,7 +124,7 @@ license_subscriptions_w_latest_subscription AS (
 {{ dbt_audit(
     cte_ref="license_subscriptions_w_latest_subscription",
     created_by="@pempey",
-    updated_by="@pempey",
+    updated_by="@utkarsh060",
     created_date="2024-02-07",
-    updated_date="2024-02-07"
+    updated_date="2024-04-19"
 ) }}

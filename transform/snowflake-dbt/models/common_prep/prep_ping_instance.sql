@@ -54,9 +54,9 @@
       {{ dbt_utils.star(from=ref('version_usage_data_source'), relation_alias='usage_data', except=['EDITION', 'CREATED_AT', 'SOURCE_IP','UPLOADED_AT']) }},
       IFF(original_edition = 'CE', 'CE', 'EE')                                                                                                    AS main_edition,
       CASE
-        WHEN original_edition = 'CE'                                     THEN 'Core'
-        WHEN original_edition = 'EE Free'                                THEN 'Core'
-        WHEN license_expires_at < ping_created_at                        THEN 'Core'
+        WHEN original_edition = 'CE'                                     THEN 'Free'
+        WHEN original_edition = 'EE Free'                                THEN 'Free'
+        WHEN license_expires_at < ping_created_at                        THEN 'Free'
         WHEN original_edition = 'EE'                                     THEN 'Starter'
         WHEN original_edition = 'EES'                                    THEN 'Starter'
         WHEN original_edition = 'EEP'                                    THEN 'Premium'
@@ -163,9 +163,9 @@
       NULL AS raw_usage_data_payload_reconstructed,
       IFF(edition = 'CE', 'CE', 'EE') AS main_edition,
       CASE
-        WHEN edition = 'CE'                   THEN 'Core'
-        WHEN edition = 'EE Free'              THEN 'Core'
-        WHEN license_expires_at < created_at  THEN 'Core'
+        WHEN edition = 'CE'                   THEN 'Free'
+        WHEN edition = 'EE Free'              THEN 'Free'
+        WHEN license_expires_at < created_at  THEN 'Free'
         WHEN edition = 'EE'                   THEN 'Starter'
         WHEN edition = 'EES'                  THEN 'Starter'
         WHEN edition = 'EEP'                  THEN 'Premium'
@@ -193,7 +193,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@icooper-acp",
-    updated_by="@jpeguero",
+    updated_by="@utkarsh060",
     created_date="2022-03-17",
-    updated_date="2023-07-04"
+    updated_date="2024-05-10"
 ) }}

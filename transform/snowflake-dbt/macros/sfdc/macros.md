@@ -56,7 +56,7 @@ This macro applies correct mapping to the deal_path field based on current busin
 
 
 {% docs integrated_budget_holder %}
-This macro applies correct mapping to the campaign budget_holder field based on current business terminology. See issue https://gitlab.com/gitlab-com/marketing/marketing-strategy-performance/-/issues/1473
+This macro applies correct mapping to the campaign budget_holder field based on current business terminology, it combines data from online and offline touchpoints. See issue https://gitlab.com/gitlab-com/marketing/marketing-strategy-performance/-/issues/1473
 {% enddocs %}
 
 

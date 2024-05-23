@@ -20,7 +20,6 @@ def update_records_redact_extended_feedback(
     """
 
     for key_value, column_value in snowplow_events:
-
         column_value_json = json.loads(column_value)
         column_value_json["data"][0]["data"]["extra"][
             "extendedFeedback"
