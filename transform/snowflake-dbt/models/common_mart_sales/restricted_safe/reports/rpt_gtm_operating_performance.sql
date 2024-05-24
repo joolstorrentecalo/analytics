@@ -16,11 +16,10 @@
       fct_sales_funnel_actual.dim_order_type_id,
       fct_sales_funnel_actual.dim_sales_qualified_source_id,
       fct_sales_funnel_actual.dim_sales_funnel_kpi_sk,  
-      fct_sales_funnel_actual.dim_crm_opportunity_id,
       SUM(fct_sales_funnel_actual.net_arr) AS net_arr,
       SUM(fct_sales_funnel_actual.new_logo_count) AS new_logo_count
     FROM  fct_sales_funnel_actual
-    {{ dbt_utils.group_by(n=6) }}
+    {{ dbt_utils.group_by(n=5) }}
 )
 
 , scaffold AS (
