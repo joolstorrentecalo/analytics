@@ -349,21 +349,28 @@ latest_churn AS (
     AND snapshot_date > last_carr_date
 ),
 
-high_value_case AS (
-  SELECT
+high_value_case AS  (SELECT 
+    *
+    FROM (SELECT
     account_id,
-    owner_id,
-    dim_crm_user.user_name      AS case_owner_name,
-    dim_crm_user.department     AS case_department,
-    --    dim_crm_user.team,
+    case_id,
+    owner_id, 
+    subject,
+    dim_crm_user.user_name as case_owner_name,
+    dim_crm_user.department as case_department,
+    dim_crm_user.team,
     dim_crm_user.manager_name,
-    dim_crm_user.user_role_name AS case_user_role_name,
-    dim_crm_user.user_role_type
-  FROM sfdc_case
-  LEFT JOIN dim_crm_user
-    ON sfdc_case.owner_id = dim_crm_user.dim_crm_user_id
-  WHERE record_type_id IN ('0128X000001pPRkQAM')
-    AND subject = 'FY25 High Value Account' -----subject placeholder - this could change
+    dim_crm_user.user_role_name as case_user_role_name,
+    dim_crm_user.user_role_type,
+    sfdc_case.created_date,
+    MAX(sfdc_case.created_date) over(partition by ACCOUNT_ID) as last_high_value_date
+    FROM "PROD"."WORKSPACE_SALES"."SFDC_CASE" 
+    LEFT JOIN common.dim_crm_user 
+        ON sfdc_case.owner_id = dim_crm_user.dim_crm_user_id
+    WHERE record_type_id in ('0128X000001pPRkQAM') 
+    and account_id = '0014M00001gTGESQA4'
+    and lower(subject) like '%high value account%') -----subject placeholder - this could change
+    WHERE created_date = last_high_value_date 
 ),
 
 start_values AS ( -- This is a large slow to query table
@@ -404,53 +411,52 @@ first_high_value_case AS (
 ),
 
 eoa_cohorts AS (
-  SELECT
-    mart_arr.arr_month,
-    --,ping_created_at
-    mart_arr.subscription_end_month,
-    mart_arr.dim_crm_account_id,
-    mart_arr.crm_account_name,
-    --,MART_CRM_ACCOUNT.CRM_ACCOUNT_OWNER
-    mart_arr.dim_subscription_id,
-    mart_arr.dim_subscription_id_original,
-    mart_arr.subscription_name,
-    mart_arr.subscription_sales_type,
-    mart_arr.auto_pay,
-    mart_arr.default_payment_method_type,
-    mart_arr.contract_auto_renewal,
-    mart_arr.turn_on_auto_renewal,
-    mart_arr.turn_on_cloud_licensing,
-    mart_arr.contract_seat_reconciliation,
-    mart_arr.turn_on_seat_reconciliation,
-    COALESCE (mart_arr.contract_seat_reconciliation = 'Yes' AND mart_arr.turn_on_seat_reconciliation = 'Yes', FALSE) AS qsr_enabled_flag,
-    mart_arr.product_tier_name,
-    mart_arr.product_delivery_type,
-    mart_arr.product_rate_plan_name,
-    mart_arr.arr,
-    --,monthly_mart.max_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
-    (mart_arr.arr / NULLIFZERO(mart_arr.quantity))                                                                   AS arr_per_user,
-    arr_per_user / 12                                                                                                AS monthly_price_per_user,
-    mart_arr.mrr / NULLIFZERO(mart_arr.quantity)                                                                     AS mrr_check
-  FROM mart_arr
-  -- LEFT JOIN RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_ACCOUNT
-  --     ON mart_arr.DIM_CRM_ACCOUNT_ID = MART_CRM_ACCOUNT.DIM_CRM_ACCOUNT_ID
-  WHERE arr_month = '2023-01-01'
-    AND product_tier_name LIKE '%Premium%'
-    AND ((
-      monthly_price_per_user >= 14
-      AND monthly_price_per_user <= 16
-    ) OR (monthly_price_per_user >= 7.5 AND monthly_price_per_user <= 9.5
-    ))
-    AND dim_crm_account_id IN
-    (
-      SELECT dim_crm_account_id
-      --,product_rate_plan_name
-      FROM mart_arr
-      WHERE arr_month >= '2020-02-01'
-        AND arr_month <= '2022-02-01'
-        AND product_rate_plan_name LIKE ANY ('%Bronze%', '%Starter%')
-    )
-),
+   select distinct dim_crm_account_id from
+    (SELECT
+mart_arr.ARR_MONTH
+--,ping_created_at
+,mart_arr.SUBSCRIPTION_END_MONTH
+,mart_arr.DIM_CRM_ACCOUNT_ID
+,mart_arr.CRM_ACCOUNT_NAME
+--,MART_CRM_ACCOUNT.CRM_ACCOUNT_OWNER
+,mart_arr.DIM_SUBSCRIPTION_ID
+,mart_arr.DIM_SUBSCRIPTION_ID_ORIGINAL
+,mart_arr.SUBSCRIPTION_NAME
+,mart_arr.subscription_sales_type
+,mart_arr.AUTO_PAY
+,mart_arr.DEFAULT_PAYMENT_METHOD_TYPE
+,mart_arr.CONTRACT_AUTO_RENEWAL
+,mart_arr.TURN_ON_AUTO_RENEWAL
+,mart_arr.TURN_ON_CLOUD_LICENSING
+,mart_arr.CONTRACT_SEAT_RECONCILIATION
+,mart_arr.TURN_ON_SEAT_RECONCILIATION
+,case when mart_arr.CONTRACT_SEAT_RECONCILIATION = 'Yes' and mart_arr.TURN_ON_SEAT_RECONCILIATION = 'Yes' then true else false end as qsr_enabled_flag
+,mart_arr.PRODUCT_TIER_NAME
+,mart_arr.PRODUCT_DELIVERY_TYPE
+,mart_arr.PRODUCT_RATE_PLAN_NAME
+,mart_arr.ARR
+--,monthly_mart.max_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
+,(mart_arr.ARR / mart_arr.QUANTITY)  as arr_per_user,
+arr_per_user/12 as monthly_price_per_user,
+mart_arr.mrr/mart_arr.quantity as mrr_check
+FROM RESTRICTED_SAFE_COMMON_MART_SALES.MART_ARR mart_arr
+-- LEFT JOIN RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_ACCOUNT
+--     ON mart_arr.DIM_CRM_ACCOUNT_ID = MART_CRM_ACCOUNT.DIM_CRM_ACCOUNT_ID
+WHERE ARR_MONTH = '2023-01-01'
+and PRODUCT_TIER_NAME like '%Premium%'
+and ((monthly_price_per_user >= 14
+and monthly_price_per_user <= 16) or (monthly_price_per_user >= 7.5 and monthly_price_per_user <= 9.5))
+and dim_crm_account_id in
+(
+select
+DIM_CRM_ACCOUNT_ID
+--,product_rate_plan_name
+from
+RESTRICTED_SAFE_COMMON_MART_SALES.MART_ARR
+where arr_month >= '2020-02-01'
+and arr_month <= '2022-02-01'
+and product_rate_plan_name like any ('%Bronze%','%Starter%')
+))),
 
 free_promo AS (
   SELECT DISTINCT dim_crm_account_id
@@ -653,42 +659,58 @@ opp AS (
 --and (is_won or (stage_name = '8-Closed Lost' and sales_type = 'Renewal') or is_closed = False)
 ),
 
-upgrades AS (
-  SELECT
-    arr_month,
-    type_of_arr_change,
-    arr.product_category[0]            AS upgrade_product,
-    previous_month_product_category[0] AS prior_product,
-    opp.is_web_portal_purchase,
-    arr.dim_crm_account_id,
-    opp.dim_crm_opportunity_id,
-    SUM(beg_arr)                       AS beg_arr,
-    SUM(end_arr)                       AS end_arr,
-    SUM(end_arr) - SUM(beg_arr)        AS delta_arr,
-    SUM(seat_change_arr)               AS seat_change_arr,
-    SUM(price_change_arr)              AS price_change_arr,
-    SUM(tier_change_arr)               AS tier_change_arr,
-    SUM(beg_quantity)                  AS beg_quantity,
-    SUM(end_quantity)                  AS end_quantity,
-    SUM(seat_change_quantity)          AS delta_seat_change,
-    COUNT(*)                           AS nbr_customers_upgrading
-  FROM mart_delta_arr_subscription_month AS arr
-  LEFT JOIN opp
-    ON (
-      arr.dim_crm_account_id = opp.dim_crm_account_id
-      AND arr.arr_month = DATE_TRUNC('month', opp.subscription_start_date)
-      -- and opp.order_type = '3. Growth'
-      AND opp.is_won
-    )
-  WHERE (
-    ARRAY_CONTAINS('Self-Managed - Starter'::VARIANT, previous_month_product_category)
-    OR ARRAY_CONTAINS('SaaS - Bronze'::VARIANT, previous_month_product_category)
-    OR ARRAY_CONTAINS('SaaS - Premium'::VARIANT, previous_month_product_category)
-    OR ARRAY_CONTAINS('Self-Managed - Premium'::VARIANT, previous_month_product_category)
-  )
-  AND tier_change_arr > 0
-  GROUP BY 1, 2, 3, 4, 5, 6, 7
+upgrades AS ( 
+  select distinct dim_crm_opportunity_id from
+(
+SELECT
+   arr_month,
+  type_of_arr_change,
+  arr.product_category[0] as upgrade_product,
+  previous_month_product_category[0] as prior_product,
+  opp.is_web_portal_purchase,
+  arr.dim_crm_account_id, 
+  opp.dim_crm_opportunity_id,
+  SUM(beg_arr)                      AS beg_arr,
+  SUM(end_arr)                      AS end_arr,
+  SUM(end_arr) - SUM(beg_arr)       AS delta_arr,
+  SUM(seat_change_arr)              AS seat_change_arr,
+  SUM(price_change_arr)             AS price_change_arr,
+  SUM(tier_change_arr)              AS tier_change_arr,
+  SUM(beg_quantity)                 AS beg_quantity,
+  SUM(end_quantity)                 AS end_quantity,
+  SUM(seat_change_quantity)         AS delta_seat_change,
+  COUNT(*)                          AS nbr_customers_upgrading
+FROM restricted_safe_legacy.mart_delta_arr_subscription_month arr
+left join 
+(
+SELECT
+*
+FROM restricted_safe_common_mart_sales.mart_crm_opportunity
+WHERE 
+((mart_crm_opportunity.is_edu_oss = 1 and net_arr > 0) or mart_crm_opportunity.is_edu_oss = 0)
+AND 
+mart_crm_opportunity.is_jihu_account = False
+AND stage_name not like '%Duplicate%'
+and (opportunity_category is null or opportunity_category not like 'Decom%')
+--and partial_churn_0_narr_flag = false
+--and fiscal_year >= 2023
+--and (is_won or (stage_name = '8-Closed Lost' and sales_type = 'Renewal') or is_closed = False)
+
 )
+ opp
+  on (arr.DIM_CRM_ACCOUNT_ID = opp.DIM_CRM_ACCOUNT_ID
+  and arr.arr_month = date_trunc('month',opp.subscription_start_date)
+ -- and opp.order_type = '3. Growth'
+  and opp.is_won)
+WHERE 
+ (ARRAY_CONTAINS('Self-Managed - Starter'::VARIANT, previous_month_product_category)
+          OR ARRAY_CONTAINS('SaaS - Bronze'::VARIANT, previous_month_product_category)
+       or ARRAY_CONTAINS('SaaS - Premium'::VARIANT, previous_month_product_category)
+       or ARRAY_CONTAINS('Self-Managed - Premium'::VARIANT, previous_month_product_category)
+       )
+   AND tier_change_arr > 0
+GROUP BY 1,2,3,4,5,6,7
+))
 
 --select * from upgrades;
 ,
@@ -799,7 +821,7 @@ eoa_accounts_fy24 AS (
   FROM eoa_accounts
 ),
 
-past_eoa_uplift_opertunities AS (
+past_eoa_uplift_opportunities AS (
   SELECT
     mart_charge.*,
     dim_subscription.dim_crm_opportunity_id,
@@ -833,7 +855,7 @@ past_eoa_uplift_opertunities AS (
 
 past_eoa_uplift_opportunity_data AS (--Gets all opportunities associated with EoA special pricing uplift
   SELECT DISTINCT dim_crm_opportunity_id
-  FROM past_eoa_uplift_opertunities
+  FROM past_eoa_uplift_opportunities
 )
 
 --select * from past_eoa_uplift_opportunity_data;
@@ -841,8 +863,9 @@ past_eoa_uplift_opportunity_data AS (--Gets all opportunities associated with Eo
 free_limit_promo_fo_data AS (--Gets all opportunities associated with Free Limit 70% discount
 
   SELECT DISTINCT
-    dim_crm_opportunity_id,
-    actual_price
+    dim_crm_opportunity_id
+    -- ,
+    -- actual_price
   FROM (
     SELECT
       mart_charge.*,
@@ -924,9 +947,10 @@ open_eoa_renewal_data AS (
 
 
   SELECT DISTINCT
-    dim_crm_opportunity_id_current_open_renewal,
-    price_after_renewal,
-    close_date
+    dim_crm_opportunity_id_current_open_renewal
+    -- ,
+    -- price_after_renewal,
+    -- close_date
   FROM open_eoa_renewals
 
 
@@ -937,11 +961,11 @@ open_eoa_renewal_data AS (
 renewal_self_service_data AS (--Uses the Order Action to determine if a Closed Won renewal was Autorenewed, Sales-Assisted, or Manual Portal Renew by the customer
 
   SELECT
-    dim_order_action.dim_subscription_id,
-    dim_subscription.subscription_name,
-    dim_order_action.contract_effective_date,
+    -- dim_order_action.dim_subscription_id,
+    -- dim_subscription.subscription_name,
+    -- dim_order_action.contract_effective_date,
     COALESCE (order_description != 'AutoRenew by CustomersDot', FALSE) AS manual_portal_renew_flag,
-    mart_crm_opportunity.is_web_portal_purchase,
+    -- mart_crm_opportunity.is_web_portal_purchase,
     mart_crm_opportunity.dim_crm_opportunity_id,
     CASE
       WHEN manual_portal_renew_flag AND is_web_portal_purchase THEN 'Manual Portal Renew'
@@ -1158,8 +1182,8 @@ full_base_data AS (
     ptc_score,
     ptc_predicted_arr                                                                                                AS ptc_predicted_arr__c,
     ptc_predicted_renewal_risk_category                                                                              AS ptc_predicted_renewal_risk_category__c,
-    upgrades.prior_product,
-    upgrades.upgrade_product,
+    -- upgrades.prior_product,
+    -- upgrades.upgrade_product,
     COALESCE (upgrades.dim_crm_opportunity_id IS NOT NULL, FALSE)                                                    AS upgrade_flag,
     COALESCE (price_increase_promo_fo_data.dim_crm_opportunity_id IS NOT NULL, FALSE)                                AS price_increase_promo_fo_flag,
     COALESCE (free_limit_promo_fo_data.dim_crm_opportunity_id IS NOT NULL, FALSE)                                    AS free_limit_promo_fo_flag,
