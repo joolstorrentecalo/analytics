@@ -1,3 +1,5 @@
+{% set filter_date = (run_started_at - modules.datetime.timedelta(weeks=156)).strftime('%Y-%m-%d') %}
+
 {{
     config(
         materialized='incremental',
@@ -16,6 +18,34 @@
     ('dim_namespace', 'dim_namespace')
     ])
 }},
+
+namespace_bdg AS (
+
+  SELECT
+    namespace_order_subscription.dim_subscription_id AS dim_latest_subscription_id,
+    namespace_order_subscription.order_id,
+    namespace_order_subscription.dim_crm_account_id,
+    namespace_order_subscription.dim_billing_account_id,
+    namespace_order_subscription.dim_namespace_id,
+    namespace_order_subscription.product_tier_name_subscription,
+    dim_subscription.subscription_version,
+    dim_subscription.subscription_updated_date,
+    dim_subscription.dim_subscription_id_original
+  FROM namespace_order_subscription
+  INNER JOIN dim_subscription
+    ON namespace_order_subscription.dim_subscription_id = dim_subscription.dim_subscription_id
+
+),
+
+{% if is_incremental() %}
+updated_subscriptions AS (
+  SELECT
+    dim_namespace_id
+  FROM namespace_bdg
+  QUALIFY MAX(subscription_updated_date) OVER (PARTITION BY dim_subscription_id_original) > (SELECT MAX(dimensions_checked_at) FROM {{ this }} )
+),
+
+{% endif %}
 
 fct_event_valid AS (
     
@@ -44,14 +74,17 @@ fct_event_valid AS (
       ON fct_event.event_name = xmau_metrics.common_events_to_include
     LEFT JOIN dim_user
       ON fct_event.dim_user_sk = dim_user.dim_user_sk
-    WHERE event_created_at >= DATEADD(MONTH, -36, DATE_TRUNC(MONTH,CURRENT_DATE))
+    WHERE event_created_at >= '{{ filter_date }}' --DATEADD(MONTH, -36, DATE_TRUNC(MONTH,CURRENT_DATE))
       AND (fct_event.days_since_user_creation_at_event_date >= 0
            OR fct_event.days_since_user_creation_at_event_date IS NULL)
       AND (dim_user.is_blocked_user = FALSE 
            OR dim_user.is_blocked_user IS NULL)
     {% if is_incremental() %}
 
-      AND event_created_at > (SELECT MAX(event_created_at) FROM {{this}})
+      AND (event_created_at > (SELECT MAX(event_created_at) FROM {{ this }})
+      -- Added to capture changes to the latest subscription
+      OR dim_ultimate_parent_namespace_id IN (SELECT * FROM updated_subscriptions)
+      )
 
     {% endif %}
 ),
@@ -59,15 +92,13 @@ fct_event_valid AS (
 deduped_namespace_bdg AS (
 
   SELECT
-    namespace_order_subscription.dim_subscription_id AS dim_latest_subscription_id,
-    namespace_order_subscription.order_id,
-    namespace_order_subscription.dim_crm_account_id,
-    namespace_order_subscription.dim_billing_account_id,
-    namespace_order_subscription.dim_namespace_id
-  FROM namespace_order_subscription
-  INNER JOIN dim_subscription
-    ON namespace_order_subscription.dim_subscription_id = dim_subscription.dim_subscription_id
-  WHERE namespace_order_subscription.product_tier_name_subscription IN ('SaaS - Bronze', 'SaaS - Ultimate', 'SaaS - Premium')
+    dim_latest_subscription_id,
+    order_id,
+    dim_crm_account_id,
+    dim_billing_account_id,
+    dim_namespace_id
+  FROM namespace_bdg
+  WHERE product_tier_name_subscription IN ('SaaS - Bronze', 'SaaS - Ultimate', 'SaaS - Premium')
   QUALIFY ROW_NUMBER() OVER (PARTITION BY dim_namespace_id ORDER BY subscription_version DESC) = 1
 
 ),
@@ -135,7 +166,8 @@ fct_event_w_flags AS (
     dim_namespace_w_bdg.dim_billing_account_id,
     COALESCE(paid_flag_by_day.plan_was_paid_at_event_date, FALSE) AS plan_was_paid_at_event_date,
     COALESCE(paid_flag_by_day.plan_id_at_event_date, 34) AS plan_id_at_event_date,
-    COALESCE(paid_flag_by_day.plan_name_at_event_date, 'free') AS plan_name_at_event_date
+    COALESCE(paid_flag_by_day.plan_name_at_event_date, 'free') AS plan_name_at_event_date,
+    CURRENT_TIMESTAMP::TIMESTAMP_NTZ AS dimensions_checked_at
   FROM fct_event_valid
   LEFT JOIN dim_namespace_w_bdg
     ON fct_event_valid.dim_ultimate_parent_namespace_id = dim_namespace_w_bdg.dim_namespace_id
@@ -187,7 +219,8 @@ gitlab_dotcom_fact AS (
     days_since_user_creation_at_event_date,
     days_since_namespace_creation_at_event_date,
     days_since_project_creation_at_event_date,
-    data_source
+    data_source,
+    dimensions_checked_at
   FROM fct_event_w_flags
 
 )
