@@ -6,9 +6,22 @@
     ('dim_sales_funnel_kpi', 'dim_sales_funnel_kpi'),
     ('dim_crm_user_hierarchy', 'dim_crm_user_hierarchy'),
     ('dim_order_type', 'dim_order_type'),
-    ('dim_sales_qualified_source', 'dim_sales_qualified_source'),
-    ('mart_crm_opportunity', 'mart_crm_opportunity')
+    ('dim_sales_qualified_source', 'dim_sales_qualified_source')
 ]) }}
+
+, actuals_day_aggregate AS (
+    SELECT
+      fct_sales_funnel_actual.actual_date_id,
+      fct_sales_funnel_actual.dim_hierarchy_sk,
+      fct_sales_funnel_actual.dim_order_type_id,
+      fct_sales_funnel_actual.dim_sales_qualified_source_id,
+      fct_sales_funnel_actual.dim_sales_funnel_kpi_sk,  
+      fct_sales_funnel_actual.dim_crm_opportunity_id,
+      SUM(fct_sales_funnel_actual.net_arr) AS net_arr,
+      SUM(fct_sales_funnel_actual.new_logo_count) AS new_logo_count
+    FROM  fct_sales_funnel_actual
+    {{ dbt_utils.group_by(n=6) }}
+)
 
 , scaffold AS (
     SELECT
@@ -26,10 +39,8 @@
       rpt_scaffold.dim_hierarchy_sk,
       rpt_scaffold.dim_order_type_id,
       rpt_scaffold.dim_sales_qualified_source_id,
-      fct_sales_funnel_actual.dim_crm_opportunity_id,
-      fct_sales_funnel_actual.net_arr,
-      fct_sales_funnel_actual.new_logo_count,
-      fct_sales_funnel_actual.email_hash,
+      actuals_day_aggregate.net_arr,
+      actuals_day_aggregate.new_logo_count,
       fct_sales_funnel_target_daily.daily_allocated_target,
       fct_sales_funnel_target_daily.mtd_allocated_target,
       fct_sales_funnel_target_daily.qtd_allocated_target,
@@ -45,12 +56,12 @@
     FROM rpt_scaffold
     INNER JOIN dim_date 
       ON rpt_scaffold.date_id = dim_date.date_id
-    LEFT JOIN fct_sales_funnel_actual
-      ON rpt_scaffold.date_id = fct_sales_funnel_actual.actual_date_id
-      AND rpt_scaffold.dim_hierarchy_sk = fct_sales_funnel_actual.dim_hierarchy_sk
-      AND rpt_scaffold.dim_order_type_id = fct_sales_funnel_actual.dim_order_type_id
-      AND rpt_scaffold.dim_sales_qualified_source_id = fct_sales_funnel_actual.dim_sales_qualified_source_id
-      AND rpt_scaffold.dim_sales_funnel_kpi_sk = fct_sales_funnel_actual.dim_sales_funnel_kpi_sk
+    LEFT JOIN actuals_day_aggregate
+      ON rpt_scaffold.date_id = actuals_day_aggregate.actual_date_id
+      AND rpt_scaffold.dim_hierarchy_sk = actuals_day_aggregate.dim_hierarchy_sk
+      AND rpt_scaffold.dim_order_type_id = actuals_day_aggregate.dim_order_type_id
+      AND rpt_scaffold.dim_sales_qualified_source_id = actuals_day_aggregate.dim_sales_qualified_source_id
+      AND rpt_scaffold.dim_sales_funnel_kpi_sk = actuals_day_aggregate.dim_sales_funnel_kpi_sk
     LEFT JOIN fct_sales_funnel_target_daily
       ON rpt_scaffold.date_id = fct_sales_funnel_target_daily.target_date_id
       AND rpt_scaffold.dim_hierarchy_sk = fct_sales_funnel_target_daily.dim_crm_user_hierarchy_sk
@@ -65,7 +76,7 @@
       AND rpt_scaffold.dim_sales_funnel_kpi_sk = target_qtd.dim_sales_funnel_kpi_sk
 )
 
-, granular AS (
+, final AS (
     SELECT
       scaffold.date_actual,
       scaffold.fiscal_year,
@@ -92,21 +103,8 @@
       dim_order_type.order_type_name,
       dim_order_type.order_type_grouped,
       dim_sales_qualified_source.sales_qualified_source_name,
-      CASE WHEN mart_crm_opportunity.product_category = 'Dedicated - Ultimate' THEN 'Dedicated - Ultimate'
-        WHEN mart_crm_opportunity.product_category IN ('Self-Managed - Premium', 'SaaS - Premium','Premium - 1 Year','Premium') THEN 'Premium'
-        WHEN mart_crm_opportunity.product_category IN ('Ultimate' , 'Self-Managed - Ultimate' , 'SaaS - Ultimate') THEN 'Ultimate'
-        ELSE 'Other' 
-      END                                                           AS product_category_modified,
-      mart_crm_opportunity.deal_size,
-      CASE WHEN scaffold.new_logo_count >= 0
-        THEN scaffold.dim_crm_opportunity_id 
-      END                                                           AS first_number_deals,
-      CASE WHEN scaffold.new_logo_count = -1
-        THEN scaffold.dim_crm_opportunity_id 
-      END                                                           AS second_number_deals,
       scaffold.net_arr,
       scaffold.new_logo_count,
-      scaffold.email_hash,
       scaffold.daily_allocated_target,
       scaffold.mtd_allocated_target,
       scaffold.qtd_allocated_target,
@@ -119,20 +117,17 @@
       scaffold.ttd_ytd_allocated_target,
       scaffold.ttd_target_date,
       scaffold.ttd_report_target_date,
-      scaffold.dim_crm_opportunity_id
-FROM scaffold
-INNER JOIN dim_sales_funnel_kpi
-  ON scaffold.dim_sales_funnel_kpi_sk = dim_sales_funnel_kpi.dim_sales_funnel_kpi_sk
-INNER JOIN dim_crm_user_hierarchy
-  ON scaffold.dim_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
-INNER JOIN dim_order_type
-  ON scaffold.dim_order_type_id = dim_order_type.dim_order_type_id
-INNER JOIN dim_sales_qualified_source
-  ON scaffold.dim_sales_qualified_source_id = dim_sales_qualified_source.dim_sales_qualified_source_id
-LEFT JOIN mart_crm_opportunity
-  ON scaffold.dim_crm_opportunity_id = mart_crm_opportunity.dim_crm_opportunity_id
+    FROM scaffold
+    INNER JOIN dim_sales_funnel_kpi
+      ON scaffold.dim_sales_funnel_kpi_sk = dim_sales_funnel_kpi.dim_sales_funnel_kpi_sk
+    INNER JOIN dim_crm_user_hierarchy
+      ON scaffold.dim_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
+    INNER JOIN dim_order_type
+      ON scaffold.dim_order_type_id = dim_order_type.dim_order_type_id
+    INNER JOIN dim_sales_qualified_source
+      ON scaffold.dim_sales_qualified_source_id = dim_sales_qualified_source.dim_sales_qualified_source_id
 )
 
 SELECT 
    *
-FROM granular
+FROM final
