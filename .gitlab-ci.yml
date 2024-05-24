@@ -9,6 +9,7 @@ job_name:
   stage: base
   script:
     - echo "Hello, GitLab CI!"
+    - printenv
   only:
     refs:
       - merge_requests
