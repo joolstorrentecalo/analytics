@@ -368,7 +368,7 @@ high_value_case AS  (SELECT
     LEFT JOIN common.dim_crm_user 
         ON sfdc_case.owner_id = dim_crm_user.dim_crm_user_id
     WHERE record_type_id in ('0128X000001pPRkQAM') 
-    and account_id = '0014M00001gTGESQA4'
+--    and account_id = '0014M00001gTGESQA4'
     and lower(subject) like '%high value account%') -----subject placeholder - this could change
     WHERE created_date = last_high_value_date 
 ),
