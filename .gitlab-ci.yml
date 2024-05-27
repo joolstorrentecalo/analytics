@@ -22,7 +22,7 @@ snowflake_provisioning_snowflake_users:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_APPROVED == "true"'
       when: manual
   script:
-    - echo "hello users"
+    - echo "hello userss"
 
 snowflake_provisioning_roles_yaml:
   stage: Python
