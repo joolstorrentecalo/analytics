@@ -26,115 +26,164 @@ models:
     columns:
       - name: date_actual
         description: The actual date of the sales transaction.
-        data_type: DATE
+        data_type: date
       - name: fiscal_year
         description: The fiscal year in which the sales transaction occurred.
-        data_type: NUMBER
+        data_type: number
       - name: fiscal_quarter_name_fy
         description: The name of the fiscal quarter in the fiscal year when the sales
           transaction occurred.
-        data_type: VARCHAR
+        data_type: varchar
       - name: first_day_of_year
         description: This column represents the first day of the fiscal year.
-        data_type: DATE
+        data_type: date
+      - name: day_of_month
+        description: This column represents the day of the month for each record.
+        data_type: number
+      - name: day_of_fiscal_quarter
+        description: This column represents the specific day within the fiscal quarter.
+        data_type: number
+      - name: day_of_year
+        description: This column represents the day of the year.
+        data_type: number
+      - name: day_of_fiscal_year
+        description: This column represents the day number within the fiscal year.
+        data_type: number
+      - name: first_day_of_fiscal_quarter
+        description: This column represents the first day of the fiscal quarter.
+        data_type: date
+      - name: first_day_of_fiscal_year
+        description: This column represents the first day of the fiscal year.
+        data_type: date
       - name: sales_funnel_kpi_name
         description: This column represents the name of the Key Performance Indicator
           (KPI) in the sales funnel.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_role_name
         description: This column represents the name of the user role in the Customer
           Relationship Management (CRM) system.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_role_level_1
         description: This column represents the first level of the user role hierarchy
           in the CRM system.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_role_level_2
         description: This column represents the second level of the user role hierarchy
           in the CRM system.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_role_level_3
         description: This column represents the third level of the user role hierarchy
           in the CRM system.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_role_level_4
         description: This column represents the fourth level in the hierarchy of the
           user roles in the CRM system.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_role_level_5
         description: This column represents the fifth and typically the most specific
           level in the hierarchy of the user roles in the CRM system.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_area
         description: This column represents the geographical area that the CRM user is
           responsible for. This could be a country, a region, or a specific
           city, depending on the organization's structure.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_business_unit
-        description: This column represents the business unit of the CRM user. The business
-          unit is a division or segment of the company that is responsible for a
-          specific set of tasks, services, or products.
-        data_type: VARCHAR
+        description: This column represents the business unit of the CRM user. The
+          business unit is a division or segment of the company that is
+          responsible for a specific set of tasks, services, or products.
+        data_type: varchar
       - name: crm_user_geo
-        description: This column represents the geographical location of the CRM user. The
-          geographical location can be a country, region, or city where the CRM
-          user is located or operates.
-        data_type: VARCHAR
+        description: This column represents the geographical location of the CRM user.
+          The geographical location can be a country, region, or city where the
+          CRM user is located or operates.
+        data_type: varchar
       - name: crm_user_region
         description: This column represents the regional division of the CRM user. The
           regional division can be a specific area or territory within a country
           or geographical location where the CRM user is located or operates.
-        data_type: VARCHAR
+        data_type: varchar
       - name: crm_user_sales_segment
         description: This column represents the sales segment of the CRM user. It is a
           categorical variable that indicates the specific segment of the sales
           team to which the CRM user belongs.
-        data_type: VARCHAR
+        data_type: varchar
+      - name: order_type_name
+        description: The name of the order type. This field is used to categorize the
+          type of sales order, such as 'New Business', 'Renewal', etc.
+        data_type: varchar
       - name: order_type_grouped
         description: This column represents the grouped order type. It is a categorical
           variable that indicates the type of order, grouped into broader
           categories for easier analysis and reporting.
-        data_type: VARCHAR
+        data_type: varchar
       - name: sales_qualified_source_name
         description: This column represents the name of the sales qualified source. It
           is a categorical variable that indicates the source from which a sales
           lead or opportunity was qualified.
-        data_type: VARCHAR
-      - name: product_category_modified
-        description: This column represents the modified product category. The original
-          product category is modified based on certain conditions. For example,
-          if the original product category is 'Dedicated - Ultimate', it remains
-          the same in the modified category. If it falls under 'Self-Managed -
-          Premium', 'SaaS - Premium', 'Premium - 1 Year', or 'Premium', it is
-          categorized as 'Premium' in the modified category. If it falls under
-          'Ultimate', 'Self-Managed - Ultimate', or 'SaaS - Ultimate', it is
-          categorized as 'Ultimate' in the modified category. Any other
-          categories are labeled as 'Other'.
-        data_type: VARCHAR
-      - name: first_number_deals
-        description: This column is used to calculate deal_count and represents the ID of the CRM opportunity for the first
-          number of deals. It is populated only when the new logo count is
-          greater than or equal to 0.
-        data_type: VARCHAR
-      - name: second_number_deals
-        description: This column is used to calculate deal_count and represents the ID of the CRM opportunity for the second
-          number of deals. It is populated only when the new logo count is -1.
-        data_type: VARCHAR
+        data_type: varchar
       - name: net_arr
-        description: This column represents the Net Annual Recurring Revenue. It is a
-          measure of the predictable and recurring revenue components of your
-          subscription business.
-        data_type: FLOAT
+        description: This column represents the Net Annual Recurring Revenue.
+        data_type: float
       - name: new_logo_count
         description: This column represents the count of new logos or new customers
           acquired.
-        data_type: FLOAT
+        data_type: float
       - name: daily_allocated_target
-        description: This column represents the daily allocated target for the sales
-          team.
-        data_type: FLOAT
-      - name: dim_crm_opportunity_id
-        description: This column represents the unique identifier for each CRM
-          opportunity. It is used to link the opportunity data with other
-          related data in the database and for counting distinct opportunities.
-        data_type: VARCHAR
+        description: This column represents the daily allocated target for the sales team.
+        data_type: float
+      - name: mtd_allocated_target
+        description: This column represents the Month-to-Date allocated target for the
+          sales funnel. It is a cumulative measure of the sales target set for
+          the current month up to the current date.
+        data_type: float
+      - name: qtd_allocated_target
+        description: This column represents the target allocated for the quarter to
+          date. It is a numeric value that indicates the sales target that has
+          been set for the current fiscal quarter.
+        data_type: float
+      - name: ytd_allocated_target
+        description: This column represents the Year-to-Date allocated target for the
+          sales funnel. It is a cumulative measure of the sales target from the
+          start of the fiscal year to the current date.
+        data_type: float
+      - name: target_date
+        description: The date when the sales target was set. This is used to track the
+          progress of sales against the target over time.
+        data_type: date
+      - name: report_target_date
+        description: The date when the target report was generated. This field is of
+          date type and is used to track the date of the report for sales funnel
+          targets.
+        data_type: date
+      - name: ttd_daily_allocated_target
+        description: This column represents the daily allocated target for the
+          time-to-date (TTD) period. It is a floating point number that
+          indicates the sales target set for each day within the TTD period.
+        data_type: float
+      - name: ttd_mtd_allocated_target
+        description: This column represents the Month-To-Date allocated target for the
+          Time-To-Date period. It is a cumulative sum of the daily allocated
+          targets for the current month up to the current date.
+        data_type: float
+      - name: ttd_qtd_allocated_target
+        description: This column represents the total-to-date (TTD) allocated target for
+          the quarter (QTD). It is a cumulative measure of the sales target set
+          for the quarter, up to the current date.
+        data_type: float
+      - name: ttd_ytd_allocated_target
+        description: This column represents the Year-To-Date allocated target for the
+          Time-To-Date (TTD) period. It is a cumulative measure of the targets
+          set for the sales team from the start of the fiscal year to the
+          current date.
+        data_type: float
+      - name: ttd_target_date
+        description: This column represents the target date for the 'To-Date'
+          calculations. It is used to calculate the cumulative metrics up to a
+          certain date.
+        data_type: date
+      - name: ttd_report_target_date
+        description: This column represents the report target date for the 'To-Date'
+          (TTD) sales funnel targets. It is a date field that indicates the date
+          for which the TTD targets are reported.
+        data_type: date
