@@ -27,16 +27,6 @@ models:
       - name: date_actual
         description: The actual date of the sales transaction.
         data_type: date
-      - name: fiscal_year
-        description: The fiscal year in which the sales transaction occurred.
-        data_type: number
-      - name: fiscal_quarter_name_fy
-        description: The name of the fiscal quarter in the fiscal year when the sales
-          transaction occurred.
-        data_type: varchar
-      - name: first_day_of_year
-        description: This column represents the first day of the fiscal year.
-        data_type: date
       - name: day_of_month
         description: This column represents the day of the month for each record.
         data_type: number
@@ -49,12 +39,22 @@ models:
       - name: day_of_fiscal_year
         description: This column represents the day number within the fiscal year.
         data_type: number
+      - name: first_day_of_year
+        description: This column represents the first day of the fiscal year.
+        data_type: date
       - name: first_day_of_fiscal_quarter
         description: This column represents the first day of the fiscal quarter.
         data_type: date
       - name: first_day_of_fiscal_year
         description: This column represents the first day of the fiscal year.
         data_type: date
+      - name: fiscal_year
+        description: The fiscal year in which the sales transaction occurred.
+        data_type: number
+      - name: fiscal_quarter_name_fy
+        description: The name of the fiscal quarter in the fiscal year when the sales
+          transaction occurred.
+        data_type: varchar
       - name: sales_funnel_kpi_name
         description: This column represents the name of the Key Performance Indicator
           (KPI) in the sales funnel.
@@ -129,6 +129,27 @@ models:
         description: This column represents the count of new logos or new customers
           acquired.
         data_type: float
+      - name: sao_count
+        description: This column represents the count of Sales Accepted Opportunities
+          (SAOs). It is calculated by counting the distinct number of
+          opportunities in the sales funnel that have been accepted by the sales
+          team.
+        data_type: number
+      - name: deal_count
+        description: This column represents the count of deals. It is calculated as the
+          difference between the count of opportunities where the new logo count
+          is greater than or equal to zero and the count of opportunities where
+          the new logo count is -1.
+        data_type: number
+      - name: target_date
+        description: The date when the sales target was set. This is used to track the
+          progress of sales against the target over time.
+        data_type: date
+      - name: report_target_date
+        description: The date when the target report was generated. This field is of
+          date type and is used to track the date of the report for sales funnel
+          targets.
+        data_type: date
       - name: daily_allocated_target
         description: This column represents the daily allocated target for the sales team.
         data_type: float
@@ -147,14 +168,15 @@ models:
           sales funnel. It is a cumulative measure of the sales target from the
           start of the fiscal year to the current date.
         data_type: float
-      - name: target_date
-        description: The date when the sales target was set. This is used to track the
-          progress of sales against the target over time.
+      - name: ttd_target_date
+        description: This column represents the target date for the 'To-Date'
+          calculations. It is used to calculate the cumulative metrics up to a
+          certain date.
         data_type: date
-      - name: report_target_date
-        description: The date when the target report was generated. This field is of
-          date type and is used to track the date of the report for sales funnel
-          targets.
+      - name: ttd_report_target_date
+        description: This column represents the report target date for the 'To-Date'
+          (TTD) sales funnel targets. It is a date field that indicates the date
+          for which the TTD targets are reported.
         data_type: date
       - name: ttd_daily_allocated_target
         description: This column represents the daily allocated target for the
@@ -177,13 +199,3 @@ models:
           set for the sales team from the start of the fiscal year to the
           current date.
         data_type: float
-      - name: ttd_target_date
-        description: This column represents the target date for the 'To-Date'
-          calculations. It is used to calculate the cumulative metrics up to a
-          certain date.
-        data_type: date
-      - name: ttd_report_target_date
-        description: This column represents the report target date for the 'To-Date'
-          (TTD) sales funnel targets. It is a date field that indicates the date
-          for which the TTD targets are reported.
-        data_type: date
