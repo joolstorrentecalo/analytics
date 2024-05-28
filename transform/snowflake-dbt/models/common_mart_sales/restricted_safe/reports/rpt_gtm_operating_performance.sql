@@ -62,6 +62,7 @@
       -- measures
       actuals_day_aggregate.net_arr,
       actuals_day_aggregate.new_logo_count,
+      actuals_day_aggregate.sao_count,
       actuals_day_aggregate.deal_count
     FROM rpt_scaffold
     INNER JOIN dim_date 
@@ -120,6 +121,7 @@
       -- measures
       scaffold.net_arr,
       scaffold.new_logo_count,
+      scaffold.sao_count,
       scaffold.deal_count,
 
       -- targets
