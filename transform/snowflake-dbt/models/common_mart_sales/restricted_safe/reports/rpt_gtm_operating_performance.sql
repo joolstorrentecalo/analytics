@@ -19,6 +19,7 @@
       SUM(fct_sales_funnel_actual.net_arr)                                  AS net_arr,
       SUM(fct_sales_funnel_actual.new_logo_count)                           AS new_logo_count,
       COUNT(DISTINCT dim_crm_opportunity_id)                                AS sao_count,
+      COUNT(DISTINCT email_hash) AS mql_count,
       COUNT(DISTINCT (
         CASE WHEN new_logo_count >= 0 THEN dim_crm_opportunity_id END)) 
       -
@@ -63,6 +64,7 @@
       actuals_day_aggregate.net_arr,
       actuals_day_aggregate.new_logo_count,
       actuals_day_aggregate.sao_count,
+      actuals_day_aggregate.mql_count,
       actuals_day_aggregate.deal_count
     FROM rpt_scaffold
     INNER JOIN dim_date 
@@ -122,6 +124,7 @@
       scaffold.net_arr,
       scaffold.new_logo_count,
       scaffold.sao_count,
+      scaffold.mql_count,
       scaffold.deal_count,
 
       -- targets

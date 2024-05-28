@@ -135,6 +135,12 @@ models:
           opportunities in the sales funnel that have been accepted by the sales
           team.
         data_type: number
+      - name: mql_count
+        description: This column represents the count of Marketing Qualified Leads
+          (MQLs). It is calculated by counting the distinct number of
+          email hashes in the sales funnel that have been accepted by the sales
+          team.
+        data_type: number
       - name: deal_count
         description: This column represents the count of deals. It is calculated as the
           difference between the count of opportunities where the new logo count
