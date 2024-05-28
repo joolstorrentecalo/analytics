@@ -40,7 +40,7 @@ fct_events AS (
   
   {% if is_incremental() %}
 
-   WHERE event_created_at > (SELECT DATEADD(DAY, -30 , max(event_created_at)) FROM {{ this }})
+   WHERE event_created_at > (SELECT MAX(event_created_at) FROM {{ this }})
 
   {% endif %}
 
