@@ -25,7 +25,7 @@ with DAG(
     description='A simple test for XSS vulnerability in Airflow',
     schedule_interval=timedelta(days=1),
     start_date=days_ago(1),
-    tags=['example', 'test', xss_payload],  # Injecting the XSS payload here
+    tags=['example', 'test', 'xss_payload'],  # Injecting the XSS payload here
 ) as dag:
 
     # Define tasks
