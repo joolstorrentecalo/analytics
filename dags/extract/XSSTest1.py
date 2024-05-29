@@ -1,7 +1,7 @@
 # File path: /path/to/your/airflow/dags/test_xss_vulnerability.py
 
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.empty import EmptyOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 
@@ -25,15 +25,15 @@ with DAG(
     description='A simple test for XSS vulnerability in Airflow',
     schedule_interval=timedelta(days=1),
     start_date=days_ago(1),
-    tags=['example', xss_payload],  # Injecting the XSS payload here
+    tags=['example', 'test', xss_payload],  # Injecting the XSS payload here
 ) as dag:
 
     # Define tasks
-    start = DummyOperator(
+    start = EmptyOperator(
         task_id='start',
     )
 
-    end = DummyOperator(
+    end = EmptyOperator(
         task_id='end',
     )
 
