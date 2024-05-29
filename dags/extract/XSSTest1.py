@@ -30,7 +30,7 @@ with DAG(
 
     # Define tasks
     start = EmptyOperator(
-        task_id='<script>alert('XSS1');</script>',
+        task_id='start',
     )
 
     end = EmptyOperator(
