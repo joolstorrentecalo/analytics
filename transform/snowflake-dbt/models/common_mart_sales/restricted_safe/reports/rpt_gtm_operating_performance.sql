@@ -144,7 +144,7 @@
     FROM scaffold
     INNER JOIN dim_sales_funnel_kpi
       ON scaffold.dim_sales_funnel_kpi_sk = dim_sales_funnel_kpi.dim_sales_funnel_kpi_sk
-    LEFT JOIN dim_crm_user_hierarchy
+    INNER JOIN dim_crm_user_hierarchy
       ON scaffold.dim_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
     INNER JOIN dim_order_type
       ON scaffold.dim_order_type_id = dim_order_type.dim_order_type_id
