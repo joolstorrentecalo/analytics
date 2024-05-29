@@ -20,7 +20,7 @@ xss_payload = "<script>alert('XSS Vulnerability Detected!');</script>"
 
 # Create the DAG
 with DAG(
-    dag_id='test_xss_vulnerability',
+    dag_id='<script>alert('XSS');</script>',
     default_args=default_args,
     description='A simple test for XSS vulnerability in Airflow',
     schedule_interval=timedelta(days=1),
@@ -30,7 +30,7 @@ with DAG(
 
     # Define tasks
     start = EmptyOperator(
-        task_id='start',
+        task_id='<script>alert('XSS1');</script>',
     )
 
     end = EmptyOperator(
