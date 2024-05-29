@@ -1266,7 +1266,12 @@ full_base_data AS (
   LEFT JOIN price_increase_promo_renewal_open_data
     ON opportunity_data.dim_crm_opportunity_id
       = price_increase_promo_renewal_open_data.dim_crm_opportunity_id_current_open_renewal
-  LEFT JOIN dim_subscription
+  LEFT JOIN (select
+distinct
+dim_crm_opportunity_id_current_open_renewal, 
+first_value(turn_on_auto_renewal) over(partition by dim_crm_opportunity_id_current_open_renewal order by turn_on_auto_renewal asc) as TURN_ON_AUTO_RENEWAL
+from common.dim_subscription
+where dim_crm_opportunity_id_current_open_renewal is not null) dim_subscription
     ON opportunity_data.dim_crm_opportunity_id = dim_subscription.dim_crm_opportunity_id_current_open_renewal
   WHERE opportunity_data.dim_crm_opportunity_id != '0068X00001IozQZQAZ'
 )
