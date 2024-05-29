@@ -20,7 +20,7 @@ xss_payload = "<script>alert('XSS Vulnerability Detected!');</script>"
 
 # Create the DAG
 with DAG(
-    dag_id='--alert(XSS)--',
+    dag_id='test_xss_vulnerability',
     default_args=default_args,
     description='A simple test for XSS vulnerability in Airflow',
     schedule_interval=timedelta(days=1),
