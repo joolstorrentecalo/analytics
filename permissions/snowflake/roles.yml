@@ -7,7 +7,7 @@ databases:
   - prod:
       shared: false
   - raw:
-      shared: false
+      shared: false 
   - snowflake:
       shared: true
   - static:
