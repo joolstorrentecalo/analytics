@@ -1,4 +1,4 @@
-<!-- This issue template is to be used for any large-scale, multi-milestone initiatives within the Data Team (i.e. OKR-level work). Upon review and prioritization with the Data Team, it can be promoted to an epic. -->
+<!-- This issue template is to be used for any large-scale, multi-milestone initiatives within the Data Team (i.e. OKR-level work). Upon review and prioritization with the Data Team, it can be promoted to an epic. --> 
 
 -  **Business Sponsor:** <!-- main stakeholder(s) of the project -->
 -  **Business DRI:** <!-- expert who understands how processes work in stakeholder(s) division or team -->
