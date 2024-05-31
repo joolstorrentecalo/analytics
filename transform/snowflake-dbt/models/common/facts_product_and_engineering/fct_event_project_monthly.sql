@@ -1,6 +1,8 @@
 {{ config(
-    materialized='table',
-    tags=["mnpi_exception", "product"]
+    tags=["mnpi_exception", "product"],
+    materialized = "incremental",
+    unique_key = "event_project_monthly_pk",
+    on_schema_change = "sync_all_columns"
 ) }}
 
 {{ simple_cte([
@@ -21,6 +23,11 @@ fact_with_month AS (
   FROM fct_event_valid
   LEFT JOIN dim_date
     ON fct_event_valid.dim_event_date_id = dim_date.date_id
+  WHERE dim_date.date_actual < dim_date.current_first_day_of_month
+  {% if is_incremental() %}
+  -- This means that the data will only be changed on a full refresh
+  LIMIT 0
+  {% endif %}
 
 ),
 
