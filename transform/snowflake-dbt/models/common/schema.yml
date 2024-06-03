@@ -9284,7 +9284,7 @@ models:
       - name: data_source
         description: ' {{ doc("service_ping_data_source") }} '
 
-name: common.fct_event_project_monthly
+name: fct_event_project_monthly
   description: '{{ doc("fct_event_project_monthly") }}'
   columns:
     - name: event_project_monthly_pk
