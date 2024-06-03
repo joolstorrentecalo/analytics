@@ -2,7 +2,8 @@
     tags=["mnpi_exception", "product"],
     materialized = "incremental",
     unique_key = "event_project_monthly_pk",
-    on_schema_change = "sync_all_columns"
+    on_schema_change = "sync_all_columns",
+    full_refresh=only_force_full_refresh()
 ) }}
 
 {{ simple_cte([
@@ -25,8 +26,8 @@ fact_with_month AS (
     ON fct_event_valid.dim_event_date_id = dim_date.date_id
   WHERE dim_date.date_actual < dim_date.current_first_day_of_month
   {% if is_incremental() %}
-  -- This means that the data will only be changed on a full refresh
-  LIMIT 0
+  -- This means that the data will only be fully changed if it has been more than an full month from the last load.
+  AND IFF( (SELECT MAX(event_calendar_month) FROM {{ this }}) < DATEADD('month', -1, dim_date.current_first_day_of_month), TRUE, FALSE)
   {% endif %}
 
 ),
