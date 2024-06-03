@@ -2068,3 +2068,25 @@ Fact derived from `fct_behavior_structured_event`, limited to only Snowplow even
 Fact derived from `fct_behavior_structured_event`, limited to only Snowplow events with the [Service Ping context](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/gitlab_service_ping/jsonschema) and columns, which indicates they are Service Ping events.
 
 {% enddocs %}
+
+{% docs fct_event_project_monthly %}
+
+**Description:** GitLab.com usage event data for valid events, grouped by month, event name, ultimate parent namespace, and project.
+
+**Data Grain:**
+- event_calendar_month
+- event_name
+- dim_ultimate_parent_namespace_id
+- dim_project_id
+
+**Business Logic in this Model:**
+- `Inherited` - A namespace's plan information (ex: `plan_name_at_event_month`) is determined by the plan for the last event on a given month
+- `Inherited` - The ultimate parent namespace's subscription, billing, and account information (ex: `dim_latest_subscription_id`) reflects the most recent available attributes associated with that namespace
+- `Inherited` - `dim_latest_product_tier_id` reflects the _current_ product tier of the namespace
+- `Inherited` - `section_name`, `stage_name`, `group_name`, and xMAU metric flags (ex: `is_gmau`) are based on the _current_ event mappings and may not match the mapping at the time of the event
+
+**Other Comments:**
+- The current month is _excluded_ in this model.
+
+
+{% enddocs %}
