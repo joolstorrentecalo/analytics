@@ -9284,79 +9284,79 @@ models:
       - name: data_source
         description: ' {{ doc("service_ping_data_source") }} '
 
-name: fct_event_project_monthly
-  description: '{{ doc("fct_event_project_monthly") }}'
-  columns:
-    - name: event_project_monthly_pk
-      description: The unique composite ID of the fct_event_project_monthly model consisting of event_calendar_month, event_name, dim_ultimate_parent_namespace_id, and dim_project_id.
-      tests:
-        - not_null
-        - unique
-    - name: dim_ultimate_parent_namespace_id
-      description: '{{ doc("dim_ultimate_parent_namespace_id_event_model") }}'
-    - name: dim_project_id
-      description: '{{ doc("dim_project_id_event_model") }}'
-    - name: dim_latest_product_tier_id
-      description: '{{ doc("dim_latest_product_tier_id") }}'
-    - name: dim_latest_subscription_id
-      description: '{{ doc("dim_latest_subscription_id") }}'
-    - name: dim_crm_account_id
-      description: '{{ doc("dim_crm_account_id") }}'
-    - name: dim_billing_account_id
-      description: '{{ doc("dim_billing_account_id") }}'
-    - name: project_created_month
-      description: The month that the project was created.
-    - name: project_creator_id
-      description: The gitlab user ID of the project's creator.
-    - name: project_is_learn_gitlab
-      description: '{{ doc("project_is_learn_gitlab") }}'
-    - name: plan_id_at_event_month
-      description: '{{ doc("plan_id_at_event_month") }}'
-    - name: plan_name_at_event_month
-      description: '{{ doc("plan_name_at_event_month") }}'
-    - name: plan_was_paid_at_event_month
-      description: '{{ doc("plan_was_paid_at_event_month") }}'
-    - name: event_calendar_month
-      description: '{{ doc("event_calendar_month") }}'
-    - name: event_name
-      description: '{{ doc("event_name") }}'
-    - name: section_name
-      description: '{{ doc("section_name") }}'
-      tests:
-        - not_null
-    - name: stage_name
-      description: '{{ doc("stage_name") }}'
-      tests:
-        - not_null
-    - name: group_name
-      description: '{{ doc("group_name") }}'
-      tests:
-        - not_null
-    - name: is_smau
-      description: '{{ doc("is_smau") }}'
-      tests:
-        - not_null
-    - name: is_gmau
-      description: '{{ doc("is_gmau") }}'
-      tests:
-        - not_null
-    - name: is_umau
-      description: '{{ doc("is_umau") }}'
-      tests:
-        - not_null
-    - name: data_source
-      description: '{{ doc("data_source") }}'
-    - name: event_count
-      description: '{{ doc("event_count") }}'
-    - name: user_count
-      description: '{{ doc("user_count") }}'
-    - name: event_date_count
-      description: '{{ doc("event_date_count") }}'
-    - name: created_by
-      description: '{{ doc("created_by") }}'
-    - name: updated_by
-      description: '{{ doc("updated_by") }}'
-    - name: model_created_date
-      description: '{{ doc("model_created_date") }}'
-    - name: model_updated_date
-      description: '{{ doc("model_updated_date") }}'
+  - name: fct_event_project_monthly
+    description: '{{ doc("fct_event_project_monthly") }}'
+    columns:
+      - name: event_project_monthly_pk
+        description: The unique composite ID of the fct_event_project_monthly model consisting of event_calendar_month, event_name, dim_ultimate_parent_namespace_id, and dim_project_id.
+        tests:
+          - not_null
+          - unique
+      - name: dim_ultimate_parent_namespace_id
+        description: '{{ doc("dim_ultimate_parent_namespace_id_event_model") }}'
+      - name: dim_project_id
+        description: '{{ doc("dim_project_id_event_model") }}'
+      - name: dim_latest_product_tier_id
+        description: '{{ doc("dim_latest_product_tier_id") }}'
+      - name: dim_latest_subscription_id
+        description: '{{ doc("dim_latest_subscription_id") }}'
+      - name: dim_crm_account_id
+        description: '{{ doc("dim_crm_account_id") }}'
+      - name: dim_billing_account_id
+        description: '{{ doc("dim_billing_account_id") }}'
+      - name: project_created_month
+        description: The month that the project was created.
+      - name: project_creator_id
+        description: The gitlab user ID of the project's creator.
+      - name: project_is_learn_gitlab
+        description: '{{ doc("project_is_learn_gitlab") }}'
+      - name: plan_id_at_event_month
+        description: '{{ doc("plan_id_at_event_month") }}'
+      - name: plan_name_at_event_month
+        description: '{{ doc("plan_name_at_event_month") }}'
+      - name: plan_was_paid_at_event_month
+        description: '{{ doc("plan_was_paid_at_event_month") }}'
+      - name: event_calendar_month
+        description: '{{ doc("event_calendar_month") }}'
+      - name: event_name
+        description: '{{ doc("event_name") }}'
+      - name: section_name
+        description: '{{ doc("section_name") }}'
+        tests:
+          - not_null
+      - name: stage_name
+        description: '{{ doc("stage_name") }}'
+        tests:
+          - not_null
+      - name: group_name
+        description: '{{ doc("group_name") }}'
+        tests:
+          - not_null
+      - name: is_smau
+        description: '{{ doc("is_smau") }}'
+        tests:
+          - not_null
+      - name: is_gmau
+        description: '{{ doc("is_gmau") }}'
+        tests:
+          - not_null
+      - name: is_umau
+        description: '{{ doc("is_umau") }}'
+        tests:
+          - not_null
+      - name: data_source
+        description: '{{ doc("data_source") }}'
+      - name: event_count
+        description: '{{ doc("event_count") }}'
+      - name: user_count
+        description: '{{ doc("user_count") }}'
+      - name: event_date_count
+        description: '{{ doc("event_date_count") }}'
+      - name: created_by
+        description: '{{ doc("created_by") }}'
+      - name: updated_by
+        description: '{{ doc("updated_by") }}'
+      - name: model_created_date
+        description: '{{ doc("model_created_date") }}'
+      - name: model_updated_date
+        description: '{{ doc("model_updated_date") }}'
