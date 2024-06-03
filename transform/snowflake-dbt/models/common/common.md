@@ -2095,3 +2095,25 @@ Derived fact table from `fct_crm_opportunity_daily_snapshot` and `fct_sales_funn
 It combines daily targets, daily actuals along with the total quarterly targets and actuals. This model includes both the numerator and denominator for calculating coverage throughout a quarter
 
 {% enddocs %}
+
+{% docs fct_event_project_monthly %}
+
+**Description:** GitLab.com usage event data for valid events, grouped by month, event name, ultimate parent namespace, and project.
+
+**Data Grain:**
+- event_calendar_month
+- event_name
+- dim_ultimate_parent_namespace_id
+- dim_project_id
+
+**Business Logic in this Model:**
+- `Inherited` - A namespace's plan information (ex: `plan_name_at_event_month`) is determined by the plan for the last event on a given month
+- `Inherited` - The ultimate parent namespace's subscription, billing, and account information (ex: `dim_latest_subscription_id`) reflects the most recent available attributes associated with that namespace
+- `Inherited` - `dim_latest_product_tier_id` reflects the _current_ product tier of the namespace
+- `Inherited` - `section_name`, `stage_name`, `group_name`, and xMAU metric flags (ex: `is_gmau`) are based on the _current_ event mappings and may not match the mapping at the time of the event
+
+**Other Comments:**
+- The current month is _excluded_ in this model.
+- Note about the `action` event: This "event" captures everything from the [Events API](https://docs.gitlab.com/ee/api/events.html) - issue comments, MRs created, etc. While the `action` event is mapped to the Manage stage, the events included actually span multiple stages (plan, create, etc), which is why this is used for UMAU. Be mindful of the impact of including `action` during stage adoption analysis.
+
+{% enddocs %}
