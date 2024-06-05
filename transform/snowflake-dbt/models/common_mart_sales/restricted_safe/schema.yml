@@ -399,7 +399,7 @@ models:
 
   - name: mart_crm_opportunity
     description:  >-
-      Model with single pane of glass over the sales and marketing metrics. Depeding on your use case, you might use  `mart_crm_opportunity_stamped_hierarchy_hist` or `mart_crm_opportunity.`
+      Model with single pane of glass over the sales and marketing metrics. Depending on your use case, you might use  `mart_crm_opportunity_stamped_hierarchy_hist` or `mart_crm_opportunity.`
       `mart_crm_opportunity_stamped_hierarchy_hist` should be used for year-over-year comparisons as it accounts for yearly changes in the sales hierarchy, views all account hierarchies through the lens of the current year hierarchy, and it reflects how the sales hierarchy is applied in practice (ie. Hybrid users are assigned to the account's hierarchy)
     columns:
       - name: dim_crm_opportunity_id
@@ -480,6 +480,10 @@ models:
         description: The net arr related to the GitLab Duo element of the opportunity.
       - name: partner_margin_percentage
         description: The percentage of the opportunity net arr to which the partner is entitled.
+      - name: net_arr_stage_1
+        description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
+      - name: valid_deal_count
+        description: A Salesforce Opportunity field that gives a -1, 0, or 1 value based on whether or not it should be counted as a true closed won for accounting/reporting purposes
 
 
   - name: mart_crm_opportunity_daily_snapshot
@@ -489,6 +493,9 @@ models:
         tests:
             - not_null
             - unique
+            - relationships:
+                to: ref('fct_crm_opportunity_daily_snapshot')
+                field: crm_opportunity_snapshot_id
         tags: ["tdf", "mart", "sales_funnel"]
       - name: dim_crm_opportunity_id
         tests:
@@ -540,6 +547,8 @@ models:
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 1 in SFDC.
       - name: xdr_net_arr_stage_3
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 3 in SFDC.
+      - name: net_arr_stage_1
+        description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
           
 
   - name: mart_crm_opportunity_stamped_hierarchy_hist
@@ -609,6 +618,10 @@ models:
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 1 in SFDC.
       - name: xdr_net_arr_stage_3
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 3 in SFDC.
+      - name: net_arr_stage_1
+        description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
+      - name: valid_deal_count
+        description: A Salesforce Opportunity field that gives a -1, 0, or 1 value based on whether or not it should be counted as a true closed won for accounting/reporting purposes
 
   - name: mart_sales_funnel_target
     description: Model with Sales targets used for planning the go to market Sales and Marketing motion.
@@ -861,4 +874,34 @@ models:
         description: How a product is deployed to the customer; Self-Managed, GitLab.com or Dedicated (or Other).
       - name: product_category
         description: Categorizes Zuora products as either Add On Services or Base Products
+  
+  - name: mart_targets_actuals_7th_day_weekly_snapshot
+    columns: 
+      - name: targets_actuals_weekly_snapshot_pk
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('fct_targets_actuals_7th_day_weekly_snapshot')
+              field: targets_actuals_weekly_snapshot_pk
+
+  - name: mart_crm_opportunity_7th_day_weekly_snapshot
+    columns:
+      - name: crm_opportunity_snapshot_id
+        description: Unique identifier of a crm opportunity in the daily snapshot models
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('fct_crm_opportunity_7th_day_weekly_snapshot')
+              field: crm_opportunity_snapshot_id
+  - name: mart_crm_opportunity_7th_day_weekly_snapshot_aggregate
+    columns:
+      - name: opportunity_weekly_snapshot_aggregate_pk
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('fct_crm_opportunity_7th_day_weekly_snapshot_aggregate')
+              field: opportunity_weekly_snapshot_aggregate_pk
 

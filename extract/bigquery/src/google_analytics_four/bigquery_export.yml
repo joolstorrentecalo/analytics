@@ -1,0 +1,20 @@
+project: mktg-goog-analytics4-5e6dc7d6
+credentials: GCP_MKTG_GOOG_ANALYTICS4_5E6DC7D6_CREDENTIALS
+
+exports:
+  - name: events
+    table: mktg-goog-analytics4-5e6dc7d6.analytics_267713722.events
+    bucket_path: gs://marketing-ga4/events
+    export_query: |-
+      SELECT *
+        , current_timestamp() as gcs_export_time
+        , '{EXPORT_DATE}' as date_part
+      FROM `mktg-goog-analytics4-5e6dc7d6.analytics_267713722.events_{EXPORT_DATE}`
+  - name: pseudonymous_users
+    table: mktg-goog-analytics4-5e6dc7d6.analytics_267713722.pseudonymous_users
+    bucket_path: gs://marketing-ga4/pseudonymous_users
+    export_query: |-
+      SELECT *
+        , current_timestamp() as gcs_export_time
+        , '{EXPORT_DATE}' as date_part
+      FROM `mktg-goog-analytics4-5e6dc7d6.analytics_267713722.pseudonymous_users_{EXPORT_DATE}`

@@ -108,6 +108,7 @@
       sfdc_opportunity_snapshots_source.account_id                                                                  AS dim_crm_account_id,
       sfdc_opportunity_snapshots_source.opportunity_id                                                              AS dim_crm_opportunity_id,
       sfdc_opportunity_snapshots_source.owner_id                                                                    AS dim_crm_user_id,
+      sfdc_account_snapshot.dim_crm_user_id                                                                         AS dim_crm_account_user_id,
       sfdc_opportunity_snapshots_source.parent_opportunity_id                                                       AS dim_parent_crm_opportunity_id,
       sfdc_opportunity_snapshots_source.order_type_stamped                                                          AS order_type,
       sfdc_opportunity_snapshots_source.opportunity_term                                                            AS opportunity_term_base,
@@ -131,6 +132,7 @@
       snapshot_dates.first_day_of_fiscal_quarter                                                                    AS snapshot_fiscal_quarter_date,
       snapshot_dates.day_of_fiscal_quarter_normalised                                                               AS snapshot_day_of_fiscal_quarter_normalised,
       snapshot_dates.day_of_fiscal_year_normalised                                                                  AS snapshot_day_of_fiscal_year_normalised,
+      snapshot_dates.last_day_of_fiscal_quarter                                                                     AS snapshot_last_day_of_fiscal_quarter,
       sfdc_account_snapshot.parent_crm_account_geo,
       sfdc_account_snapshot.crm_account_owner_sales_segment,
       sfdc_account_snapshot.crm_account_owner_geo,
@@ -208,6 +210,7 @@
       sfdc_opportunity_source.account_id                                                                    AS dim_crm_account_id,
       sfdc_opportunity_source.opportunity_id                                                                AS dim_crm_opportunity_id,
       sfdc_opportunity_source.owner_id                                                                      AS dim_crm_user_id,
+      sfdc_account.dim_crm_user_id                                                                          AS dim_crm_account_user_id,
       sfdc_opportunity_source.parent_opportunity_id                                                         AS dim_parent_crm_opportunity_id,
       sfdc_opportunity_source.order_type_stamped                                                            AS order_type,
       sfdc_opportunity_source.opportunity_term                                                              AS opportunity_term_base,
@@ -231,7 +234,8 @@
       live_date.first_day_of_fiscal_quarter                                                                 AS snapshot_fiscal_quarter_date,
       live_date.day_of_fiscal_quarter_normalised                                                            AS snapshot_day_of_fiscal_quarter_normalised,
       live_date.day_of_fiscal_year_normalised                                                               AS snapshot_day_of_fiscal_year_normalised,
-      sfdc_account.parent_crm_account_geo,
+      live_date.last_day_of_fiscal_quarter                                                                  AS snapshot_last_day_of_fiscal_quarter,
+      sfdc_account.parent_crm_account_geo                                                                   AS parent_crm_account_geo,
       account_owner.crm_user_sales_segment                                                                  AS crm_account_owner_sales_segment,
       account_owner.crm_user_geo                                                                            AS crm_account_owner_geo,
       account_owner.crm_user_region                                                                         AS crm_account_owner_region,
@@ -447,7 +451,8 @@ LEFT JOIN cw_base
       sfdc_opportunity.iacv_created_date                                                          AS arr_created_date,
       arr_created_date.fiscal_quarter_name_fy                                                     AS arr_created_fiscal_quarter_name,
       arr_created_date.first_day_of_fiscal_quarter                                                AS arr_created_fiscal_quarter_date,
-
+      created_date.fiscal_quarter_name_fy                                                         AS created_fiscal_quarter_name,
+      created_date.first_day_of_fiscal_quarter                                                    AS created_fiscal_quarter_date,
       subscription_start_date.fiscal_quarter_name_fy                                              AS subscription_start_date_fiscal_quarter_name,
       subscription_start_date.first_day_of_fiscal_quarter                                         AS subscription_start_date_fiscal_quarter_date,
 
@@ -1286,6 +1291,26 @@ LEFT JOIN cw_base
                       ) 
       END AS dim_crm_opp_owner_stamped_hierarchy_sk, 
 
+      DATEDIFF(MONTH, arr_created_fiscal_quarter_date, close_fiscal_quarter_date) AS arr_created_to_close_diff,
+
+      CASE
+        WHEN arr_created_to_close_diff BETWEEN 0 AND 2 THEN 'CQ'
+        WHEN arr_created_to_close_diff BETWEEN 3 AND 5 THEN 'CQ+1'
+        WHEN arr_created_to_close_diff BETWEEN 6 AND 8 THEN 'CQ+2'
+        WHEN arr_created_to_close_diff BETWEEN 9 AND 11 THEN 'CQ+3'
+        WHEN arr_created_to_close_diff >= 12 THEN 'CQ+4 >='
+      END AS landing_quarter_relative_to_arr_created_date,  
+
+      DATEDIFF(MONTH, sfdc_opportunity.snapshot_fiscal_quarter_date, close_fiscal_quarter_date) AS snapshot_to_close_diff,
+
+      CASE
+        WHEN snapshot_to_close_diff BETWEEN 0 AND 2 THEN 'CQ'
+        WHEN snapshot_to_close_diff BETWEEN 3 AND 5 THEN 'CQ+1'
+        WHEN snapshot_to_close_diff BETWEEN 6 AND 8 THEN 'CQ+2'
+        WHEN snapshot_to_close_diff BETWEEN 9 AND 11 THEN 'CQ+3'
+        WHEN snapshot_to_close_diff >= 12 THEN 'CQ+4 >='
+      END AS landing_quarter_relative_to_snapshot_date,  
+
     CASE
       WHEN is_renewal = 1 
           AND is_eligible_age_analysis = 1
@@ -1293,35 +1318,236 @@ LEFT JOIN cw_base
       WHEN is_renewal = 0 
           AND is_eligible_age_analysis = 1
             THEN DATEDIFF(day, sfdc_opportunity.created_date, close_date.date_actual) 
-    END                                                         AS cycle_time_in_days
+    END                                                           AS cycle_time_in_days,
+    -- Snapshot Quarter Metrics
 
-    FROM sfdc_opportunity
-    INNER JOIN sfdc_opportunity_stage
-      ON sfdc_opportunity.stage_name = sfdc_opportunity_stage.primary_label
-    LEFT JOIN quote
-      ON sfdc_opportunity.dim_crm_opportunity_id = quote.dim_crm_opportunity_id
-    LEFT JOIN linear_attribution_base
-      ON sfdc_opportunity.dim_crm_opportunity_id = linear_attribution_base.dim_crm_opportunity_id
-    LEFT JOIN campaigns_per_opp
-      ON sfdc_opportunity.dim_crm_opportunity_id = campaigns_per_opp.dim_crm_opportunity_id
-    LEFT JOIN first_contact
-      ON sfdc_opportunity.dim_crm_opportunity_id = first_contact.opportunity_id AND first_contact.row_num = 1
-    LEFT JOIN dim_date AS close_date
-      ON sfdc_opportunity.close_date = close_date.date_actual
-    LEFT JOIN dim_date AS arr_created_date
-      ON sfdc_opportunity.iacv_created_date::DATE = arr_created_date.date_actual
-    LEFT JOIN dim_date AS subscription_start_date
-      ON sfdc_opportunity.subscription_start_date::DATE = subscription_start_date.date_actual
-    LEFT JOIN net_iacv_to_net_arr_ratio
-      ON sfdc_opportunity.opportunity_owner_user_segment = net_iacv_to_net_arr_ratio.user_segment_stamped
-        AND sfdc_opportunity.order_type = net_iacv_to_net_arr_ratio.order_type
-    LEFT JOIN sfdc_record_type_source 
-      ON sfdc_opportunity.record_type_id = sfdc_record_type_source.record_type_id
-    LEFT JOIN sfdc_opportunity_live
-    ON sfdc_opportunity_live.dim_crm_opportunity_id = sfdc_opportunity.dim_crm_opportunity_id
-    LEFT JOIN abm_tier_unioned
-      ON sfdc_opportunity.dim_crm_opportunity_id=abm_tier_unioned.dim_crm_opportunity_id
-        AND sfdc_opportunity.is_live = 1
+    -- This code calculates sales metrics for each snapshot quarter
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = arr_created_fiscal_quarter_date
+        AND is_net_arr_pipeline_created = 1 
+          THEN net_arr
+      ELSE NULL
+    END                                                         AS created_arr_in_snapshot_quarter,
+
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND is_closed_won = TRUE 
+          AND is_win_rate_calc = TRUE
+            THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS closed_won_opps_in_snapshot_quarter,
+
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND is_win_rate_calc = TRUE
+          THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS closed_opps_in_snapshot_quarter,
+
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND is_booked_net_arr = TRUE
+          THEN net_arr
+      ELSE NULL
+    END                                                         AS booked_net_arr_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = arr_created_fiscal_quarter_date
+        AND is_net_arr_pipeline_created = 1 
+          THEN calculated_deal_count 
+      ELSE NULL
+    END                                                         AS created_deals_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
+        AND is_renewal = 1 
+          AND  is_eligible_age_analysis = 1
+            THEN DATEDIFF(day, arr_created_date, close_date.date_actual)
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
+        AND is_renewal = 0 
+          AND  is_eligible_age_analysis = 1
+            THEN DATEDIFF(day, sfdc_opportunity.created_date, close_date.date_actual) 
+      ELSE NULL
+    END                                                         AS cycle_time_in_days_in_snapshot_quarter, 
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND is_booked_net_arr = TRUE 
+        THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS booked_deal_count_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
+        AND is_eligible_open_pipeline = 1
+            THEN net_arr
+      ELSE NULL
+    END                                                          AS open_1plus_net_arr_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
+        AND is_eligible_open_pipeline = 1
+          AND is_stage_3_plus = 1
+            THEN net_arr
+      ELSE NULL
+    END                                                          AS open_3plus_net_arr_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
+        AND is_eligible_open_pipeline = 1
+          AND is_stage_4_plus = 1
+            THEN net_arr
+      ELSE NULL
+    END                                                          AS open_4plus_net_arr_in_snapshot_quarter,
+    CASE 
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date  
+        AND is_eligible_open_pipeline = 1
+          THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS open_1plus_deal_count_in_snapshot_quarter,
+
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date  
+        AND is_eligible_open_pipeline = 1
+        AND is_stage_3_plus = 1
+          THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS open_3plus_deal_count_in_snapshot_quarter,
+
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date  
+        AND is_eligible_open_pipeline = 1
+        AND is_stage_4_plus = 1
+          THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS open_4plus_deal_count_in_snapshot_quarter,
+
+    -- Fields to calculate average deal size. Net arr in the numerator / deal count in the denominator
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND is_booked_net_arr = TRUE 
+          AND net_arr > 0
+        THEN 1
+      ELSE NULL
+    END                                                         AS positive_booked_deal_count_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND is_booked_net_arr = TRUE 
+          AND net_arr > 0
+        THEN net_arr
+      ELSE NULL
+    END                                                         AS positive_booked_net_arr_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
+        AND is_eligible_open_pipeline = 1
+            AND net_arr > 0
+        THEN 1
+      ELSE NULL
+    END                                                         AS positive_open_deal_count_in_snapshot_quarter,
+    CASE
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date 
+        AND is_eligible_open_pipeline = 1
+            AND net_arr > 0
+        THEN net_arr
+      ELSE NULL
+    END                                                         AS positive_open_net_arr_in_snapshot_quarter,
+    CASE 
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND sfdc_opportunity.is_closed = 'TRUE' 
+          THEN calculated_deal_count 
+        ELSE NULL
+    END                                                         AS closed_deals_in_snapshot_quarter,
+    CASE 
+      WHEN sfdc_opportunity.snapshot_fiscal_quarter_date = close_fiscal_quarter_date
+        AND sfdc_opportunity.is_closed = 'TRUE' 
+          THEN net_arr 
+      ELSE NULL
+    END                                                         AS closed_net_arr_in_snapshot_quarter, 
+    -- Overall Sales Metrics
+
+    -- This code calculates sales metrics without specific quarter alignment
+    CASE
+      WHEN is_net_arr_pipeline_created = 1 
+          THEN net_arr
+      ELSE NULL
+    END                                                         AS created_arr,
+
+    CASE
+      WHEN is_closed_won = TRUE 
+          AND is_win_rate_calc = TRUE
+            THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS closed_won_opps,
+
+    CASE
+      WHEN is_win_rate_calc = TRUE
+          THEN calculated_deal_count
+      ELSE NULL
+    END                                                         AS closed_opps,
+    CASE
+      WHEN is_net_arr_pipeline_created = 1 
+          THEN calculated_deal_count 
+      ELSE NULL
+    END                                                         AS created_deals, 
+
+    -- Fields to calculate average deal size. Net arr in the numerator / deal count in the denominator
+    CASE
+      WHEN is_booked_net_arr = TRUE 
+          AND net_arr > 0
+        THEN 1
+      ELSE NULL
+    END                                                         AS positive_booked_deal_count,
+    CASE
+      WHEN is_booked_net_arr = TRUE 
+          AND net_arr > 0
+        THEN net_arr
+      ELSE NULL
+    END                                                         AS positive_booked_net_arr,
+    CASE
+      WHEN is_eligible_open_pipeline = 1
+            AND net_arr > 0
+        THEN 1
+      ELSE NULL
+    END                                                         AS positive_open_deal_count,
+    CASE
+      WHEN is_eligible_open_pipeline = 1
+            AND net_arr > 0
+        THEN net_arr
+      ELSE NULL
+    END                                                         AS positive_open_net_arr,
+    CASE 
+      WHEN sfdc_opportunity.is_closed = 'TRUE' 
+          THEN calculated_deal_count 
+        ELSE NULL
+    END                                                         AS closed_deals,
+    CASE 
+      WHEN sfdc_opportunity.is_closed = 'TRUE' 
+          THEN net_arr 
+      ELSE NULL
+    END                                                         AS closed_net_arr
+  FROM sfdc_opportunity
+  INNER JOIN sfdc_opportunity_stage
+    ON sfdc_opportunity.stage_name = sfdc_opportunity_stage.primary_label
+  LEFT JOIN quote
+    ON sfdc_opportunity.dim_crm_opportunity_id = quote.dim_crm_opportunity_id
+  LEFT JOIN linear_attribution_base
+    ON sfdc_opportunity.dim_crm_opportunity_id = linear_attribution_base.dim_crm_opportunity_id
+  LEFT JOIN campaigns_per_opp
+    ON sfdc_opportunity.dim_crm_opportunity_id = campaigns_per_opp.dim_crm_opportunity_id
+  LEFT JOIN first_contact
+    ON sfdc_opportunity.dim_crm_opportunity_id = first_contact.opportunity_id AND first_contact.row_num = 1
+  LEFT JOIN dim_date AS close_date
+    ON sfdc_opportunity.close_date = close_date.date_actual
+  LEFT JOIN dim_date AS created_date
+    ON sfdc_opportunity.created_date = created_date.date_actual
+  LEFT JOIN dim_date AS arr_created_date
+    ON sfdc_opportunity.iacv_created_date::DATE = arr_created_date.date_actual
+  LEFT JOIN dim_date AS subscription_start_date
+    ON sfdc_opportunity.subscription_start_date::DATE = subscription_start_date.date_actual
+  LEFT JOIN net_iacv_to_net_arr_ratio
+    ON sfdc_opportunity.opportunity_owner_user_segment = net_iacv_to_net_arr_ratio.user_segment_stamped
+      AND sfdc_opportunity.order_type = net_iacv_to_net_arr_ratio.order_type
+  LEFT JOIN sfdc_record_type_source 
+    ON sfdc_opportunity.record_type_id = sfdc_record_type_source.record_type_id
+  LEFT JOIN sfdc_opportunity_live
+  ON sfdc_opportunity_live.dim_crm_opportunity_id = sfdc_opportunity.dim_crm_opportunity_id
+  LEFT JOIN abm_tier_unioned
+    ON sfdc_opportunity.dim_crm_opportunity_id=abm_tier_unioned.dim_crm_opportunity_id
+      AND sfdc_opportunity.is_live = 1
 
 )
 
@@ -1330,6 +1556,6 @@ LEFT JOIN cw_base
     created_by="@michellecooper",
     updated_by="@lisvinueza",
     created_date="2022-02-23",
-    updated_date="2024-04-25"
+    updated_date="2024-05-09"
 ) }}
 

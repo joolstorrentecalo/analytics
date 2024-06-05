@@ -56,10 +56,15 @@ This macro applies correct mapping to the deal_path field based on current busin
 
 
 {% docs integrated_budget_holder %}
-This macro applies correct mapping to the campaign budget_holder field based on current business terminology. See issue https://gitlab.com/gitlab-com/marketing/marketing-strategy-performance/-/issues/1473
+This macro applies correct mapping to the campaign budget_holder field based on current business terminology, it combines data from online and offline touchpoints. See issue https://gitlab.com/gitlab-com/marketing/marketing-strategy-performance/-/issues/1473
 {% enddocs %}
 
 
 {% docs date_spine_7th_day %}
 This macro generates a date spine that provides weekly snapshots (every 7 days) throughout a quarter, extending up to day 84. For the final week of the quarter, the duration varies: it can span 8 days for Q2, Q3, and Q4, while for Q1, it may be 5 or 6 days, depending on the year.
+{% enddocs %}
+
+
+{% docs partner_marketing_task_subject_cleaning %}
+Standardizes the cleaning for task/event cleaning to strip out PII from the task/event subject fields, leaving only SAFE data.
 {% enddocs %}

@@ -45,7 +45,7 @@ WITH product_tier_mapping AS (
     UNION ALL
     
     SELECT
-      'Self-Managed - Core'                                         AS product_tier_historical,
+      'Self-Managed - Free'                                         AS product_tier_historical,
       'Self-Managed - Free'                                         AS product_tier,
       'Self-Managed'                                                AS product_delivery_type,
       'Self-Managed'                                                AS product_deployment_type,
@@ -100,7 +100,7 @@ WITH product_tier_mapping AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@jpeguero",
+    updated_by="@utkarsh060",
     created_date="2022-03-31",
-    updated_date="2023-05-26"
+    updated_date="2024-05-10"
 ) }}

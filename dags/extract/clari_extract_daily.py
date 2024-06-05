@@ -9,7 +9,7 @@ from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 
 from airflow_utils import (
-    DATA_IMAGE,
+    DATA_IMAGE_3_10,
     clone_and_setup_extraction_cmd,
     gitlab_defaults,
     slack_failed_task,
@@ -31,6 +31,7 @@ env = os.environ.copy()
 GIT_BRANCH = env["GIT_BRANCH"]
 pod_env_vars = {**gitlab_pod_env_vars, **{}}
 TASK_SCHEDULE = "daily"
+TASK_NAME_PRE = f"clari-extract-{TASK_SCHEDULE}"
 
 # Define the default arguments for the DAG
 default_args = {
@@ -56,11 +57,11 @@ clari_extract_command = (
     f"{clone_and_setup_extraction_cmd} && " f"python clari/src/clari.py"
 )
 
-clari_task = KubernetesPodOperator(
+clari_task_this_quarter = KubernetesPodOperator(
     **gitlab_defaults,
-    image=DATA_IMAGE,
-    task_id=f"clari-extract-{TASK_SCHEDULE}",
-    name=f"clari-extract-{TASK_SCHEDULE}",
+    image=DATA_IMAGE_3_10,
+    task_id=f"{TASK_NAME_PRE}-this-quarter",
+    name=f"{TASK_NAME_PRE}-this-quarter",
     secrets=[
         SNOWFLAKE_ACCOUNT,
         SNOWFLAKE_LOAD_ROLE,
@@ -73,6 +74,7 @@ clari_task = KubernetesPodOperator(
         **pod_env_vars,
         "logical_date": "{{ logical_date }}",  # run yest's quarter
         "task_schedule": TASK_SCHEDULE,
+        "task_instance_key_str": "{{ task_instance_key_str }}",
     },
     affinity=get_affinity("extraction"),
     tolerations=get_toleration("extraction"),
@@ -80,4 +82,30 @@ clari_task = KubernetesPodOperator(
     dag=dag,
 )
 
-clari_task
+clari_task_next_quarter = KubernetesPodOperator(
+    **gitlab_defaults,
+    image=DATA_IMAGE_3_10,
+    task_id=f"{TASK_NAME_PRE}-next-quarter",
+    name=f"{TASK_NAME_PRE}-next-quarter",
+    secrets=[
+        SNOWFLAKE_ACCOUNT,
+        SNOWFLAKE_LOAD_ROLE,
+        SNOWFLAKE_LOAD_USER,
+        SNOWFLAKE_LOAD_WAREHOUSE,
+        SNOWFLAKE_LOAD_PASSWORD,
+        CLARI_API_KEY,
+    ],
+    env_vars={
+        **pod_env_vars,
+        # based on yest date, get the next quarter
+        "logical_date": "{{ logical_date.add(months=3) }}",
+        "task_schedule": TASK_SCHEDULE,
+        "task_instance_key_str": "{{ task_instance_key_str }}",
+    },
+    affinity=get_affinity("extraction"),
+    tolerations=get_toleration("extraction"),
+    arguments=[clari_extract_command],
+    dag=dag,
+)
+
+clari_task_this_quarter >> clari_task_next_quarter

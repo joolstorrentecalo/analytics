@@ -43,6 +43,7 @@ WITH source AS (
         -- logistical information
         isclosed                                                                            AS is_closed,
         iswon                                                                               AS is_won,
+        valid_deal_count__c                                                                 AS valid_deal_count,
         closedate                                                                           AS close_date,
         createddate                                                                         AS created_date,
         days_in_stage                                                                       AS days_in_stage,
@@ -74,7 +75,7 @@ WITH source AS (
         -- opportunity information
         acv_2__c                                                                            AS acv,
         amount                                                                              AS amount,
-        IFF(acv_2__c >= 0, 1, 0)                                                            AS closed_deals, -- so that you can exclude closed deals that had negative impact
+        IFF(acv_2__c >= 0, 1, 0)                                                            AS is_closed_deals, -- so that you can exclude closed deals that had negative impact
         competitors__c                                                                      AS competitors,
         critical_deal_flag__c                                                               AS critical_deal_flag,
         {{sfdc_deal_size('arr_net__c', 'deal_size')}},
@@ -82,7 +83,6 @@ WITH source AS (
         incremental_acv_2__c                                                                AS forecasted_iacv,
         iacv_created_date__c                                                                AS iacv_created_date,
         incremental_acv__c                                                                  AS incremental_acv,
-        pre_covid_iacv__c                                                                   AS pre_covid_iacv,
         invoice_number__c                                                                   AS invoice_number,
         is_refund_opportunity__c                                                            AS is_refund,
         is_downgrade_opportunity__c                                                         AS is_downgrade,
@@ -138,6 +138,7 @@ WITH source AS (
         arr__c                                                                              AS arr,
         stage_3_net_arr__c                                                                  AS xdr_net_arr_stage_3,
         stage_1_xdr_net_arr__c                                                              AS xdr_net_arr_stage_1,
+        stage_1_net_arr__c                                                                  AS net_arr_stage_1,
         enterprise_agile_planning_net_arr__c                                                AS enterprise_agile_planning_net_arr,
         duo_net_arr__c                                                                      AS duo_net_arr,
         days_in_sao__c                                                                      AS days_in_sao,

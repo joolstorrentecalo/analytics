@@ -918,6 +918,7 @@
       -- Account
       dim_crm_account.abm_tier,
       dim_crm_account.health_number,
+      dim_crm_account.crm_account_type,
 
      -- Opportunity Report Fields
      CASE 
@@ -1057,5 +1058,5 @@
     created_by="@rkohnke",
     updated_by="@degan",
     created_date="2022-07-05",
-    updated_date="2024-05-09",
+    updated_date="2024-05-14",
   ) }}

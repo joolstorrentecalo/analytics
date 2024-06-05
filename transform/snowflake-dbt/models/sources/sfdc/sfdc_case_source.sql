@@ -38,7 +38,14 @@ renamed AS (
     suppliedphone AS supplied_phone,
     type AS case_type,
     opportunity__c AS opportunity_id,
-
+    Close_Case_Spam__c AS spam_checkbox, 
+    context__c AS context,
+    feedback__c AS feedback,
+    Date_Time_First_Responded__c AS first_responded_date,
+    Time_to_First_Response__c AS time_to_first_response, 
+    Notes__c AS next_steps,
+    Next_Steps_Date__c AS next_steps_date,
+    
     -- metadata
     createdbyid AS created_by_id,
     createddate AS created_date,
@@ -49,7 +56,6 @@ renamed AS (
     CONVERT_TIMEZONE(
       'America/Los_Angeles', CURRENT_TIMESTAMP()
     ) AS _last_dbt_run
-
   FROM source
 
 )

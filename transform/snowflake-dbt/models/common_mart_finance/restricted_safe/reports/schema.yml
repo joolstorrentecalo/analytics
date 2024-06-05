@@ -2,7 +2,10 @@ version: 2
 
 models:
   - name: rpt_available_to_renew_8th_calendar_day
-    description: Snapshot of the daily available to renew model taken on the 8th calendar day after month-end close.
+    description: rpt_available_to_renew_combined should be used instead of this model as it includes logic to use the 5th day after 2024-03-01. Snapshot of the daily available to renew model taken on the 8th calendar day after month-end close.
+
+  - name: rpt_available_to_renew_combined
+    description: Snapshot of the daily available to renew model taken on the 8th calendar day after month-end close until 2024-03-01 and 5th calendar day after.
 
   - name: rpt_available_to_renew_45th_calendar_day
     description: Snapshot of the daily available to renew model taken on the 45th calendar day after month-end close.

@@ -191,3 +191,11 @@ models:
           description: ' {{ doc("unload_event_end") }} '
         - name: unload_event_start
           description: ' {{ doc("unload_event_start") }} '
+        - name: suggestion_source
+          description: ' {{ doc("code_suggestions_suggestion_source") }} '
+        - name: is_invoked
+          description: ' {{ doc("code_suggestions_is_invoked") }} '
+        - name: options_count
+          description: ' {{ doc("code_suggestions_options_count") }} '
+        - name: accepted_option
+          description: ' {{ doc("code_suggestions_accepted_option") }} '

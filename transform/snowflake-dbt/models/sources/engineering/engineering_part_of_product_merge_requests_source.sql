@@ -4,33 +4,41 @@
     })
 }}
 
-WITH source AS (
-    
-    SELECT *
-    FROM {{ source('engineering', 'part_of_product_merge_requests') }}
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY jsontext['plain_diff_path'] 
-      ORDER BY ARRAY_SIZE(jsontext['merge_request_diffs']) DESC, uploaded_at DESC) = 1
+WITH flattened AS (
+  SELECT
+    value,
+    uploaded_at
+  FROM {{ source('engineering', 'part_of_product_graphql_merge_requests') }}
+  INNER JOIN LATERAL FLATTEN(input => jsontext['data']['project']['mergeRequests']['nodes'])
+),
 
-), renamed AS (
-    
-    SELECT 
-      jsontext['added_lines']::NUMBER                             AS added_lines,
-      jsontext['real_size']::VARCHAR                              AS real_size, --this occasionally has `+` - ie `374+`
-      jsontext['removed_lines']::NUMBER                           AS removed_lines,
-      jsontext['plain_diff_path']::VARCHAR                        AS plain_diff_url_path,
-      jsontext['merge_request_diff']['created_at']::TIMESTAMP     AS merge_request_updated_at,
-      jsontext['diff_files']::ARRAY                               AS file_diffs,
-      jsontext['target_branch_name']                              AS target_branch_name,
-      --get the number after the last dash
-      REGEXP_REPLACE(
-          GET(SPLIT(plain_diff_url_path, '-'), ARRAY_SIZE(SPLIT(plain_diff_url_path, '-')) - 1),  
-          '[^0-9]+', 
-          ''
-      )::NUMBER                                                   AS product_merge_request_iid,
-      TRIM(ARRAY_TO_STRING(ARRAY_SLICE(SPLIT(plain_diff_url_path, '-'), 0, -1), '-'), '/')::VARCHAR AS product_merge_request_project
-    FROM source
+dedupped AS (
 
+  SELECT *
+  FROM flattened
+  QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY value['webPath']
+    ORDER BY value['updatedAt'] DESC, uploaded_at DESC
+  ) = 1
+
+),
+
+renamed AS (
+
+  SELECT
+    value['diffStatsSummary']['additions']::NUMBER                                                AS added_lines,
+    value['diffStatsSummary']['fileCount']::VARCHAR                                               AS real_size,
+    value['diffStatsSummary']['deletions']::NUMBER                                                AS removed_lines,
+    value['webPath']::VARCHAR || '.diff'                                                          AS plain_diff_url_path,
+    value['createdAt']::TIMESTAMP                                                                 AS merge_request_created_at,
+    value['updatedAt']::TIMESTAMP                                                                 AS merge_request_updated_at,
+    value['diffStats']::ARRAY                                                                     AS file_diffs,
+    value['targetBranch']::VARCHAR                                                                AS target_branch_name,
+    value['iid']::NUMBER                                                                          AS product_merge_request_iid,
+    value['projectId']::NUMBER                                                                    AS product_merge_request_project_id,
+    TRIM(ARRAY_TO_STRING(ARRAY_SLICE(SPLIT(plain_diff_url_path, '-'), 0, -1), '-'), '/')::VARCHAR AS product_merge_request_project,
+    uploaded_at
+  FROM dedupped
 )
-SELECT * 
-FROM renamed
 
+SELECT * FROM renamed

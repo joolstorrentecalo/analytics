@@ -7,13 +7,13 @@
 
 {{ simple_cte([
     ('zuora_refund_source', 'zuora_refund_source'),
-    ('prep_billing_account', 'prep_billing_account')
+    ('zuora_account_source', 'zuora_account_source')
 ]) }},
 
 zuora_account AS (
 
   SELECT *
-  FROM prep_billing_account
+  FROM zuora_account_source
   WHERE is_deleted = FALSE
 
 ),
@@ -29,7 +29,7 @@ final AS (
     zuora_refund_source.refund_number,
 
     --Foreign keys
-    zuora_account.dim_billing_account_id,
+    zuora_account.account_id                                                  AS dim_billing_account_id,
   
     --Refund dates
     zuora_refund_source.refund_date,
@@ -46,7 +46,7 @@ final AS (
 
   FROM zuora_refund_source
   INNER JOIN zuora_account
-    ON zuora_refund_source.account_id = zuora_account.dim_billing_account_id
+    ON zuora_refund_source.account_id = zuora_account.account_id
 )
 
 {{ dbt_audit(
@@ -54,5 +54,5 @@ cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-05-01",
-updated_date="2024-05-01"
+updated_date="2024-05-14"
 ) }}

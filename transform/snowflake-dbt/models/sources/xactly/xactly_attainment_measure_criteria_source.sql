@@ -20,7 +20,6 @@ WITH source AS (
       type::VARCHAR                                         AS type
 
     FROM source
-    
 )
 
 SELECT *

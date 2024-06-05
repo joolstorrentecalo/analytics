@@ -15,6 +15,7 @@ sources:
 
     tables:
       - name: clari_export_forecast_net_iacv
+      - name: gdpr_delete_requests
       - name: email_domain_classification
       - name: financial_metrics_program_phase_1
       - name: lam_corrections

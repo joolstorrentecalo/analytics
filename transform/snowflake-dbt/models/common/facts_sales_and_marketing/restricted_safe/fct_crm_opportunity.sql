@@ -199,6 +199,7 @@
       -- flags
       sfdc_opportunity.is_closed,
       sfdc_opportunity.is_won,
+      sfdc_opportunity.valid_deal_count,
       sfdc_opportunity.is_refund,
       sfdc_opportunity.is_downgrade,
       sfdc_opportunity.is_swing_deal,
@@ -271,6 +272,7 @@
       sfdc_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       sfdc_opportunity.calculated_from_ratio_net_arr,
       sfdc_opportunity.net_arr,
+      sfdc_opportunity.net_arr_stage_1,
       sfdc_opportunity.xdr_net_arr_stage_1,
       sfdc_opportunity.xdr_net_arr_stage_3,
       sfdc_opportunity.enterprise_agile_planning_net_arr,
@@ -359,7 +361,7 @@
 {{ dbt_audit(
     cte_ref="final_opportunities",
     created_by="@mcooperDD",
-    updated_by="@chrissharp",
+    updated_by="@rkohnke",
     created_date="2020-11-30",
-    updated_date="2024-04-30"
+    updated_date="2024-05-23"
 ) }}

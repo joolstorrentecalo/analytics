@@ -77,7 +77,7 @@
     ON instance_pings.license_sha256 = map_license_account_sha256.license_sha256
     LEFT JOIN installations
      ON installations.dim_installation_id = instance_pings.dim_installation_id
-    WHERE instance_pings.product_tier = 'Core'
+    WHERE instance_pings.product_tier = 'Free'
 
 ), joined AS (
 
@@ -139,7 +139,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@snalamaru",
-    updated_by="@jpeguero",
+    updated_by="@utkarsh060",
     created_date="2023-01-20",
-    updated_date="2023-06-22"
+    updated_date="2024-05-10"
 ) }}

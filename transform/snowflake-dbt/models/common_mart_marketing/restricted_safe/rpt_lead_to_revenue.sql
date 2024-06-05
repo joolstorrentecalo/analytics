@@ -27,6 +27,8 @@
   
   --Person Data
       person_base.email_hash,
+      person_base.sfdc_record_type,
+      person_base.person_first_country,
       person_base.email_domain_type,
       person_base.source_buckets,
       person_base.true_inquiry_date,
@@ -55,6 +57,22 @@
       END AS person_order_type,
       person_base.lead_score_classification,
       person_base.is_defaulted_trial,
+      
+    --MQL and Most Recent Touchpoint info
+      person_base.bizible_mql_touchpoint_id,
+      person_base.bizible_mql_touchpoint_date,
+      person_base.bizible_mql_form_url,
+      person_base.bizible_mql_sfdc_campaign_id,
+      person_base.bizible_mql_ad_campaign_name,
+      person_base.bizible_mql_marketing_channel,
+      person_base.bizible_mql_marketing_channel_path,
+      person_base.bizible_most_recent_touchpoint_id,
+      person_base.bizible_most_recent_touchpoint_date,
+      person_base.bizible_most_recent_form_url,
+      person_base.bizible_most_recent_sfdc_campaign_id,
+      person_base.bizible_most_recent_ad_campaign_name,
+      person_base.bizible_most_recent_marketing_channel,
+      person_base.bizible_most_recent_marketing_channel_path,
 
   --Account Data
       mart_crm_account.crm_account_name,
@@ -147,9 +165,11 @@
       opp.created_date AS opp_created_date,
       opp.close_date,
       opp.is_won,
+      opp.valid_deal_count,
       opp.is_sao,
       opp.new_logo_count,
       opp.net_arr,
+      opp.net_arr_stage_1,
       opp.xdr_net_arr_stage_1,
       opp.xdr_net_arr_stage_3,
       opp.is_net_arr_closed_deal,
@@ -367,14 +387,15 @@
       ON opp.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE opp.created_date >= '2021-02-01'
       OR opp.created_date IS NULL
-    {{dbt_utils.group_by(n=88)}}
+    {{dbt_utils.group_by(n=90)}}
     
 ), cohort_base_combined AS (
   
     SELECT
    --IDs
       dim_crm_person_id,
-      person_base_with_tp.dim_crm_account_id,
+      COALESCE (person_base_with_tp.dim_crm_account_id,opp_base_with_batp.dim_crm_account_id) AS dim_crm_account_id,
+      COALESCE (person_base_with_tp.dim_parent_crm_account_id,opp_base_with_batp.dim_parent_crm_account_id) AS dim_parent_crm_account_id,
       sfdc_record_id,
       COALESCE (person_base_with_tp.dim_crm_touchpoint_id,opp_base_with_batp.dim_crm_touchpoint_id) AS dim_crm_touchpoint_id, 
       person_base_with_tp.dim_crm_touchpoint_id AS dim_crm_btp_touchpoint_id,
@@ -387,6 +408,8 @@
   --Person Data
       email_hash,
       email_domain_type,
+      sfdc_record_type,
+      person_first_country,
       person_base_with_tp.source_buckets,
       true_inquiry_date,
       mql_date_first_pt,
@@ -415,6 +438,22 @@
       traction_response_time_in_business_hours,
       lead_score_classification,
       is_defaulted_trial,
+
+  --MQL and Most Recent Touchpoint info
+      person_base_with_tp.bizible_mql_touchpoint_id,
+      person_base_with_tp.bizible_mql_touchpoint_date,
+      person_base_with_tp.bizible_mql_form_url,
+      person_base_with_tp.bizible_mql_sfdc_campaign_id,
+      person_base_with_tp.bizible_mql_ad_campaign_name,
+      person_base_with_tp.bizible_mql_marketing_channel,
+      person_base_with_tp.bizible_mql_marketing_channel_path,
+      person_base_with_tp.bizible_most_recent_touchpoint_id,
+      person_base_with_tp.bizible_most_recent_touchpoint_date,
+      person_base_with_tp.bizible_most_recent_form_url,
+      person_base_with_tp.bizible_most_recent_sfdc_campaign_id,
+      person_base_with_tp.bizible_most_recent_ad_campaign_name,
+      person_base_with_tp.bizible_most_recent_marketing_channel,
+      person_base_with_tp.bizible_most_recent_marketing_channel_path,
   
   --Opp Data
       opportunity_name,
@@ -429,9 +468,11 @@
       opp_base_with_batp.lead_source AS opp_lead_source,
       opp_base_with_batp.source_buckets AS opp_source_buckets,
       is_won,
+      valid_deal_count,
       is_sao,
       new_logo_count,
       net_arr,
+      net_arr_stage_1,
       xdr_net_arr_stage_1,
       xdr_net_arr_stage_3,
       is_net_arr_closed_deal,
@@ -558,6 +599,8 @@
 ), intermediate AS (
 
   SELECT DISTINCT
+    {{ dbt_utils.generate_surrogate_key(['cohort_base_combined.dim_crm_person_id','cohort_base_combined.dim_crm_btp_touchpoint_id','cohort_base_combined.dim_crm_batp_touchpoint_id','cohort_base_combined.dim_crm_opportunity_id']) }}
+                                                 AS lead_to_revenue_id,
     cohort_base_combined.*,
     --inquiry_date fields
     inquiry_date.fiscal_year                     AS inquiry_date_range_year,
@@ -613,6 +656,8 @@
     ON cohort_base_combined.close_date = closed_date.date_day
   LEFT JOIN dim_date AS touchpoint_date
     ON cohort_base_combined.bizible_touchpoint_date = touchpoint_date.date_day
+  WHERE cohort_base_combined.dim_crm_person_id IS NOT NULL
+    OR cohort_base_combined.dim_crm_opportunity_id IS NOT NULL
 
 ), final AS (
 
@@ -626,5 +671,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-03-12",
+    updated_date="2024-05-30",
   ) }}

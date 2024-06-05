@@ -94,7 +94,7 @@ we can delete this connection and use the mart table directly.
 
       sfdc_opportunity_xf.acv,
       sfdc_opportunity_xf.amount,
-      sfdc_opportunity_xf.closed_deals,
+      sfdc_opportunity_xf.is_closed_deals,
       sfdc_opportunity_xf.competitors,
       sfdc_opportunity_xf.critical_deal_flag,
       sfdc_opportunity_xf.fpa_master_bookings_flag,

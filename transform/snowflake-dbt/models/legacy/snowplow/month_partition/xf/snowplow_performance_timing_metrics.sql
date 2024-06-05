@@ -1,7 +1,9 @@
 WITH events AS (
 
     SELECT *
-    FROM {{ ref('snowplow_structured_events') }}
+    FROM {{ref('snowplow_unnested_events')}}
+    WHERE event = 'struct'
+      AND is_staging_event = FALSE
 
 
 ), parsed_timing AS (

@@ -134,6 +134,10 @@ filtered_code_suggestion_events AS (
     host_name,
     is_streaming,
     gitlab_global_user_id,
+    suggestion_source,
+    is_invoked,
+    options_count,
+    accepted_option,
     namespace_ids,
     ultimate_parent_namespace_ids,
     dim_installation_ids,
@@ -150,7 +154,8 @@ filtered_code_suggestion_events AS (
     subscription_name,
     ultimate_parent_namespace_id,
     dim_installation_id,
-    installation_host_name
+    installation_host_name,
+    namespace_is_internal
   FROM code_suggestions_joined_to_fact_and_dim
   WHERE app_id IN ('gitlab_ai_gateway', 'gitlab_ide_extension') --"official" Code Suggestions app_ids
     AND is_event_to_exclude = FALSE --only include the good events
@@ -162,5 +167,5 @@ filtered_code_suggestion_events AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-04-23"
+    updated_date="2024-05-28"
 ) }}

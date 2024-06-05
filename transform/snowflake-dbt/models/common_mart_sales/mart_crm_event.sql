@@ -41,6 +41,7 @@
     dim_crm_event.comments,
     dim_crm_event.qualified_convo_or_meeting,
     dim_crm_event.first_opportunity_event_created_date,
+    dim_crm_event.partner_marketing_task_subject,
 
     --Dates and Datetimes
     dim_crm_event.event_start_date_time,

@@ -9,7 +9,7 @@ WITH source AS (
       yearly_name::VARCHAR                     AS yearly_name,
       yearly_dri::VARCHAR                      AS yearly_dri,
       yearly_description::VARCHAR              AS yearly_description,
-      is_mnpi::VARCHAR                         AS is_mnpi,
+      is_mnpi::BOOLEAN                         AS is_mnpi,
       FY25_Q4::FLOAT                           AS FY25_Q4,
       FY25_Q3::FLOAT                           AS FY25_Q3,
       FY25_Q2::FLOAT                           AS FY25_Q2,

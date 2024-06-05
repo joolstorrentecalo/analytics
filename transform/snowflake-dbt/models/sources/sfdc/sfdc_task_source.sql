@@ -27,6 +27,8 @@ WITH source AS (
       comments__c                               AS comments,
       description                               AS full_comments,
       subject                                   AS task_subject,
+      {{ partner_marketing_task_subject_cleaning('subject') }} 
+                                                AS partner_marketing_task_subject,
       activitydate                              AS task_date,
       createddate                               AS task_created_date,
       createdbyid                               AS task_created_by_id,

@@ -99,3 +99,8 @@ folders:
     folder_name: pending_invoices_report
     table_name: pending_invoices_report
     table_replace_append: 0
+  - name: gdpr_delete_requests
+    owner: '@parmstrong'
+    folder_name: gdpr_delete_requests
+    table_name: gdpr_delete_requests
+    table_replace_append: 0

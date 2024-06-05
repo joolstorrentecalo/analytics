@@ -29,7 +29,7 @@
         paid_user_metrics.dim_subscription_id_original,
         paid_user_metrics.dim_subscription_id,
         IFF(mart_arr_all.product_tier_name ILIKE '%Ultimate%', 1, 0)                                                        AS ultimate_subscription_flag,
-        IFF(mart_arr_all.product_rate_plan_name ILIKE '%OSS Program%', true, false)                                                        AS is_oss_program,
+        IFF(mart_arr_all.product_rate_plan_name ILIKE '%OSS Program%' AND SUM(mart_arr_all.arr) OVER (PARTITION BY mart_arr_all.dim_subscription_id_original, mart_arr_all.arr_month, mart_arr_all.product_delivery_type) = 0, TRUE, FALSE)                                                        AS is_oss_program,
         paid_user_metrics.delivery_type,
         paid_user_metrics.deployment_type,
         paid_user_metrics.instance_type,
@@ -276,6 +276,7 @@ LEFT JOIN mart_arr_all
     ON paid_user_metrics.dim_subscription_id_original = mart_arr_all.dim_subscription_id_original
     AND paid_user_metrics.snapshot_month = mart_arr_all.arr_month
     AND paid_user_metrics.delivery_type = mart_arr_all.product_delivery_type
+    AND mart_arr_all.product_tier_name NOT IN ('Storage','Not Applicable')
 WHERE paid_user_metrics.license_user_count != 0
 qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instance_identifier ORDER BY paid_user_metrics.ping_created_at DESC NULLs last) = 1
 
@@ -285,7 +286,7 @@ final as (
 
 select
    *,
-   CASE WHEN ROW_NUMBER() OVER (PARTITION BY snapshot_month, dim_subscription_id_original, delivery_type, instance_type ORDER BY billable_user_count desc nulls last, ping_created_at desc nulls last) = 1
+   CASE WHEN ROW_NUMBER() OVER (PARTITION BY snapshot_month, dim_subscription_id_original, delivery_type, instance_type, is_oss_program ORDER BY billable_user_count desc nulls last, ping_created_at desc nulls last) = 1
               and instance_type = 'Production' and is_oss_program = false
              THEN True 
              ELSE False 
@@ -336,5 +337,5 @@ from
     created_by="@snalamaru",
     updated_by="@jonglee1218",
     created_date="2023-12-10",
-    updated_date="2024-04-15"
+    updated_date="2024-05-16"
 ) }}

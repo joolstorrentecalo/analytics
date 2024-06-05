@@ -53,16 +53,16 @@ engineers AS (
     date_actual,
     COUNT(DISTINCT
         CASE
-            WHEN (job_title LIKE '%Backend Engineer%' 
-            OR job_title LIKE '%Fullstack Engineer%' 
-            OR job_title LIKE 'Distinguished Engineer%'
-            OR job_title = 'Engineering Fellow')
+            WHEN (position LIKE '%Backend Engineer%' 
+            OR position LIKE '%Fullstack Engineer%' 
+            OR position LIKE 'Distinguished Engineer%'
+            OR position = 'Engineering Fellow')
                 THEN employee_id ELSE NULL END) AS backend,
     COUNT(DISTINCT
         CASE 
-            WHEN job_title LIKE '%Frontend Engineer%' 
+            WHEN position LIKE '%Frontend Engineer%' 
                 THEN employee_Id ELSE NULL END) AS frontend
-  FROM employee_directory_analysis
+  FROM {{ ref('team_member_history') }}
   WHERE Department != 'Meltano'
   GROUP BY 1
   HAVING backend > 0 OR frontend > 0

@@ -119,6 +119,7 @@
   ), joined AS (
 
       SELECT
+        fct_ping_instance_metric.ping_instance_metric_monthly_pk                                                                        AS ping_instance_metric_monthly_pk,
         fct_ping_instance_metric.dim_ping_date_id                                                                                       AS dim_ping_date_id,
         fct_ping_instance_metric.dim_license_id                                                                                         AS dim_license_id,
         fct_ping_instance_metric.dim_installation_id                                                                                    AS dim_installation_id,
@@ -219,7 +220,11 @@
     SELECT
 
       -- Primary Key
+      ping_instance_metric_monthly_pk,
+
+      -- Outdated, Misstated Primary Key
       {{ dbt_utils.generate_surrogate_key(['dim_ping_instance_id', 'metrics_path']) }} AS ping_instance_metric_id,
+
       dim_ping_date_id,
       metrics_path,
       metric_value,
@@ -303,7 +308,7 @@
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2022-03-11",
-    updated_date="2024-04-18"
+    updated_date="2024-05-21"
 ) }}

@@ -306,3 +306,28 @@ Known exceptions and not yet implemented source tables were identified from obse
 This macro will generate a 'missing member' record which can be added to any dimension to handle late arriving dimensions in fact tables. It constructs an 'Unknown' record with null or unknown dimension attributes to maintain join integrity to facts models.
 
 {% enddocs %}
+
+{% docs union_tables %}
+
+The `union_tables` macro is derived from the `dbt_utils.union_relations` macro. It is designed to handle unions of tables with unequal schemas, supporting WHERE clauses and individual table filters, then combining all results using UNION. It constructs SQL SELECT statements for each specified table, ensuring correct column alignment and handling missing columns by filling them with NULL values. It allows for optional column overrides, inclusion or exclusion of specific columns, and the addition of a source column to identify the originating table. The macro supports WHERE clauses and individual table filters. Example usage below:
+
+    union_tables(
+        relations=[
+            ref('sales_jan'),
+            ref('sales_feb'),
+            ref('sales_mar')
+        ],
+        column_override={'sales_amount': 'FLOAT'},
+        include=['sale_id', 'product_id', 'sales_amount', 'sale_date'],
+        exclude=['discount_code'],
+        source_column_name='_source_table',
+        where='is_active = true',
+        filters={
+            'sales_jan': 'region = "North"',
+            'sales_feb': 'region = "South"'
+        }
+    )
+
+This macro also casts numeric columns to NUMBER to avoid overflow issues.
+
+{% enddocs %}

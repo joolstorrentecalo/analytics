@@ -62,8 +62,6 @@ dbt_secrets = [
     SNOWFLAKE_USER,
 ]
 
-from kubernetes_helpers import get_affinity, get_toleration
-
 env = os.environ.copy()
 
 GIT_BRANCH = env["GIT_BRANCH"]
@@ -77,7 +75,6 @@ default_args = {
     "retry_delay": timedelta(minutes=1),
     "sla": timedelta(hours=24),
     "sla_miss_callback": slack_failed_task,
-    # Only has data from March 2018
     "start_date": datetime(2023, 8, 24),
 }
 
@@ -109,8 +106,11 @@ dbt_external_table_run = KubernetesPodOperator(
     dag=dag,
 )
 
+spec_file = "bigquery/src/gcp_billing/bigquery_export.yml"
+spec_path = f"{REPO_BASE_PATH}/extract/{spec_file}"
+
 with open(
-    f"{REPO_BASE_PATH}/extract/gcs_external/src/gcp_billing/gcs_external.yml",
+    spec_path,
     "r",
 ) as yaml_file:
     try:
@@ -123,7 +123,9 @@ for export in stream["exports"]:
 
     billing_extract_command = f"""
     {clone_and_setup_extraction_cmd} &&
-    python gcs_external/src/gcp_billing/gcs_external.py --export_name={export_name}
+    python bigquery/src/bigquery_export.py \
+        --config_path={spec_file} \
+        --export_name={export_name}
     """
 
     task_name = export["name"]
@@ -137,6 +139,7 @@ for export in stream["exports"]:
         env_vars={
             **pod_env_vars,
             "EXPORT_DATE": "{{ yesterday_ds }}",
+            "GIT_BRANCH": GIT_BRANCH,
         },
         affinity=get_affinity("extraction"),
         tolerations=get_toleration("extraction"),

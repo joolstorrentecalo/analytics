@@ -30,6 +30,7 @@ WITH source AS (
       source.comments,
       source.full_comments,
       source.task_subject,
+      source.partner_marketing_task_subject,
       source.task_date,
       source.task_created_date,
       FIRST_VALUE(source.task_created_date) OVER (PARTITION BY source.related_opportunity_id ORDER BY source.task_created_date ASC) AS first_opportunity_task_created_date,

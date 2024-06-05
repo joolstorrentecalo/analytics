@@ -37,6 +37,7 @@
     fct_crm_task.task_mapped_to,
     dim_crm_task.full_comments,
     dim_crm_task.task_subject,
+    dim_crm_task.partner_marketing_task_subject,
     dim_crm_task.task_status,
     dim_crm_task.task_subtype,
     dim_crm_task.task_type,
@@ -162,7 +163,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@jngCES",
+    updated_by="@michellecooper",
     created_date="2022-12-05",
-    updated_date="2023-09-04"
+    updated_date="2024-05-17"
 ) }}

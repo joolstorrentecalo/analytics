@@ -1243,3 +1243,56 @@ models:
 
   - name: wk_mart_current_ar_by_aging_payment_terms_monthly
     description: Analysis of currently open invoice balances by payment terms and aging buckets
+  
+  - name: wk_fct_available_to_renew
+    description: A new workspace model to capture the ATR for all Subsriptions.
+
+  - name: wk_fct_available_to_renew_subscription_linkage
+    description: A new workspace model with ATR for all Subsriptions and renewal subscription linkage IDs.
+    
+  - name: wk_prep_yearlies_actual
+    description: a model containing actual values for the yearly items. The model contains both SAFE and MNPI data. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - yearly_name
+            - quarter
+    columns:
+      - name: yearly_name
+        description: name of the yearly item
+        tests:
+          - not_null
+      - name: source_table
+        description: Snowflake tables where the data is sourced
+      - name: quarter 
+        description: fiscal quarter of the reported target & actual
+      - name: actuals_raw 
+        description: Raw value of the actuals for the quaerter
+
+  - name: wk_yearlies_target_attainment_mnpi
+    description: a model containing both yearlies targets and actuals values. The model contains both SAFE and MNPI data. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - yearly_name
+            - quarter
+    columns:
+      - name: yearly_name
+        description: name of the yearly item
+          - not_null
+      - name: yearly_dri
+        description: DRI(s) of the yearly item
+      - name: yearly_description
+        description: description of the yearly item
+      - name: is_mnpi
+        description: true or false flag to determine whether the yearly item is MNPI
+      - name: quarter 
+        description: fiscal quarter of the reported target & actual
+      - name: source_table
+        description: Snowflake tables where the data is sourced
+      - name: targets_raw
+        description: Raw value of the target for the quarter
+      - name: actuals_raw 
+        description: Raw value of the actuals for the quaerter
+      - name: target_attainment
+        description: actuals_raw divided by targets_raw to calculate % of attainment

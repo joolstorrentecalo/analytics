@@ -1,5 +1,7 @@
 project_path,project_id, owner
 gitlab-org/build/CNG,4359271
+gitlab-org/cells/http-router,54957577
+gitlab-org/cells/topology-service,56726842
 gitlab-org/charts/auto-deploy-app,11915984
 gitlab-org/charts/deploy-image-helm-base,7453181
 gitlab-org/charts/gitlab,3828396

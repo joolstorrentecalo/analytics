@@ -17,9 +17,9 @@ import os
 from logging import info
 from abc import ABC, abstractmethod
 from typing import Dict, List
+from gitlabdata.orchestration_utils import make_request
 
 from thought_industries_api_helpers import (
-    make_request,
     iso8601_to_epoch_ts_ms,
     epoch_ts_ms_to_datetime_str,
     upload_payload_to_snowflake,

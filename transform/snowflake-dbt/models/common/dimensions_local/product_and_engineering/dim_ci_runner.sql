@@ -43,6 +43,7 @@ WITH prep_ci_runner AS (
 
     --- CI Runner Machine Type Mapping
     ci_runner_machine_type,
+    cost_factor,
     contacted_at,
     is_active,
     ci_runner_version,
@@ -68,7 +69,7 @@ WITH prep_ci_runner AS (
 {{ dbt_audit(
     cte_ref="prep_ci_runner",
     created_by="@snalamaru",
-    updated_by="@chrissharp",
+    updated_by="@michellecooper",
     created_date="2021-06-23",
-    updated_date="2024-05-08"
+    updated_date="2024-05-17"
 ) }}

@@ -15,6 +15,8 @@ models:
       - name: task_subject
         meta:
            masking_policy: analyst_sales_sensitive
+      - name: partner_marketing_task_subject
+        description: A non-pii field with the type of subject.
 
   - name: mart_crm_event
     description: Record of all Salesforce Events related to leads, contact, accounts, and opportunities. 
@@ -174,7 +176,9 @@ models:
       - name: last_modified_date
         description: The Date the event was last modified. 
       - name: systemmodstamp
-        description: The time/date stamp from SFDC when this record was created. 
+        description: The time/date stamp from SFDC when this record was created.
+      - name: partner_marketing_task_subject
+        description: A non-pii field with the type of subject.
 
   - name: rpt_scaffold_sales_funnel
     description: Scaffold table that provides a foundational structure between fct_sales_funnel_actual and fct_sales_funnel_target_daily to support the visualization layer. Link to handbook documentation on [scaffold tables](https://about.gitlab.com/handbook/business-technology/data-team/platform/edw/#scaffold-tables)
@@ -183,3 +187,13 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: rpt_targets_actuals_multi_grain
+    description: >
+      This report table consolidates data:
+      - At the opportunity level for the current quarter  
+      - Aggregate data on a weekly basis for previous quarters 
+      - Targets 
+      It serves as a singular source for creating pipeline visualizations in Tableau, 
+      offering a comprehensive view across different timeframes. This report is a multi
+      grain table, since the data is at 3 different levels of granularity.

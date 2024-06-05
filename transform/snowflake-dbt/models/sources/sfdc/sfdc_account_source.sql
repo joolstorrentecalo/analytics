@@ -110,6 +110,7 @@ renamed AS (
     account_demographics_employee_count__c AS account_employee_count,
     account_demographic_max_family_employees__c AS account_max_family_employee,
     account_demographics_upa_country__c AS account_upa_country,
+    account_demographics_upa_country_name__c AS account_upa_country_name,
     account_demographics_upa_state__c AS account_upa_state,
     account_demographics_upa_city__c AS account_upa_city,
     account_demographics_upa_street__c AS account_upa_street,

@@ -294,6 +294,22 @@ tables:
     import_query: |-
       SELECT version
       FROM schema_migrations
+  self_managed_instance_activations:
+    advanced_metadata: true
+    export_db: EXPORT_DB
+    export_schema: 'customers'
+    export_table: 'self_managed_instance_activations'
+    export_table_primary_key: id
+    import_db: CUSTOMERS_DB
+    import_query: |-
+      SELECT id
+           , created_at
+           , updated_at
+           , activated_at
+           , self_managed_instance_id
+           , cloud_activation_id
+           , subscription_id
+      FROM self_managed_instance_activations
   temporary_extension_histories:
     advanced_metadata: true
     export_db: EXPORT_DB

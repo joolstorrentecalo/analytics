@@ -63,7 +63,7 @@ WITH source AS (
         -- opportunity information
         acv_2__c                                        AS acv,
         amount                                          AS amount,
-        IFF(acv_2__c >= 0, 1, 0)                        AS closed_deals, -- so that you can exclude closed deals that had negative impact
+        IFF(acv_2__c >= 0, 1, 0)                        AS is_closed_deals, -- so that you can exclude closed deals that had negative impact
         competitors__c                                  AS competitors,
         critical_deal_flag__c                           AS critical_deal_flag,
         {{sfdc_deal_size('arr_net__c', 'deal_size')}},
@@ -71,7 +71,6 @@ WITH source AS (
         incremental_acv_2__c                            AS forecasted_iacv,
         iacv_created_date__c                            AS iacv_created_date,
         incremental_acv__c                              AS incremental_acv,
-        pre_covid_iacv__c                               AS pre_covid_iacv,
         invoice_number__c                               AS invoice_number,
         is_refund_opportunity__c                        AS is_refund,
         is_downgrade_opportunity__c                     AS is_downgrade,

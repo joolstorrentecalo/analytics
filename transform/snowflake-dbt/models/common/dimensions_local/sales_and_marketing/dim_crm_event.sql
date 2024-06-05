@@ -32,6 +32,7 @@ WITH prep_crm_event AS (
         prep_crm_event.comments,
         prep_crm_event.qualified_convo_or_meeting,
         prep_crm_event.first_opportunity_event_created_date,
+        prep_crm_event.partner_marketing_task_subject,
     
     --Dates and Datetimes
         prep_crm_event.event_start_date_time,

@@ -737,3 +737,22 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: sfdc_zqu_product_rate_plan_source
+    description: '{{ doc("sfdc_zqu_product_rate_plan_source") }}'
+    columns:
+      - name: zqu_product_rate_plan_id
+        tags: ["tdf", "sfdc"]
+        tests:
+          - not_null
+          - unique
+
+  - name: sfdc_zqu_zproduct_source
+    description: '{{ doc("sfdc_zqu_zproduct_source") }}'
+    columns:
+      - name: zqu_zproduct_id
+        tags: ["tdf", "sfdc"]
+        tests:
+          - not_null
+          - unique
+

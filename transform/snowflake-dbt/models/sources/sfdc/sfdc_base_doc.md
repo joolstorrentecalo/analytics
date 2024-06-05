@@ -271,3 +271,15 @@ Source model for SFDC MDF Funds Requests
 Source model for SFDC user territory association
 
 {% enddocs %}
+
+{% docs sfdc_zqu_product_rate_plan_source  %}
+
+Source model for SFDC custom object product rate plan source representing a product rate plan from Zuora
+
+{% enddocs %}
+
+{% docs sfdc_zqu_zproduct_source  %}
+
+Source model for SFDC custom object product source representing a product from Zuora
+
+{% enddocs %}

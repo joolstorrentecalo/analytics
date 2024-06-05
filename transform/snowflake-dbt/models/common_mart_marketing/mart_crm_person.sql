@@ -32,7 +32,7 @@
       mql_date_first.first_day_of_month        AS mql_month_first,
       mql_date_first_pt.first_day_of_month     AS mql_month_first_pt,
       mql_date_latest.date_day                 AS mql_date_latest,
-       initial_mql_date_first_pt.date_day      AS initial_mql_date_first_pt,
+      initial_mql_date_first_pt.date_day       AS initial_mql_date_first_pt,
       initial_mql_date_first.first_day_of_month
                                                AS initial_mql_month_first,
       initial_mql_date_first_pt.first_day_of_month
@@ -217,7 +217,23 @@
         WHEN LOWER(dim_crm_person.lead_source) LIKE '%trial - enterprise%' THEN TRUE
         ELSE FALSE
       END                                                        AS is_lead_source_trial,
-      dim_crm_person.person_first_country
+      dim_crm_person.person_first_country,
+      
+      --MQL and Most Recent Touchpoint info
+      dim_crm_person.bizible_mql_touchpoint_id,
+      dim_crm_person.bizible_mql_touchpoint_date,
+      dim_crm_person.bizible_mql_form_url,
+      dim_crm_person.bizible_mql_sfdc_campaign_id,
+      dim_crm_person.bizible_mql_ad_campaign_name,
+      dim_crm_person.bizible_mql_marketing_channel,
+      dim_crm_person.bizible_mql_marketing_channel_path,
+      dim_crm_person.bizible_most_recent_touchpoint_id,
+      dim_crm_person.bizible_most_recent_touchpoint_date,
+      dim_crm_person.bizible_most_recent_form_url,
+      dim_crm_person.bizible_most_recent_sfdc_campaign_id,
+      dim_crm_person.bizible_most_recent_ad_campaign_name,
+      dim_crm_person.bizible_most_recent_marketing_channel,
+      dim_crm_person.bizible_most_recent_marketing_channel_path
     FROM fct_crm_person
     LEFT JOIN dim_crm_person
       ON fct_crm_person.dim_crm_person_id = dim_crm_person.dim_crm_person_id
@@ -303,7 +319,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@degan",
+    updated_by="@rkohnke",
     created_date="2020-12-07",
-    updated_date="2024-03-11",
+    updated_date="2024-05-17",
   ) }}  

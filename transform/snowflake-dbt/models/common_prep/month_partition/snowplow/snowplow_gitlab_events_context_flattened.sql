@@ -127,7 +127,11 @@ WITH filtered_source as (
             {'field':'gitlab_instance_id', 'alias':'instance_id'},
             {'field':'gitlab_host_name', 'alias':'host_name'},
             {'field':'is_streaming', 'data_type':'boolean'},
-            {'field':'gitlab_global_user_id'}
+            {'field':'gitlab_global_user_id'},
+            {'field':'suggestion_source'},
+            {'field':'is_invoked', 'data_type':'boolean'},
+            {'field':'options_count', 'formula':"NULLIF(context_data['options_count']::VARCHAR, 'null')", 'data_type':'number', 'alias':'options_count'},
+            {'field':'accepted_option', 'data_type':'int'}
             ]
         )
       }},
@@ -260,6 +264,10 @@ SELECT
   MAX(column_selection.host_name)                             AS host_name,
   MAX(column_selection.is_streaming)                          AS is_streaming,
   MAX(column_selection.gitlab_global_user_id)                 AS gitlab_global_user_id,
+  MAX(column_selection.suggestion_source)                     AS suggestion_source,
+  MAX(column_selection.is_invoked)                            AS is_invoked,
+  MAX(column_selection.options_count)                         AS options_count,
+  MAX(column_selection.accepted_option)                       AS accepted_option,
 
   MAX(column_selection.ide_extension_version_context)         AS ide_extension_version_context,
   MAX(column_selection.ide_extension_version_context_schema)  AS ide_extension_version_context_schema,

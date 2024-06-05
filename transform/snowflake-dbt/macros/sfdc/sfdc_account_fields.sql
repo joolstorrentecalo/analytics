@@ -330,6 +330,7 @@ WITH map_merged_crm_account AS (
 
       sfdc_account.account_max_family_employee                            AS parent_crm_account_max_family_employee,
       sfdc_account.account_upa_country                                    AS parent_crm_account_upa_country,
+      sfdc_account.account_upa_country_name                               AS parent_crm_account_upa_country_name,
       sfdc_account.account_upa_state                                      AS parent_crm_account_upa_state,
       sfdc_account.account_upa_city                                       AS parent_crm_account_upa_city,
       sfdc_account.account_upa_street                                     AS parent_crm_account_upa_street,

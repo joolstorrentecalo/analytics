@@ -69,8 +69,9 @@ exposures:
       - ref('gitlab_dotcom_memberships')
       - ref('gitlab_dotcom_usage_data_events')
       - ref('gitlab_dotcom_users_source')
-      - ref('snowplow_structured_events')
-      - ref('snowplow_gitlab_events_context_flattened')
+      - ref('fct_behavior_structured_event')
+      - ref('dim_behavior_event')
+      - ref('dim_behavior_operating_system')
       - ref('mart_product_usage_free_user_metrics_monthly')
       - ref('monthly_stage_usage_by_namespace')
     owner:
@@ -89,8 +90,9 @@ exposures:
       - ref('mart_crm_attribution_touchpoint')
       - ref('sfdc_task')
       - ref('sfdc_lead_source')      
-      - ref('snowplow_structured_events')
-      - ref('snowplow_gitlab_events_context_flattened')
+      - ref('fct_behavior_structured_event')
+      - ref('dim_behavior_event')
+      - ref('dim_behavior_operating_system')
     owner:
       name: Kevin Dietz
       email: kdietz@gitlab.com

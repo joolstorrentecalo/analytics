@@ -202,7 +202,7 @@ final AS (
     fulfillment_partner.crm_account_name AS fulfillment_partner_name,
 
     -- Dates
-    DAYNAME(dim_date.current_date_actual) AS current_day_name,  --need to add this field to date_details
+    dim_date.current_day_name,
     dim_date.current_date_actual,
     dim_date.current_fiscal_year,
     dim_date.current_first_day_of_fiscal_year,
@@ -212,13 +212,9 @@ final AS (
     dim_date.current_day_of_month,
     dim_date.current_day_of_fiscal_quarter,
     dim_date.current_day_of_fiscal_year,
-    CASE WHEN current_day_name = 'Sun' THEN dim_date.current_date_actual
-      ELSE DATEADD('day', -1, DATE_TRUNC('week', dim_date.current_date_actual)) END     
-                                                                    AS current_first_day_of_week,
-    FLOOR((DATEDIFF(day, dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) / 7))                   
-                                                                    AS current_week_of_fiscal_quarter_normalised,
-    FLOOR((DATEDIFF(day, dim_date.current_first_day_of_fiscal_quarter, dim_date.current_date_actual) / 7)) 
-                                                                    AS current_week_of_fiscal_quarter,
+    dim_date.current_first_day_of_week,
+    dim_date.current_week_of_fiscal_quarter_normalised,
+    dim_date.current_week_of_fiscal_quarter,
     created_date.date_actual                                        AS created_date,
     created_date.first_day_of_month                                 AS created_month,
     created_date.first_day_of_fiscal_quarter                        AS created_fiscal_quarter_date,
@@ -374,6 +370,8 @@ final AS (
     fct_crm_opportunity.positive_booked_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.positive_open_deal_count_in_snapshot_quarter,
     fct_crm_opportunity.positive_open_net_arr_in_snapshot_quarter,
+    fct_crm_opportunity.closed_deals_in_snapshot_quarter,
+    fct_crm_opportunity.closed_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_1plus_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_3plus_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.open_4plus_net_arr_in_snapshot_quarter,
@@ -383,7 +381,6 @@ final AS (
     fct_crm_opportunity.created_arr_in_snapshot_quarter,
     fct_crm_opportunity.closed_won_opps_in_snapshot_quarter,
     fct_crm_opportunity.closed_opps_in_snapshot_quarter,
-    fct_crm_opportunity.closed_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.booked_net_arr_in_snapshot_quarter,
     fct_crm_opportunity.created_deals_in_snapshot_quarter,
     fct_crm_opportunity.cycle_time_in_days_in_snapshot_quarter,
@@ -446,7 +443,7 @@ final AS (
     fct_crm_opportunity.last_day_of_fiscal_quarter,
     fct_crm_opportunity.last_day_of_fiscal_year,
     IFF(dim_date.current_first_day_of_fiscal_quarter = snapshot_first_day_of_fiscal_quarter, TRUE, FALSE) AS is_current_snapshot_quarter,
-    IFF(current_first_day_of_week = dim_date.first_day_of_week, TRUE, FALSE) AS is_current_snapshot_week,
+    IFF(dim_date.current_first_day_of_week = dim_date.first_day_of_week, TRUE, FALSE) AS is_current_snapshot_week,
     'granular' AS source
   FROM fct_crm_opportunity
   LEFT JOIN dim_crm_account

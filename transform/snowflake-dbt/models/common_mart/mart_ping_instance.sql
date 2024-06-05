@@ -1,7 +1,8 @@
 {{ config(
     tags=["product", "mnpi_exception"],
     materialized = "table",
-    unique_key = "ping_instance_id"
+    unique_key = "ping_instance_id",
+    cluster_by=['ping_created_at::DATE']
 ) }}
 
 {{ simple_cte([
@@ -292,5 +293,5 @@ sorted AS (
     created_by="@icooper-acp",
     updated_by="@utkarsh060",
     created_date="2022-03-11",
-    updated_date="2024-04-18"
+    updated_date="2024-05-15"
 ) }}

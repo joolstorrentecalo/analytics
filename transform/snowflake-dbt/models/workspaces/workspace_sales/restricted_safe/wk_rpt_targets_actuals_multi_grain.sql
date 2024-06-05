@@ -378,6 +378,8 @@ unioned AS (
     positive_booked_net_arr_in_snapshot_quarter,
     positive_open_deal_count_in_snapshot_quarter,
     positive_open_net_arr_in_snapshot_quarter,
+    closed_deals_in_snapshot_quarter,
+    closed_net_arr_in_snapshot_quarter,
     open_1plus_net_arr_in_snapshot_quarter,
     open_3plus_net_arr_in_snapshot_quarter,
     open_4plus_net_arr_in_snapshot_quarter,
@@ -387,7 +389,6 @@ unioned AS (
     created_arr_in_snapshot_quarter,
     closed_won_opps_in_snapshot_quarter,
     closed_opps_in_snapshot_quarter,
-    closed_net_arr_in_snapshot_quarter,
     booked_net_arr_in_snapshot_quarter,
     created_deals_in_snapshot_quarter,
     cycle_time_in_days_in_snapshot_quarter,
@@ -808,6 +809,8 @@ unioned AS (
     NULL AS positive_booked_net_arr_in_snapshot_quarter,
     NULL AS positive_open_deal_count_in_snapshot_quarter,
     NULL AS positive_open_net_arr_in_snapshot_quarter,
+    NULL AS closed_deals_in_snapshot_quarter,
+    NULL AS closed_net_arr_in_snapshot_quarter,
     NULL AS open_1plus_net_arr_in_snapshot_quarter,
     NULL AS open_3plus_net_arr_in_snapshot_quarter,
     NULL AS open_4plus_net_arr_in_snapshot_quarter,
@@ -817,7 +820,6 @@ unioned AS (
     NULL AS created_arr_in_snapshot_quarter,
     NULL AS closed_won_opps_in_snapshot_quarter,
     NULL AS closed_opps_in_snapshot_quarter,
-    NULL AS closed_net_arr_in_snapshot_quarter,
     NULL AS booked_net_arr_in_snapshot_quarter,
     NULL AS created_deals_in_snapshot_quarter,
     NULL AS cycle_time_in_days_in_snapshot_quarter,
@@ -894,7 +896,10 @@ unioned AS (
 
 SELECT 
   unioned.*,
-  MAX(IFF(snapshot_date <= CURRENT_DATE(),snapshot_date, NULL)) OVER () AS max_snapshot_date,
+  MAX(CASE 
+        WHEN source != 'targets_actuals' AND snapshot_date < CURRENT_DATE() THEN snapshot_date 
+        ELSE NULL 
+    END) OVER () AS max_snapshot_date, -- We want to ensure we have the max_snapshot_date that comes from the actuals in every row but excluding the future dates we have in the targets data 
   FLOOR((DATEDIFF(day, current_first_day_of_fiscal_quarter, max_snapshot_date) / 7)) 
                                                                         AS most_recent_snapshot_week
 FROM unioned

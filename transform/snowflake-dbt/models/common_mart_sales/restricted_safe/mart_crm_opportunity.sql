@@ -154,6 +154,7 @@
 
       -- Flags
       fct_crm_opportunity.is_won,
+      fct_crm_opportunity.valid_deal_count,
       fct_crm_opportunity.is_closed,
       dim_crm_opportunity.is_edu_oss,
       dim_crm_opportunity.is_ps_opp,
@@ -494,6 +495,7 @@
       fct_crm_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       fct_crm_opportunity.calculated_from_ratio_net_arr,
       fct_crm_opportunity.net_arr,
+      fct_crm_opportunity.net_arr_stage_1,
       fct_crm_opportunity.xdr_net_arr_stage_1,
       fct_crm_opportunity.xdr_net_arr_stage_3,
       fct_crm_opportunity.enterprise_agile_planning_net_arr,
@@ -607,9 +609,9 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@chrissharp",
+    updated_by="@rkohnke",
     created_date="2020-12-07",
-    updated_date="2024-04-30"
+    updated_date="2024-05-22"
   ) }}
 
 

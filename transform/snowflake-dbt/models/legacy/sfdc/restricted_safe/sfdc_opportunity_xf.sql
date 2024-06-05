@@ -89,7 +89,7 @@ WITH sfdc_opportunity AS (
       -- opportunity information
       sfdc_opportunity.acv,
       sfdc_opportunity.amount,
-      sfdc_opportunity.closed_deals,
+      sfdc_opportunity.is_closed_deals,
       sfdc_opportunity.competitors,
       sfdc_opportunity.critical_deal_flag,
       sfdc_opportunity.deal_size,
@@ -97,7 +97,6 @@ WITH sfdc_opportunity AS (
       sfdc_opportunity.forecasted_iacv,
       sfdc_opportunity.iacv_created_date,
       sfdc_opportunity.incremental_acv,
-      sfdc_opportunity.pre_covid_iacv,
       sfdc_opportunity.invoice_number,
       sfdc_opportunity.is_refund,
       sfdc_opportunity.is_downgrade,

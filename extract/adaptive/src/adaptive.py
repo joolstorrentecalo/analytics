@@ -8,9 +8,9 @@ import xmltodict
 from logging import info, error, basicConfig, getLogger
 from io import StringIO
 from typing import Any, Dict, Union, List, Optional
+from gitlabdata.orchestration_utils import make_request
 
 from adaptive_helpers import (
-    make_request,
     upload_exported_data,
     read_processed_versions_table,
     upload_processed_version,

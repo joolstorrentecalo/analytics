@@ -70,7 +70,8 @@ WITH source AS (
       meeting_cancelled__c::BOOLEAN          AS is_meeting_canceled,
       close_task__c::BOOLEAN                 AS is_closed_event,
       activity__c::FLOAT                     AS is_activity,
-
+      {{ partner_marketing_task_subject_cleaning('subject') }} 
+                                             AS partner_marketing_task_subject,  
 
     --Recurrence Info
       recurrenceactivityid::VARCHAR          AS event_recurrence_activity_id,

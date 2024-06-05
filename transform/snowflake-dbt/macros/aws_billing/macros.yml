@@ -1,0 +1,33 @@
+version: 2
+
+macros:
+  - name: dedupe_aws_source
+    description: '{{ doc("dedupe_aws_source") }}'
+    arguments:
+      - name: source_table
+        type: string
+        description: Name of the source table (from schema.yml file).
+      - name: source_schema
+        type: string
+        description: Name of the source table (from schema.yml file). Default value is AWS_BILLING.
+      - name: condition_column
+        type: string
+        description: Name of the column for data deduplication. Default value is metadata$file_last_modified.
+      - name: unique_key
+        type: string
+        description: Unique column (pseudo primary key). Default value is ID.
+  - name: dedupe_and_union_aws_source
+    description: '{{ doc("dedupe_and_union_aws_source") }}'
+    arguments:
+      - name: source_tables
+        type: comma separated list between brackets
+        description: Name of the source table (from schema.yml file).
+      - name: source_schema
+        type: string
+        description: Name of the source table (from schema.yml file). Default value is AWS_BILLING.
+      - name: condition_column
+        type: string
+        description: Name of the column for data deduplication. Default value is metadata$file_last_modified.
+      - name: unique_key
+        type: string
+        description: Unique column (pseudo primary key). Default value is ID.

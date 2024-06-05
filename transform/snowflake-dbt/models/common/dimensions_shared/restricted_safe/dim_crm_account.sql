@@ -74,6 +74,7 @@
       prep_crm_account.parent_crm_account_role_type,
       prep_crm_account.parent_crm_account_max_family_employee,
       prep_crm_account.parent_crm_account_upa_country,
+      prep_crm_account.parent_crm_account_upa_country_name,
       prep_crm_account.parent_crm_account_upa_state,
       prep_crm_account.parent_crm_account_upa_city,
       prep_crm_account.parent_crm_account_upa_street,

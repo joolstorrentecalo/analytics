@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow_utils import (
-    DATA_IMAGE,
+    DATA_IMAGE_3_10,
     clone_and_setup_extraction_cmd,
     gitlab_defaults,
     slack_failed_task,
@@ -45,7 +45,7 @@ default_args = {
 # Set the command for the container
 container_cmd = f"""
     {clone_and_setup_extraction_cmd} &&
-    python gitlab_api_mrs/src/execute.py part_of_product
+    python gitlab_api_mrs/src/execute.py part_of_product_graphql
 """
 
 # Create the DAG
@@ -53,13 +53,14 @@ dag = DAG(
     "part_of_product_mrs",
     default_args=default_args,
     schedule_interval="0 4 * * *",
-    catchup=False,
+    catchup=True,
+    max_active_runs=4,
 )
 
 # Task 1
 part_of_product_mrs_run = KubernetesPodOperator(
     **gitlab_defaults,
-    image=DATA_IMAGE,
+    image=DATA_IMAGE_3_10,
     task_id="part-of-product-mrs",
     name="part-of-product-mrs",
     secrets=[

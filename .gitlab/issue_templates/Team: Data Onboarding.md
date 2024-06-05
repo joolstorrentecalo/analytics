@@ -51,7 +51,7 @@ You will need access to several groups, applications, tools, and data sources fo
 | Access To | Distributed Data Analyst | Data Analyst | Analytics Engineer | Data Scientist | Data Engineer | Method |
 | ------- | :----------------------: | :----------: | :----------------: | :------------: | :-----------: | ------ |
 |  Lucidchart | Yes | Yes | Yes | Yes  | Yes  | Access Request |
-|  Sisense |  Editor | Editor  | Editor  | Editor  | Editor | Access Request, [Example](https://gitlab.com/gitlab-com/team-member-epics/access-requests/-/issues/10858) |
+|  Tableau |  Creator | Creator  | Creator  | Explorer  | Optional | Access Request, [Example](https://gitlab.com/gitlab-com/team-member-epics/access-requests/-/issues/10858) |
 |  Stitch |  No | No  | No | No | Yes | ? |
 |  Fivetran | No  | No  | No | No | Yes | [Instructions](https://about.gitlab.com/handbook/business-ops/okta/#managing-okta-access-using-google-groups) |
 |  Airflow |  No | Analyst | Admin| Analyst | Admin | |
@@ -97,8 +97,7 @@ Getting to know the team will require purposeful steps on your part in our all-r
 <summary>Team Member Steps</summary>
 
 - [ ] Review the [org chart](https://www.myworkday.com/gitlab/d/inst/247$55/rel-task/2998$10935.htmld) to find your immediate team and the greater Data Team. Using your browser search to find your self on the page can be a quick way to find your team.
-- [ ] Schedule coffee chats with members of the Data Team starting with those in your immediate team. These should be in addition to the ones you do with other GitLab team members. Consider making these recurring meetings for every 3-4 weeks with everyone you will work closely with. In addition, you should also consider scheduling chats with Business Technology (IT, Enterprise Apps, Procurement) people as well.
-- [ ] Schedule a cofee chat with the Sr. Director of Data and Analytics
+- [ ] Schedule coffee chats with members of the Data Team starting with those in your immediate team. These should be in addition to the ones you do with other GitLab team members. Once you have fully onboarded, consider creating recurring meetings for every 3-4 weeks with everyone you will work closely with. 
 
 </details>
 
@@ -116,12 +115,10 @@ There are many slack channels for communication of data team needs and informati
 | ------- | :----------------------: | :----------: | :----------------: | :------------: | :-----------: | 
 | `data` | Yes | Yes | Yes | Yes | Yes | 
 | `data-lounge` | Yes | Yes | Yes | Yes | Yes |
-| `data-onboarding` | Yes | Yes | Yes | Yes | Yes |
 | `data-daily` | No | Yes | Yes | Yes | Yes |
+| `data-weekly` | No | Yes | Yes | Yes | Yes |
 | `data-triage` | No | Yes | Yes | Yes | Yes |
 | `data-engineering` | No | Yes | Yes | Yes | Yes |
-| `business-technology` | No | Yes | Yes | Yes | Yes |
-| `bt-team-lounge` | No | Yes | Yes | Yes | Yes |
 | `analytics-pipelines` | No | No | Yes | No | No |
 | `data-prom-alerts` | No | No | No | No | Yes |
 | `bt-data-science` | No | No | No | Yes | No |
@@ -350,16 +347,11 @@ _Ensure you've set up your SSH configuration in the previous step as this is req
    - [dbt Labs Blog](https://blog.getdbt.com/)
    - [dbt Discourse](http://discourse.getdbt.com)
 
-### Sisense 
+### Tableau 
 
-Sisense is our enterprise standard data visualization application and is the only application approved for connecting to our Enterprise Data Warehouse.
+Tableau is our enterprise standard data visualization application.
 
-- [ ] Review the following training materials from the [Data Team Sisense](https://about.gitlab.com/handbook/business-technology/data-team/platform/periscope/#training-resources) page.
-  - [ ] Watch Accessing Sisense
-  - [ ] Review the Getting Started article
-  - [ ] Watch the Gitlab's Sisence Editor Training
-- [ ] Watch the Sisence Admin Training [Part 1](https://www.youtube.com/watch?v=YspSfOuEQV4&list=PL05JrBw4t0KrRVTZY33WEHv8SjlA_-keI&index=16)
-- [ ] Watch the Sisence Admin Training [Part 2](https://www.youtube.com/watch?v=LQT9fXw1EaE&list=PL05JrBw4t0KrRVTZY33WEHv8SjlA_-keI&index=14)
+- [ ] Review the [Data Team handbook page on Tableau](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/tableau/).
 
 </details>
 

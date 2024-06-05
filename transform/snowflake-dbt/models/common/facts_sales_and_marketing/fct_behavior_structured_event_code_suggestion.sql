@@ -38,7 +38,11 @@ code_suggestion_context AS (
     fct_behavior_structured_event.instance_id,
     fct_behavior_structured_event.host_name,
     fct_behavior_structured_event.is_streaming,
-    fct_behavior_structured_event.gitlab_global_user_id
+    fct_behavior_structured_event.gitlab_global_user_id,
+    fct_behavior_structured_event.suggestion_source,
+    fct_behavior_structured_event.is_invoked,
+    fct_behavior_structured_event.options_count,
+    fct_behavior_structured_event.accepted_option
   FROM fct_behavior_structured_event
   WHERE behavior_at >= '2023-08-01' -- no events added to context before Aug 2023
     AND has_code_suggestions_context = TRUE
@@ -157,7 +161,25 @@ code_suggestion_context AS (
   LEFT JOIN dim_installation
     ON dim_installation.dim_instance_id = code_suggestion_context.instance_id
   WHERE code_suggestion_context.instance_id IS NOT NULL
-    AND code_suggestion_context.instance_id != 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f'
+    AND ( 
+          code_suggestion_context.host_name IS NULL
+            OR code_suggestion_context.host_name = ''
+        )
+
+  UNION
+
+  SELECT
+    code_suggestion_context.behavior_structured_event_pk,
+    code_suggestion_context.instance_id,
+    dim_installation.dim_installation_id,
+    dim_installation.host_name
+  FROM code_suggestion_context
+  LEFT JOIN dim_installation
+    ON dim_installation.dim_instance_id = code_suggestion_context.instance_id
+      AND dim_installation.host_name = code_suggestion_context.host_name
+  WHERE code_suggestion_context.instance_id IS NOT NULL
+    AND code_suggestion_context.host_name IS NOT NULL
+    AND code_suggestion_context.host_name != ''
 
 )
 
@@ -243,5 +265,5 @@ code_suggestion_context AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-04-23"
+    updated_date="2024-06-03"
 ) }}

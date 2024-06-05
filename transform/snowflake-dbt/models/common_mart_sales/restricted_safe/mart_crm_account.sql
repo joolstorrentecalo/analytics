@@ -51,6 +51,7 @@
       dim_crm_account.parent_crm_account_role_type,
       dim_crm_account.parent_crm_account_max_family_employee,
       dim_crm_account.parent_crm_account_upa_country,
+      dim_crm_account.parent_crm_account_upa_country_name,
       dim_crm_account.parent_crm_account_upa_state,
       dim_crm_account.parent_crm_account_upa_city,
       dim_crm_account.parent_crm_account_upa_street,

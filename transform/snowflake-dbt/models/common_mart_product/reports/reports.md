@@ -169,7 +169,7 @@ ORDER BY 1
 - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')`
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `major_minor_version_id`, `version_is_prerelease`, and `instance_user_count` look at 'Last Ping of the Month' pings
 - Exclude the current month
 
@@ -196,7 +196,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated)` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include metrics for 28 Day and All-Time time frames
 - `Inherited` - Include metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude metrics that timed out during ping generation
@@ -231,7 +231,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited`- Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include metrics for 28 Day and All-Time time frames
 - `Inherited` - Include metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude metrics that timed out during ping generation
@@ -266,7 +266,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include metrics for 28 Day and All-Time time frames
 - `Inherited` - Include metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude metrics that timed out during ping generation
@@ -342,7 +342,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Include subscriptions where:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated)` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Exclude the current month
 
 **Business Logic in this Model:**
@@ -366,7 +366,7 @@ _Note: This model is not expected to be used much (if at all) for analysis. The 
 - `Inherited` - Subscriptions and seats are limited to:
   - `product_deployment_type IN ('Self-Managed', 'Dedicated')` 
   - `subscription_status IN ('Active','Cancelled')`
-  - `product_tier_name <> 'Storage'`
+  - `product_tier_name NOT IN ('Storage', 'Not Applicable')`
 - `Inherited` - Include 28 Day and All-Time metrics  
 - `Inherited` - Include Metrics from the 'Last Ping of the Month' pings
 - `Inherited` - Exclude the current month

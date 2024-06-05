@@ -18,6 +18,7 @@ WITH prep_crm_task AS (
     -- Task infomation
     prep_crm_task.full_comments,
     prep_crm_task.task_subject,
+    prep_crm_task.partner_marketing_task_subject,
     prep_crm_task.task_status,
     prep_crm_task.task_subtype,
     prep_crm_task.task_type,
@@ -121,5 +122,5 @@ WITH prep_crm_task AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2022-12-05",
-    updated_date="2023-03-13"
+    updated_date="2024-05-17"
 ) }}

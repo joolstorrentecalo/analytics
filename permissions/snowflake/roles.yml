@@ -22,10 +22,6 @@ databases:
       shared: false
   - abright_prep:
       shared: false
-  - airbyteevaluation_prod:
-      shared: false
-  - airbyteevaluation_prep:
-      shared: false
   - akapungu_prod:
       shared: false
   - akapungu_prep:
@@ -38,17 +34,11 @@ databases:
       shared: false
   - apiaseczna_prep:
       shared: false
-  - bi_tool_eval:
-      shared: false
   - testing_db:
       shared: false
   - cbraza_prod:
       shared: false
   - cbraza_prep:
-      shared: false
-  - cdeleon_prod:
-      shared: false
-  - cdeleon_prep:
       shared: false
   - cleroux_prod:
       shared: false
@@ -93,10 +83,6 @@ databases:
   - jclapper_prod:
       shared: false
   - jclapper_prep:
-      shared: false
-  - jng_prod:
-      shared: false
-  - jng_prep:
       shared: false
   - jpeguero_prod:
       shared: false
@@ -210,10 +196,6 @@ databases:
       shared: false
   - rkohnke_prep:
       shared: false
-  - rrendon_prod:
-      shared: false
-  - rrendon_prep:
-      shared: false
   - sbalasani_prod:
       shared: false
   - sbalasani_prep:
@@ -258,6 +240,10 @@ databases:
       shared: true
   - snowplow_stg_test_ved_raw:
       shared: true
+  - kvasireddy_prod:
+      shared: false
+  - kvasireddy_prep:
+      shared: false
 roles:
   - accountadmin:
       warehouses:
@@ -338,6 +324,8 @@ roles:
         - qualtrics
         - zuora_revenue
         - zuora_query_api
+        - sensitive_marketing
+  - sensitive_marketing:
       privileges:
         databases:
           read:
@@ -494,6 +482,7 @@ roles:
         - gitlab_data_yaml
         - google_ads
         - google_analytics_360
+        - google_analytics_4
         - google_search_console
         - netsuite
         - marketo
@@ -1173,6 +1162,7 @@ roles:
             - prod.*
             - raw.snapshots
             - raw.gcp_billing
+            - raw.google_analytics_4_bigquery
             - raw.dbt_artifacts
         tables:
           read:
@@ -1183,6 +1173,7 @@ roles:
             - prod.*.*
             - raw.snapshots.*
             - raw.gcp_billing.*
+            - raw.google_analytics_4_bigquery.*
             - raw.dbt_artifacts.*
   - sales_analytics:
       warehouses:
@@ -1420,38 +1411,6 @@ roles:
           read:
             - prep.bizible.*
             - raw.bizible.*
-  - bi_tool_eval_db:
-      warehouses:
-        - reporting
-      privileges:
-        databases:
-          read:
-            - bi_tool_eval
-          write:
-            - bi_tool_eval
-        schemas:
-          read:
-            - bi_tool_eval.*
-          write:
-            - bi_tool_eval.*
-        tables:
-          read:
-            - bi_tool_eval.*.*
-          write:
-            - bi_tool_eval.*.*
-  - bi_tool_eval_read:
-      warehouses:
-        - reporting
-      privileges:
-        databases:
-          read:
-            - bi_tool_eval
-        schemas:
-          read:
-            - bi_tool_eval.*
-        tables:
-          read:
-            - bi_tool_eval.*.*
   - covid19:
       privileges:
         databases:
@@ -2052,6 +2011,24 @@ roles:
           read:
             - prep.google_analytics_360.*
             - raw.google_analytics_360_fivetran.*
+  - google_analytics_4:
+      warehouses:
+        - dev_xs
+      privileges:
+        databases:
+          read:
+            - raw
+            - prep
+        schemas:
+          read:
+            - raw.google_analytics_4_bigquery
+            - raw.google_analytics_4_fivetran
+            - prep.google_analytics_4
+        tables:
+          read:
+            - raw.google_analytics_4_bigquery.*
+            - raw.google_analytics_4_fivetran.*
+            - prep.google_analytics_4.*
   - google_search_console:
       privileges:
         databases:
@@ -2138,6 +2115,7 @@ roles:
             - prod.legacy
             - prod.workspace_marketing
             - prod.workspace_product
+            - prod.restricted_safe_workspace_marketing
         tables:
           read:
             - prep.gitlab_dotcom.gitlab_dotcom_users_source
@@ -2151,6 +2129,7 @@ roles:
             - prod.workspace_marketing.user_history
             - prod.workspace_marketing.user_unsubscribed_channel
             - prod.workspace_marketing.user_unsubscribed_message_type
+            - prod.restricted_safe_workspace_marketing.rpt_create_partner_touchpoints
   - influx_db:
       privileges:
         databases:
@@ -2348,6 +2327,24 @@ roles:
         tables:
           read:
             - prod.pumps_sensitive.*
+  - rally_source:
+      warehouses:
+        - dev_xs
+      privileges:
+        databases:
+          read:
+            - raw
+            - prep
+        schemas:
+          read:
+            - raw.rally_initial_export
+            - raw.rally_webhook_stitch
+            - prep.sensitive
+        tables:
+          read:
+            - raw.rally_initial_export.*
+            - raw.rally_webhook_stitch.*
+            - prep.sensitive.rally_optouts
   - restricted_safe:
       warehouses:
         - reporting
@@ -2899,6 +2896,22 @@ roles:
           read:
             - raw.zuora_revenue.*
             - prep.zuora_revenue.*
+  - clari:
+      warehouses:
+        - dev_xs
+      privileges:
+        databases:
+          read:
+            - raw
+            - prep
+        schemas:
+          read:
+            - raw.clari
+            - prep.clari
+        tables:
+          read:
+            - raw.clari.*
+            - prep.clari.*
   - aadesanya:
       member_of:
         - snowflake_analyst
@@ -2913,41 +2926,6 @@ roles:
         - xactly
       warehouses:
         - dev_xs
-  - airbyteevaluation:
-      warehouses:
-        - loading
-      owns:
-        databases:
-          - airbyteevaluation_prep
-          - airbyteevaluation_prod
-        schemas:
-          - airbyteevaluation_prep.*
-          - airbyteevaluation_prod.*
-        tables:
-          - airbyteevaluation_prep.*.*
-          - airbyteevaluation_prod.*.*
-      privileges:
-        databases:
-          read:
-            - airbyteevaluation_prep
-            - airbyteevaluation_prod
-          write:
-            - airbyteevaluation_prep
-            - airbyteevaluation_prod
-        schemas:
-          read:
-            - airbyteevaluation_prep.*
-            - airbyteevaluation_prod.*
-          write:
-            - airbyteevaluation_prep.*
-            - airbyteevaluation_prod.*
-        tables:
-          read:
-            - airbyteevaluation_prep.*.*
-            - airbyteevaluation_prod.*.*
-          write:
-            - airbyteevaluation_prep.*.*
-            - airbyteevaluation_prod.*.*
   - airflow:
       warehouses:
         - dev_l
@@ -2979,7 +2957,6 @@ roles:
         - restricted_safe
         - salesforce_sandbox
         - xactly
-        - bi_tool_eval_db
       warehouses:
         - dev_xs
       owns:
@@ -3045,7 +3022,6 @@ roles:
         - analyst_sales
         - xactly
         - restricted_safe
-        - bi_tool_eval_read
       warehouses:
         - dev_xs
       owns:
@@ -3114,7 +3090,6 @@ roles:
       member_of:
         - analyst_people
         - bamboohr
-        - bi_tool_eval_read
         - pto
         - restricted_safe
         - workday
@@ -3162,6 +3137,7 @@ roles:
       member_of:
         - analyst_engineering
         - restricted_safe
+        - zuora_query_api
       warehouses:
         - dev_xs
       owns:
@@ -3208,10 +3184,19 @@ roles:
         - analyst_sales
         - reporter
         - restricted_safe
-        - bi_tool_eval_read
         - static_sensitive
       warehouses:
         - reporting
+      privileges:
+        databases:
+          read:
+            - prep
+        schemas:
+          read:
+            - prep.sensitive
+        tables:
+          read:
+            - prep.sensitive.mart_marketing_contact
   - bmandavia:
       member_of: []
       warehouses: []
@@ -3243,7 +3228,6 @@ roles:
         - analyst_growth
         - restricted_safe
         - data_team_analyst
-        - bi_tool_eval_read
       warehouses:
         - dev_xs
       owns:
@@ -3261,7 +3245,6 @@ roles:
         - analyst_sales
         - xactly
         - restricted_safe
-        - bi_tool_eval_read
       warehouses:
         - dev_xs
   - cdu:
@@ -3269,21 +3252,6 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
-  - cdeleon:
-      member_of:
-        - analyst_engineering
-      warehouses:
-        - dev_xs
-      owns:
-        databases:
-          - cdeleon_prep
-          - cdeleon_prod
-        schemas:
-          - cdeleon_prep.*
-          - cdeleon_prod.*
-        tables:
-          - cdeleon_prep.*.*
-          - cdeleon_prod.*.*
   - cdewit:
       member_of:
         - reporter
@@ -3347,7 +3315,6 @@ roles:
         - analytics_engineer_core
         - analyst_engineering
         - analyst_growth
-        - bi_tool_eval_read
         - customers_db
         - data_science_readonly
         - gitlab_dotcom
@@ -3489,13 +3456,13 @@ roles:
         - reporter
         - analyst_marketing
         - restricted_safe
-        - bi_tool_eval_read
         - data_science_readonly
         - facebook_ads
         - hightouch_role
         - linkedin_ads
         - static_pmg_readonly
         - analyst_marketing_sensitive
+        - sensitive_marketing
       warehouses:
         - dev_xs
       owns:
@@ -3567,7 +3534,6 @@ roles:
         - reporter
         - analyst_marketing
         - restricted_safe
-        - bi_tool_eval_read
         - data_science_readonly
         - facebook_ads
         - linkedin_ads
@@ -3577,7 +3543,6 @@ roles:
       member_of:
         - analyst_growth
         - restricted_safe
-        - bi_tool_eval_read
       warehouses:
         - dev_xs
       owns:
@@ -3794,7 +3759,6 @@ roles:
   - hkacmarski:
       member_of:
         - analyst_sales
-        - bi_tool_eval_read
         - reporter
         - restricted_safe
       warehouses:
@@ -3843,7 +3807,6 @@ roles:
         - restricted_safe
         - salesforce_sandbox
         - xactly
-        - bi_tool_eval_db
       warehouses:
         - dev_xs
       owns:
@@ -3883,7 +3846,6 @@ roles:
         - reporter
         - analyst_marketing
         - restricted_safe
-        - bi_tool_eval_read
         - data_science_readonly
         - facebook_ads
         - linkedin_ads
@@ -4046,16 +4008,12 @@ roles:
         - zendesk
       warehouses:
         - dev_xs
+        - dev_l
   - jhackamack:
       member_of:
         - analyst_sales
         - restricted_safe
         - static_sensitive
-      warehouses:
-        - dev_xs
-  - jhalloran:
-      member_of:
-        - snowflake_analyst
       warehouses:
         - dev_xs
   - jhope:
@@ -4149,50 +4107,6 @@ roles:
         - reporter
       warehouses:
         - dev_xs
-  - jng:
-      member_of:
-        - analytics_engineer_core
-        - analyst_engineering
-        - analyst_growth
-        - data_team_analyst
-        - restricted_safe
-        - bi_tool_eval_read
-        - marketo
-        - zuora
-      warehouses:
-        - dev_xs
-      owns:
-        databases:
-          - jng_prep
-          - jng_prod
-        schemas:
-          - jng_prep.*
-          - jng_prod.*
-        tables:
-          - jng_prep.*.*
-          - jng_prod.*.*
-      privileges:
-        databases:
-          read:
-            - jng_prep
-            - jng_prod
-          write:
-            - jng_prep
-            - jng_prod
-        schemas:
-          read:
-            - jng_prep.*
-            - jng_prod.*
-          write:
-            - jng_prep.*
-            - jng_prod.*
-        tables:
-          read:
-            - jng_prep.*.*
-            - jng_prod.*.*
-          write:
-            - jng_prep.*.*
-            - jng_prod.*.*
   - jpeguero:
       member_of:
         - analyst_finance
@@ -4267,11 +4181,6 @@ roles:
       warehouses:
         - dev_xs
   - jrubi:
-      member_of:
-        - reporter
-      warehouses:
-        - dev_xs
-  - jsalazar:
       member_of:
         - reporter
       warehouses:
@@ -4416,7 +4325,6 @@ roles:
   - kdietz:
       member_of:
         - analyst_core
-        - bi_tool_eval_read
         - data_team_analyst
         - google_analytics_360
         - marketo
@@ -4655,7 +4563,6 @@ roles:
   - lmai:
       member_of:
         - analyst_engineering
-        - bi_tool_eval_read
       warehouses:
         - dev_xs
       owns:
@@ -4754,7 +4661,6 @@ roles:
         - analyst_sales
         - restricted_safe
         - data_team_analyst
-        - bi_tool_eval_read
         - xactly
         - sales_analytics
         - data_science_readonly
@@ -4795,13 +4701,6 @@ roles:
           write:
             - lwork_prep.*.*
             - lwork_prod.*.*
-  - manggara:
-      member_of:
-        - analyst_finance
-        - bamboohr_analytics
-        - restricted_safe
-      warehouses:
-        - dev_xs
   - marin:
       member_of:
         - snowflake_analyst
@@ -4811,7 +4710,6 @@ roles:
       member_of:
         - analyst_sales
         - restricted_safe
-        - bi_tool_eval_read
         - static_sensitive
       warehouses:
         - dev_xs
@@ -4843,6 +4741,7 @@ roles:
         - customers_db
         - data_team_analyst
         - data_science_readonly
+        - gainsight_customer_success
         - restricted_safe
         - salesforce_sandbox
         - workday
@@ -4887,8 +4786,8 @@ roles:
         - analyst_engineering
         - analyst_growth
         - data_team_analyst
+        - gainsight_customer_success
         - restricted_safe
-        - bi_tool_eval_read
         - zuora
       warehouses:
         - dev_xs
@@ -5058,7 +4957,8 @@ roles:
         - analyst_sales
         - xactly
         - restricted_safe
-        - bi_tool_eval_read
+        - clari
+        - zendesk
       warehouses:
         - dev_xs
       owns:
@@ -5176,13 +5076,13 @@ roles:
   - nhertz:
       member_of:
         - reporter
+        - rally_source
       warehouses:
         - dev_xs
   - nhervas:
       member_of:
         - analyst_growth
         - restricted_safe
-        - bi_tool_eval_read
       warehouses:
         - dev_xs
       owns:
@@ -5238,7 +5138,6 @@ roles:
         - restricted_safe
         - salesforce_sandbox
         - xactly
-        - bi_tool_eval_db
         - zuora_stitch_rest_api
         - jbare
       warehouses:
@@ -5279,7 +5178,6 @@ roles:
       member_of:
         - analyst_growth
         - restricted_safe
-        - bi_tool_eval_read
         - customers_db
         - zuora_query_api
       warehouses:
@@ -5321,7 +5219,6 @@ roles:
         - analyst_sales
         - restricted_safe
         - data_team_analyst
-        - bi_tool_eval_read
         - xactly
         - sales_analytics
         - data_science_readonly
@@ -5429,7 +5326,6 @@ roles:
         - analyst_people
         - analyst_sales
         - bamboohr
-        - bi_tool_eval_db
         - prometheus
         - pto
         - restricted_safe
@@ -5632,7 +5528,6 @@ roles:
       member_of:
         - analyst_marketing
         - bizible
-        - bi_tool_eval_read
         - data_team_analyst
         - data_science_readonly
         - facebook_ads
@@ -5643,6 +5538,7 @@ roles:
         - snowplow
         - zuora_order
         - zuora_stitch_rest_api
+        - sensitive_marketing
       warehouses:
         - dev_xs
       owns:
@@ -5693,7 +5589,6 @@ roles:
         - analyst_sales
         - restricted_safe
         - data_team_analyst
-        - bi_tool_eval_read
         - xactly
         - sales_analytics
         - data_science_readonly
@@ -5706,35 +5601,6 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
-  - rrendon:
-      member_of:
-        - analyst_engineering
-        - aws_billing
-        - elasticsearch_billing
-      warehouses:
-        - dev_xs
-      privileges:
-        databases:
-          read:
-            - rrendon_prep
-            - rrendon_prod
-          write:
-            - rrendon_prep
-            - rrendon_prod
-        schemas:
-          read:
-            - rrendon_prep.*
-            - rrendon_prod.*
-          write:
-            - rrendon_prep.*
-            - rrendon_prod.*
-        tables:
-          read:
-            - rrendon_prep.*.*
-            - rrendon_prod.*.*
-          write:
-            - rrendon_prep.*.*
-            - rrendon_prod.*.*
   - rrosu:
       member_of: []
       warehouses: []
@@ -5744,20 +5610,11 @@ roles:
   - rwoo:
       member_of: []
       warehouses: []
-  - sawezec:
-      member_of:
-        - analyst_growth
-        - restricted_safe
-        - data_team_analyst
-        - bi_tool_eval_read
-      warehouses:
-        - dev_xs
   - sbalasani:
       member_of:
         - analytics_engineer_core
         - analyst_engineering
         - analyst_growth
-        - bi_tool_eval_read
         - data_team_analyst
         - marketo
         - restricted_safe
@@ -6149,25 +6006,6 @@ roles:
         - analyst_people_sensitive
       warehouses:
         - reporting
-  - target_snowflake:
-      warehouses:
-        - loading
-      privileges:
-        databases:
-          read:
-            - testing_db
-          write:
-            - testing_db
-        schemas:
-          read:
-            - testing_db.*
-          write:
-            - testing_db.*
-        tables:
-          read:
-            - testing_db.*.*
-          write:
-            - testing_db.*.*
   - tfigueiro:
       member_of:
         - reporter
@@ -6219,8 +6057,8 @@ roles:
         - analyst_engineering
         - analyst_growth
         - data_team_analyst
+        - gainsight_customer_success
         - restricted_safe
-        - bi_tool_eval_read
         - zuora
       warehouses:
         - dev_xs
@@ -6367,6 +6205,7 @@ roles:
       member_of:
         - reporter
         - snowflake_analyst_safe
+        - rally_source
       warehouses:
         - dev_xs
   - wlin:
@@ -6443,6 +6282,144 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - aspringfield:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - kkloss:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - mdunleavy:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - fmcwilliams:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - nleonard:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - seanhall:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - kvasireddy:
+      member_of:
+        - adaptive
+        - analyst_finance
+        - bamboohr_analytics
+        - customers_db
+        - data_science_readonly
+        - data_team_analyst
+        - data_manager
+        - marketo
+        - restricted_safe
+        - salesforce_sandbox
+        - xactly
+      warehouses:
+        - dev_xs
+      owns:
+        databases:
+          - kvasireddy_prep
+          - kvasireddy_prod
+        schemas:
+          - kvasireddy_prep.*
+          - kvasireddy_prod.*
+        tables:
+          - kvasireddy_prep.*.*
+          - kvasireddy_prod.*.*
+      privileges:
+        databases:
+          read:
+            - kvasireddy_prep
+            - kvasireddy_prod
+          write:
+            - kvasireddy_prep
+            - kvasireddy_prod
+        schemas:
+          read:
+            - kvasireddy_prep.*
+            - kvasireddy_prod.*
+          write:
+            - kvasireddy_prep.*
+            - kvasireddy_prod.*
+        tables:
+          read:
+            - kvasireddy_prep.*.*
+            - kvasireddy_prod.*.*
+          write:
+            - kvasireddy_prep.*.*
+            - kvasireddy_prod.*.*
+  - zapier:
+      warehouses:
+        - transforming_xs
+      privileges:
+        databases:
+          read:
+            - prod
+        schemas:
+          read:
+            - prod.workspace_customer_success
+        tables:
+          read:
+            - prod.workspace_customer_success.mart_product_usage_health_score
+  - gsodhi:
+      member_of:
+        - snowflake_analyst_safe
+      warehouses:
+        - dev_xs
+  - avpfestin:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - acook:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - aevans:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - tmccaslin:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - jdleon:
+      member_of:
+        - adaptive
+        - analyst_finance
+        - bamboohr_analytics
+        - customers_db
+        - analyst_marketing
+        - data_team_analyst
+        - restricted_safe
+        - xactly
+      warehouses:
+        - dev_xs
+  - testtableau:
+      member_of:
+        - reporter
+      warehouses:
+        - dev_xs
+  - nscoville:
+      member_of:
+        - snowflake_analyst_safe
+        - data_team_analyst
+      warehouses:
+        - dev_xs
 users:
   - aadesanya:
       can_login: true
@@ -6452,10 +6429,6 @@ users:
       can_login: true
       member_of:
         - aarts
-  - airbyteevaluation:
-      can_login: true
-      member_of:
-        - airbyteevaluation
   - airflow:
       can_login: true
       member_of:
@@ -6540,10 +6513,6 @@ users:
       can_login: true
       member_of:
         - asalimi
-  - bi_tool_eval:
-      can_login: true
-      member_of:
-        - bi_tool_eval_read
   - bbutterfield:
       can_login: true
       member_of:
@@ -6573,10 +6542,6 @@ users:
       can_login: true
       member_of:
         - ccontreras
-  - cdeleon:
-      can_login: true
-      member_of:
-        - cdeleon
   - cdewit:
       can_login: true
       member_of:
@@ -6820,10 +6785,6 @@ users:
       can_login: true
       member_of:
         - jhackamack
-  - jhalloran:
-      can_login: true
-      member_of:
-        - jhalloran
   - jhope:
       can_login: true
       member_of:
@@ -6852,10 +6813,6 @@ users:
       can_login: true
       member_of:
         - joshua
-  - jng:
-      can_login: true
-      member_of:
-        - jng
   - jpeguero:
       can_login: true
       member_of:
@@ -6872,10 +6829,6 @@ users:
       can_login: true
       member_of:
         - jrubi
-  - jsalazar:
-      can_login: true
-      member_of:
-        - jsalazar
   - jsingh:
       can_login: true
       member_of:
@@ -6979,10 +6932,6 @@ users:
       can_login: true
       member_of:
         - lwork
-  - manggara:
-      can_login: true
-      member_of:
-        - manggara
   - marin:
       can_login: true
       member_of:
@@ -7011,7 +6960,6 @@ users:
       can_login: true
       member_of:
         - meltano
-        - target_snowflake
   - mfleisher:
       can_login: true
       member_of:
@@ -7207,10 +7155,6 @@ users:
       can_login: true
       member_of:
         - rpereira
-  - rrendon:
-      can_login: true
-      member_of:
-        - rrendon
   - rrosu:
       can_login: false
       member_of: []
@@ -7224,18 +7168,10 @@ users:
       can_login: true
       member_of:
         - sbalasani
-  - sawezec:
-      can_login: true
-      member_of:
-        - sawezec
   - schaturvedi:
       can_login: true
       member_of:
         - schaturvedi
-  - securitybotsnowflakeapi:
-      can_login: true
-      member_of:
-        - securityadmin
   - sfigueroa:
       can_login: true
       member_of:
@@ -7317,10 +7253,6 @@ users:
       can_login: true
       member_of:
         - tableau_restricted_people_data
-  - target_snowflake:
-      can_login: true
-      member_of:
-        - target_snowflake
   - tfigueiro:
       can_login: true
       member_of:
@@ -7457,6 +7389,70 @@ users:
       can_login: true
       member_of:
         - sguyon
+  - aspringfield:
+      can_login: true
+      member_of:
+        - aspringfield
+  - kkloss:
+      can_login: true
+      member_of:
+        - kkloss
+  - mdunleavy:
+      can_login: true
+      member_of:
+        - mdunleavy
+  - fmcwilliams:
+      can_login: true
+      member_of:
+        - fmcwilliams
+  - nleonard:
+      can_login: true
+      member_of:
+        - nleonard
+  - seanhall:
+      can_login: true
+      member_of:
+        - seanhall
+  - kvasireddy:
+      can_login: true
+      member_of:
+        - kvasireddy
+  - zapier:
+      can_login: true
+      member_of:
+        - zapier
+  - gsodhi:
+      can_login: true
+      member_of:
+        - gsodhi
+  - avpfestin:
+      can_login: true
+      member_of:
+        - avpfestin
+  - acook:
+      can_login: true
+      member_of:
+        - acook
+  - aevans:
+      can_login: true
+      member_of:
+        - aevans
+  - tmccaslin:
+      can_login: true
+      member_of:
+        - tmccaslin
+  - jdleon:
+      can_login: true
+      member_of:
+        - jdleon
+  - testtableau:
+      can_login: true
+      member_of:
+        - testtableau
+  - nscoville:
+      can_login: true
+      member_of:
+        - nscoville
 warehouses:
   - admin:
       size: x-small

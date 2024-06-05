@@ -153,13 +153,22 @@ suggestion_level AS (
     requested.ide_vendor,
     requested.ide_version,
     requested.language_server_version,
-    --model_engine and model_name not available on requested event. Default to loaded event, fall back to others to maximize coverage
+    requested.is_invoked,
+
+    --model_engine, model_name, accepted_option, suggestion_source, and options_count are not available on requested event. If not limited to a single possible event type, default to loaded event, fall back to others to maximize coverage
+    accepted.accepted_option,
     COALESCE(loaded.model_engine, shown.model_engine, 
       accepted.model_engine, rejected.model_engine, 
       cancelled.model_engine)                                                                       AS model_engine,
     COALESCE(loaded.model_name, shown.model_name, 
       accepted.model_name, rejected.model_name, 
       cancelled.model_name)                                                                         AS model_name,
+    COALESCE(loaded.suggestion_source, shown.suggestion_source, 
+      accepted.suggestion_source, rejected.suggestion_source, 
+      cancelled.suggestion_source, not_provided.suggestion_source)                                  AS suggestion_source,
+    COALESCE(loaded.options_count, shown.options_count, 
+      accepted.options_count, rejected.options_count, 
+      cancelled.options_count, not_provided.options_count)                                          AS options_count,
 
     --Timestamps
     requested.behavior_at                                                                           AS requested_at,
@@ -177,6 +186,7 @@ suggestion_level AS (
     DATEDIFF('milliseconds', requested_at, loaded_at)                                               AS load_time_in_ms,
     DATEDIFF('milliseconds', shown_at, COALESCE(accepted_at, rejected_at))                          AS display_time_in_ms,
     DATEDIFF('milliseconds', requested_at, stream_started_at)                                       AS stream_start_time_in_ms,
+    DATEDIFF('milliseconds', requested_at, shown_at)                                                AS time_to_show_in_ms,
 
     --Outcome/end result of suggestion
     COALESCE(accepted.event_action, rejected.event_action,
@@ -224,8 +234,8 @@ suggestion_level AS (
 {{ dbt_audit(
     cte_ref="suggestion_level",
     created_by="@michellecooper",
-    updated_by="@mdrussell",
+    updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-04-12"
+    updated_date="2024-05-28"
 ) }}
 

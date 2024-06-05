@@ -1932,6 +1932,101 @@ models:
     - name: dbt_updated_at 
       description: The timestamp of when this model was last built/refreshed      
 
+- name: rpt_behavior_code_suggestion_outcome
+  description: '{{ doc("rpt_behavior_code_suggestion_outcome") }}'
+  columns:
+    - name: suggestion_id
+      description: '{{ doc("code_suggestions_suggestion_id")}} '
+      tests:
+        - not_null
+        - unique
+    - name: language
+      description: '{{ doc("code_suggestions_language") }}'
+    - name: delivery_type
+      description: ' {{ doc("product_delivery_type") }}'
+      accepted_values:
+        values: ['Self-Managed', 'SaaS']
+    - name: model_engine
+      description: '{{ doc("code_suggestions_model_engine") }}'
+    - name: model_name
+      description: '{{ doc("code_suggestions_model_name") }}'
+    - name: prefix_length
+      description: '{{ doc("code_suggestions_prefix_length") }}'
+    - name: suffix_length
+      description: '{{ doc("code_suggestions_suffix_length") }}'
+    - name: is_streaming
+      description: '{{ doc("code_suggestions_is_streaming") }}'
+    - name: extension_name
+      description: '{{ doc("extension_name") }}'
+    - name: extension_version
+      description: '{{ doc("extension_version") }}'
+    - name: ide_name
+      description: '{{ doc("ide_name") }}'
+    - name: ide_vendor
+      description: '{{ doc("ide_vendor") }}'
+    - name: ide_version
+      description: '{{ doc("ide_version") }}'
+    - name: language_server_version
+      description: '{{ doc("language_server_version") }}'
+    - name: requested_at
+      description: '{{ doc("code_suggestions_requested_at")}} '
+    - name: loaded_at
+      description: '{{ doc("code_suggestions_loaded_at")}} '
+    - name: shown_at
+      description: '{{ doc("code_suggestions_shown_at")}} '
+    - name: accepted_at
+      description: '{{ doc("code_suggestions_accepted_at")}} '
+    - name: rejected_at
+      description: '{{ doc("code_suggestions_rejected_at")}} '
+    - name: cancelled_at
+      description: '{{ doc("code_suggestions_cancelled_at")}} '
+    - name: not_provided_at
+      description: '{{ doc("code_suggestions_not_provided_at")}} '
+    - name: error_at
+      description: '{{ doc("code_suggestions_error_at")}} '
+    - name: load_time_in_ms
+      description: '{{ doc("code_suggestions_load_time_in_ms")}} '
+    - name: display_time_in_ms
+      description: '{{ doc("code_suggestions_display_time_in_ms")}} '
+    - name: suggestion_outcome
+      description: '{{ doc("code_suggestions_suggestion_outcome")}} '
+    - name: was_requested
+      description: '{{ doc("code_suggestions_was_requested")}} '
+    - name: was_loaded
+      description: '{{ doc("code_suggestions_was_loaded")}} '
+    - name: was_shown
+      description: '{{ doc("code_suggestions_was_shown")}} '
+    - name: was_accepted
+      description: '{{ doc("code_suggestions_was_accepted")}} '
+    - name: was_rejected
+      description: '{{ doc("code_suggestions_was_rejected")}} '
+    - name: was_cancelled
+      description: '{{ doc("code_suggestions_was_cancelled")}} '
+    - name: was_not_provided
+      description: '{{ doc("code_suggestions_was_not_provided")}} '
+    - name: was_error
+      description: '{{ doc("code_suggestions_was_error")}} '
+    - name: was_stream_started
+      description: '{{ doc("code_suggestions_was_stream_started") }}'
+    - name: was_stream_completed
+      description: '{{ doc("code_suggestions_was_stream_completed") }}'
+    - name: created_by
+      description: '{{ doc("created_by") }}'
+    - name: updated_by
+      description: '{{ doc("updated_by") }}'
+    - name: model_created_date
+      description: '{{ doc("model_created_date") }}'
+    - name: model_updated_date
+      description: '{{ doc("model_updated_date") }}'
+    - name: suggestion_source
+      description: ' {{ doc("code_suggestions_suggestion_source") }} '
+    - name: is_invoked
+      description: ' {{ doc("code_suggestions_is_invoked") }} '
+    - name: options_count
+      description: ' {{ doc("code_suggestions_options_count") }} '
+    - name: accepted_option
+      description: ' {{ doc("code_suggestions_accepted_option") }} '
+
 - name: rpt_user_based_metric_counts_namespace_monthly
   description: '{{ doc("rpt_user_based_metric_counts_namespace_monthly") }}'
   tests:
