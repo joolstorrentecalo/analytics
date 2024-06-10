@@ -113,7 +113,7 @@
     - if [ ! -z "$EXCLUDE" ]; then DBT_CI_EXCLUDE="--exclude $EXCLUDE"; fi
     - echo $DBT_CI_EXCLUDE
     - export DBT_CI_FULL_REFRESH=""
-    - if [ ! -z "$FULL_REFRESH" ]; then DBT_CI_FULL_REFRESH="--full-refresh"; fi
+    - if [ "$FULL_REFRESH" == "TRUE" ]; then DBT_CI_FULL_REFRESH="--full-refresh"; else DBT_CI_FULL_REFRESH=""; fi
     - echo $DBT_CI_FULL_REFRESH
     # VARS format "key":"value","key":"value"
     - export DBT_CI_VARS=""
