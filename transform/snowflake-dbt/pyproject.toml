@@ -6,8 +6,8 @@ authors = []
 
 [tool.poetry.dependencies]
 python = "^3.10.3"
-dbt-snowflake = "1.6.4"
-dbt-core= "1.6.4"
+dbt-snowflake = "1.8.0"
+dbt-core= "1.8.0"
 gitlabdata = "0.3.28"
 loguru = "0.6.0"
 pandas = "1.4.2"
