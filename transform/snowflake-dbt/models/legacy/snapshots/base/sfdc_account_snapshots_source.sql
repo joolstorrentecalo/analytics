@@ -7,7 +7,7 @@ WITH source AS (
     PARTITION BY 
       dbt_valid_from::DATE, 
       id 
-    ORDER BY dbt_valid_from DESC
+    ORDER BY dbt_valid_from
     ) = 1
 
 ),
