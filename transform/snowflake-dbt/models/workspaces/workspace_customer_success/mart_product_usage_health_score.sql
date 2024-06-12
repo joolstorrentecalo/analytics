@@ -327,3 +327,4 @@ qualify row_number() OVER (PARTITION BY paid_user_metrics.snapshot_month, instan
     created_date="2023-03-30",
     updated_date="2023-08-05"
 ) }}
+ 
