@@ -17,9 +17,7 @@
         {{ dbt_utils.generate_surrogate_key(
         [
           'paid_user_metrics.dim_subscription_id',
-          'paid_user_metrics.deployment_type',
-          'paid_user_metrics.uuid',
-          'paid_user_metrics.hostname',
+          'paid_user_metrics.dim_installation_id',
           'paid_user_metrics.dim_namespace_id'
         ]
       ) }} AS primary_key_no_snapshot_month,
