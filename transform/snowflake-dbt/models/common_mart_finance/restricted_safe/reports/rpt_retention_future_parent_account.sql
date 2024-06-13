@@ -1,6 +1,5 @@
 {{ simple_cte([
  ('dim_date', 'dim_date'),
- ('dim_crm_account_daily_snapshot', 'dim_crm_account_daily_snapshot'),
  ('dim_crm_account', 'dim_crm_account'),
  ('rpt_arr', 'rpt_arr_snapshot_combined')
 ]) }},
@@ -47,19 +46,19 @@ py_arr_with_cy_parent AS (
   SELECT
     child_account_arrs.arr_month                                AS py_arr_month,
     DATEADD('year', 1, child_account_arrs.arr_month)            AS retention_month,
-    dim_crm_account_daily_snapshot.dim_parent_crm_account_id    AS parent_account_id_in_retention_month,
+    future_parent_account.parent_account_id                     AS parent_account_id_in_retention_month,
     DATEADD('year', 1, dim_date.snapshot_date_fpa)              AS retention_period_snapshot_date,
-    ARRAY_AGG(product_category)                                 AS py_product_category,
-    MAX(product_ranking)                                        AS py_product_ranking,
+    ARRAY_AGG(child_account_arrs.product_category)              AS py_product_category,
+    MAX(child_account_arrs.product_ranking)                     AS py_product_ranking,
     SUM(ZEROIFNULL(child_account_arrs.mrr))                     AS py_mrr,
     SUM(ZEROIFNULL(child_account_arrs.arr))                     AS py_arr,
     SUM(ZEROIFNULL(child_account_arrs.quantity))                AS py_quantity
   FROM child_account_arrs
   LEFT JOIN dim_date
     ON child_account_arrs.arr_month::DATE = dim_date.date_day
-  LEFT JOIN dim_crm_account_daily_snapshot
-    ON child_account_arrs.child_account_id = dim_crm_account_daily_snapshot.dim_crm_account_id
-      AND dim_crm_account_daily_snapshot.snapshot_date = DATEADD('year', 1, dim_date.snapshot_date_fpa)
+  LEFT JOIN child_account_arrs AS future_parent_account
+    ON child_account_arrs.child_account_id = future_parent_account.child_account_id
+      AND DATEADD('year', 1, child_account_arrs.arr_month) = future_parent_account.arr_month
   WHERE retention_month BETWEEN '2020-03-01' AND '2024-02-01'
   -- this is from when we started doing daily snapshots for dim_crm_account_daily_snapshot and used the 8th day snapshot
   {{ dbt_utils.group_by(n=4) }}
@@ -69,19 +68,19 @@ py_arr_with_cy_parent AS (
   SELECT
     child_account_arrs.arr_month                                AS py_arr_month,
     DATEADD('year', 1, child_account_arrs.arr_month)            AS retention_month,
-    dim_crm_account_daily_snapshot.dim_parent_crm_account_id    AS parent_account_id_in_retention_month,
-    DATEADD('year', 1, dim_date.snapshot_date_fpa_fifth)              AS retention_period_snapshot_date,
-    ARRAY_AGG(product_category)                                 AS py_product_category,
-    MAX(product_ranking)                                        AS py_product_ranking,
+    future_parent_account.parent_account_id                     AS parent_account_id_in_retention_month,
+    DATEADD('year', 1, dim_date.snapshot_date_fpa_fifth)        AS retention_period_snapshot_date,
+    ARRAY_AGG(child_account_arrs.product_category)              AS py_product_category,
+    MAX(child_account_arrs.product_ranking)                     AS py_product_ranking,
     SUM(ZEROIFNULL(child_account_arrs.mrr))                     AS py_mrr,
     SUM(ZEROIFNULL(child_account_arrs.arr))                     AS py_arr,
     SUM(ZEROIFNULL(child_account_arrs.quantity))                AS py_quantity
   FROM child_account_arrs
   LEFT JOIN dim_date
     ON child_account_arrs.arr_month::DATE = dim_date.date_day
-  LEFT JOIN dim_crm_account_daily_snapshot
-    ON child_account_arrs.child_account_id = dim_crm_account_daily_snapshot.dim_crm_account_id
-      AND dim_crm_account_daily_snapshot.snapshot_date = DATEADD('year', 1, dim_date.snapshot_date_fpa_fifth)
+  LEFT JOIN child_account_arrs AS future_parent_account
+    ON child_account_arrs.child_account_id = future_parent_account.child_account_id
+      AND DATEADD('year', 1, child_account_arrs.arr_month) = future_parent_account.arr_month
   WHERE retention_month >= '2024-03-01'
   -- this is when we started using the 5th day snapshot
   {{ dbt_utils.group_by(n=4) }}
@@ -160,5 +159,5 @@ final AS (
  created_by="@nmcavinue",
  updated_by="@chrissharp",
  created_date="2023-11-03",
- updated_date="2024-04-24"
+ updated_date="2024-06-13"
 ) }}
