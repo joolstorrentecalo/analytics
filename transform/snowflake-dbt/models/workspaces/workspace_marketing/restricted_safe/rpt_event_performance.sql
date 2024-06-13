@@ -295,6 +295,7 @@ account_pipeline AS (
   SELECT
     account_summary.dim_crm_account_id,
     account_summary.dim_campaign_id,
+    opportunity_snapshot_base.dim_crm_opportunity_id,
     account_summary.true_event_date,
     snapshot_dates.event_snapshot_type,
     COALESCE(attended_leads > 0 AND account_summary.dim_crm_account_id IS NOT NULL, FALSE)                                                                                                                          AS account_has_attended_flag,
@@ -338,7 +339,7 @@ account_pipeline AS (
     ON account_summary.dim_crm_account_id = opportunity_snapshot_base.dim_crm_account_id
       AND snapshot_dates.date_day = opportunity_snapshot_base.opportunity_snapshot_date
  
-  {{dbt_utils.group_by(n=9)}}
+  {{dbt_utils.group_by(n=10)}}
 ),
 
 
@@ -463,6 +464,7 @@ aggregated_account_influenced_performance AS (
   SELECT
     combined_models.dim_campaign_id,
     combined_models.dim_crm_account_id,
+    combined_models.dim_crm_opportunity_id,
     combined_models.true_event_date,
     combined_models.stage_name,
     combined_models.event_snapshot_type,
@@ -479,6 +481,7 @@ SELECT
     --IDs
     account_pipeline.dim_crm_account_id,
     mart_crm_account.dim_parent_crm_account_id,
+    account_pipeline.dim_crm_opportunity_id,
     account_pipeline.dim_campaign_id,
     campaigns.dim_parent_campaign_id,
 
@@ -562,6 +565,7 @@ SELECT
         AND account_pipeline.event_snapshot_type = aggregated_account_influenced_performance.event_snapshot_type
         AND account_pipeline.true_event_date = aggregated_account_influenced_performance.true_event_date
         AND account_pipeline.stage_name = aggregated_account_influenced_performance.stage_name
+        and account_pipeline.dim_crm_opportunity_id = aggregated_account_influenced_performance.dim_crm_opportunity_id
     LEFT JOIN campaigns ON account_pipeline.dim_campaign_id = campaigns.dim_campaign_id
     LEFT JOIN mart_crm_account
     ON account_pipeline.dim_crm_account_id = mart_crm_account.dim_crm_account_id
