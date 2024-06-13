@@ -1765,3 +1765,62 @@ models:
         tests:
           - unique
           - not_null
+
+
+  - name: PREP_CRM_CASE
+    description: '{{ doc("PREP_CRM_CASE") }}'
+    columns:
+        name: case_id
+        name: dim_crm_case_sk
+          description: surrogate key generated with dbt_utils
+        name: dim_crm_case_pk
+          description: primary key
+        name: dim_crm_account_id,
+        name: business_hours_id,
+        name: case_number,
+        name: contact_id,
+        name: from_chatter_feed_id,
+        name: owner_id AS dim_crm_user_id,
+        name: record_type_id,
+        name: source_id,
+        name: opportunity_id AS dim_crm_opportunity_id,
+        name: created_by_id,
+        name: closed_date,
+        name: description,
+        name: is_closed,
+        name: is_closed_on_create,
+        name: is_escalated,
+        name: origin,
+        name: priority,
+        name: reason,
+        name: resolution_action,
+        name: status,
+        name: subject,
+        name: case_type,
+        name: created_date,
+        name: spam_checkbox,
+        name: context,
+        name: feedback,
+        name: first_responded_date,
+        name: time_to_first_response,
+        name: next_steps,
+        name: next_steps_date,
+        name: is_deleted,
+        name: contact_email,
+        name: contact_fax,
+        name: contact_mobile,
+        name: contact_phone,
+        name: supplied_company,
+        name: supplied_email,
+        name: supplied_name,
+        name: supplied_phone,
+        name: days_create_to_close
+          description: DATEDIFF('DAY',source.created_date,source.closed_date),
+        name: days_create_to_today
+          description: DATEDIFF('DAY',source.created_date,CURRENT_DATE),
+        name: last_modified_by_id,
+        name: last_modified_date,
+        name: systemmodstamp
+
+
+
