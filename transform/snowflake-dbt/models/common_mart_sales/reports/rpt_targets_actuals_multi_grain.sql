@@ -13,6 +13,7 @@ WITH unioned AS (
     ],
     filters={
         'mart_crm_opportunity_7th_day_weekly_snapshot': 'is_current_snapshot_quarter = true',
+        'mart_crm_opportunity_7th_day_weekly_snapshot': 'is_relevant_opp = true',
         'mart_crm_opportunity_7th_day_weekly_snapshot_aggregate': 'is_current_snapshot_quarter = false'
     }
 ) }}
