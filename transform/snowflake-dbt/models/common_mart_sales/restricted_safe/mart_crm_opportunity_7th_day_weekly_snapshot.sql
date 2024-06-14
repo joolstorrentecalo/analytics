@@ -159,7 +159,11 @@ final AS (
     fct_crm_opportunity.is_swing_deal,
     fct_crm_opportunity.is_excluded_from_pipeline_created,
     fct_crm_opportunity.critical_deal_flag,
-
+    CASE WHEN CLOSED_OPPS_IN_SNAPSHOT_QUARTER != NULL OR
+        OPEN_1PLUS_DEAL_COUNT_IN_SNAPSHOT_QUARTER != NULL OR
+        CREATED_DEALS_IN_SNAPSHOT_QUARTER != NULL
+           THEN 1
+           ELSE 0 END AS is_relevant_opp,
 
 
     -- account fields
