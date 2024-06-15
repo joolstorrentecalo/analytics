@@ -322,6 +322,11 @@ account_pipeline AS (
       WHEN opportunity_snapshot_base.snapshot_is_eligible_open_pipeline = 1 
       THEN opp_net_arr 
       END) AS open_pipeline,
+    SUM(
+      CASE 
+      WHEN opportunity_snapshot_base.snapshot_is_net_arr_pipeline_created = 1 
+      THEN opp_net_arr 
+      END) AS all_pipeline,
     COUNT(
       DISTINCT 
       CASE 
@@ -471,7 +476,7 @@ aggregated_account_influenced_performance AS (
     SUM(CASE WHEN is_net_arr_pipeline_created = 1 THEN influenced_net_arr END) AS influenced_pipeline
   FROM
     combined_models
-  {{dbt_utils.group_by(n=5)}}
+  {{dbt_utils.group_by(n=6)}}
 
 ),
 
@@ -554,6 +559,7 @@ SELECT
     account_pipeline.sourced_pipeline_post_event,
     account_pipeline.sourced_opps_post_event,
     account_pipeline.open_pipeline,
+    account_pipeline.all_pipeline,
     account_pipeline.open_pipeline_opps,
     aggregated_account_influenced_performance.influenced_pipeline
     FROM
@@ -576,6 +582,6 @@ SELECT
     cte_ref="final",
     created_by="@degan",
     updated_by="@dmicovic",
-    created_date="2024-04-23",
+    created_date="2024-06-13",
     updated_date="2024-05-10",
   ) }}
