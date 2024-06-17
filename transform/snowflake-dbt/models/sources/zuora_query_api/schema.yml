@@ -6,7 +6,7 @@ models:
     columns:
       - name: zuora_user_id
         tags: ["tdf", "zuora", "zuora_query_api"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -15,7 +15,7 @@ models:
     columns:
       - name: order_action_rate_plan_id
         tags: ["tdf", "zuora", "zuora_query_api"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -24,7 +24,7 @@ models:
     columns:
       - name: ramp_interval_id
         tags: [ "tdf", "zuora", "zuora_query_api" ]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -34,7 +34,7 @@ models:
     columns:
       - name: ramp_id
         tags: [ "tdf", "zuora", "zuora_query_api" ]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -43,7 +43,7 @@ models:
     columns:
       - name: ramp_interval_metric_id
         tags: [ "tdf", "zuora", "zuora_query_api" ]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -52,7 +52,7 @@ models:
     columns:
       - name: charge_contractual_value_id
         tags: [ "tdf", "zuora", "zuora_query_api" ]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -61,7 +61,7 @@ models:
     columns:
       - name: charge_metrics_discount_allocation_detail_id
         tags: [ "tdf", "zuora", "zuora_query_api" ]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -70,6 +70,6 @@ models:
     columns:
       - name: charge_metrics_id
         tags: [ "tdf", "zuora", "zuora_query_api" ]
-        tests:
+        data_tests:
           - not_null
           - unique

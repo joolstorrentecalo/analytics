@@ -19,7 +19,7 @@ models:
           description: '{{ doc("gitlab_pto_employee_division") }}'
         - name: hr_employee_id
           description: The employee id of Workday
-          tests:
+          data_tests:
             - not_null
         - name: employee_uuid
           description: '{{ doc("gitlab_pto_employee_uuid") }}'

@@ -5,16 +5,16 @@ models:
     description: This surfaces the greenhouse data for candidate surveys at a department level for interview SAT scores.
     columns:
     - name: candidate_survey_id
-      tests:
+      data_tests:
       - not_null
       - unique
     - name: organization_id
-      tests:
+      data_tests:
       - not_null
     - name: department_id
     - name: department_name
     - name: submitted_at
-      tests:
+      data_tests:
       - not_null
     - name: candidate_survey_question_1
     - name: isat_score
@@ -23,7 +23,7 @@ models:
     description: Provides current job openings created in Greenhouse.
     columns: 
     - name: job_opening_id
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: job_id
@@ -63,7 +63,7 @@ models:
       description: The week the candidate is expected to start. We've aggregated to week level to help with onboarding.
     - name: geographic_region
       description: The report currently pulls for candidates expected to start in North America, and is our start case to determine if the report helps with onboarding.
-      tests:
+      data_tests:
         - accepted_values: 
             values: ['North America', 'South America', 'EMEA','Asia Pacific', 'Americas']
     - name: candidates_estimated_to_start

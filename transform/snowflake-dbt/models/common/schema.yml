@@ -6,7 +6,7 @@ models:
     columns:
       - name: opportunity_contact_role_id
         description: A primary key for the contact added to an opportunity.
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -14,15 +14,15 @@ models:
     description: ' {{ doc("bdg_epic_user_request") }}'
     columns:
       - name: epic_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: is_user_request_only_in_collaboration_project
         description: Boolean flag that if TRUE indicates whether the user request was only done in a customer collaboration project.
       - name: CONCAT(epic_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -30,15 +30,15 @@ models:
     description: ' {{ doc("bdg_issue_user_request") }}'
     columns:
       - name: dim_issue_sk
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: is_user_request_only_in_collaboration_project
         description: Boolean flag that if TRUE indicates whether the user request was only done in a customer collaboration project.
       - name: CONCAT(issue_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -165,15 +165,15 @@ models:
     description: '{{ doc("bdg_subscription_product_rate_plan") }}'
     columns:
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_product_tier_id
@@ -198,7 +198,7 @@ models:
     columns:
       - name: dim_accounting_event_id
         description: Unique identifier for an accounting event such as a performance obligation or hold.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -208,7 +208,7 @@ models:
     columns:
       - name: dim_accounting_type_id
         description: Unique identifier for an accounting type such as contract liability or asset.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -218,7 +218,7 @@ models:
     columns:
       - name: dim_alliance_type_id
         description: Alliance type from prep table identifying the type of alliance relationship the partner has with GitLab.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
@@ -228,7 +228,7 @@ models:
     columns:
       - name: dim_amendment_id
         description: Unique identifier of an Amendment in Zuora Billing.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "arr"]
@@ -238,12 +238,12 @@ models:
     columns:
       - name: dim_billing_account_sk
         description: '{{ doc("dim_billing_account_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_billing_account_id
         description: The unique identifier of the Zuora account associated with a given Subscription ID
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_crm_account_id
@@ -283,7 +283,7 @@ models:
     columns:
       - name: billing_account_snapshot_id
         description: Unique identifier of a billing account snapshot
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "arr_snapshots"]
@@ -322,7 +322,7 @@ models:
     columns:
       - name: dim_campaign_id
         description: Campaign unique identifier
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: campaign_name
@@ -348,12 +348,12 @@ models:
     columns:
       - name: dim_crm_person_id
         description: A dbt generated ID for the record.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: sfdc_record_id
         description: The 18 digit Salesforce id for the contact or lead.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: email_hash
@@ -444,7 +444,7 @@ models:
     columns:
       - name: dim_crm_user_id
         description: Primary key for Salesforce users and the primary key for this dimension
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: [ "tdf", "common" ]
@@ -461,7 +461,7 @@ models:
     columns:
       - name: crm_user_snapshot_id
         description: Primary key for Salesforce users in the daily snapshot and the primary key for this dimension
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: [ "tdf", "common" ]
@@ -470,7 +470,7 @@ models:
     description: '{{ doc("dim_crm_user_hierarchy") }}'
     columns:
       - name: dim_crm_user_hierarchy_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
@@ -479,7 +479,7 @@ models:
     description: '{{ doc("dim_crm_touchpoint") }}'
     columns:
       - name: dim_crm_touchpoint_id
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -534,7 +534,7 @@ models:
     description: '{{ doc("dim_date") }}'
     columns:
       - name: date_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: date_day
@@ -710,7 +710,7 @@ models:
     columns:
       - name: dim_dr_partner_engagement_id
         description: Identifies the type of business engagement relationship a partner has with GitLab.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
@@ -722,14 +722,14 @@ models:
     description: This model limits the gitlab dotcom emails table to only have records for emails ending with `gitlab.com`.
     columns:
         - name: user_id
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: gitlab_ops_user_name
         - name: notification_email
         - name: email_handle
         - name: number_of_emails
-          tests:
+          data_tests:
             - accepted_values:
                 values: ['1']
 
@@ -741,12 +741,12 @@ models:
     columns:
       - name: major_minor_version
         description: The unique name of the release maintained by the Version app.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: release_date
         description: The official date of the release, that happens every 22 of each month.
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -754,20 +754,20 @@ models:
     description: '{{ doc("dim_app_release") }}'
     columns:
       - name: dim_app_release_sk
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_app_release_sk") }}'
       - name: app_release_id
         description: '{{ doc("app_release_id") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: application
         description: The application that the release refers to.
       - name: version
         description: The unique identifier of the release.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: major_version
@@ -792,7 +792,7 @@ models:
     columns:
       - name: dim_hold_id
         description: Unique identifier for an accounting hold.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -801,7 +801,7 @@ models:
     description: The host_id and host_name of the self-managed instance.
     columns:
       - name: dim_host_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: host_name
@@ -811,37 +811,37 @@ models:
     columns:
       - name: dim_industry_id
         description: Unique identifier of a version of a industry
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "industry", "common"]
       - name: industry_name
         description: Industry text
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "industry", "common"]
 
   - name: dim_installation
     description: '{{ doc("dim_installation") }}'
-    tests:
+    data_tests:
       - dbt_utils.expression_is_true:
           expression: "installation_creation_date > '2000-01-01' OR dim_installation_id = 'b6a2b5c51f1e36f6fcb8568319633808'"
     columns:
       - name: dim_installation_id
         description: '{{ doc("dim_installation_id") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "product", "common"]
       - name: host_name
         description: Name/URL of the host
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "product", "common"]
       - name: dim_instance_id
         description: '{{ doc("dim_instance_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: installation_creation_date
         description: '{{ doc("installation_creation_date") }}'
@@ -851,7 +851,7 @@ models:
     columns:
       - name: dim_invoice_id
         description: The unique identifier of an invoice
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -861,13 +861,13 @@ models:
     columns:
       - name: dim_sales_qualified_source_id
         description: Unique identifier for each sales qualified source name
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "opportunity", "common","sales_funnel"]
       - name: sales_qualified_source_name
         description: Sales qualified source name
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "opportunity", "common", "sales_funnel"]
@@ -877,13 +877,13 @@ models:
     columns:
       - name: dim_deal_path_id
         description: Unique identifier for each purchase channel name
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "purchase_channel", "common", "sales_funnel" ]
       - name: deal_path_name
         description: Deal path name text
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "purchase_channel", "common", "sales_funnel" ]
@@ -893,7 +893,7 @@ models:
     columns:
       - name: dim_order_id
         description: Unique identifier for each order which groups all order actions within an order
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -902,7 +902,7 @@ models:
     columns:
       - name: dim_order_action_id
         description: Unique identifier for each order action. These represent any action taken grouped under a single order
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_order_id
@@ -946,13 +946,13 @@ models:
     columns:
       - name: dim_order_type_id
         description: Unique identifier for each order type
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "order_type", "common", "sales_funnel" ]
       - name: order_type_name
         description: '{{ doc("order_type_name") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "order_type", "common", "sales_funnel" ]
@@ -962,7 +962,7 @@ models:
     columns:
       - name: dim_sales_funnel_kpi_sk
         description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
-        tests:
+        data_tests:
           - not_null
       - name: sales_funnel_kpi_name
         description: '{{ doc("sales_funnel_kpi_name") }}'
@@ -1025,14 +1025,14 @@ models:
     description: '{{ doc("dim_location_country") }}'
     columns:
       - name: country_name
-        tests:
+        data_tests:
           - not_null
       - name: iso_2_country_code
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_location_country_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1040,7 +1040,7 @@ models:
     description: '{{ doc("dim_location_region") }}'
     columns:
       - name: dim_location_region_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1049,7 +1049,7 @@ models:
     columns:
       - name: dim_manual_journal_entry_header_id
         description: Unique identifier for a manual journal entry which may include multiple lines.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -1059,7 +1059,7 @@ models:
     columns:
       - name: dim_manual_journal_entry_line_id
         description: Unique identifier for a line in a manual journal entry. This can be directly related to a revenue contract line or a revenue contract.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -1072,18 +1072,18 @@ models:
     columns:
       - name: dim_product_detail_id
         description: The unique ID of each row in dim_product_detail, based on product rate plan charge ID.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: [ "tdf", "common", "gainsight"]
       - name: dim_product_tier_id
         description: The unique ID of a product tier determined in dim_product_tier.
-        tests:
+        data_tests:
           - not_null
         tags: [ "tdf", "common", "gainsight"]
       - name: product_id
         description: The ID of the product that contains the product rate plan.
-        tests:
+        data_tests:
           - not_null
         tags: [ "tdf", "common", "gainsight"]
       - name: product_name
@@ -1131,14 +1131,14 @@ models:
     columns:
       - name: dim_product_tier_id
         description: ID of the product tier determined by the surrogate key macro.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: [ "tdf", "common", "gainsight"]
       - name: product_tier_historical
         description: Product pricing tiers prior to [tier renaming](https://gitlab-com.gitlab.io/packaging-and-pricing/pricing-handbook/handbook/renaming_tiers/) (early 2021).
         tags: [ "tdf", "common", "gainsight"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: product_tier_historical_short
@@ -1146,7 +1146,7 @@ models:
       - name: product_tier_name
         description: Name of the [GitLab tier](https://about.gitlab.com/handbook/marketing/strategic-marketing/tiers/) associated with the product.
         tags: [ "tdf", "common", "gainsight"]
-        tests:
+        data_tests:
           - not_null
       - name: product_tier_name_short
         description: Pulls the product tier from `product_tier_name` with the delivery type removed.
@@ -1162,12 +1162,12 @@ models:
     columns:
       - name: dim_project_id
         description: ID of the project (from Gitlab Postgres db)
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_namespace_id
         description: ID of the namespace the project belongs to
-        tests:
+        data_tests:
           - not_null
       - name: dim_user_id_creator
         description: ID of the user who created the project
@@ -1181,7 +1181,7 @@ models:
     columns:
       - name: dim_revenue_contract_id
         description: Unique identifier for a revenue contract.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -1191,7 +1191,7 @@ models:
     columns:
       - name: dim_revenue_contract_hold_id
         description: Unique identifier for a hold applied to a revenue contract or revenue contract line.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -1201,7 +1201,7 @@ models:
     columns:
       - name: dim_revenue_contract_line_id
         description: Unique identifier for a revenue contract line.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -1211,7 +1211,7 @@ models:
     columns:
       - name: dim_revenue_contract_performance_obligation_id
         description: Unique identifier for a performance obligation connected to a revenue contract line.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -1221,7 +1221,7 @@ models:
     columns:
       - name: dim_revenue_contract_schedule_id
         description: Unique identifier for a performance obligation connected to a revenue contract line.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -1231,13 +1231,13 @@ models:
     columns:
       - name: dim_sales_segment_id
         description: Unique identifier of a version of a sales segment
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "common", "sales_funnel" ]
       - name: sales_segment_name
         description: Sales Segment text
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "common", "sales_funnel" ]
@@ -1247,13 +1247,13 @@ models:
     columns:
       - name: dim_sales_territory_id
         description: Unique identifier of a version of a sales territory
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "sales_territory", "common" ]
       - name: sales_territory_name
         description: Sales Territory text
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "sales_territory", "common" ]
@@ -1263,7 +1263,7 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
@@ -1274,7 +1274,7 @@ models:
       - name: dim_billing_account_id_invoice_owner
       - name: dim_crm_opportunity_id
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_previous
@@ -1283,7 +1283,7 @@ models:
         description: The unique identifier of the subscription
       - name: subscription_status
         description: The status of the subscription
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['Active', 'Cancelled', 'Draft', 'Expired']
@@ -1314,7 +1314,7 @@ models:
         description: The month when the subscription term ends. This month is the same as the term end month or the cancelation month, as appropriate.
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
                   values: ['Sales-Assisted', 'Self-Service']
@@ -1348,7 +1348,7 @@ models:
     columns:
       - name: dim_app_release_major_minor_sk
         description: '{{ doc("dim_app_release_major_minor_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: app_release_major_minor_id
@@ -1376,7 +1376,7 @@ models:
     columns:
       - name: subscription_snapshot_id
         description: Unique identifier of a subscription snapshot
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "arr_snapshots"]
@@ -1388,7 +1388,7 @@ models:
     columns:
       - name: dim_campaign_id
         description: Unique identifier of a SFDC campaign.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common"]
@@ -1397,7 +1397,7 @@ models:
     description: '{{ doc("fct_crm_attribution_touchpoint") }}'
     columns:
       - name: dim_crm_touchpoint_id
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -1429,7 +1429,7 @@ models:
     description: '{{ doc("fct_crm_touchpoint") }}'
     columns:
       - name: dim_crm_touchpoint_id
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -1441,7 +1441,7 @@ models:
     columns:
       - name: dim_crm_person_id
         description: A dbt generated surrogate key combining the lead id and contact id.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
@@ -1453,7 +1453,7 @@ models:
         description: the ownerid from the lead or contact respectively for joining on dim_crm_user
       - name: dim_crm_account_id
         description: the accountId from contacts and lean_data_matched_account from leads to join on dim_crm_account
-        tests:
+        data_tests:
           - dbt_utils.relationships_where:
               to: ref('dim_crm_account')
               field: dim_crm_account_id
@@ -1505,25 +1505,25 @@ models:
     description: '{{ doc("fct_saas_product_usage_metrics_monthly") }}'
     columns:
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_namespace_id
       - name: snapshot_month
         description: First day of the month in which data is being reported.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: snapshot_date_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: instance_type
@@ -1588,7 +1588,7 @@ models:
         description: All-time count of projects with package registry configured ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_with_packages))
       - name: projects_with_packages_28_days_event
         description: '{{ doc("projects_with_packages_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: deployments_28_days_user
         description: Monthly count of unique users triggering deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyreleasedeployments))
@@ -1698,211 +1698,211 @@ models:
         description: Monthly count of MAU changing an issue’s iteration ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_iteration_changed_monthly))
       - name: protected_branches_28_days_user
         description: '{{ doc("protected_branches_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_cd_lead_time_usage_28_days_event
         description: '{{ doc("ci_cd_lead_time_usage_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_cd_deployment_frequency_usage_28_days_event
         description: '{{ doc("ci_cd_deployment_frequency_usage_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
         description: '{{ doc("environments_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: feature_flags_all_time_event
         description: '{{ doc("feature_flags_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: successful_deployments_28_days_event
         description: '{{ doc("successful_deployments_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: failed_deployments_28_days_event
         description: '{{ doc("failed_deployments_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_compliance_framework_all_time_event
         description: '{{ doc("projects_compliance_framework_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: commit_ci_config_file_28_days_user
         description: '{{ doc("commit_ci_config_file_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: view_audit_all_time_user
         description: '{{ doc("view_audit_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dependency_scanning_jobs_all_time_user
         description: '{{ doc("dependency_scanning_jobs_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: analytics_devops_adoption_all_time_user
         description: '{{ doc("analytics_devops_adoption_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_imported_all_time_event
         description: '{{ doc("projects_imported_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: preferences_security_dashboard_28_days_user
         description: '{{ doc("preferences_security_dashboard_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: web_ide_edit_28_days_user
         description: '{{ doc("web_ide_edit_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: auto_devops_pipelines_all_time_event
         description: '{{ doc("auto_devops_pipelines_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_prometheus_active_all_time_event
         description: '{{ doc("projects_prometheus_active_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: prometheus_enabled
         description: '{{ doc("prometheus_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: prometheus_metrics_enabled
         description: '{{ doc("prometheus_metrics_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: group_saml_enabled
         description: '{{ doc("group_saml_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: jira_issue_imports_all_time_event
         description: '{{ doc("jira_issue_imports_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: author_epic_all_time_user
         description: '{{ doc("author_epic_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: author_issue_all_time_user
         description: '{{ doc("author_issue_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: failed_deployments_28_days_user
         description: '{{ doc("failed_deployments_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: successful_deployments_28_days_user
         description: '{{ doc("successful_deployments_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: geo_enabled
         description: '{{ doc("geo_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: auto_devops_pipelines_28_days_user
         description: '{{ doc("auto_devops_pipelines_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_instance_runners_all_time_event
         description: '{{ doc("active_instance_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_group_runners_all_time_event
         description: '{{ doc("active_group_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_project_runners_all_time_event
         description: '{{ doc("active_project_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: gitaly_version
         description: '{{ doc("gitaly_version_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: gitaly_servers_all_time_event
         description: '{{ doc("gitaly_servers_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: snippets_28_days_event
         description: '{{ doc("snippets_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: single_file_editor_28_days_user
         description: '{{ doc("single_file_editor_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_created_28_days_event
         description: '{{ doc("merge_requests_created_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_created_28_days_user
         description: '{{ doc("merge_requests_created_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_approval_rules_28_days_event
         description: '{{ doc("merge_requests_approval_rules_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: custom_compliance_frameworks_28_days_event
         description: '{{ doc("custom_compliance_frameworks_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_security_policy_28_days_event
         description: '{{ doc("projects_security_policy_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_security_policy_28_days_user
         description: '{{ doc("merge_requests_security_policy_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipelines_implicit_auto_devops_28_days_event
         description: '{{ doc("pipelines_implicit_auto_devops_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipeline_schedules_28_days_user
         description: '{{ doc("pipeline_schedules_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_internal_pipelines_28_days_event
         description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_builds_28_days_event
         description: '{{ doc("ci_builds_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: audit_features_28_days_user
         description: '{{ doc("audit_features_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: groups_all_time_event
         description: '{{ doc("groups_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: commit_ci_config_file_7_days_user
         description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_pipeline_config_repository_all_time_user
         description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_pipeline_config_repository_all_time_event
         description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipeline_schedules_all_time_event
         description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipeline_schedules_all_time_user
         description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: is_missing_paid_seats
         description: Flags if there are currently active users, but no seats have been paid for
@@ -1916,17 +1916,17 @@ models:
     columns:
       - name: snapshot_month
         description: Month in which CI Minutes usage data was snapshotted, formatted as `20YY-MM-01`.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_namespace_id
         description: ID of the namespace responsible for the CI Minutes usage.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: ultimate_parent_namespace_id
         description: ID of the namespace's ultimate parent namespace.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: namespace_type
@@ -1935,12 +1935,12 @@ models:
         description: '{{ doc("visibility_level") }}'
       - name:  limit
         description: Monthly CI Minutes limit of the namespace, based on its [product tier](https://about.gitlab.com/pricing/). This value will be 'Not supported minutes' if shared runners are not enabled on the namespace and 'Unlimited minutes' for certain GitLab internal namespaces.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: shared_runners_minutes_used_overall
         description: Total CI Minutes used in the snapshot month.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: status
@@ -1963,7 +1963,7 @@ models:
     columns:
       - name: event_pk
         description: '{{ doc("event_pk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -1992,27 +1992,27 @@ models:
         description: '{{ doc("event_date") }}'
       - name: group_name
         description: '{{ doc("group_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: section_name
         description: '{{ doc("section_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: stage_name
         description: '{{ doc("stage_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_smau
         description: '{{ doc("is_smau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_gmau
         description: '{{ doc("is_gmau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_umau
         description: '{{ doc("is_umau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: parent_id
         description: '{{ doc("parent_id") }}'
@@ -2048,7 +2048,7 @@ models:
     columns:
       - name: event_pk
         description: '{{ doc("event_pk") }}'
-        # tests:
+        # data_tests:
           # - not_null
           # - unique
       - name: event_id
@@ -2101,7 +2101,7 @@ models:
     columns:
       - name: event_user_daily_pk
         description: The unique ID of a daily event.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_event_date_id
@@ -2122,27 +2122,27 @@ models:
         description: '{{ doc("event_date") }}'
       - name: group_name
         description: '{{ doc("group_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: section_name
         description: '{{ doc("section_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: stage_name
         description: '{{ doc("stage_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_smau
         description: '{{ doc("is_smau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_gmau
         description: '{{ doc("is_gmau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_umau
         description: '{{ doc("is_umau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: event_name
         description: '{{ doc("event_name") }}'
@@ -2174,7 +2174,7 @@ models:
     columns:
       - name: event_namespace_daily_pk
         description: The unique ID of a daily namespace level event.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_event_date_id
@@ -2193,27 +2193,27 @@ models:
         description: '{{ doc("event_date") }}'
       - name: group_name
         description: '{{ doc("group_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: section_name
         description: '{{ doc("section_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: stage_name
         description: '{{ doc("stage_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_smau
         description: '{{ doc("is_smau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_gmau
         description: '{{ doc("is_gmau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_umau
         description: '{{ doc("is_umau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: event_name
         description: '{{ doc("event_name") }}'
@@ -2245,38 +2245,38 @@ models:
     columns:
       - name: latest_order_id_in_month
         description: Order ID that was associated with the subscription at month close.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_previous
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_product_tier_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: active_user_count
         description: Count of active users currently on the customer's subcription. A count of 0 indicates that Seat Link has been turned off by the customer.
       - name: license_user_count
         description: Count of licensed users purchased with the customer's subcription.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: max_historical_user_count
@@ -2294,12 +2294,12 @@ models:
         description: Flags rows where `active_user_count` is NULL in source.
       - name: snapshot_month
         description: Month in which Seat Link usage data is reported.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: report_date
         description: Day on which Seat Link usage data is reported. Should always be last day of month for historical months.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
 
@@ -2308,29 +2308,29 @@ models:
     columns:
       - name: snapshot_month
         description: Month in which Storage usage data was snapshotted, formatted as `20YY-MM-01`.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_namespace_id
         description: ID of the namespace responsible for the Storage usage.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: ultimate_parent_namespace_id
         description: ID of the namespace's ultimate parent namespace.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: largest_repository_size_gib
         description: Size of the namespace's largest project repository, in GiB.
       - name: total_free_storage_limit_gib
         description: Sum of free repository level storage (10 GiB) over all repositories under the top level namespace. Since storage limits are provided in GiB, they are being reported in GiB. For certain GitLab internal namespaces this value is 0, implying **unlimited storage**.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: total_purchased_storage_limit_gib
         description: Total extra storage purhaced across all namespaces under the top level namespace. Extra storage is currently purchased in 10 GiB increments and thus is reported in GiB.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: has_repositories_above_free_limit
@@ -2367,7 +2367,7 @@ models:
     columns:
       - name: dim_bizible_marketing_channel_path_id
         description: Unique identifier for the marketing channel.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
@@ -2377,14 +2377,14 @@ models:
     description: '{{ doc("dim_namespace_hist") }}'
     columns:
       - name: namespace_snapshot_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_namespace_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
@@ -2392,14 +2392,14 @@ models:
     description: '{{ doc("dim_namespace_plan_hist") }}'
     columns:
       - name: dim_namespace_id
-        tests:
+        data_tests:
           - not_null
 
   - name: dim_namespace
     description: '{{ doc("dim_namespace") }}'
     columns:
       - name: dim_namespace_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
@@ -2415,7 +2415,7 @@ models:
       - name: owner_id
       - name: namespace_type
         description: '{{ doc("namespace_type") }}'
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: has_avatar
@@ -2446,17 +2446,17 @@ models:
       - name: ultimate_parent_namespace_id
       - name: gitlab_plan_id
         description: The **plan_id** associated with the namespace's subscription. This can be inheritted from the namespaces's ultimate parent.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: gitlab_plan_title
         description: Whether or not the namespace associated with the project is subscribed to a paid plan. This can be inheritted from the namespaces's ultimate parent.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: gitlab_plan_is_paid
         description: Whether or not the namespace associated with the project is subscribed to a paid plan. This can be inheritted from the namespaces's ultimate parent.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_product_tier_id,
@@ -2471,10 +2471,10 @@ models:
     description: '{{ doc("dim_order_hist") }}'
     columns:
       - name: dim_order_id
-        tests:
+        data_tests:
           - not_null
       - name: customer_id
-        tests:
+        data_tests:
           - not_null
       - name: product_rate_plan_id
       - name: dim_subscription_id
@@ -2483,14 +2483,14 @@ models:
       - name: order_start_date
       - name: order_end_date
       - name: order_created_at
-        tests:
+        data_tests:
           - not_null
       - name: last_extra_ci_minutes_sync_at
       - name: increased_billing_rate_notified_at
       - name: order_is_trial
       - name: amendment_type
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
@@ -2499,7 +2499,7 @@ models:
     columns:
       - name: dim_quote_id
         description: The unique identifier for each of the quotes.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: quote_number
@@ -2516,19 +2516,19 @@ models:
     columns:
       - name: dim_license_id
         description: The unique ID of a generated license.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
       - name: license_md5
         description: The md5 hash of the license file. Use this field to join to fct_ping_instance.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
       - name: license_sha256
         description: The sha256 hash of the license file. Use this field to join to fct_ping_instance.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
@@ -2594,7 +2594,7 @@ models:
     columns:
       - name: dim_ci_build_id
         description: Unique key of CI Build
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_project_id
@@ -2615,12 +2615,12 @@ models:
     columns:
       - name: dim_issue_sk
         description: The unique identifier for each of the issues.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_project_id
       - name: dim_plan_sk_at_creation
-        tests:
+        data_tests:
           - not_null
       - name: masked_label_title
         description: '{{ doc("label_title") }}'
@@ -2631,10 +2631,10 @@ models:
       - name: dim_ci_pipeline_id
         description: The unique identifier for each of the CI Pipelines.
       - name: dim_project_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_plan_id
-        tests:
+        data_tests:
           - not_null
       - name: ci_pipeline_internal_id
         description: Internal ID for the CI Pipeline. This is project specific
@@ -2644,7 +2644,7 @@ models:
     columns:
       - name: dim_user_id
         description: Unique key of User.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: is_blocked_user
@@ -2673,7 +2673,7 @@ models:
     columns:
       - name: user_snapshot_id
         description: Unique key of User.
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -2706,7 +2706,7 @@ models:
     columns:
       - name: dim_ci_runner_id
         description: The unique ID of the runner with which the CI build has been run
-        tests:
+        data_tests:
           - unique
       - name: created_date_id
       - name: created_at
@@ -2735,23 +2735,23 @@ models:
     description: '{{ doc("dim_ci_stage") }}'
     columns:
       - name: dim_ci_stage_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_project_id
         description: Foreign key to `dim_project` that shows the ID of the project in which the stage was run. Defaults to `-1` if a project ID from the CI builds source table is not found in `dim_project`.
-        tests:
+        data_tests:
           - not_null
       - name: dim_ci_pipeline_id
         description: Foreign key to `dim_ci_pipeline` that shows the ID of the pipeline in which the stage was run. Defaults to `-1` if a CI pipeline ID from the CI builds source table is not found in `dim_ci_pipeline`.
-        tests:
+        data_tests:
           - not_null
       - name: created_date_id
         description: Foreign key to `dim_date` that shows the ID of the date on which the stage was created. Defaults to `-1` if a date ID from the CI builds source table is not found in `dim_date`.
-        tests:
+        data_tests:
           - not_null
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
       - name: ci_stage_name
@@ -2764,7 +2764,7 @@ models:
     columns:
       - name: dim_ci_build_id
         description: Unique key of CI Build
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -2780,7 +2780,7 @@ models:
       - name: ultimate_parent_namespace_id
       - name: dim_plan_id
         description: ID of the Plan
-        tests:
+        data_tests:
           - not_null
       - name: dim_user_id
         description: Foreign key that shows the ID of the user who triggered the CI Build
@@ -2798,12 +2798,12 @@ models:
     columns:
       - name: dim_merge_request_sk
         description: The unique identifier for each of the merge requets.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_project_sk
       - name: dim_plan_sk_at_creation
-        tests:
+        data_tests:
           - not_null
 
   - name: dim_epic
@@ -2811,13 +2811,13 @@ models:
     columns:
       - name: dim_epic_sk
         description: The unique identifier for each of the events.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_project_id
       - name: dim_plan_sk_at_creation
         description: '{{ doc("dim_plan_id_at_creation") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_internal_epic
         description: '{{ doc("is_internal_epic") }}'
@@ -2827,12 +2827,12 @@ models:
     columns:
       - name: dim_note_id
         description: The unique identifier for each of the events.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_project_id
       - name: dim_plan_id
-        tests:
+        data_tests:
           - not_null
       - name: is_system
         description: boolean flag allowing us to identify if a note is automatically created by the system or if it is a user's action
@@ -2842,20 +2842,20 @@ models:
     columns:
       - name: dim_issue_link_id
         description: The identifier for an issue relationship
-        tests:
+        data_tests:
           - not_null
       - name: dim_issue_sk_source
         description: The identifier for source issue of an issue link
-        tests:
+        data_tests:
           - not_null
       - name: dim_issue_sk_target
         description: The identifier for target issue of an issue link
-        tests:
+        data_tests:
           - not_null
 
   - name: dim_locality
     description: '{{ doc("dim_locality") }}'
-    tests:
+    data_tests:
     - dbt_utils.unique_combination_of_columns:
         combination_of_columns:
           - locality
@@ -2863,11 +2863,11 @@ models:
     columns:
       - name: dim_locality_id
         description: The id derived from the locality that will be used to join with other tables.
-        tests:
+        data_tests:
           - not_null
       - name: locality
         description: The unique location lables used in compensation calculations.
-        tests:
+        data_tests:
           - not_null
       - name: location_factor
         description: A cost of market evaluation compared to San Francisco. https://about.gitlab.com/handbook/total-rewards/compensation/compensation-calculator/#location-factor
@@ -2875,7 +2875,7 @@ models:
         description: The parent country of the locality
       - name: valid_from
         description: The date the location factor for a locality begins being applied
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         description: The date the location factor for a locality stops being applied
@@ -2887,7 +2887,7 @@ models:
     description: ' {{ doc("dim_ping_instance") }} '
     columns:
       - name: dim_ping_instance_id
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_ping_instance_id") }}'
@@ -3074,7 +3074,7 @@ models:
     description: ' {{ doc("dim_ping_metric") }} '
     columns:
       - name: ping_metric_id
-        tests:
+        data_tests:
           - not_null
           - unique
         description: ' {{ doc("ping_metric_id") }} '
@@ -3141,7 +3141,7 @@ models:
     description: ' {{ doc("dim_ping_metric_daily_snapshot") }} '
     columns:
       - name: ping_metric_hist_id
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("ping_metric_hist_id") }}'
@@ -3207,7 +3207,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric") }} '
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the service_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -3242,7 +3242,7 @@ models:
         description: '{{ doc("ping_created_at") }}'
       - name: uploaded_at
         description: '{{ doc("uploaded_at") }}'
-        tests:
+        data_tests:
           - not_null
       - name: ping_created_date
         description: '{{ doc("ping_created_date") }}'
@@ -3277,7 +3277,7 @@ models:
     description: '{{ doc("fct_ping_instance_metric_rolling_6_months") }}'
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -3337,7 +3337,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric_rolling_13_months") }} '
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -3372,7 +3372,7 @@ models:
         description: '{{ doc("ping_created_at") }}'
       - name: uploaded_at
         description: '{{ doc("uploaded_at") }}'
-        tests:
+        data_tests:
           - not_null
       - name: ping_created_date
         description: '{{ doc("ping_created_date") }}'
@@ -3401,7 +3401,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric") }} '
     columns:
       - name: dim_ping_instance_id
-        tests:
+        data_tests:
           - not_null
         description: The unique id of a service ping instance in the dim_ping_instance model.
       - name: dim_instance_id
@@ -3485,7 +3485,7 @@ models:
       - name: projects_with_packages_all_time_event
       - name: projects_with_packages_28_days_event
         description: '{{ doc("projects_with_packages_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: deployments_28_days_user
       - name: releases_28_days_user
@@ -3563,24 +3563,24 @@ models:
     description: '{{ doc("fct_ping_instance_metric_wave_monthly") }}'
     columns:
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: snapshot_month
         description: First day of the month in which data is being reported.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: snapshot_date_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: seat_link_report_date
@@ -3667,7 +3667,7 @@ models:
         description: All-time count of projects with package registry configured ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_with_packages))
       - name: projects_with_packages_28_days_event
         description: '{{ doc("projects_with_packages_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: deployments_28_days_user
         description: Monthly count of unique users triggering deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyreleasedeployments))
@@ -3777,267 +3777,267 @@ models:
         description: Monthly count of MAU changing an issue’s iteration ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_iteration_changed_monthly))
       - name: protected_branches_28_days_user
         description: '{{ doc("protected_branches_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_cd_lead_time_usage_28_days_event
         description: '{{ doc("ci_cd_lead_time_usage_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_cd_deployment_frequency_usage_28_days_event
         description: '{{ doc("ci_cd_deployment_frequency_usage_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
         description: '{{ doc("environments_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: feature_flags_all_time_event
         description: '{{ doc("feature_flags_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: successful_deployments_28_days_event
         description: '{{ doc("successful_deployments_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: failed_deployments_28_days_event
         description: '{{ doc("failed_deployments_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_compliance_framework_all_time_event
         description: '{{ doc("projects_compliance_framework_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: commit_ci_config_file_28_days_user
         description: '{{ doc("commit_ci_config_file_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: view_audit_all_time_user
         description: '{{ doc("view_audit_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dependency_scanning_jobs_all_time_user
         description: '{{ doc("dependency_scanning_jobs_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: analytics_devops_adoption_all_time_user
         description: '{{ doc("analytics_devops_adoption_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_imported_all_time_event
         description: '{{ doc("projects_imported_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: preferences_security_dashboard_28_days_user
         description: '{{ doc("preferences_security_dashboard_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: web_ide_edit_28_days_user
         description: '{{ doc("web_ide_edit_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: auto_devops_pipelines_all_time_event
         description: '{{ doc("auto_devops_pipelines_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_prometheus_active_all_time_event
         description: '{{ doc("projects_prometheus_active_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: prometheus_enabled
         description: '{{ doc("prometheus_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: prometheus_metrics_enabled
         description: '{{ doc("prometheus_metrics_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: group_saml_enabled
         description: '{{ doc("group_saml_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: jira_issue_imports_all_time_event
         description: '{{ doc("jira_issue_imports_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: author_epic_all_time_user
         description: '{{ doc("author_epic_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: author_issue_all_time_user
         description: '{{ doc("author_issue_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: failed_deployments_28_days_user
         description: '{{ doc("failed_deployments_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: successful_deployments_28_days_user
         description: '{{ doc("successful_deployments_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: geo_enabled
         description: '{{ doc("geo_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: auto_devops_pipelines_28_days_user
         description: '{{ doc("auto_devops_pipelines_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_instance_runners_all_time_event
         description: '{{ doc("active_instance_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_group_runners_all_time_event
         description: '{{ doc("active_group_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_project_runners_all_time_event
         description: '{{ doc("active_project_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: gitaly_version
         description: '{{ doc("gitaly_version_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: gitaly_servers_all_time_event
         description: '{{ doc("gitaly_servers_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: api_fuzzing_scans_all_time_event
         description: '{{ doc("api_fuzzing_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: api_fuzzing_scans_28_days_event
         description: '{{ doc("api_fuzzing_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: coverage_fuzzing_scans_all_time_event
         description: '{{ doc("coverage_fuzzing_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: coverage_fuzzing_scans_28_days_event
         description: '{{ doc("coverage_fuzzing_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: secret_detection_scans_all_time_event
         description: '{{ doc("secret_detection_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: secret_detection_scans_28_days_event
         description: '{{ doc("secret_detection_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dependency_scanning_scans_all_time_event
         description: '{{ doc("dependency_scanning_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dependency_scanning_scans_28_days_event
         description: '{{ doc("dependency_scanning_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: container_scanning_scans_all_time_event
         description: '{{ doc("container_scanning_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: container_scanning_scans_28_days_event
         description: '{{ doc("container_scanning_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dast_scans_all_time_event
         description: '{{ doc("dast_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dast_scans_28_days_event
         description: '{{ doc("dast_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: sast_scans_all_time_event
         description: '{{ doc("sast_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: sast_scans_28_days_event
         description: '{{ doc("sast_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: snippets_28_days_event
         description: '{{ doc("snippets_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: single_file_editor_28_days_user
         description: '{{ doc("single_file_editor_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_created_28_days_event
         description: '{{ doc("merge_requests_created_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_created_28_days_user
         description: '{{ doc("merge_requests_created_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_approval_rules_28_days_event
         description: '{{ doc("merge_requests_approval_rules_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: custom_compliance_frameworks_28_days_event
         description: '{{ doc("custom_compliance_frameworks_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_security_policy_28_days_event
         description: '{{ doc("projects_security_policy_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: merge_requests_security_policy_28_days_user
         description: '{{ doc("merge_requests_security_policy_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipelines_implicit_auto_devops_28_days_event
         description: '{{ doc("pipelines_implicit_auto_devops_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipeline_schedules_28_days_user
         description: '{{ doc("pipeline_schedules_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_internal_pipelines_28_days_event
         description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_builds_28_days_event
         description: '{{ doc("ci_builds_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: audit_features_28_days_user
         description: '{{ doc("audit_features_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: groups_all_time_event
         description: '{{ doc("groups_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: commit_ci_config_file_7_days_user
         description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_pipeline_config_repository_all_time_user
         description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_pipeline_config_repository_all_time_event
         description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipeline_schedules_all_time_event
         description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: pipeline_schedules_all_time_user
         description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: instance_user_count_not_aligned
         description: Checks if the instance user count sent with the Usage Ping aligns with `active_user_count` from Seat Link source. Returns NULL if counts are aligned, if not the instance user count from the Usage Ping is displayed.
@@ -4064,7 +4064,7 @@ models:
     description: ' {{ doc("fct_ping_instance") }} '
     columns:
       - name: ping_instance_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance model consisting of dim_ping_instance_id
       - name: dim_ping_instance_id
@@ -4073,7 +4073,7 @@ models:
         description: '{{ doc("ping_created_at") }}'
       - name: uploaded_at
         description: '{{ doc("uploaded_at") }}'
-        tests:
+        data_tests:
           - not_null
       - name: dim_product_tier_id
         description: '{{ doc("dim_product_tier_id_ping_model") }}'
@@ -4143,7 +4143,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric_28_day") }} '
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -4205,7 +4205,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric_7_day") }} '
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -4267,7 +4267,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric_none_null") }} '
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -4330,11 +4330,11 @@ models:
     columns:
       - name: ping_instance_metric_monthly_pk
         description: '{{ doc("ping_instance_metric_monthly_pk") }}'
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -4394,7 +4394,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric_weekly") }} '
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -4458,7 +4458,7 @@ models:
     description: ' {{ doc("fct_ping_instance_metric_all_time") }} '
     columns:
       - name: ping_instance_metric_id
-        tests:
+        data_tests:
           - not_null
         description: The unique composite ID for the fct_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
       - name: dim_ping_instance_id
@@ -4521,7 +4521,7 @@ models:
     columns:
       - name: performance_indicator_targets_pk
         description: The unique composite ID for the fct_performance_indicator_targets consisting of reporting_month and pi_metric_name
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: reporting_month
@@ -4544,7 +4544,7 @@ models:
     columns:
       - name: dim_charge_id
         description: Unique identifier for a rate plan charge in Zuora. These are transactions in Zuora Billing.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "arr"]
@@ -4557,7 +4557,7 @@ models:
     columns:
       - name: dim_crm_account_id
         description: Account ID from SFDC identifing the customer
-        tests:
+        data_tests:
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_parent_crm_account_id
@@ -4571,7 +4571,7 @@ models:
         description: Employee count band the account belongs to based on the account_max_family_employee. Bands include "> 2K", "> 1.5K", "> 1K".
       - name: is_reseller
         description: Identify whether a crm_account is a reseller.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: crm_account_created_date
@@ -4787,7 +4787,7 @@ models:
     columns:
       - name: crm_account_snapshot_id
         description: Unique identifier of a crm account in the daily snapshot models
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: dim_crm_account_id
@@ -5024,7 +5024,7 @@ models:
     columns:
       - name: dim_crm_opportunity_id
         description: primary key for Salesforce Opportunities
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
@@ -5033,7 +5033,7 @@ models:
       - name: opportunity_name
       - name: dim_crm_user_id
         description: Sourced from the opportunity owner_id this key is for joining to dim_crm_user
-        tests:
+        data_tests:
           - relationships:
               to: ref('dim_crm_user')
               field: dim_crm_user_id
@@ -5232,11 +5232,11 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null
       - name: dim_charge_id
         description: The unique identifier of a verion of a rate plan charge
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_product_detail_id
@@ -5265,7 +5265,7 @@ models:
     columns:
       - name: dim_crm_account_id
         description: Unique identifier of a crm account from Salesforce. This is the natural key of the table.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common"]
@@ -5279,13 +5279,13 @@ models:
     columns:
       - name: dim_crm_opportunity_id
         description: A dbt generated surrogate key combining the sfdc_record_id and the sales_accepted_date.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: [ "tdf", "common", "sales_funnel" ]
       - name: dim_crm_account_id
         description: join key for dim_crm_account from the accountid field in Salesforce
-        tests:
+        data_tests:
           - dbt_utils.relationships_where:
               to: ref('dim_crm_account')
               field: dim_crm_account_id
@@ -5294,28 +5294,28 @@ models:
         tags: [ "tdf", "common", "sales_funnel" ]
       - name: dim_alliance_type_id
         description: join key for dim_alliance_type_scd.
-        tests:
+        data_tests:
           - relationships:
               to: ref('dim_alliance_type_scd')
               field: dim_alliance_type_id
         tags: [ "tdf", "common", "sales_funnel" ]
       - name: dim_alliance_type_current_id
         description: join key for dim_alliance_type_scd. It contains current state id for the alliance type dimension.
-        tests:
+        data_tests:
           - relationships:
               to: ref('dim_alliance_type_scd')
               field: dim_alliance_type_id
         tags: [ "tdf", "common", "sales_funnel" ]
       - name: dim_dr_partner_engagement_id
         description: join key for dim_dr_partner_engagement
-        tests:
+        data_tests:
           - relationships:
               to: ref('dim_dr_partner_engagement')
               field: dim_dr_partner_engagement_id
         tags: [ "tdf", "common", "sales_funnel" ]
       - name: dim_channel_type_id
         description: join key for dim_channel_type
-        tests:
+        data_tests:
           - relationships:
               to: ref('dim_channel_type')
               field: dim_channel_type_id
@@ -5551,7 +5551,7 @@ models:
     columns:
       - name: crm_opportunity_snapshot_id
         description: Unique identifier of a crm opportunity in the daily snapshot models
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "common", "sales_funnel", "opportunity_snapshots"]
@@ -5561,7 +5561,7 @@ models:
     columns:
       - name: crm_opportunity_snapshot_id
         description: Unique identifier of a crm opportunity in the daily snapshot models
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: [ "tdf", "common", "sales_funnel", "opportunity_snapshots"]
@@ -5571,7 +5571,7 @@ models:
     tags: [ "tdf", "common", "sales_funnel", "opportunity_snapshots"]
     columns: 
       - name: opportunity_weekly_snapshot_aggregate_pk
-        tests:
+        data_tests:
           - not_null
           - unique
   
@@ -5580,7 +5580,7 @@ models:
     tags: [ "tdf", "common", "sales_funnel", "opportunity_snapshots"]
     columns: 
       - name: targets_actuals_weekly_snapshot_pk
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -5589,7 +5589,7 @@ models:
     columns:
       - name: credit_balance_adjustment_pk
         description: Zuora credit balance adjustment - grain is one adjustment per invoice or account
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5599,7 +5599,7 @@ models:
     columns:
       - name: dim_invoice_id
         description: The unique identifier of an invoice
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5609,7 +5609,7 @@ models:
     columns:
       - name: invoice_aging_detail_pk
         description: The unique identifier of a transaction
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5619,7 +5619,7 @@ models:
     columns:
       - name: invoice_item_adjustment_pk
         description: Zuora invoice item adjustment - grain is one adjustment per invoice item
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5629,23 +5629,23 @@ models:
     columns:
       - name: charge_id
         description: The unique identifier of a verion of a rate plan charge associated with the invoice item
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "invoice"]
       - name: invoice_item_id
         description: unique invoice item id that identifies a line item on the invoice
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
       - name: dim_invoice_id
         description: The ID of the invoice that's associated with the invoice item
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "invoice"]
       - name: invoice_number
         description: The unique identification number of the invoice
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "invoice"]
       - name: dim_crm_account_id_invoice
@@ -5669,7 +5669,7 @@ models:
     description: Aggregate fact table with invoice items summarized on charge level
     columns:
       - name: charge_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -5678,7 +5678,7 @@ models:
     columns:
       - name: invoice_payment_pk
         description: Zuora invoice payment transaction - grain is one payment applied to the invoice
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5688,7 +5688,7 @@ models:
     columns:
       - name: dim_manual_journal_entry_line_id
         description: Unique identifier for a manual journal entry line.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -5698,7 +5698,7 @@ models:
     columns:
       - name: mrr_snapshot_id
         description: The unique identifier of the given snapshot MRR.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "arr"]
@@ -5711,7 +5711,7 @@ models:
     columns:
       - name: mrr_id
         description: The unique identifier of the MRR.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "mrr"]
@@ -5719,11 +5719,11 @@ models:
         description: The identifier of date month in dim_date
       - name: dim_charge_id
         description: join key for dim_charge
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: join key for dim_billing_account
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('dim_billing_account')
@@ -5731,14 +5731,14 @@ models:
         tags: ["tdf", "common", "mrr"]
       - name: dim_crm_account_id
         description: join key for dim_crm_account
-        tests:
+        data_tests:
           - relationships:
               to: ref('dim_crm_account')
               field: dim_crm_account_id
         tags: ["tdf", "common", "mrr"]
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscription table
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('dim_subscription')
@@ -5746,7 +5746,7 @@ models:
         tags: ["tdf", "common", "mrr"]
       - name: dim_product_detail_id
         description: The identifier of product details in dim_product_detail
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: Zuora account id
@@ -5766,7 +5766,7 @@ models:
     columns:
       - name: mrr_id
         description: The unique identifier of the MRR.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "mrr"]
@@ -5774,11 +5774,11 @@ models:
         description: The identifier of date month in dim_date
       - name: dim_charge_id
         description: join key for dim_charge
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: join key for dim_billing_account
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('dim_billing_account')
@@ -5786,14 +5786,14 @@ models:
         tags: ["tdf", "common", "mrr"]
       - name: dim_crm_account_id
         description: join key for dim_crm_account
-        tests:
+        data_tests:
           - relationships:
               to: ref('dim_crm_account')
               field: dim_crm_account_id
         tags: ["tdf", "common", "mrr"]
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscription table
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('dim_subscription')
@@ -5801,7 +5801,7 @@ models:
         tags: ["tdf", "common", "mrr"]
       - name: dim_product_detail_id
         description: The identifier of product details in dim_product_detail
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: Zuora account id
@@ -5819,7 +5819,7 @@ models:
     columns:
       - name: payment_pk
         description: Zuora payment transaction - grain is one payment applied to a single invoice or several invoices
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5829,7 +5829,7 @@ models:
     columns:
       - name: refund_pk
         description: Zuora refund transaction - grain is a refund made on the invoice or account
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5839,7 +5839,7 @@ models:
     columns:
       - name: refund_invoice_payment_pk
         description: Zuora refund invoice payment transaction - grain is one refund payment made on the invoice
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "invoice"]
@@ -5849,7 +5849,7 @@ models:
     columns:
       - name: quote_item_id
         description: A unique identifier of a product included in a quote amendment which is associated with a quote
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -5857,7 +5857,7 @@ models:
     description: '{{ doc("fct_quote") }}'
     columns:
       - name: dim_quote_id
-        tests:
+        data_tests:
           - not_null
           - unique
           - relationships:
@@ -5869,7 +5869,7 @@ models:
     columns:
       - name: dim_revenue_contract_hold_id
         description: Unique identifier for a hold applied to a revenue contract or revenue contract line.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -5879,7 +5879,7 @@ models:
     columns:
       - name: dim_revenue_contract_line_id
         description: Unique identifier for a revenue contract line.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
@@ -5889,7 +5889,7 @@ models:
     columns:
       - name: dim_revenue_contract_schedule_id
         description: Unique identifier for a schedule applied to a revenue contract line.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
 
@@ -5897,17 +5897,17 @@ models:
     description: '{{ doc("fct_sales_funnel_partner_alliance_target") }}'
     columns:
       - name: kpi_name
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: sales_funnel_partner_alliance_target_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_sales_funnel_kpi_sk
         description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
 
@@ -5915,17 +5915,17 @@ models:
     description: '{{ doc("fct_sales_funnel_partner_alliance_target_daily") }}'
     columns:
       - name: kpi_name
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: sales_funnel_partner_alliance_target_daily_pk
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_sales_funnel_kpi_sk
         description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: report_target_date
@@ -5943,13 +5943,13 @@ models:
     description: '{{ doc("fct_sales_funnel_actual") }}'
     columns:
       - name: sales_funnel_actual_sk
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_sales_funnel_kpi_sk
         description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
 
@@ -5957,17 +5957,17 @@ models:
     description: '{{ doc("fct_sales_funnel_target") }}'
     columns:
       - name: kpi_name
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: sales_funnel_target_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_sales_funnel_kpi_sk
         description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
 
@@ -5975,17 +5975,17 @@ models:
     description: '{{ doc("fct_sales_funnel_target_daily") }}'
     columns:
       - name: kpi_name
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: sales_funnel_target_daily_pk
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_sales_funnel_kpi_sk
         description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: report_target_date
@@ -6004,14 +6004,14 @@ models:
     columns:
       - name: dim_waterfall_summary_id
         description: Unique identifier for a revenue contract line schedule period.
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common", "zuora_revenue"]
 
   - name: bdg_metrics_redis_events
     description: '{{ doc("bdg_metrics_redis_events") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - metrics_path
@@ -6025,7 +6025,7 @@ models:
     columns:
       - name: dim_crm_event_sk
         description: The utility-generated ID key, from the event_id. 
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: dim_crm_event_pk
@@ -6201,7 +6201,7 @@ models:
     columns:
       - name: dim_crm_task_sk
         description: '{{ doc("dim_crm_task_sk") }}'
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common"]
@@ -6219,7 +6219,7 @@ models:
     columns:
       - name: dim_crm_task_sk
         description: '{{ doc("dim_crm_task_sk") }}'
-        tests:
+        data_tests:
           - unique
           - not_null
         tags: ["tdf", "common"]
@@ -6232,7 +6232,7 @@ models:
     description: '{{ doc("dim_behavior_browser") }}'
     columns: 
       - name: dim_behavior_browser_sk
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_behavior_browser_sk") }}'
@@ -6261,7 +6261,7 @@ models:
     description: '{{ doc("dim_behavior_operating_system") }}'
     columns: 
       - name: dim_behavior_operating_system_sk
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_behavior_operating_system_sk") }}'
@@ -6292,7 +6292,7 @@ models:
     description: '{{ doc("dim_behavior_website_page") }}'
     columns:
       - name: dim_behavior_website_page_sk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -6346,7 +6346,7 @@ models:
     description: '{{ doc("fct_behavior_website_page_view") }}'
     columns:
       - name: fct_behavior_website_page_view_sk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -6414,7 +6414,7 @@ models:
     description: '{{ doc("dim_behavior_event") }}'
     columns:
       - name: dim_behavior_event_sk
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_behavior_event_sk") }}'
@@ -6451,7 +6451,7 @@ models:
     description: '{{ doc("fct_behavior_structured_event") }}'
     columns: 
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -6700,7 +6700,7 @@ models:
     description: '{{ doc("fct_behavior_structured_event_30") }}'
     columns: 
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -6949,7 +6949,7 @@ models:
     description: '{{ doc("fct_behavior_structured_event_90") }}'
     columns: 
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -7198,7 +7198,7 @@ models:
     description:  '{{ doc("fct_behavior_structured_event_experiment") }}'
     columns: 
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("behavior_structured_event_pk") }}'
@@ -7299,13 +7299,13 @@ models:
       - name: has_subscription_auto_renew_context
         description: '{{ doc("has_subscription_auto_renew_context") }}'
       - name: experiment_name
-        tests:
+        data_tests:
           - not_null:
               config:
                 error_if: ">5784"
         description: '{{ doc("experiment_name") }}'        
       - name: experiment_variant
-        tests:
+        data_tests:
           - not_null:
               config:
                 error_if: ">5784"
@@ -7319,7 +7319,7 @@ models:
     description: '{{ doc("fct_behavior_structured_event_without_assignment") }}'
     columns: 
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -7560,7 +7560,7 @@ models:
     description: '{{ doc("fct_behavior_structured_event_without_assignment_190") }}'
     columns: 
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -7802,7 +7802,7 @@ models:
     description: '{{ doc("fct_behavior_structured_event_without_assignment_400") }}'
     columns: 
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -8043,7 +8043,7 @@ models:
     description: '{{ doc("fct_behavior_structured_event_redis_hll_counters") }}'
     columns:
       - name: behavior_structured_event_pk
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("behavior_structured_event_pk") }}'
@@ -8096,7 +8096,7 @@ models:
     description: '{{ doc("fct_behavior_unstructured_event") }}'
     columns:
       - name: fct_behavior_unstructured_sk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -8158,12 +8158,12 @@ models:
     columns:
       - name: dim_ping_instance_id
         description: The unique identifier of the ping. This appears as id in the ping payload.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: ping_created_at
         description: The timestamp at which the ping was created_at
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: ping_created_date_28_days_earlier
@@ -8177,7 +8177,7 @@ models:
       - name: ping_created_date
         description: The day the ping was created at (removes the extra time information in the timestamp)
       - name: uuid
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: ping_delivery_type
@@ -8397,7 +8397,7 @@ models:
         description: All-time count of projects with package registry configured ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_with_packages))
       - name: projects_with_packages_28_days_event
         description: '{{ doc("projects_with_packages_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: deployments_28_days_user
         description: Monthly count of unique users triggering deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyreleasedeployments))
@@ -8507,255 +8507,255 @@ models:
         description: Monthly count of MAU changing an issue’s iteration ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_iteration_changed_monthly))
       - name: protected_branches_28_days_user
         description: '{{ doc("protected_branches_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_cd_lead_time_usage_28_days_event
         description: '{{ doc("ci_cd_lead_time_usage_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_cd_deployment_frequency_usage_28_days_event
         description: '{{ doc("ci_cd_deployment_frequency_usage_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_with_repositories_enabled_all_time_user
         description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: environments_all_time_event
         description: '{{ doc("environments_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: feature_flags_all_time_event
         description: '{{ doc("feature_flags_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: successful_deployments_28_days_event
         description: '{{ doc("successful_deployments_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: failed_deployments_28_days_event
         description: '{{ doc("failed_deployments_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_compliance_framework_all_time_event
         description: '{{ doc("projects_compliance_framework_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: commit_ci_config_file_28_days_user
         description: '{{ doc("commit_ci_config_file_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: view_audit_all_time_user
         description: '{{ doc("view_audit_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dependency_scanning_jobs_all_time_user
         description: '{{ doc("dependency_scanning_jobs_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: analytics_devops_adoption_all_time_user
         description: '{{ doc("analytics_devops_adoption_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_imported_all_time_event
         description: '{{ doc("projects_imported_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: preferences_security_dashboard_28_days_user
         description: '{{ doc("preferences_security_dashboard_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: web_ide_edit_28_days_user
         description: '{{ doc("web_ide_edit_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: auto_devops_pipelines_all_time_event
         description: '{{ doc("auto_devops_pipelines_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_prometheus_active_all_time_event
         description: '{{ doc("projects_prometheus_active_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: prometheus_enabled
         description: '{{ doc("prometheus_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: prometheus_metrics_enabled
         description: '{{ doc("prometheus_metrics_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: group_saml_enabled
         description: '{{ doc("group_saml_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: jira_issue_imports_all_time_event
         description: '{{ doc("jira_issue_imports_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: author_epic_all_time_user
         description: '{{ doc("author_epic_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: author_issue_all_time_user
         description: '{{ doc("author_issue_all_time_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: failed_deployments_28_days_user
         description: '{{ doc("failed_deployments_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: successful_deployments_28_days_user
         description: '{{ doc("successful_deployments_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: geo_enabled
         description: '{{ doc("geo_enabled_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: auto_devops_pipelines_28_days_user
         description: '{{ doc("auto_devops_pipelines_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_instance_runners_all_time_event
         description: '{{ doc("active_instance_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_group_runners_all_time_event
         description: '{{ doc("active_group_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: active_project_runners_all_time_event
         description: '{{ doc("active_project_runners_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: gitaly_version
         description: '{{ doc("gitaly_version_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: gitaly_servers_all_time_event
         description: '{{ doc("gitaly_servers_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: api_fuzzing_scans_all_time_event
         description: '{{ doc("api_fuzzing_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: api_fuzzing_scans_28_days_event
         description: '{{ doc("api_fuzzing_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: coverage_fuzzing_scans_all_time_event
         description: '{{ doc("coverage_fuzzing_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: coverage_fuzzing_scans_28_days_event
         description: '{{ doc("coverage_fuzzing_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: secret_detection_scans_all_time_event
         description: '{{ doc("secret_detection_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: secret_detection_scans_28_days_event
         description: '{{ doc("secret_detection_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dependency_scanning_scans_all_time_event
         description: '{{ doc("dependency_scanning_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dependency_scanning_scans_28_days_event
         description: '{{ doc("dependency_scanning_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: container_scanning_scans_all_time_event
         description: '{{ doc("container_scanning_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: container_scanning_scans_28_days_event
         description: '{{ doc("container_scanning_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dast_scans_all_time_event
         description: '{{ doc("dast_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: dast_scans_28_days_event
         description: '{{ doc("dast_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: sast_scans_all_time_event
         description: '{{ doc("sast_scans_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: sast_scans_28_days_event
         description: '{{ doc("sast_scans_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: packages_pushed_registry_all_time_event
         description: '{{ doc("packages_pushed_registry_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: packages_pulled_registry_all_time_event
         description: '{{ doc("packages_pulled_registry_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: compliance_dashboard_view_28_days_user
         description: '{{ doc("compliance_dashboard_view_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: audit_screen_view_28_days_user
         description: '{{ doc("audit_screen_view_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: instance_audit_screen_view_28_days_user
         description: '{{ doc("instance_audit_screen_view_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: credential_inventory_view_28_days_user
         description: '{{ doc("credential_inventory_view_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: compliance_frameworks_pipeline_28_days_event
         description: '{{ doc("compliance_frameworks_pipeline_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: groups_streaming_destinations_all_time_event
         description: '{{ doc("groups_streaming_destinations_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: audit_event_destinations_all_time_event
         description: '{{ doc("audit_event_destinations_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: audit_event_destinations_28_days_event
         description: '{{ doc("audit_event_destinations_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: projects_status_checks_all_time_event
         description: '{{ doc("projects_status_checks_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: external_status_checks_all_time_event
         description: '{{ doc("external_status_checks_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: paid_license_search_28_days_user
         description: '{{ doc("paid_license_search_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: compliance_frameworks_pipeline_all_time_event
         description: '{{ doc("compliance_frameworks_pipeline_all_time_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: last_activity_28_days_user
         description: '{{ doc("last_activity_28_days_user_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: ci_internal_pipelines_28_days_event
         description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
-        tests:
+        data_tests:
           - dbt_utils.at_least_one
       - name: is_latest_data
         description: Flags the row with the most recently received data from Usage Ping
@@ -8769,7 +8769,7 @@ models:
     columns:
       - name: event_namespace_monthly_pk
         description: The unique composite ID of the fct_event_namespace_monthly model consisting of event_calendar_month, event_name, and dim_ultimate_parent_namespace_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_ultimate_parent_namespace_id
@@ -8794,27 +8794,27 @@ models:
         description: '{{ doc("event_name") }}'
       - name: section_name
         description: '{{ doc("section_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: stage_name
         description: '{{ doc("stage_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: group_name
         description: '{{ doc("group_name") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_smau
         description: '{{ doc("is_smau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_gmau
         description: '{{ doc("is_gmau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: is_umau
         description: '{{ doc("is_umau") }}'
-        tests:
+        data_tests:
           - not_null
       - name: data_source
         description: '{{ doc("data_source") }}'
@@ -8838,7 +8838,7 @@ models:
     columns:
       - name: delta_arr_subscription_lineage_product_monthly_pk
         description: The unique composite ID of the fct_delta_arr_subscription_month model consisting of arr_month and dim_oldest_subscription_in_cohort_id.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_parent_crm_account_id
@@ -8882,7 +8882,7 @@ models:
  
   - name: dim_team_member
     description: '{{ doc("dim_team_member") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - employee_id
@@ -8890,10 +8890,10 @@ models:
     columns:
       - name: employee_id
         description: Workday Employee Identification 
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: first_name
       - name: last_name
@@ -8951,21 +8951,21 @@ models:
         description: The employee type from the following list - Employee (PEO or Entity), Contractor (Independent, customer-to-customer or PEO), Intern, Consultant.
 
   - name: dim_team
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - team_id
             - valid_from
     columns:
       - name: team_hierarchy_level
-        tests:
+        data_tests:
           - accepted_values:
               values: ['1', '2', '3', '4', '5', '6', '7', '8', '9']
       - name: dim_team_sk
-        tests:
+        data_tests:
           - not_null
       - name: team_id
-        tests:
+        data_tests:
           - not_null
       - name: team_superior_team_id
       - name: hierarchy_level_1
@@ -9002,7 +9002,7 @@ models:
 
   - name: fct_team_member_status
     description: '{{ doc("fct_team_member_status") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - employee_id
@@ -9011,11 +9011,11 @@ models:
     columns:
       - name: employee_id
         description: Workday Employee Identification 
-        tests:
+        data_tests:
           - not_null
       - name: employment_status
         description: Employment Status (active, terminated). Other statuses will be added in the future (ie. Long term leave) 
-        tests:
+        data_tests:
           - not_null
       - name: termination_reason
         description: Categorical variable that indicates the reason why a team member has been terminated
@@ -9031,12 +9031,12 @@ models:
           masking_policy: analyst_people_sensitive
       - name: status_effective_date
         description: Effective date of employment status
-        tests:
+        data_tests:
           - not_null
 
   - name: fct_team_member_position
     description: '{{ doc("fct_team_member_position") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - employee_id
@@ -9045,18 +9045,18 @@ models:
     columns:
       - name: team_member_position_pk
         description: Primary key for the table
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_team_member_sk
         description: A unique ID for each team member.
-        tests:
+        data_tests:
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team. This field didn't exist before the move to Workday
       - name: employee_id
         description: Unique ID of the team member.
-        tests:
+        data_tests:
           - not_null
       - name: manager
         description: The team member's manager name
@@ -9093,7 +9093,7 @@ models:
 
   - name: fct_team_status
     description: '{{ doc("fct_team_status") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - dim_team_member_sk
@@ -9101,15 +9101,15 @@ models:
     columns:
       - name: dim_team_member_sk
         description: A unique ID for each team member.
-        tests:
+        data_tests:
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team.
-        tests:
+        data_tests:
           - not_null
       - name: employee_id
         description: Unique ID of the team member.
-        tests:
+        data_tests:
           - not_null
       - name: team_id
         description: Unique ID of the team.
@@ -9135,7 +9135,7 @@ models:
         description: Whether the team member's job position is active.
       - name: employment_status
         description: Employment Status (active, terminated). Other statuses will be added in the future (ie. Long term leave) 
-        tests:
+        data_tests:
           - not_null
       - name: termination_reason
         description: Categorical variable that indicates the reason why a team member has been terminated
@@ -9152,10 +9152,10 @@ models:
       - name: is_current
         description: Whether the team status is the most current as of the date the query is run.
       - name: valid_from
-        tests: 
+        data_tests: 
           - not_null
       - name: valid_to
-        tests: 
+        data_tests: 
           - not_null
 
 
@@ -9164,21 +9164,21 @@ models:
     columns:
       - name: dim_trial_latest_sk
         description: '{{ doc("dim_trial_latest_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_trial_snapshot_id
         description: A unique ID for each Snapshotted Order.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: order_id
         description: The unique ID of an Order. It can be used as a join key to join to CDot Orders only.
-        tests:
+        data_tests:
           - not_null
       - name: dim_namespace_id
         description: The id of the namespace related to the subscription.
-        tests: 
+        data_tests: 
           - unique        
       - name: customer_id
         description: The unique ID of a customer. It can be used as a Join key to join to CDot Customers only.
@@ -9206,7 +9206,7 @@ models:
         description: Boolean flag to indicate if the Order started as a Trial or not
       - name: last_extra_ci_minutes_sync_at
       - name: valid_from
-        tests: 
+        data_tests: 
           - not_null
       - name: valid_to
 
@@ -9216,12 +9216,12 @@ models:
     columns:
       - name: trial_pk
         description: The composite primary key of the model that uniquely represents a row, cannot be used as a join key.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: internal_order_id
         description: The unique ID of a CDot Order. It can only be used as a join key to join to CDot Orders. It cannot be used to join to Zuora Orders as this is a system specific key generated by CDot.
-        tests:
+        data_tests:
           - not_null
       - name: dim_namespace_id
         description: The id of the namespace related to the order.  
@@ -9266,12 +9266,12 @@ models:
     columns:
       - name: trial_first_pk
         description: The composite primary key created by hashing `order_id` and `namespace_id` that uniquely represents a row, cannot be used as a join key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: internal_order_id
         description: The unique ID of a CDot Order. It can only be used as a join key to join to CDot Orders. It cannot be used to join to Zuora Orders as this is a system specific key generated by CDot
-        tests:
+        data_tests:
           - not_null
       - name: dim_namespace_id
         description: The id of the namespace related to the first trial order. 
@@ -9312,12 +9312,12 @@ models:
     columns:
       - name: trial_latest_pk
         description: The primary key created by hashing `order_id` and `namespace_id` that uniquely represents a row, cannot be used as a join key.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: internal_order_id
         description: The unique ID of a CDot Order. It can only be used as a join key to join to CDot Orders. It cannot be used to join to Zuora Orders as this is a system specific key generated by CDot.
-        tests:
+        data_tests:
           - not_null
       - name: dim_namespace_id
         description: The id of the namespace related to the latest trial order. 
@@ -9357,7 +9357,7 @@ models:
     columns:
       - name: dim_package_sk
         description: '{{ ("dim_package_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: package_id
@@ -9386,7 +9386,7 @@ models:
     columns:
       - name: dim_integration_sk
         description: '{{ doc("dim_integration_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: integration_id
@@ -9413,7 +9413,7 @@ models:
     columns:
       - name: dim_requirement_sk
         description: '{{ doc("dim_requirement_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: requirement_id
@@ -9442,7 +9442,7 @@ models:
     columns:
       - name: dim_snippet_sk
         description: '{{ doc("dim_snippet_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: snippet_id
@@ -9469,7 +9469,7 @@ models:
     columns:
       - name: dim_milestone_sk
         description: '{{ doc("dim_milestone_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: milestone_id
@@ -9503,7 +9503,7 @@ models:
     description: '{{ doc("fct_latest_seat_link_installation") }}'
     columns:
       - name: latest_seat_link_installation_sk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -9514,7 +9514,7 @@ models:
     columns:
     - name: behavior_structured_event_pk
       description: '{{ doc("behavior_structured_event_pk") }}'
-      tests:
+      data_tests:
         - unique
         - not_null
     - name: behavior_at
@@ -9599,7 +9599,7 @@ models:
     columns:
     - name: behavior_structured_event_pk
       description: '{{ doc("behavior_structured_event_pk") }}'
-      tests:
+      data_tests:
         - unique
         - not_null
     - name: behavior_at
@@ -9624,7 +9624,7 @@ models:
     columns:
       - name: behavior_structured_event_pk
         description: '{{ doc("behavior_structured_event_pk") }}'
-        tests:
+        data_tests:
         - unique:
             config:
               where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"

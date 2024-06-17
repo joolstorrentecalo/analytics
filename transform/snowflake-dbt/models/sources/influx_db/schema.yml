@@ -6,7 +6,7 @@ models:
    columns:
      - name: timestamp
        description: Time when the test was run.
-       tests:
+       data_tests:
          - not_null
      - name: resource
        description: Type of resource created - MR, Issue, project, etc.
@@ -23,17 +23,17 @@ models:
      - name: info
        description: Any information regarding the resource created.
      - name: job_url
-       description: Name of the CI Job where tests are run.
+       description: Name of the CI Job where data_tests are run.
      - name: combined_composite_keys
        description: Combined Composite Keys for all columns
-       tests:
+       data_tests:
          - unique
  - name: all_test_stats_source
    description: Base model for all_test_stats
    columns:
      - name: all_test_stats_id
        description: Unique id to identify a testcase in RSpec.
-       tests:
+       data_tests:
          - not_null
      - name: testcase
        description: Url of the testcase in the gitlab project.
@@ -60,9 +60,9 @@ models:
      - name: merge_request_iid
        description: If triggered from MR, iid of the merge request.
      - name: smoke
-       description: Is this test part of the smoke tests bucket?
+       description: Is this test part of the smoke data_tests bucket?
      - name: reliable
-       description: Is this test part of the reliable tests bucket?
+       description: Is this test part of the reliable data_tests bucket?
      - name: quarantined
        description: Is this test currently quarantined?
      - name: retried
@@ -83,13 +83,13 @@ models:
        description: Total number of milliseconds to finish fabrication of test resources via API and UI.0
      - name: combined_composite_keys
        description: Combined Composite Keys for all columns
-       tests:
+       data_tests:
          - unique
  - name: main_test_stats_source
    description: Base model for main_test_stats
    columns:
      - name: main_test_stats_id
-       tests:
+       data_tests:
          - not_null
      - name: testcase
        description: Url of the testcase in the gitlab project.
@@ -116,9 +116,9 @@ models:
      - name: merge_request_iid
        description: If triggered from MR, iid of the merge request.
      - name: smoke
-       description: Is this test part of the smoke tests bucket?
+       description: Is this test part of the smoke data_tests bucket?
      - name: reliable
-       description: Is this test part of the reliable tests bucket?
+       description: Is this test part of the reliable data_tests bucket?
      - name: quarantined
        description: Is this test currently quarantined?
      - name: retried
@@ -139,5 +139,5 @@ models:
        description: Total number of milliseconds to finish fabrication of test resources via API and UI.0
      - name: combined_composite_keys
        description: Combined Composite Keys for all columns
-       tests:
+       data_tests:
          - unique

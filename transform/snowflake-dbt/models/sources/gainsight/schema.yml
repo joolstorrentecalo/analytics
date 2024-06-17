@@ -6,7 +6,7 @@ models:
       columns:
         - name: crm_acct_id
         - name: gainsight_unique_row_id
-          tests:
+          data_tests:
             - not_null
         - name: instance_hostname
         - name: instance_uuid

@@ -8,12 +8,12 @@ models:
     columns:
       - name: accounting_period_id
         tags: ["tdf", "zuora_central_sandbox"]
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: accounting_period_start_date
         tags: ["tdf", "zuora_central_sandbox"]
-        tests:
+        data_tests:
           - not_null:
               severity: warn
   - name: zuora_central_sandbox_amendment_source
@@ -21,7 +21,7 @@ models:
     columns:
       - name: amendment_id
         tags: ["tdf", "zuora_central_sandbox"]
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -35,7 +35,7 @@ models:
     columns:
       - name: invoice_payment_id
         tags: ["tdf", "zuora_central_sandbox"]      
-        tests:
+        data_tests:
           - not_null: 
               severity: warn
           - unique:
@@ -65,12 +65,12 @@ models:
     columns:
       - name: product_id
         tags: ["tdf", "zuora_central_sandbox"]
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_name
         tags: ["tdf", "zuora_central_sandbox"]
-        tests:
+        data_tests:
           - not_null:
               severity: warn
   - name: zuora_central_sandbox_rate_plan_charge_source
@@ -86,7 +86,7 @@ models:
     columns:
       - name: accounting_period_id
         tags: ["tdf", "zuora_central_sandbox"]
-        tests:
+        data_tests:
           - not_null:
               severity: warn
   - name: zuora_central_sandbox_subscription_source

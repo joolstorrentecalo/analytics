@@ -4,6 +4,6 @@ models:
     description: Model for Customers sensitive data
     columns:
         - name: customer_id
-          tests:
+          data_tests:
               - not_null
               - unique

@@ -5,12 +5,12 @@ models:
     columns:
       - name: account_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: account_name
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: account_id_18
       - name: master_record_id
@@ -50,7 +50,7 @@ models:
       - name: billing_postal_code
       - name: is_sdr_target_account
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: lam
       - name: lam_dev_count
@@ -181,24 +181,24 @@ models:
     columns:
       - name: account_history_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: account_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_bizible_attribution_touchpoint_source
     description: Attribution touchpoints are on opportunities.
     columns:
       - name: touchpoint_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: campaign_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - relationships:
               to: ref('sfdc_campaign_source')
               field: campaign_id
@@ -206,7 +206,7 @@ models:
     description: Touch points are on leads and contacts.
     columns:
       - name: touchpoint_id
-        tests:
+        data_tests:
           - unique
           - not_null
   - name: sfdc_campaign_source
@@ -214,19 +214,19 @@ models:
     columns:
       - name: campaign_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: campaign_name
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_campaign_member_source
     description: The source model for SFDC Campaign Members
     columns:
       - name: campaign_member_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: campaign_member_status
@@ -236,7 +236,7 @@ models:
     columns:
       - name: case_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_contact_source
@@ -244,7 +244,7 @@ models:
     columns:
       - name: contact_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: contact_email
@@ -254,7 +254,7 @@ models:
         tags: ["tdf", "sfdc"]
         meta:
           sensitive: true
-        tests:
+        data_tests:
           - not_null
       - name: zoominfo_company_id
         description: The zoom info id of the company matched by the Zoom Info enrichment process.
@@ -277,11 +277,11 @@ models:
     columns:
       - name: contact_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: contact_history_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_event_source
@@ -289,16 +289,16 @@ models:
     columns:
       - name: event_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: owner_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: account_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - relationships:
               to: ref('sfdc_account_source')
               field: account_id
@@ -308,34 +308,34 @@ models:
     columns:
       - name: account_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('sfdc_account')
               field: account_id
       - name: ebr_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: ebr_date
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: owner_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: ebr_name
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_lead_source
     description: Source model for SFDC Leads
     columns:
       - name: lead_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: lead_email
@@ -345,7 +345,7 @@ models:
         tags: ["tdf", "sfdc"]
         meta:
           sensitive: true
-        tests:
+        data_tests:
           - not_null
       - name: zoominfo_company_id
         description: The zoom info id of the company matched by the Zoom Info enrichment process.
@@ -366,11 +366,11 @@ models:
     columns:
       - name: lead_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: lead_history_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_opportunity_source
@@ -378,20 +378,20 @@ models:
     columns:
       - name: account_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: opportunity_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: opportunity_name
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: stage_name
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('sfdc_opportunity_stage')
@@ -449,23 +449,23 @@ models:
     columns:
       - name: opportunity_history_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: opportunity_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_opportunity_field_history_source
     description: Source model for SFDC Opportunity Field History
     columns:
       - name: field_history_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: opportunity_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
 
   - name: sfdc_opportunity_split_source
@@ -473,7 +473,7 @@ models:
     columns:
       - name: opportunity_split_id
         tags: [ "tdf", "sfdc" ]
-        tests:
+        data_tests:
           - not_null
 
   - name: sfdc_opportunity_split_type_source
@@ -481,7 +481,7 @@ models:
     columns:
       - name: opportunity_split_type_id
         tags: [ "tdf", "sfdc" ]
-        tests:
+        data_tests:
           - not_null
 
   - name: sfdc_opportunity_team_member_source
@@ -489,7 +489,7 @@ models:
     columns:
       - name: opportunity_team_member_id
         tags: [ "tdf", "sfdc" ]
-        tests:
+        data_tests:
           - not_null
 
   - name: sfdc_opportunity_stage_source
@@ -497,7 +497,7 @@ models:
     columns:
       - name: sfdc_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_statement_of_work_source
@@ -505,59 +505,59 @@ models:
     columns:
       - name: ps_engagement_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: opportunity_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_proof_of_concept_source
     description: base model for SFDC Proof of Concept
     columns:
       - name: account_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
       - name: pov_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: pov_status
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_quote_source
     description: Source model for SFDC Zuora Quotes
     columns:
       - name: quote_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: owner_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_record_type_source
     description: Source model for SFDC Record Types
     columns:
       - name: record_type_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: record_type_name
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_user_roles_source
     description: Source model for SFDC User Roles
     columns:
       - name: id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_users_source
@@ -565,7 +565,7 @@ models:
     columns:
       - name: user_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_zqu_quote_source
@@ -573,7 +573,7 @@ models:
     columns:
       - name: zqu_quote_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_zqu_quote_amendment_source
@@ -581,7 +581,7 @@ models:
     columns:
       - name: zqu_quote_amendment_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -590,7 +590,7 @@ models:
     columns:
       - name: zqu_quote_rate_plan_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -599,7 +599,7 @@ models:
     columns:
       - name: zqu_quote_rate_plan_charge_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -608,7 +608,7 @@ models:
     columns:
       - name: task_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: full_comments
@@ -623,7 +623,7 @@ models:
     columns:
       - name: customer_subscription_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -632,7 +632,7 @@ models:
     columns:
       - name: funds_request_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   
@@ -641,7 +641,7 @@ models:
     columns:
       - name: funds_claim_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -680,7 +680,7 @@ models:
     columns:
       - name: permission_set_assignment_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -689,7 +689,7 @@ models:
     columns:
       - name: profile_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -698,7 +698,7 @@ models:
     columns:
       - name: group_member_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   
@@ -707,7 +707,7 @@ models:
     columns:
       - name: group_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -716,7 +716,7 @@ models:
     columns:
       - name: account_share_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -725,7 +725,7 @@ models:
     columns:
       - name: opportunity_share_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -734,7 +734,7 @@ models:
     columns:
       - name: user_territory_association_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -743,7 +743,7 @@ models:
     columns:
       - name: zqu_product_rate_plan_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -752,7 +752,7 @@ models:
     columns:
       - name: zqu_zproduct_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
 

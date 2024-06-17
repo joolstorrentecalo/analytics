@@ -5,13 +5,13 @@ models:
     description: Base model for gcp billing summary data. Column descriptions can be found at https://cloud.google.com/billing/docs/how-to/export-data-bigquery-tables/standard-usage
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
                 where: "export_time >= DATEADD('day',-3,CURRENT_DATE())"
       - name: billing_account_id
-        tests:
+        data_tests:
           - not_null
       - name: partition_date
       - name: uploaded_at
@@ -23,13 +23,13 @@ models:
     description: Base model for gcp billing summary data. Column descriptions can be found at https://cloud.google.com/billing/docs/how-to/export-data-bigquery-tables/detailed-usage
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
                 where: "invoice_month >= DATEADD('month',-3,CURRENT_DATE())"
       - name: billing_account_id
-        tests:
+        data_tests:
           - not_null
       - name: partition_date
       - name: uploaded_at

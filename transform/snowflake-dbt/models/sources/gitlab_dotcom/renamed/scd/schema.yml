@@ -6,7 +6,7 @@ models:
     columns:
       - name: issue_link_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
@@ -14,11 +14,11 @@ models:
       - name: updated_at
       - name: valid_from
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
 
@@ -27,11 +27,11 @@ models:
     columns:
       - name: gitlab_subscription_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: namespace_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
@@ -41,48 +41,48 @@ models:
         description: The date that the subscription's trial ended or is scheduled to end (can be in the future.) Should always be populated when gitlab_subscription_trial_starts_on is populated.
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
 
   - name: gitlab_dotcom_group_group_links_source
     description: This table represents groups being shared with groups. {{ doc("scd_type_two_documentation") }}'
     tags: ["tdf","gitlab_dotcom"]
-    tests:
+    data_tests:
       - dbt_utils.expression_is_true:
           expression: "valid_from <= valid_to"
     columns:
       - name: group_group_link_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: shared_group_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: shared_with_group_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_label_links_source
@@ -90,17 +90,17 @@ models:
     columns:
       - name: label_link_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
       - name: valid_from
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
 
@@ -110,17 +110,17 @@ models:
     columns:
       - name: merge_request_reviewer_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
       - name: valid_from
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
 
@@ -129,17 +129,17 @@ models:
     columns:
       - name: member_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
       - name: valid_from
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
 
@@ -148,33 +148,33 @@ models:
     columns:
       - name: project_group_link_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: group_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
 
@@ -183,7 +183,7 @@ models:
     columns:
       - name: id
         tags: ["gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: name
         tags: ["gitlab_dotcom"]

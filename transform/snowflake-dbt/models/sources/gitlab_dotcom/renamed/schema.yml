@@ -6,7 +6,7 @@ models:
     columns:
       - name: alert_management_alert_assignee_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: gitlab_dotcom_alert_management_alerts_source
@@ -14,22 +14,22 @@ models:
     columns:
       - name: alert_management_alert_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_application_settings_source
     description: Base model for Gitlab.com application settings data
     columns:
       - name: application_settings_id
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: gitlab_dotcom_approval_merge_request_rules_source
@@ -37,32 +37,32 @@ models:
     columns:
       - name: approval_merge_request_rule_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_approvals_source
     description: Base model for Gitlab.com approvals
     columns:
       - name: approval_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_audit_events_source
@@ -70,12 +70,12 @@ models:
     columns:
       - name: audit_event_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: author_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_award_emoji_source
@@ -83,7 +83,7 @@ models:
     columns:
       - name: award_emoji_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -92,12 +92,12 @@ models:
     columns:
       - name: board_assignee_relation_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: board_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_boards_epic_boards
@@ -105,7 +105,7 @@ models:
     columns:
       - name: epic_board_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_board_labels_source
@@ -113,16 +113,16 @@ models:
     columns:
       - name: board_label_relation_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: board_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: label_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_boards_source
@@ -130,16 +130,16 @@ models:
     columns:
       - name: board_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_cluster_agents_source
@@ -147,7 +147,7 @@ models:
     columns:
       - name: cluster_agent_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -156,7 +156,7 @@ models:
     tags: ["gitlab_dotcom"]
     columns:
       - name: container_repository_id
-        tests:
+        data_tests:
           - not_null
       - name: project_id
       - name: container_repository_name
@@ -169,7 +169,7 @@ models:
     columns:
       - name: ci_build_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_build_trace_section_names_source
@@ -177,7 +177,7 @@ models:
     columns:
       - name: ci_build_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_builds_source
@@ -185,16 +185,16 @@ models:
     columns:
       - name: ci_build_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_group_variables_source
@@ -202,16 +202,16 @@ models:
     columns:
       - name: ci_group_variable_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_job_artifacts_source
@@ -219,16 +219,16 @@ models:
     columns:
       - name: ci_job_artifact_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_job_token_project_scope_links_source
@@ -236,12 +236,12 @@ models:
     columns:
       - name: ci_job_token_project_scope_link_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_pipeline_artifacts_source
@@ -249,16 +249,16 @@ models:
     columns:
       - name: ci_pipeline_artifact_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_pipeline_schedule_variables_source
@@ -266,16 +266,16 @@ models:
     columns:
       - name: ci_pipeline_schedule_variable_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_pipeline_schedules_source
@@ -283,16 +283,16 @@ models:
     columns:
       - name: ci_pipeline_schedule_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_secure_files
@@ -300,7 +300,7 @@ models:
     columns:
       - name: ci_secure_files_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -309,7 +309,7 @@ models:
     columns:
       - name: dast_profiles_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_epic_issues_source
@@ -317,15 +317,15 @@ models:
     columns:
       - name: epic_issues_relation_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: epic_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: issue_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -334,16 +334,16 @@ models:
     columns:
       - name: ci_pipeline_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_platform_metrics_source
@@ -351,36 +351,36 @@ models:
     columns:
       - name: metric_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: platform_target
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: recorded_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: target_count
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_ci_runner_projects_source
     description: Base model for Gitlab.com ci_runner_projects
     columns:
       - name: ci_runner_project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: runner_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
 
@@ -389,16 +389,16 @@ models:
     columns:
       - name: runner_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_sources_pipelines_source
@@ -406,7 +406,7 @@ models:
     columns:
       - name: ci_source_pipeline_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -415,12 +415,12 @@ models:
     columns:
       - name: ci_stage_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_trigger_requests_source
@@ -428,16 +428,16 @@ models:
     columns:
       - name: ci_trigger_request_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ci_triggers_source
@@ -445,52 +445,52 @@ models:
     columns:
       - name: ci_trigger_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_cert_managers_source
     columns:
       - name: clusters_applications_cert_managers_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_crossplane_source
     columns:
       - name: clusters_applications_crossplane_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_elastic_stacks_source
     columns:
       - name: clusters_applications_elastic_stacks_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_helm_source
@@ -498,79 +498,79 @@ models:
     columns:
       - name: clusters_applications_helm_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_ingress_source
     columns:
       - name: clusters_applications_ingress_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_jupyter_source
     columns:
       - name: clusters_applications_jupyter_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_knative_source
     columns:
       - name: clusters_applications_knative_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_prometheus_source
     columns:
       - name: clusters_applications_prometheus_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_applications_runners_source
     columns:
       - name: clusters_applications_runners_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_clusters_source
     columns:
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -579,16 +579,16 @@ models:
     columns:
       - name: cluster_group_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: group_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_cluster_projects_source
@@ -596,12 +596,12 @@ models:
     columns:
       - name: cluster_project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cluster_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: project_id
 
@@ -610,16 +610,16 @@ models:
     columns:
       - name: deployment_merge_request_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: deployment_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: merge_request_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_deployments_source
@@ -627,20 +627,20 @@ models:
     columns:
       - name: deployment_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: deployment_iid
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: environment_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_design_management_designs_versions_source
@@ -648,16 +648,16 @@ models:
     columns:
       - name: design_version_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: design_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: version_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_design_management_designs_source
@@ -665,12 +665,12 @@ models:
     columns:
       - name: design_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           -  not_null
       - name: issue_id
 
@@ -679,7 +679,7 @@ models:
     columns:
       - name: version_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: gitlab_dotcom_elasticsearch_indexed_namespaces_source
@@ -687,15 +687,15 @@ models:
     columns:
       - name: namespace_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: task_instance_name
       - name: uploaded_at
@@ -710,7 +710,7 @@ models:
       - name: gitlab_email_id
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
 
@@ -719,12 +719,12 @@ models:
     columns:
       - name: experiment_subject_id
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: experiment_id
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_environments_source
@@ -732,12 +732,12 @@ models:
     columns:
       - name: environment_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_epics_source
@@ -745,34 +745,34 @@ models:
     columns:
       - name: epic_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: state_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4]
       - name: state
         description: Inferred off of state_id.
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_events_source
     columns:
       - name: event_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -780,12 +780,12 @@ models:
     columns:
       - name: experiment_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: experiment_name
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -794,7 +794,7 @@ models:
     columns:
       - name: id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -804,13 +804,13 @@ models:
       - name: gitlab_subscription_history_id
         description: The unique identifier of the history row.
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: gitlab_subscription_id
         description: The namespace associated with the gitlab_subscription.
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_gpg_signatures_source
@@ -819,14 +819,14 @@ models:
       - name: gpg_signatures_id
         description: Unique identifier for gpg_signatures
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_identities_source
@@ -834,13 +834,13 @@ models:
     columns:
       - name: identity_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: identity_provider
         description: Which service is the identity provided through? (Google, GitHub, etc.)
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
       - name: updated_at
@@ -850,16 +850,16 @@ models:
     columns:
       - name: issue_severity_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: issue_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: severity
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_issue_assignees_source
     description: >-
@@ -868,16 +868,16 @@ models:
       - name: user_issue_relation_id
         description: unique key created with an md5 hash of user_id and issue_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: issue_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_issue_metrics_source
@@ -885,20 +885,20 @@ models:
     columns:
       - name: issue_metric_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: issue_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_issues_source
@@ -906,27 +906,27 @@ models:
     columns:
       - name: issue_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: state
         description: >-
           The source table has both "state" and "state_id" columns. We use state_id to
           infer the "state" string as we found this gives results that match the API and UI.
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: state_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4]
@@ -942,16 +942,16 @@ models:
     columns:
       - name: key_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_label_priorities_source
@@ -959,24 +959,24 @@ models:
     columns:
       - name: label_priority_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: label_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_labels_source
@@ -986,7 +986,7 @@ models:
     columns:
       - name: label_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -995,16 +995,16 @@ models:
     columns:
       - name: lfs_object_project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: lfs_object_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
 
@@ -1013,16 +1013,16 @@ models:
     columns:
       - name: list_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_merge_request_blocks_source
@@ -1030,7 +1030,7 @@ models:
     columns:
       - name: merge_request_blocks_id
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1039,20 +1039,20 @@ models:
     columns:
       - name: merge_request_diff_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: merge_request_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_merge_request_metrics_source
@@ -1060,20 +1060,20 @@ models:
     columns:
       - name: merge_request_metric_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: merge_request_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_merge_requests_source
@@ -1083,16 +1083,16 @@ models:
     columns:
       - name: merge_request_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: is_merge_to_master
         description: >-
@@ -1103,11 +1103,11 @@ models:
           The source table has both "state" and "state_id" columns. We use state_id to
           infer the "state" string as we found this gives results that match the API and UI.
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: merge_request_state_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4]
@@ -1119,24 +1119,24 @@ models:
           unique id created with an md5 hash of `issue_id`, `merge_request_id`,
           and `created_at`
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: merge_request_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: issue_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_milestones_source
@@ -1144,16 +1144,16 @@ models:
     columns:
       - name: milestone_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_namespace_details_source
@@ -1161,7 +1161,7 @@ models:
     columns:
       - name: namespace_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1170,12 +1170,12 @@ models:
     columns:
       - name: namespace_statistics_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: namespace_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_namespace_settings_source
@@ -1183,7 +1183,7 @@ models:
     columns:
       - name: namespace_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1192,22 +1192,22 @@ models:
     columns:
       - name: namespace_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: namespace_path
         description: '{{ doc("visibility_documentation") }}'
       - name: namespace_type
         description: '{{ doc("namespace_type") }}'
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['Group', 'User', 'Project']
@@ -1226,16 +1226,16 @@ models:
     columns:
       - name: note_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_notification_settings_source
@@ -1243,20 +1243,20 @@ models:
     columns:
       - name: notification_settings_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_oauth_access_tokens_source
@@ -1266,11 +1266,11 @@ models:
     columns:
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: oauth_access_token_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1280,16 +1280,16 @@ models:
     columns:
       - name: onboarding_progress_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_plans_source
     description: >-
@@ -1297,31 +1297,31 @@ models:
     columns:
       - name: plan_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: plan_name
         description: The english naming of the plan type (gold, silver, etc.)
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: plan_title
         description: The capitalized english naming of the plan type (Gold, Silver, etc.)
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: plan_is_paid
         description: Whether or not this plan type is considered a paid subscription.
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
 
@@ -1331,7 +1331,7 @@ models:
     columns:
       - name: pages_domain_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1341,7 +1341,7 @@ models:
     columns:
       - name: programming_language_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1350,16 +1350,16 @@ models:
     columns:
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_project_ci_cd_settings_source
@@ -1367,7 +1367,7 @@ models:
     columns:
       - name: project_ci_cd_settings_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1376,21 +1376,21 @@ models:
     columns:
       - name: project_feature_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_project_import_data_source
@@ -1398,7 +1398,7 @@ models:
     columns:
       - name: project_import_relation_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1407,12 +1407,12 @@ models:
     columns:
       - name: project_mirror_data_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_project_repositories_source
@@ -1420,12 +1420,12 @@ models:
     columns:
       - name: project_repository_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - unique
 
   - name: gitlab_dotcom_project_repository_storage_moves_source
@@ -1433,7 +1433,7 @@ models:
     columns:
       - name: project_repository_storage_move_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: gitlab_dotcom_project_settings_source
@@ -1441,7 +1441,7 @@ models:
     columns:
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: gitlab_dotcom_project_statistics_source
@@ -1449,12 +1449,12 @@ models:
     columns:
       - name: project_statistics_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_projects_source
@@ -1462,7 +1462,7 @@ models:
     columns:
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
@@ -1496,36 +1496,36 @@ models:
     columns:
       - name: prometheus_alert_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_releases_source
     description: Base model for Gitlab.com releases
     columns:
       - name: release_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_protected_branches_source
@@ -1534,7 +1534,7 @@ models:
     columns:
       - name: protected_branch_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1543,7 +1543,7 @@ models:
     columns:
       - name: protected_branch_merge_access_levels_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1552,7 +1552,7 @@ models:
     columns:
       - name: protected_branch_push_access_levels_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1562,7 +1562,7 @@ models:
     columns:
       - name: push_rule_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1572,16 +1572,16 @@ models:
     columns:
       - name: repository_language_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: programming_language_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_requirements_source
@@ -1589,12 +1589,12 @@ models:
     columns:
       - name: requirement_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null :
               severity: warn
 
@@ -1603,7 +1603,7 @@ models:
     columns:
       - name: resource_iteration_events_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1612,23 +1612,23 @@ models:
     columns:
       - name: resource_label_event_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: action_type_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_resource_milestone_events_source
     columns:
       - name: resource_milestone_event_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1636,7 +1636,7 @@ models:
     columns:
       - name: resource_weight_event_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1646,11 +1646,11 @@ models:
       - name: reviews_id
         description: Unique identifier for gpg_signatures
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_routes_source
@@ -1658,7 +1658,7 @@ models:
     columns:
       - name: route_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1667,7 +1667,7 @@ models:
     columns:
       - name: saml_provider_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1676,16 +1676,16 @@ models:
     columns:
       - name: integration_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_shards_source
@@ -1693,7 +1693,7 @@ models:
     columns:
       - name: shard_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1702,37 +1702,37 @@ models:
     columns:
       - name: snippet_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: author_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_sprints_source
     description: Base model for Gitlab.com sprints
     columns:
       - name: sprint_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
       - name: sprint_iid
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_ssh_signatures_source
@@ -1741,14 +1741,14 @@ models:
       - name: ssh_signatures_id
         description: Unique identifier for ssh_signatures
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_subscriptions_source
@@ -1756,16 +1756,16 @@ models:
     columns:
       - name: subscription_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_subscription_add_ons_source
@@ -1773,16 +1773,16 @@ models:
     columns:
       - name: id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_subscription_add_on_purchases_source
@@ -1790,16 +1790,16 @@ models:
     columns:
       - name: id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
         
   - name: gitlab_dotcom_subscription_user_add_on_assignments_source
@@ -1807,16 +1807,16 @@ models:
     columns:
       - name: id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_system_note_metadata_source
@@ -1824,16 +1824,16 @@ models:
     columns:
       - name: system_note_metadata_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_todos_source
@@ -1841,20 +1841,20 @@ models:
     columns:
       - name: todo_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_user_credit_card_validations_source
@@ -1862,7 +1862,7 @@ models:
     columns:
       - name: user_id
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1871,23 +1871,23 @@ models:
     columns:
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: user_custom_key
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: user_custom_value
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_user_details_source
@@ -1895,7 +1895,7 @@ models:
     columns:
       - name: user_id
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1904,7 +1904,7 @@ models:
     columns:
       - name: user_id
         tags: ["tdf", "gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_user_preferences_source_non_dedupe
@@ -1912,7 +1912,7 @@ models:
     columns:
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_user_preferences_source
@@ -1920,7 +1920,7 @@ models:
     columns:
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1933,23 +1933,23 @@ models:
     columns:
       - name: user_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: role
         description: This is the string translation of the "role" column stored as an integer in the source database. It is converted using the `user_role_mapping` macro.
       - name: role_id
         description: This is the integer representation of a user's role, as it's stored in the database.
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - accepted_values:
               values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 99]
 
@@ -1959,13 +1959,13 @@ models:
     columns:
       - name: vulnerability_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_vulnerability_occurrences_source
     description: >-
@@ -1973,11 +1973,11 @@ models:
     columns:
       - name: project_id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: vulnerability_created_at
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
       - name: vulnerability_name
       - name: vulnerability_report_type
@@ -1987,7 +1987,7 @@ models:
     description: A base model for Gitlab.com vulnerability_reads.
     columns:
       - name: id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1996,7 +1996,7 @@ models:
     columns:
       - name: id
         tags: ["tdf","gitlab_dotcom"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -2005,7 +2005,7 @@ models:
       Base model for Gitlab.com security scans.
     columns:
       - name: security_scan_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
@@ -2022,7 +2022,7 @@ models:
       Base model for Gitlab.com suggested merge request reviewers.
     columns:
       - name: merge_request_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
@@ -2036,7 +2036,7 @@ models:
     description: Base model for Gitlab.com WebHooks table. More information about Gitlab webhooks [HERE](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html).
     columns:
       - name: web_hook_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -2045,17 +2045,17 @@ models:
     columns:
       - name: ml_candidate_id
         description: Appears as `id` in the source data
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
       - name: experiment_id
-        tests:
+        data_tests:
           - not_null
       - name: user_id
       - name: start_at
@@ -2063,7 +2063,7 @@ models:
       - name: end_at
         description: Appears as `end_time` in the source data
       - name: status
-        tests:
+        data_tests:
           - not_null
       - name: package_id
       - name: ml_candidate_eid
@@ -2078,21 +2078,21 @@ models:
     columns:
       - name: ml_experiment_id
         description: Appears as `id` in the source data
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
       - name: ml_experiment_iid
         description: Appears as `iid` in the source data
-        tests:
+        data_tests:
           - not_null
       - name: project_id
-        tests:
+        data_tests:
           - not_null
       - name: user_id
       - name: deleted_on
@@ -2101,41 +2101,41 @@ models:
     description: Base model for Gitlab.com zoekt indices source.
     columns:
       - name: id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: zoekt_enabled_namespace_id
       - name: zoekt_node_id
-        tests:
+        data_tests:
           - not_null
       - name: namespace_id
-        tests:
+        data_tests:
           - not_null
       - name: state
-        tests:
+        data_tests:
           - not_null
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_zoekt_enabled_namespaces_source
     description: Base model for Gitlab.com zoekt indices source.
     columns:
       - name: id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: root_namespace_id
-        tests:
+        data_tests:
           - not_null
       - name: search
-        tests:
+        data_tests:
           - not_null
       - name: created_at
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null

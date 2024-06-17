@@ -6,7 +6,7 @@ models:
   columns:
     - name: event_pk
       description: '{{ doc("event_pk") }}'
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -35,27 +35,27 @@ models:
       description: '{{ doc("event_date") }}'
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: parent_id
       description: '{{ doc("parent_id") }}'
@@ -113,7 +113,7 @@ models:
   columns:
     - name: event_namespace_daily_pk
       description: the unique ID combination of the event_date, event_name, and dim_ultimate_parent_namespace_id in mart_event_namespace_daily.
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: dim_event_date_id
@@ -132,27 +132,27 @@ models:
       description: '{{ doc("event_date") }}'
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: event_name
       description: '{{ doc("event_name") }}'
@@ -200,7 +200,7 @@ models:
   columns:
     - name: event_user_daily_pk
       description: the unique composite ID for the mart_event_user_daily model consisting of event_date, dim_user_id, dim_ultimate_parent_namespace_id, and event_name.
-      tests:
+      data_tests:
         - not_null
         - unique:
             config: 
@@ -223,27 +223,27 @@ models:
       description: '{{ doc("event_date") }}'
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: event_name
       description: '{{ doc("event_name") }}'
@@ -292,7 +292,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         #- unique
       description: The unique composite ID for the mart_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
@@ -423,7 +423,7 @@ models:
   description: ' {{ doc("mart_ping_instance") }} '
   columns:
     - name: ping_instance_id
-      tests:
+      data_tests:
         - not_null
         #- unique
       description: The unique composite ID for the mart_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
@@ -556,7 +556,7 @@ models:
   columns:
     - name: ping_instance_metric_monthly_pk
       description: '{{ doc("ping_instance_metric_monthly_pk") }}'
-      tests:
+      data_tests:
         - unique
         - not_null
     - name: ping_instance_metric_id
@@ -691,7 +691,7 @@ models:
 
 - name: mart_ping_instance_metric_weekly
   description: ' {{ doc("mart_ping_instance_metric_weekly") }} '
-  tests:
+  data_tests:
     - dbt_utils.unique_combination_of_columns:
         combination_of_columns:
           - dim_installation_id
@@ -834,7 +834,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric_7_day") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -976,7 +976,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric_28_day") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -1118,7 +1118,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric_all_time") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -1261,7 +1261,7 @@ models:
   columns:
     - name: event_namespace_monthly_pk
       description: The unique composite ID of the mart_event_namespace_monthly model consisting of event_calendar_month, event_name, and dim_ultimate_parent_namespace_id
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: dim_ultimate_parent_namespace_id
@@ -1300,27 +1300,27 @@ models:
       description: '{{ doc("event_name") }}'
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: data_source
       description: '{{ doc("data_source") }}'
@@ -1343,7 +1343,7 @@ models:
   description: '{{ doc("mart_behavior_structured_event") }}'
   columns:
     - name: behavior_structured_event_pk
-      tests:
+      data_tests:
         - unique:
             config:
               where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
@@ -1434,7 +1434,7 @@ models:
   columns:
     - name: behavior_structured_event_pk
       description: '{{ doc("behavior_structured_event_pk") }}'
-      tests:
+      data_tests:
         - unique
         - not_null
     - name: behavior_date

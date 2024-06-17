@@ -6,12 +6,12 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: email_address
         description: Email address for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: first_name
@@ -153,7 +153,7 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: is_group_namespace_owner
@@ -397,7 +397,7 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: max_trial_start_date
@@ -409,12 +409,12 @@ models:
     columns:
       - name: email
         description: The email of the Rally user
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: opted_out
         description: If the Rally user opted out from emails
       - name: updated_at
         description: When the the user was last updated. A value of `1970-01-01` reflects the user hasn't been updated since iniital export in May, 2024
-        tests:
+        data_tests:
           - not_null

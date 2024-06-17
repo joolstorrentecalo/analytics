@@ -5,7 +5,7 @@ models:
     columns:
       - name: contact_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: sfdc_lead_pii
@@ -13,6 +13,6 @@ models:
     columns:
       - name: lead_id
         tags: ["tdf", "sfdc"]
-        tests:
+        data_tests:
           - not_null
           - unique

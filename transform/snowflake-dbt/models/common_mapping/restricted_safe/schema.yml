@@ -6,7 +6,7 @@ models:
     columns:
       - name: dim_crm_account_id
         description: CRM account ID for the account
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_sales_segment_id
@@ -21,7 +21,7 @@ models:
     columns:
       - name: dim_crm_opportunity_id
         description: unique identifier of an opportunity
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_crm_user_id
@@ -43,11 +43,11 @@ models:
     description: This table maps an original crm_account_id to its final, non-deleted crm_account_id if the original crm_id has been deleted and merged. If the account has not been deleted and merged, the non-deleted crm_account_id is equal to the original crm_account_id.
     columns:
     - name: sfdc_account_id
-      tests:
+      data_tests:
         - not_null
         - unique
       tags: ["tdf", "common", "crm_account"]
     - name: dim_crm_account_id
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "crm_account"]

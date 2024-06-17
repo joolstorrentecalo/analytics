@@ -4,18 +4,18 @@ models:
     - name: google_analytics_4_events_source
       columns:
         - name: date_part
-          tests:
+          data_tests:
             - not_null
     - name: google_analytics_4_pseudonymous_users_source
       columns:
         - name: pseudo_user_id
-          tests:
+          data_tests:
             - not_null
         - name: date_part
-          tests:
+          data_tests:
             - not_null
     - name: google_analytics_4_user_audiences_source
       columns:
         - name: date_part
-          tests:
+          data_tests:
             - not_null

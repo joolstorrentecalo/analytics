@@ -5,7 +5,7 @@ models:
       description: Model containing Bizible attribution touchpoints along with contact, lead, account, campaign, and opportunity details.
       columns:
         - name: dim_crm_touchpoint_id
-          tests:
+          data_tests:
               - not_null
         - name: touchpoint_person_campaign_date_id
           description: A concatenation of fields from the mart that can be used to join attribution and person touchpoints together. 
@@ -87,7 +87,7 @@ models:
       description: Model containing Bizible touchpoints (non-attribution) along with contact, lead, account, and campaign details.
       columns:
         - name: dim_crm_touchpoint_id
-          tests:
+          data_tests:
               - not_null
         - name: touchpoint_person_campaign_date_id
           description: A concatenation of fields from the mart that can be used to join attribution and person touchpoints together. 
@@ -144,7 +144,7 @@ models:
       description: Model with person and MQL business logic.
       columns:
         - name: dim_crm_person_id
-          tests:
+          data_tests:
               - not_null
               - unique
           tags: ["tdf", "mart", "sales_funnel"]
@@ -295,7 +295,7 @@ models:
       description: Maps a person (unconverted lead or a contact) to an opportunity through their associated Salesforce account and connects any of their related touchpoints.
       columns:
         - name: lead_to_revenue_id
-          tests:
+          data_tests:
               - not_null
               - unique
           description: The primary key in the lead to revenue table - a compilation of the person, touchpoint, and opportunity ids.
@@ -876,7 +876,7 @@ models:
       columns:
         - name: dim_marketo_person_id
           description: The Unique person ID from Marketo
-          tests:
+          data_tests:
           - not_null
           - unique
         - name: dim_crm_person_id

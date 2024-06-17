@@ -3,7 +3,7 @@ version: 2
 models:
   - name: rpt_duo_pro_license_utilization_monthly
     description: Workspace model for reporting on monthly Duo Pro seat utilization. Metric nuances described in column descriptions.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - reporting_month

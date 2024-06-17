@@ -13,16 +13,16 @@ models:
     description: '{{ doc("engineering_blocking_time") }}'
     columns:
       - name: aggregation_name
-        tests:
+        data_tests:
           - not_null
       - name: metric_name
-        tests:
+        data_tests:
           - not_null
       - name: metric_value
-        tests:
+        data_tests:
           - not_null
       - name: metric_reported_at
-        tests:
+        data_tests:
           - not_null
   - name: engineering_commit_stats
     description: This table details information about engineering commmit stats.
@@ -33,31 +33,31 @@ models:
     description: This table contains information about largest-content-paint statistics.
     columns:
       - name: aggregation_name
-        tests:
+        data_tests:
           - not_null
       - name: metric_name
-        tests:
+        data_tests:
           - not_null
       - name: metric_value
-        tests:
+        data_tests:
           - not_null
       - name: metric_reported_at
-        tests:
+        data_tests:
           - not_null
   - name: engineering_layout_shift_source
     description: '{{ doc("engineering_layout_shift") }}'
     columns:
       - name: aggregation_name
-        tests:
+        data_tests:
           - not_null
       - name: metric_name
-        tests:
+        data_tests:
           - not_null
       - name: metric_value
-        tests:
+        data_tests:
           - not_null
       - name: metric_reported_at
-        tests:
+        data_tests:
           - not_null
   - name: engineering_nvd_data
     description: '{{ doc("engineering_nvd_data") }}'
@@ -86,7 +86,7 @@ models:
       - name: real_size
       - name: removed_lines
       - name: plain_diff_url_path
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: engineering_development_team_members
@@ -95,10 +95,10 @@ models:
       - name: country
       - name: development_section
       - name: gitlab_handle
-        tests:
+        data_tests:
           - not_null
       - name: gitlab_id
-        tests:
+        data_tests:
           - not_null
       - name: is_backend_maintainer
       - name: is_backend_trainee_maintainer

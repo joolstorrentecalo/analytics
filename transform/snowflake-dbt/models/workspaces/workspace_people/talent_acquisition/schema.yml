@@ -3,14 +3,14 @@ version: 2
 models:
     - name: rpt_hires
       description: This is a report specifically for talent acquisition and counts accepted offers as hires.
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - candidate_id
               - application_id
 
     - name: rpt_job_opening_interviews
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - job_id
@@ -19,7 +19,7 @@ models:
               - scheduled_interview_id
 
     - name: rpt_job_opening_stage
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - job_id
@@ -28,14 +28,14 @@ models:
               - modified_stage_id
       columns:
         - name: job_id
-          tests:
+          data_tests:
             - not_null
         - name: job_opening_id
-          tests:
+          data_tests:
             - not_null
         - name: application_id
-          tests:
+          data_tests:
             - not_null
         - name: modified_stage_id
-          tests:
+          data_tests:
             - not_null 

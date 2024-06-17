@@ -5,14 +5,14 @@ models:
     description: Gives the current state of the employees at GitLab at any point of time. This is the model to use for headcount, team size, or any people-related analysis for employees. This has current and past employees, as well as their department, division, and cost center and hire/termination dates.
     columns:
     - name: unique_key
-      tests:
+      data_tests:
       - not_null
       - unique
     - name: date_actual
-      tests:
+      data_tests:
       - not_null
     - name: full_name
-      tests:
+      data_tests:
       - not_null
     - name: job_title
     - name: department
@@ -22,35 +22,35 @@ models:
       description: Introduces values of ['Director+', 'Manager', 'Individual Contributor'] for roles. There is no accepted values test since this field was not religiously populated prior to 2020-02.
     - name: location_factor
     - name: is_hire_date
-      tests:
+      data_tests:
       - not_null
     - name: is_termination_date
       description: Shows as true if it is a team members last work day. This field defaults to false for all team members if date_actual is after the current date.
-      tests:
+      data_tests:
       - not_null
     - name: layers
       description: '{{ doc("employee_layers") }}'
-      tests:
+      data_tests:
       - not_null
       
   - name: employee_directory_intermediate
     description: INCLUDES SENSITIVE INFORMATION. The master collection of all info about GitLab employees for their latest position.
     columns:
     - name: employee_id
-      tests:
+      data_tests:
       - not_null
     - name: employee_number
-      tests:
+      data_tests:
       - not_null
     - name: first_name
-      tests:
+      data_tests:
       - not_null
     - name: last_name
     - name: job_title
     - name: supervisor
     - name: work_email
     - name: hire_date
-      tests:
+      data_tests:
        - not_null
     - name: termination_date
     - name: department
@@ -66,7 +66,7 @@ models:
       description: Introduces values of ['Senior Leadership', 'Manager', 'Individual Contributor'] for roles. There is no accepted values test since this field was not religiously populated prior to 2020-02. This classifies `Senior Leadership` as anyone with a job grade of 11, 12, or CXO with direct reports, anyone with a job grade of 10 or job role of `Manager` with direct reports as a `Manager`, and everyone else as an `Individual Contributor`. The one exception is for when an employee is on leave in which case we don't factor in the total_direct_reports field.
     - name: layers
       description: '{{ doc("employee_layers") }}'
-      tests:
+      data_tests:
       - not_null
     - name: exclude_from_location_factor
       description: This identifies sales team members for which the comp calculator location factor does not apply. 
@@ -77,28 +77,28 @@ models:
     description: This model contains a list of Discretionary bonuses awarded (excludes other types of bonuses). It includes the employee ID to be able to join to the `employee_directory_analysis` model to understand the break down of discretionary bonuses given.
     columns:
     - name: unique_filter_key
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: employee_id
-      tests:
+      data_tests:
         - not_null
     - name: bonus_date
-      tests:
+      data_tests:
         - not_null
 
   - name: bamboohr_employment_status_xf
     description: This model provides a transaction record of an employee's status changes (i.e. active, leave, termed). It helps identify when an employee is re-hired.
     columns:
         - name: employee_id
-          tests:
+          data_tests:
             - not_null
         - name: employment_status
-          tests:
+          data_tests:
             - not_null
         - name: is_rehire
           description: Identifies re-hired employees based on having a previous employment status of "Terminated."
-          tests:
+          data_tests:
             - not_null
             - accepted_values:
                     values: ['True', 'False']
@@ -112,7 +112,7 @@ models:
             masking_policy: analyst_people_sensitive
         - name: valid_from_date
           description: Provides the start date for the specific employment status record.
-          tests:
+          data_tests:
             - not_null
         - name: valid_to_date
           description: Provides the end date for a specific record. For the terminated record stamp, it will provide a null since there will be no following record, unless the employee is re-hired, in which case it will indicate how long the employee was separated.
@@ -190,17 +190,17 @@ models:
 
   - name: bamboohr_job_role
     description: This model shows the job role an employee is in and when their role changes. The data for this table comes from bamboohr_id_emmployee_number_mapping raw. We started capturing data points not in other reports starting 2020.02.27
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_number
             - effective_date
     columns:
       - name: employee_number
-        tests:
+        data_tests:
             - not_null
       - name: employee_id
-        tests:
+        data_tests:
             - not_null
       - name: job_role
       - name: job_grade
