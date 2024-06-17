@@ -146,11 +146,12 @@ class TestPostgresPipelineTable:
         and swap_temp_table_on_schema_change() is not called
         """
         load_type = "backfill"
+        database_type = "main"
         source_engine = target_engine = metadata_engine = self.engine
 
         mock_check_backfill_metadata.return_value = True, datetime.utcnow(), -1
         self.pipeline_table.do_load(
-            load_type, source_engine, target_engine, metadata_engine
+            load_type, source_engine, target_engine, metadata_engine, database_type
         )
         mock_check_is_new_table_or_schema_addition.assert_not_called()
         mock_swap_temp_table_on_schema_change.assert_not_called()
@@ -181,6 +182,7 @@ class TestPostgresPipelineTable:
         and swap_temp_table_on_schema_change() is called
         """
         load_type = "incremental"
+        database_type = "main"
         source_engine = target_engine = metadata_engine = self.engine
         is_schema_addition = False
         loaded = True
@@ -190,7 +192,7 @@ class TestPostgresPipelineTable:
         mock_load_incremental.return_value = loaded
 
         self.pipeline_table.do_load(
-            load_type, source_engine, target_engine, metadata_engine
+            load_type, source_engine, target_engine, metadata_engine, database_type
         )
         mock_check_is_new_table_or_schema_addition.assert_called_once_with(
             source_engine, target_engine
