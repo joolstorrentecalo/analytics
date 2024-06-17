@@ -1,6 +1,6 @@
 """
 Based on the DAG `execution_date` and `task_schedule`
-derives the fiscal_quarter.
+derives the fiscal_quarter...
 
 The fiscal_quarter is used to request the `net_arr` Clari endpoint.
 
