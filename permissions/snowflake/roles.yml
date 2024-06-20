@@ -1444,7 +1444,7 @@ roles:
             - prep.sensitive.customers_db_customers_pii
   - prod_reporting:
       member_of:
-        - boneyard 
+        - boneyard
       privileges:
         databases:
           read:
@@ -1509,9 +1509,6 @@ roles:
             - prod.restricted_safe_workspace_finance
             - prod.restricted_safe_workspace_marketing
             - prod.restricted_safe_workspace_sales
-
-
-
         tables:
           read:
             - prod.restricted_safe_common.*
@@ -3657,8 +3654,6 @@ roles:
   - eboyd:
       member_of:
         - snowflake_analyst_safe
-      warehouses:
-        - dev_xs
       warehouses:
         - dev_xs
   - eneuberger:
@@ -6456,6 +6451,11 @@ roles:
         - snowflake_analyst_safe
       warehouses:
         - dev_xs
+  - mvanremmerden:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
 users:
   - aadesanya:
       can_login: true
@@ -7509,6 +7509,10 @@ users:
       can_login: true
       member_of:
         - eludaway
+  - mvanremmerden:
+      can_login: true
+      member_of:
+        - mvanremmerden
 warehouses:
   - admin:
       size: x-small
