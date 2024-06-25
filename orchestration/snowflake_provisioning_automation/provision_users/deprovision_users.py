@@ -141,6 +141,9 @@ def main():
     logging.info(f"is_test_run: {is_test_run}")
     time.sleep(5)  # give user a chance to abort
 
+    sysadmin_connection = SnowflakeConnection(
+        config_dict, "SYSADMIN", is_test_run=False, use_gitlab_utils_engine=True
+    )
     # if users are passed in to remove, remove those users
     if users_to_remove_arg:
         users_to_remove = users_to_remove_arg
@@ -148,19 +151,11 @@ def main():
     # else if users were NOT passed in to remove
     # then check if any snowflake_users are missing in roles.yml
     else:
-        account_usage_connection = SnowflakeConnection(
-            config_dict, "SYSADMIN", is_test_run=False
-        )
-        users_to_remove = get_users_to_remove(account_usage_connection)
-        account_usage_connection.dispose_engine()
+        users_to_remove = get_users_to_remove(sysadmin_connection)
     #
     logging.info(f"users_to_remove: {users_to_remove}")
-
-    securityadmin_connection = SnowflakeConnection(
-        config_dict, "SECURITYADMIN", is_test_run
-    )
-    deprovision_users(securityadmin_connection, users_to_remove)
-    securityadmin_connection.dispose_engine()
+    deprovision_users(sysadmin_connection, users_to_remove)
+    sysadmin_connection.dispose_engine()
 
 
 if __name__ == "__main__":

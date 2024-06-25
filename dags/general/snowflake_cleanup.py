@@ -16,8 +16,6 @@ from kube_secrets import (
     SNOWFLAKE_LOAD_WAREHOUSE,
     SNOWFLAKE_PASSWORD,
     SNOWFLAKE_USER,
-    SNOWFLAKE_PROVISIONER_USER,
-    SNOWFLAKE_PROVISIONER_PASSWORD,
     SNOWFLAKE_PROVISIONER_WAREHOUSE,
 )
 
@@ -110,9 +108,10 @@ purge_dev_schemas = KubernetesPodOperator(
     task_id="deprovision_users",
     name="deprovision_users",
     secrets=[
-        SNOWFLAKE_PROVISIONER_USER,
-        SNOWFLAKE_PROVISIONER_PASSWORD,
+        SNOWFLAKE_USER,
+        SNOWFLAKE_PASSWORD,
         SNOWFLAKE_ACCOUNT,
+        SNOWFLAKE_LOAD_DATABASE,
         SNOWFLAKE_PROVISIONER_WAREHOUSE,
     ],
     env_vars=pod_env_vars,

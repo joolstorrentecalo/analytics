@@ -8,25 +8,40 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from sqlalchemy.sql import text
 from typing import Any, List, Tuple
+from gitlabdata.orchestration_utils import snowflake_engine_factory
 
 
 class SnowflakeConnection:
     """Class to connect to Snowflake"""
 
-    def __init__(self, config_dict: dict, role: str, is_test_run: bool = True):
+    def __init__(
+        self,
+        config_dict: dict,
+        role: str,
+        is_test_run: bool = True,
+        use_gitlab_utils_engine: bool = False,
+    ):
         self.is_test_run = is_test_run
 
         # only create engine if NOT test run
         if not self.is_test_run:
-            self.engine = create_engine(
-                URL(
-                    user=config_dict["SNOWFLAKE_PROVISIONER_USER"],
-                    password=config_dict["SNOWFLAKE_PROVISIONER_PASSWORD"],
-                    account=config_dict["SNOWFLAKE_ACCOUNT"],
-                    role=role,  # needs to be passed in, can be securityadmin/sysadmin
-                    warehouse=config_dict["SNOWFLAKE_PROVISIONER_WAREHOUSE"],
+
+            # used for deprovisioning users
+            if use_gitlab_utils_engine:
+                self.engine = snowflake_engine_factory(
+                    config_dict, role, load_warehouse="SNOWFLAKE_PROVISIONER_WAREHOUSE"
                 )
-            )
+            # used for provisioning_users
+            else:
+                self.engine = create_engine(
+                    URL(
+                        user=config_dict["SNOWFLAKE_PROVISIONER_USER"],
+                        password=config_dict["SNOWFLAKE_PROVISIONER_PASSWORD"],
+                        account=config_dict["SNOWFLAKE_ACCOUNT"],
+                        role=role,  # needs to be passed in, can be securityadmin/sysadmin
+                        warehouse=config_dict["SNOWFLAKE_PROVISIONER_WAREHOUSE"],
+                    )
+                )
 
     def query_executor(self, query: str, query_params: dict = {}) -> List[Tuple[Any]]:
         """
