@@ -3,8 +3,6 @@
 ) }}
 
 {{ simple_cte([
-
-    ('dim_crm_touchpoint','dim_crm_touchpoint'),
     ('fct_campaign','fct_campaign'),
     ('dim_campaign','dim_campaign'),
     ('dim_crm_user','dim_crm_user'),
@@ -18,14 +16,8 @@
   ]) 
 }}
 
-, event_channel_campaigns AS (
-  SELECT DISTINCT bizible_salesforce_campaign AS dim_campaign_id
-  FROM
-    dim_crm_touchpoint
-  WHERE bizible_marketing_channel = 'Event'
-),
 
-campaigns AS (
+,campaigns AS (
   SELECT
     dim_campaign.dim_campaign_id,
     fct_campaign.dim_parent_campaign_id,
@@ -82,6 +74,8 @@ campaigns AS (
     ON fct_campaign.start_date_id = campaign_start.date_id
 
   WHERE true_event_date >= '2023-02-01'
+  AND campaign_type in ('Owned Event', 'Workshop', 'Executive Roundtables', 'Webcast', 'Sponsored Webcast', 'Conference', 'Speaking Session', 'Virtual Sponsorship', 'Self-Service Virtual Event', 'Vendor Arranged Meetings')
+
 ),
 
 
