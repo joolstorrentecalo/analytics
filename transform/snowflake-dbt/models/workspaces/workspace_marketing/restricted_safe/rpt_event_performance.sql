@@ -169,7 +169,7 @@ account_open_pipeline_live AS (
 snapshot_dates AS (
   SELECT 
     dim_campaign_id,
-    DATEADD(DAY, -2, true_event_date) AS date_day,
+    DATEADD(DAY, -2, current_date) AS date_day,
     'Current Date'  AS event_snapshot_type
   FROM 
   campaigns
