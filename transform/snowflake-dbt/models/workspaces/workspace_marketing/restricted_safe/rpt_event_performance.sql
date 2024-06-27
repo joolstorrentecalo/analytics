@@ -64,8 +64,6 @@
 
   FROM
     fct_campaign
-  INNER JOIN event_channel_campaigns
-    ON fct_campaign.dim_campaign_id = event_channel_campaigns.dim_campaign_id
   LEFT JOIN dim_campaign
     ON fct_campaign.dim_campaign_id = dim_campaign.dim_campaign_id
   LEFT JOIN dim_crm_user AS campaign_owner
@@ -78,12 +76,8 @@
 
 ),
 
-
-
-
 campaign_members AS (
   SELECT
-
     -- id's
     mart_crm_person.dim_crm_person_id,
     sfdc_campaign_member.campaign_id                           AS dim_campaign_id,
@@ -137,40 +131,34 @@ campaign_members AS (
   LEFT JOIN mart_crm_account AS campaign_partner_account
     ON campaigns.campaign_partner_crm_id = campaign_partner_account.dim_crm_account_id
 
+/*
 ),
-
-
 account_open_pipeline_live AS (
   SELECT
+    mart_crm_opportunity_stamped_hierarchy_hist.dim_crm_opportunity_id,
     mart_crm_opportunity_stamped_hierarchy_hist.dim_crm_account_id,
+    mart_crm_opportunity_stamped_hierarchy_hist.stage_name,
     SUM(COALESCE(net_arr, 0)) AS open_pipeline_live
   FROM mart_crm_opportunity_stamped_hierarchy_hist
   WHERE is_net_arr_pipeline_created = TRUE AND is_eligible_open_pipeline = 1 AND is_open = 1
-  {{dbt_utils.group_by(n=1)}}
+  {{dbt_utils.group_by(n=3)}}
+*/
 
-),
-
-
-account_summary AS (
+),account_summary AS (
   SELECT 
-    dim_campaign_id,
-    person_account_id                                                                         AS dim_crm_account_id,
-    true_event_date,
-    campaign_name,
-    open_pipeline_live,
-    COUNT(DISTINCT dim_crm_person_id)                                                         AS registered_leads,
-    COUNT(
-      DISTINCT 
-      CASE 
-      WHEN campaign_member_has_responded = TRUE 
-      THEN dim_crm_person_id 
-      END) AS attended_leads
+    campaign_members.dim_campaign_id,
+    campaign_members.person_account_id      AS dim_crm_account_id,
+    -- account_open_pipeline_live.dim_crm_opportunity_id,
+    -- account_open_pipeline_live.stage_name,
+    campaign_members.true_event_date,
+    campaign_members.campaign_name,
+    -- account_open_pipeline_live.open_pipeline_live
   FROM
     campaign_members
-  LEFT JOIN
-    account_open_pipeline_live
-    ON campaign_members.person_account_id = account_open_pipeline_live.dim_crm_account_id
-  {{dbt_utils.group_by(n=5)}}
+--   LEFT JOIN
+--     account_open_pipeline_live
+--     ON campaign_members.person_account_id = account_open_pipeline_live.dim_crm_account_id
+  {{dbt_utils.group_by(n=4)}}
 ),
 
 
@@ -179,6 +167,13 @@ account_summary AS (
 --SNAPSHOT MODELS
 
 snapshot_dates AS (
+  SELECT 
+    dim_campaign_id,
+    DATEADD(DAY, -2, true_event_date) AS date_day,
+    'Current Date'  AS event_snapshot_type
+  FROM 
+  campaigns
+  UNION
   SELECT 
     dim_campaign_id,
     true_event_date AS date_day,
@@ -206,6 +201,7 @@ snapshot_dates AS (
     '90 Days Post Event'              AS event_snapshot_type
   FROM 
   campaigns
+
 ),
 
 snapshot_opportunity_dates AS (
@@ -292,12 +288,13 @@ account_pipeline AS (
     opportunity_snapshot_base.dim_crm_opportunity_id,
     account_summary.true_event_date,
     snapshot_dates.event_snapshot_type,
-    COALESCE(attended_leads > 0 AND account_summary.dim_crm_account_id IS NOT NULL, FALSE)                                                                                                                          AS account_has_attended_flag,
+    -- COALESCE(attended_leads > 0 AND account_summary.dim_crm_account_id IS NOT NULL, FALSE) AS account_has_attended_flag,
     opportunity_snapshot_base.stage_name,
+    opportunity_snapshot_base.order_type,
     --METRICS 
-    account_summary.registered_leads,
-    account_summary.attended_leads,
-    account_summary.open_pipeline_live,
+    -- account_summary.registered_leads,
+    -- account_summary.attended_leads,
+    -- account_summary.open_pipeline_live,
     SUM(
       CASE 
       WHEN opportunity_snapshot_base.pipeline_created_date > true_event_date AND 
@@ -336,12 +333,11 @@ account_pipeline AS (
   LEFT JOIN
     opportunity_snapshot_base
     ON account_summary.dim_crm_account_id = opportunity_snapshot_base.dim_crm_account_id
-      AND snapshot_dates.date_day = opportunity_snapshot_base.opportunity_snapshot_date
- 
-  {{dbt_utils.group_by(n=10)}}
+      AND snapshot_dates.date_day = opportunity_snapshot_base.opportunity_snapshot_date 
+  {{dbt_utils.group_by(n=7)}}
 ),
 
-
+/* 
 attribution_touchpoint_snapshot_base AS (
   SELECT 
     snapshot_dates.date_day                                                                AS touchpoint_snapshot_date,
@@ -473,6 +469,7 @@ aggregated_account_influenced_performance AS (
   {{dbt_utils.group_by(n=6)}}
 
 ),
+*/
 
 final AS (
 
@@ -486,7 +483,8 @@ SELECT
 
     account_pipeline.true_event_date,
     account_pipeline.event_snapshot_type,
-    account_pipeline.account_has_attended_flag,
+    -- account_pipeline.account_has_attended_flag,
+    
     --CAMPAIGN DIMENSIONS
     campaigns.campaign_name,
     campaigns.campaign_status,
@@ -513,6 +511,7 @@ SELECT
     campaigns.campaign_sub_region,
     campaigns.campaign_budgeted_cost,
     campaigns.campaign_actual_cost,
+
     --ACCOUNT DIMENSIONS
     mart_crm_account.abm_tier,
     mart_crm_account.crm_account_owner_id,
@@ -544,28 +543,27 @@ SELECT
     mart_crm_account.crm_account_sub_industry,
 
     --PIPELINE METRICS
-    aggregated_account_influenced_performance.stage_name,
+    account_pipeline.stage_name,
+    account_pipeline.order_type,
 
     --METRICS
-    account_pipeline.open_pipeline_live,
-    account_pipeline.registered_leads,
-    account_pipeline.attended_leads,
+    -- account_pipeline.open_pipeline_live,
+    -- account_pipeline.registered_leads,
+    -- account_pipeline.attended_leads,
     account_pipeline.sourced_pipeline_post_event,
     account_pipeline.sourced_opps_post_event,
     account_pipeline.open_pipeline,
     account_pipeline.all_pipeline,
     account_pipeline.open_pipeline_opps,
-    aggregated_account_influenced_performance.influenced_pipeline
+    -- aggregated_account_influenced_performance.influenced_pipeline
     FROM
     account_pipeline
-    LEFT JOIN
-    aggregated_account_influenced_performance
-    ON account_pipeline.dim_crm_account_id = aggregated_account_influenced_performance.dim_crm_account_id
-        AND account_pipeline.dim_campaign_id = aggregated_account_influenced_performance.dim_campaign_id
-        AND account_pipeline.event_snapshot_type = aggregated_account_influenced_performance.event_snapshot_type
-        AND account_pipeline.true_event_date = aggregated_account_influenced_performance.true_event_date
-        AND account_pipeline.stage_name = aggregated_account_influenced_performance.stage_name
-        and account_pipeline.dim_crm_opportunity_id = aggregated_account_influenced_performance.dim_crm_opportunity_id
+    -- LEFT JOIN
+    -- aggregated_account_influenced_performance
+    -- ON account_pipeline.dim_crm_account_id = aggregated_account_influenced_performance.dim_crm_account_id
+    --     AND account_pipeline.dim_campaign_id = aggregated_account_influenced_performance.dim_campaign_id
+    --     AND account_pipeline.event_snapshot_type = aggregated_account_influenced_performance.event_snapshot_type
+    --     and account_pipeline.dim_crm_opportunity_id = aggregated_account_influenced_performance.dim_crm_opportunity_id
     LEFT JOIN campaigns ON account_pipeline.dim_campaign_id = campaigns.dim_campaign_id
     LEFT JOIN mart_crm_account
     ON account_pipeline.dim_crm_account_id = mart_crm_account.dim_crm_account_id
