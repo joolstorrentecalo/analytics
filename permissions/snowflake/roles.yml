@@ -6277,6 +6277,11 @@ roles:
         - zendesk
       warehouses:
         - dev_xs
+  - someusers1:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - jblevins:
       member_of:
         - snowflake_analyst_safe
@@ -7435,6 +7440,10 @@ users:
       can_login: true
       member_of:
         - mmagoma
+  - someusers1:
+      can_login: true
+      member_of:
+        - someusers1
   - jblevins:
       can_login: true
       member_of:
