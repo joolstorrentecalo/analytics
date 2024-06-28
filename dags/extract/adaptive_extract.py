@@ -1,5 +1,5 @@
 """
-Run Adaptive Extract
+Run Adaptive Extract.
 """
 
 import os
