@@ -33,6 +33,7 @@ models:
       - name: deal_size
         data_tests:
           - not_null
+<<<<<<< HEAD
   - name: sfdc_bizible_attribution_touchpoint_xf
     columns:
       - name: touchpoint_id
@@ -45,6 +46,8 @@ models:
         data_tests:
           - not_null
           - unique
+=======
+>>>>>>> 17ffbbacc5 (begin removing models)
   - name: sfdc_contact_xf
     columns:
       - name: contact_id

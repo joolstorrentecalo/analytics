@@ -12,7 +12,8 @@ WITH date_table AS (
 ), sfdc_deleted_accounts AS (
 
     SELECT *
-    FROM {{ ref('sfdc_deleted_accounts') }}
+    FROM {{ ref('prep_crm_account') }}
+    WHERE is_deleted = True
 
 ), zuora_accounts AS (
 
@@ -75,7 +76,7 @@ WITH date_table AS (
 ), replace_sfdc_account_id_with_master_record_id AS (
 
     SELECT
-      COALESCE(initial_join_to_sfdc.sfdc_account_id_int, sfdc_master_record_id) AS sfdc_account_id,
+      COALESCE(initial_join_to_sfdc.sfdc_account_id_int, master_record_id) AS sfdc_account_id,
       initial_join_to_sfdc.*
     FROM initial_join_to_sfdc
     LEFT JOIN sfdc_deleted_accounts

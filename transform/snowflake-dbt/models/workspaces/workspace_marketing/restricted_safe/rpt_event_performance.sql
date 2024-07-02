@@ -10,7 +10,7 @@
     ('dim_date', 'dim_date'),
     ('mart_crm_person','mart_crm_person'),
     ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
-    ('sfdc_campaign_member','sfdc_campaign_member'),
+    ('sfdc_campaign_member','sfdc_campaign_member_source'),
     ('mart_crm_opportunity_daily_snapshot','mart_crm_opportunity_daily_snapshot'),
     ('mart_crm_account','mart_crm_account'),
     ('sfdc_bizible_attribution_touchpoint_snapshots_source','sfdc_bizible_attribution_touchpoint_snapshots_source')
@@ -137,6 +137,7 @@ campaign_members AS (
   -- partner from campaigns
   LEFT JOIN mart_crm_account AS campaign_partner_account
     ON campaigns.campaign_partner_crm_id = campaign_partner_account.dim_crm_account_id
+  WHERE sfdc_campaign_member.is_deleted = FALSE
 
 ),
 
