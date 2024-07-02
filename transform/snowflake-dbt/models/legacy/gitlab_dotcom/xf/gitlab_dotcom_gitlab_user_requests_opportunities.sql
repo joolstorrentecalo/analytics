@@ -17,7 +17,7 @@ WITH issues_and_epics AS (
 ), sfdc_opportunities AS (
 
     SELECT *
-    FROM {{ ref('sfdc_opportunity_xf') }}
+    FROM {{ ref('sfdc_opportunity_source') }}
 
 ), user_requests AS (
 
