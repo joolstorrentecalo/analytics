@@ -26,7 +26,7 @@ WITH crm_account_dimensions AS (
 ), sfdc_opportunity AS (
 
     SELECT *
-    FROM {{ ref('sfdc_opportunity') }}
+    FROM {{ ref('sfdc_opportunity_source') }}
 
 ), opportunity_fields AS(
 
