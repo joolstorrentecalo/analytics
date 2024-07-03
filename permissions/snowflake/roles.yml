@@ -6199,7 +6199,7 @@ roles:
         - dev_xs
   - bslee:
       member_of:
-        - snowflake_analyst
+        - snowflake_analyst_safe
       warehouses:
         - dev_xs
   - warias:
