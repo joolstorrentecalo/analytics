@@ -6197,6 +6197,11 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - bslee:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - warias:
       member_of:
         - data_team_analyst
@@ -7550,6 +7555,10 @@ users:
       can_login: true
       member_of:
         - jaltherr
+  - bslee:
+      can_login: true
+      member_of:
+        - bslee
   - plopez:
       can_login: true
       member_of:
