@@ -68,3 +68,11 @@ This macro generates a date spine that provides weekly snapshots (every 7 days) 
 {% docs partner_marketing_task_subject_cleaning %}
 Standardizes the cleaning for task/event cleaning to strip out PII from the task/event subject fields, leaving only SAFE data.
 {% enddocs %}
+
+{% docs opportunity_marts %}
+
+This macro manages all the fields that need to be included in the opportunity marts (daily snapshot and 7th day weekly snapshot). This ensures parity between the two models at all times. 
+
+The two parameters required for these tables are: model type (weekly or daily) and the fact table it should pull the fields from.
+
+{% enddocs %}
