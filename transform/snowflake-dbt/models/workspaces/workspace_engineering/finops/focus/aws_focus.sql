@@ -1,20 +1,8 @@
-WITH source AS (
+{% set source_tables = ['aws_billing_dedicated_dev_3675_source',
+  'aws_billing_dedicated_legacy_0475_source',
+  'aws_billing_gitlab_marketplace_5127_source',
+  'aws_billing_itorg_3027_source',
+  'aws_billing_legacy_gitlab_0347_source',
+  'aws_billing_services_org_6953_source'] %}
 
-  SELECT *
-  FROM {{ ref('aws_billing_source')}}
-
-)
-
-SELECT
-  DATE(line_item_usage_start_date) AS date_day, --date
-  bill_payer_account_id AS billing_account_id, -- acount id  
-  bill_billing_period_end_date AS billing_period_end, --invoice month
-  line_item_usage_account_id AS sub_account_id, -- project.id eq
-  line_item_product_code AS service_name,
-  line_item_line_item_description AS charge_description, --sku desc
-  line_item_usage_amount AS pricing_quantity, --usage amount in proicing unit
-  pricing_unit AS pricing_unit,
-  line_item_net_unblended_cost AS billed_cost,
-  pricing_public_on_demand_cost AS list_cost
-FROM source
-
+{{ union_aws_source(source_tables) }}

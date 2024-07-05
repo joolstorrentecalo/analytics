@@ -1,105 +1,101 @@
-{% docs dedupe_aws_source %}
+{% docs aws_source_incremental %}
 
-## Dedupe AWS Source
+## Run AWS source incrementally
 
-This macro is designed to deduplicate data from an AWS billing source table. It works on incremental models and uses a specified unique key and condition column to identify the most recent records.
+This macro is designed to run an incremental delete+strategy on each passed in table, and then parse the JSON to select the desired fields.
 
 ## Fields:
 
-* source_table: (Required) The name of the source table in your AWS billing schema.
-* source_schema: (Optional, default: 'aws_billing') The schema containing the source table.
-* condition_column: (Optional, default: 'metadata$file_last_modified') The column used to determine the latest record for each unique key.
-* unique_key: (Optional, default: 'id') The column that uniquely identifies each record.
+* `source_table`: (Required) The name of the source table in your AWS billing schema.
+* `source_schema`: (Optional, default: 'aws_billing') The schema containing the source table.
+* `delete_insert_key`: (Optional, default: `year_mo_partition`) Column to use for dbt incremental delete+insert. If using 'year_mo_partition', this means that any existing year_mo_partitions that are part of the incremental batch are first deleted before being re-inserted incrementally.
 
 **Example Usage:**
 
 {% raw %}
 ```jinja2
-{% set my_deduped_table = dedupe_aws_source('my_cost_usage_data') %}
-select * from {{ my_deduped_table }}
+{% set my_aws_incremental_table = aws_source_incremental('dedicated_dev_3675') %}
+select * from {{ my_aws_incremental_table }}
 ```
 {% endraw %}
 ## Generated SQL:
 
 {% raw %}
 ```sql
-SELECT *
-FROM (
-SELECT *,
-    metadata$file_last_modified AS modified_at_,
-    ROW_NUMBER() OVER (PARTITION BY id ORDER BY metadata$file_last_modified DESC) AS rn
-FROM "RAW".aws_billing.my_cost_usage_data
-WHERE metadata$file_last_modified > (SELECT MAX(modified_at) FROM my_deduped_table)
-) subquery
-WHERE rn = 1
+
+WITH source AS (
+  SELECT
+    *,
+    metadata$file_last_modified AS modified_at_
+  FROM "RAW".aws_billing.dedicated_dev_3675
+),
+
+parsed AS (
+  SELECT
+    value['bill_bill_type']::VARCHAR                                                   AS bill_bill_type,
+    ...
 ```
 {% endraw %}
 {% enddocs %}
 
-{% docs dedupe_and_union_aws_source %}
+{% docs union_aws_source %}
 
-## Deduplicating and Unioning Multiple AWS Sources
+## Unioning Multiple AWS Sources
 
-`dedupe_and_union_aws_source`
-
-This macro combines data from multiple AWS billing source tables, deduplicates records within each table, and then unions the results. It leverages the `dedupe_aws_source` macro for deduplication.
+This macro unions data from multiple AWS billing source tables
 
 ## Fields:
 
 * `source_tables` (**required**): A list of the names of your AWS source tables (e.g., `['table1', 'table2', 'table3']`).
-* `schema` (optional, default: 'aws_billing'): The schema where your source tables are located.
-* `condition_column` (optional, default: 'metadata$file_last_modified'): The column used to determine the most recent record (usually a timestamp).
-* `unique_key` (optional, default: 'id'): A comma-separated string specifying the columns that uniquely identify a record (e.g., "value['field1']::VARCHAR, value['field2']::VARCHAR").
 
 **Example Usage:**
 {% raw %}
 ```jinja2
-{% set unique_key = "value['bill_payer_account_id']::VARCHAR, 
-    value['bill_invoice_id']::VARCHAR, 
-    value['identity_line_item_id']::VARCHAR, 
-    value['identity_time_interval']::VARCHAR" %}
-{% set source_tables = ['dedicated_legacy_0475', 
-    'dedicated_dev_3675'] %}
+{% set source_tables = ['dedicated_legacy_0475',
+    'dedicated_dev_3675',
+    'gitlab_marketplace_5127',
+    'itorg_3027',
+    'legacy_gitlab_0347',
+    'services_org_6953'] %}
 
-
-WITH all_raw_deduped as (
-{{ dedupe_and_union_aws_source(source_tables, 
-    'aws_billing', 
-    'metadata$file_last_modified', 
-    unique_key) }}
-)
-
+{{ union_aws_source(source_tables)}}
 ```
 {% endraw %}
 ## Generated SQL:
 {% raw %}
 ```sql
-WITH all_raw_deduped as (     
-SELECT *
-FROM (
-SELECT *,
-    metadata$file_last_modified AS modified_at_,
-    ROW_NUMBER() OVER (PARTITION BY value['bill_payer_account_id']::VARCHAR, 
-    value['bill_invoice_id']::VARCHAR, 
-    value['identity_line_item_id']::VARCHAR, 
-    value['identity_time_interval']::VARCHAR ORDER BY metadata$file_last_modified DESC) AS rn
+SELECT
+  DATE(line_item_usage_start_date) AS date_day, --date
+  bill_payer_account_id AS billing_account_id, -- acount id
+  bill_billing_period_end_date AS billing_period_end, --invoice month
+  line_item_usage_account_id AS sub_account_id, -- project.id eq
+  line_item_product_code AS service_name,
+  line_item_line_item_description AS charge_description, --sku desc
+  line_item_usage_amount AS pricing_quantity, --usage amount in proicing unit
+  pricing_unit AS pricing_unit,
+  line_item_net_unblended_cost AS billed_cost,
+  pricing_public_on_demand_cost AS list_cost
 FROM "RAW".aws_billing.dedicated_legacy_0475
-WHERE metadata$file_last_modified > (SELECT MAX(modified_at) FROM "PREP".aws_billing.aws_billing_source_test)
-) subquery
-WHERE rn = 1
-        UNION ALL   
-SELECT *
-FROM (
-SELECT *,
-    metadata$file_last_modified AS modified_at_,
-    ROW_NUMBER() OVER (PARTITION BY value['bill_payer_account_id']::VARCHAR, 
-    value['bill_invoice_id']::VARCHAR, 
-    value['identity_line_item_id']::VARCHAR, 
-    value['identity_time_interval']::VARCHAR ORDER BY metadata$file_last_modified DESC) AS rn
+
+UNION ALL
+
+SELECT
+  DATE(line_item_usage_start_date) AS date_day, --date
+  bill_payer_account_id AS billing_account_id, -- acount id
+  bill_billing_period_end_date AS billing_period_end, --invoice month
+  line_item_usage_account_id AS sub_account_id, -- project.id eq
+  line_item_product_code AS service_name,
+  line_item_line_item_description AS charge_description, --sku desc
+  line_item_usage_amount AS pricing_quantity, --usage amount in proicing unit
+  pricing_unit AS pricing_unit,
+  line_item_net_unblended_cost AS billed_cost,
+  pricing_public_on_demand_cost AS list_cost
 FROM "RAW".aws_billing.dedicated_dev_3675
-WHERE metadata$file_last_modified > (SELECT MAX(modified_at) FROM "PREP".aws_billing.aws_billing_source_test)
-) subquery
-WHERE rn = 1
+
+UNION ALL
+
+...
+
 ```
 {% endraw %}
 {% enddocs %}

@@ -1942,6 +1942,8 @@ tables:
       , jobs_to_be_done
       , experiment_features_enabled
       , code_suggestions
+      , early_access_program_participant
+      , early_access_program_joined_by_id
       FROM namespace_settings
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
