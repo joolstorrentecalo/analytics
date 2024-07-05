@@ -2,6 +2,7 @@
     "alias": "dim_date"
 }) }}
 
+
 WITH dates AS (
 
   SELECT
@@ -16,8 +17,8 @@ WITH dates AS (
 
 {{ dbt_audit(
     cte_ref="dates",
-    created_by="@msendal",
-    updated_by="@jpeguero",
+    created_by="sffl",
+    updated_by="jahsfkjsf",
     created_date="2020-06-01",
     updated_date="2023-08-14"
 ) }}
