@@ -6326,6 +6326,11 @@ roles:
         - zendesk
       warehouses:
         - dev_xs
+  - tganga:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - alejandro:
       member_of:
         - snowflake_analyst
@@ -7580,6 +7585,10 @@ users:
       can_login: true
       member_of:
         - nleonard
+  - tganga:
+      can_login: true
+      member_of:
+        - tganga
   - seanhall:
       can_login: true
       member_of:

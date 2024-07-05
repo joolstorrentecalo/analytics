@@ -1,31 +1,28 @@
-{{ config(
-    materialized='incremental',
-    unique_key = "unique_key_aws"
-    )
-}}
+{%- macro aws_source_incremental(source_table, source_schema='aws_billing', delete_insert_key='year_mo_partition') -%}
 
-{% set macro_unique_key = "value['bill_payer_account_id']::VARCHAR, 
-    value['bill_invoice_id']::VARCHAR, 
-    value['identity_line_item_id']::VARCHAR, 
-    value['identity_time_interval']::VARCHAR" %}
+{% set source_table_name = source_table %}
+{% set source_schema_name = source_schema %}
 
-{% set source_tables = ['dedicated_legacy_0475', 
-    'dedicated_dev_3675', 
-    'gitlab_marketplace_5127', 
-    'itorg_3027', 
-    'legacy_gitlab_0347', 
-    'services_org_6953'] %}
+{{ config.set('materialized', 'incremental') }}
+{{ config.set('unique_key', delete_insert_key) }}
+{{ config.set('incremental_strategy', 'delete+insert') }}
 
 
-WITH all_raw_deduped as (
-{{ dedupe_and_union_aws_source(source_tables, 
-    'aws_billing', 
-    'metadata$file_last_modified', 
-    macro_unique_key) }}
+WITH source AS (
+  SELECT
+    *,
+    metadata$file_last_modified AS modified_at_
+  FROM {{ source(source_schema_name, source_table_name) }}
+
+  {% if is_incremental() %}
+
+WHERE modified_at_ > (SELECT MAX(modified_at) FROM {{ this }})
+
+{% endif %}
+
 ),
 
 parsed AS (
-
   SELECT
     value['bill_bill_type']::VARCHAR                                                   AS bill_bill_type,
     value['bill_billing_entity']::VARCHAR                                              AS bill_billing_entity,
@@ -187,13 +184,11 @@ parsed AS (
     value['savings_plan_savings_plan_rate']::DECIMAL                                   AS savings_plan_savings_plan_rate,
     value['savings_plan_total_commitment_to_date']::DECIMAL                            AS savings_plan_total_commitment_to_date,
     value['savings_plan_used_commitment']::DECIMAL                                     AS savings_plan_used_commitment,
-    {{ dbt_utils.generate_surrogate_key(["value['bill_payer_account_id']::VARCHAR",
-                                            "value['bill_invoice_id']::VARCHAR",
-                                            "value['identity_line_item_id']::VARCHAR",
-                                            "value['identity_time_interval']::VARCHAR"]) }} 
-                                                                                       AS unique_key_aws,
-    modified_at_ as modified_at
-  FROM all_raw_deduped
+    year_mo_partition,
+    modified_at_                                                                       AS modified_at
+  FROM source
 )
 
 SELECT * FROM parsed
+
+{%- endmacro -%}
