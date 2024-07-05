@@ -55,6 +55,7 @@ gitlab-org/project-templates/jsonnet,19985677
 gitlab-org/project-templates/cluster-management,17136273
 gitlab-org/build/CNG,4359271
 gitlab-org/build/CNG-mirror,7682093
+gitlab-org/quality/quality-engineering/CNG-mirror,59564261
 gitlab-org/ci-cd/docker-machine,1254421
 gitlab-org/ci-cd/gitlab-runner-ubi-images,17019611
 gitlab-org/ci-cd/codequality,17035255
