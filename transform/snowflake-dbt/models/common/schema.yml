@@ -6470,6 +6470,135 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
+  
+  - name: fct_behavior_website_session
+    description: '{{ doc("fct_behavior_website_session") }}'
+    columns:
+      - name: fct_behavior_website_session_pk
+        tests:
+          - not_null
+          - unique:
+              config:
+                where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
+        description: '{{ doc("fct_behavior_website_session_pk") }}'  
+      - name: app_id
+        description: '{{ doc("app_id") }}'
+      - name: session_id
+        description: '{{ doc("session_id") }}'
+      - name: dim_behavior_browser_sk
+        description: '{{ doc("dim_behavior_browser_sk") }}'
+      - name: dim_behavior_operating_system_sk
+        description: '{{ doc("dim_behavior_operating_system_sk") }}'
+      - name: dim_behavior_website_page_sk
+        description: '{{ doc("dim_behavior_website_page_sk") }}'
+      - name: dim_behavior_referrer_page_sk
+        description: '{{ doc("dim_behavior_referrer_page_sk") }}'
+      - name: session_start
+        description: '{{ doc("website_session_start") }}'
+      - name: session_end
+        description: '{{ doc("website_session_end") }}'
+      - name: behavior_at
+        description: '{{ doc("behavior_at") }}' 
+      - name: session_start_local
+        description: '{{ doc("website_session_start_local") }}'
+      - name: session_end_local
+        description: '{{ doc("website_session_end_local") }}'
+      - name: user_snowplow_domain_id
+        description: '{{ doc("user_snowplow_domain_id") }}'
+      - name: user_snowplow_crossdomain_id
+        description: '{{ doc("user_snowplow_crossdomain_id") }}'
+      - name: first_gsc_pseudonymized_user_id
+        description: '{{ doc("gsc_pseudonymized_user_id") }}'
+      - name: first_gsc_project_id
+        description: '{{ doc("dim_project_id_behavior_model") }}'
+      - name: first_gsc_namespace_id
+        description: '{{ doc("dim_namespace_id_behavior_model") }}'
+      - name: first_gsc_google_analytics_client_id
+        description: '{{ doc("gsc_google_analytics_client_id") }}'
+      - name: first_gsc_environment
+        description: '{{ doc("environment_behavior_model") }}'
+      - name: first_gsc_is_gitlab_team_member
+        description: '{{ doc("gsc_is_gitlab_team_member") }}'
+      - name: first_gsc_plan
+        description: '{{ doc("gsc_plan") }}'
+      - name: first_gsc_source
+        description: '{{ doc("gsc_source") }}'
+      - name: last_gsc_pseudonymized_user_id
+        description: '{{ doc("gsc_pseudonymized_user_id") }}'
+      - name: last_gsc_project_id
+        description: '{{ doc("dim_project_id_behavior_model") }}'
+      - name: last_gsc_namespace_id
+        description: '{{ doc("dim_namespace_id_behavior_model") }}'
+      - name: last_gsc_google_analytics_client_id
+        description: '{{ doc("gsc_google_analytics_client_id") }}'
+      - name: last_gsc_environment
+        description: '{{ doc("environment_behavior_model") }}'
+      - name: last_gsc_is_gitlab_team_member
+        description: '{{ doc("gsc_is_gitlab_team_member") }}'
+      - name: last_gsc_plan
+        description: '{{ doc("gsc_plan") }}'
+      - name: last_gsc_source
+        description: '{{ doc("gsc_source") }}'
+      - name: user_city
+        description: '{{ doc("user_city") }}'
+      - name: user_country
+        description: '{{ doc("user_country") }}'
+      - name: user_region
+        description: '{{ doc("user_region") }}'
+      - name: user_region_name
+        description: '{{ doc("user_region_name") }}'
+      - name: user_timezone_name
+        description: '{{ doc("user_timezone_name") }}'
+      - name: first_page_title
+        description: '{{ doc("page_title") }}'
+      - name: first_page_url
+        description: '{{ doc("page_url") }}'
+      - name: first_page_url_fragment
+        description: '{{ doc("page_url_fragment") }}'
+      - name: first_page_url_host
+        description: '{{ doc("page_url_host") }}'
+      - name: first_page_url_path
+        description: '{{ doc("page_url_path") }}'
+      - name: first_page_url_port
+        description: '{{ doc("page_url_port") }}'
+      - name: first_page_url_query
+        description: '{{ doc("page_url_query") }}'
+      - name: first_page_url_scheme
+        description: '{{ doc("page_url_scheme") }}'
+      - name: glm_source 
+      - name: utm_campaign
+        description: '{{ doc("utm_campaign") }}'
+      - name: utm_content
+        description: '{{ doc("utm_content") }}'
+      - name: utm_medium
+        description: '{{ doc("utm_medium") }}'
+      - name: utm_source
+        description: '{{ doc("utm_source") }}'
+      - name: utm_term
+        description: '{{ doc("utm_term") }}'
+      - name: referer_url
+        description: '{{ doc("referer_url") }}'
+      - name: referer_url_fragment
+        description: '{{ doc("referer_url_fragment") }}'
+      - name: referer_url_port
+        description: '{{ doc("referer_url_port") }}'
+      - name: session_index
+        description: '{{ doc("session_index") }}'
+      - name: session_cookie_index
+      - name: page_views
+        description: '{{ doc("session_page_views") }}'
+      - name: engaged_seconds
+        description: '{{ doc("session_engaged_seconds") }}' 
+      - name: engaged_seconds_range
+        description: '{{ doc("session_engaged_seconds_range") }}' 
+      - name: created_by
+        description: '{{ doc("created_by") }}'
+      - name: updated_by
+        description: '{{ doc("updated_by") }}'
+      - name: model_created_date
+        description: '{{ doc("model_created_date") }}'
+      - name: model_updated_date
+        description: '{{ doc("model_updated_date") }}'
 
   - name: dim_behavior_event
     description: '{{ doc("dim_behavior_event") }}'

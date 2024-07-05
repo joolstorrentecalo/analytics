@@ -1621,9 +1621,21 @@ Unique User ID set by Snowplow when the user visits GitLab.com for the first tim
 
 {% enddocs %}
 
+{% docs user_snowplow_crossdomain_id %}
+
+Unique User ID set by Snowplow when the user visits GitLab.com for the first time (using 3rd party cookie).
+
+{% enddocs %}
+
 {% docs contexts %}
 
 JSON object for custom contexts implemented during tracking implementation. [More information on Snowplow contexts](https://docs.snowplow.io/docs/understanding-your-pipeline/canonical-event/#contexts). [More information on GitLab standard context](https://docs.gitlab.com/ee/development/snowplow/schemas.html#gitlab_standard) 
+
+{% enddocs %}
+
+{% docs page_url %}
+
+The page URL path of the event. Example: `http://gitlab.com/namespace9495566/project21362945/-/merge_requests/1575`. 
 
 {% enddocs %}
 
@@ -1648,6 +1660,18 @@ Scheme i.e. protocol. Example: 'https'.
 {% docs page_url_host %}
 
 Host/Domain information 
+
+{% enddocs %}
+
+{% docs page_title %}
+
+Web page title
+
+{% enddocs %}
+
+{% docs page_url_port %}
+
+Port if specified, 80 if not
 
 {% enddocs %}
 
@@ -1789,9 +1813,45 @@ URL path of the referrer page.
 
 {% enddocs %}
 
+{% docs fct_behavior_website_session_pk %}
+
+Primary key generated using `event_id` and `session_end`.
+
+{% enddocs %}
+
+{% docs referer_url %}
+
+URL of the referrer page.
+
+{% enddocs %}
+
+{% docs referer_url_fragment %}
+
+Referer URL fragment.
+
+{% enddocs %}
+
+{% docs referer_url_port %}
+
+Referer port.
+
+{% enddocs %}
+
 {% docs engaged_seconds %}
 
 Total time (in seconds) user was on the page. This is calculated as difference between page_view_start_at and page_view_end_at. 
+
+{% enddocs %}
+
+{% docs session_engaged_seconds %}
+
+Total time (in seconds) user was on the session visit. This is calculated as difference between session_start and session_end.
+
+{% enddocs %}
+
+{% docs session_engaged_seconds_range %}
+
+Range of time spent by the user on this session visit (in seconds). Example: '240s or more'
 
 {% enddocs %}
 
@@ -3445,3 +3505,68 @@ Primary key for the model, consisting of dim_installation_id, metrics_path, and 
 
 {% enddocs %}
 
+{% docs website_session_start %}
+
+Timestamp for the start of the website session
+
+{% enddocs %}
+
+{% docs website_session_end %}
+
+Timestamp for the end of the website session
+
+{% enddocs %}
+
+{% docs website_session_start_local %}
+
+Timestamp for the start of the website session on the user's clock
+
+{% enddocs %}
+
+{% docs website_session_end_local %}
+
+Timestamp for the end of the website session on the user's clock
+
+{% enddocs %}
+
+{% docs utm_campaign %}
+
+The campaign ID. Example: '13894723'
+
+{% enddocs %}
+
+{% docs utm_content %}
+
+The content of the ad. (Or an ID so that it can be looked up.)
+
+{% enddocs %}
+
+{% docs utm_medium %}
+
+Type of traffic source. Example: 'cpc', 'affiliate', 'organic', 'social'
+
+{% enddocs %}
+
+{% docs utm_source %}
+
+The company / website where the traffic came from. Example: 'Google', 'Facebook'
+
+{% enddocs %}
+
+{% docs utm_term %}
+
+Any keywords associated with the referer. Example: 'new age tarot decks'
+
+{% enddocs %}
+
+{% docs session_page_views %}
+
+Number of page views within this session
+
+{% enddocs %}
+
+{% docs session_user_bounced %}
+
+Did the user bounce on their first page view in this session?. Example: FALSE
+
+{% enddocs %}
