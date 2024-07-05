@@ -109,6 +109,17 @@
       mart_crm_touchpoint.integrated_budget_holder,
       mart_crm_touchpoint.touchpoint_offer_type,
       mart_crm_touchpoint.touchpoint_offer_type_grouped,
+      mart_crm_touchpoint.utm_campaign_date,
+      mart_crm_touchpoint.utm_campaign_region,
+      mart_crm_touchpoint.utm_campaign_budget,
+      mart_crm_touchpoint.utm_campaign_type,
+      mart_crm_touchpoint.utm_campaign_gtm,
+      mart_crm_touchpoint.utm_campaign_language,
+      mart_crm_touchpoint.utm_campaign_name,
+      mart_crm_touchpoint.utm_campaign_agency,
+      mart_crm_touchpoint.utm_content_offer,
+      mart_crm_touchpoint.utm_content_asset_type,
+      mart_crm_touchpoint.utm_content_industry,
       -- Touchpoint Data Cont.
       mart_crm_touchpoint.bizible_marketing_channel,
       mart_crm_touchpoint.bizible_marketing_channel_path,
@@ -335,6 +346,17 @@
       mart_crm_attribution_touchpoint.integrated_budget_holder,
       mart_crm_attribution_touchpoint.touchpoint_offer_type,
       mart_crm_attribution_touchpoint.touchpoint_offer_type_grouped,
+      mart_crm_attribution_touchpoint.utm_campaign_date,
+      mart_crm_attribution_touchpoint.utm_campaign_region,
+      mart_crm_attribution_touchpoint.utm_campaign_budget,
+      mart_crm_attribution_touchpoint.utm_campaign_type,
+      mart_crm_attribution_touchpoint.utm_campaign_gtm,
+      mart_crm_attribution_touchpoint.utm_campaign_language,
+      mart_crm_attribution_touchpoint.utm_campaign_name,
+      mart_crm_attribution_touchpoint.utm_campaign_agency,
+      mart_crm_attribution_touchpoint.utm_content_offer,
+      mart_crm_attribution_touchpoint.utm_content_asset_type,
+      mart_crm_attribution_touchpoint.utm_content_industry,
       -- Touchpoint Data Cont.
       mart_crm_attribution_touchpoint.bizible_marketing_channel,
       mart_crm_attribution_touchpoint.bizible_marketing_channel_path,
@@ -395,7 +417,7 @@
       ON opp.dim_crm_account_id=dim_crm_account.dim_crm_account_id
     LEFT JOIN dim_crm_account partner_account
       ON opp.partner_account=partner_account.dim_crm_account_id
-  {{dbt_utils.group_by(n=186)}}
+  {{dbt_utils.group_by(n=197)}}
     
 ), cohort_base_combined AS (
   
@@ -576,6 +598,17 @@
       integrated_budget_holder,
       touchpoint_offer_type,
       touchpoint_offer_type_grouped,
+      utm_campaign_date,
+      utm_campaign_region,
+      utm_campaign_budget,
+      utm_campaign_type,
+      utm_campaign_gtm,
+      utm_campaign_language,
+      utm_campaign_name,
+      utm_campaign_agency,
+      utm_content_offer,
+      utm_content_asset_type,
+      utm_content_industry,
       -- Touchpoint Data Cont.
       bizible_marketing_channel,
       bizible_marketing_channel_path,
@@ -792,6 +825,17 @@
       integrated_budget_holder,
       touchpoint_offer_type,
       touchpoint_offer_type_grouped,
+      utm_campaign_date,
+      utm_campaign_region,
+      utm_campaign_budget,
+      utm_campaign_type,
+      utm_campaign_gtm,
+      utm_campaign_language,
+      utm_campaign_name,
+      utm_campaign_agency,
+      utm_content_offer,
+      utm_content_asset_type,
+      utm_content_industry,
       -- Touchpoint Data Cont.
       bizible_marketing_channel,
       bizible_marketing_channel_path,
@@ -1056,7 +1100,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@degan",
+    updated_by="@rkohnke",
     created_date="2022-07-05",
-    updated_date="2024-05-14",
+    updated_date="2024-05-29",
   ) }}

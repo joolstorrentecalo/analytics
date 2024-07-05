@@ -18,7 +18,7 @@ final AS (
     -- keys and attributes
     dim_sales_qualified_source_id,
     dim_order_type_id,
-    dim_order_type_live_id,
+    dim_order_type_current_id,
     dim_crm_current_account_set_hierarchy_sk,
     crm_current_account_set_sales_segment_live AS crm_current_account_set_sales_segment,
     crm_current_account_set_geo_live AS crm_current_account_set_geo,
@@ -32,7 +32,7 @@ final AS (
     crm_current_account_set_role_level_4,
     crm_current_account_set_role_level_5,
     order_type,
-    order_type_live,
+    order_type_current,
     order_type_grouped,
     stage_name,
     deal_path_name,

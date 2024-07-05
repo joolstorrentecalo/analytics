@@ -17,7 +17,7 @@ from kube_secrets import (
     SNOWFLAKE_PASSWORD,
     SNOWFLAKE_USER,
     SNOWFLAKE_PROVISIONER_USER,
-    SNOWFLAKE_PROVISIONER_PASSWORD,
+    SNOWFLAKE_PROVISIONER_PW,
     SNOWFLAKE_PROVISIONER_WAREHOUSE,
 )
 
@@ -97,6 +97,8 @@ purge_dev_schemas = KubernetesPodOperator(
     dag=dag,
 )
 
+# Commenting out temporarily while awaiting updated NSP for `snowflake_provisioner` role
+'''
 # Task 3: deprovision stale users in Snowflake
 test_run_arg = "--test-run" if is_local_test() else "--no-test-run"
 
@@ -111,7 +113,7 @@ purge_dev_schemas = KubernetesPodOperator(
     name="deprovision_users",
     secrets=[
         SNOWFLAKE_PROVISIONER_USER,
-        SNOWFLAKE_PROVISIONER_PASSWORD,
+        SNOWFLAKE_PROVISIONER_PW,
         SNOWFLAKE_ACCOUNT,
         SNOWFLAKE_PROVISIONER_WAREHOUSE,
     ],
@@ -121,3 +123,4 @@ purge_dev_schemas = KubernetesPodOperator(
     tolerations=get_toleration("extraction"),
     dag=dag,
 )
+'''

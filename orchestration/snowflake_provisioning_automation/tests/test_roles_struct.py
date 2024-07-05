@@ -1,7 +1,5 @@
 import os
-import sys
 import yaml
-import logging
 import pytest
 
 import roles_struct
@@ -45,8 +43,8 @@ def test_add_values(my_roles_struct):
     my_roles_struct.add_values()
     databases = my_roles_struct.roles_data["databases"]
     original_len = len(databases)
-    assert databases[-1] == {"user3_prep": {"shared": False}}
-    assert databases[-2] == {"user3_prod": {"shared": False}}
+    assert {"user3_prep": {"shared": False}} in databases
+    assert {"user3_prod": {"shared": False}} in databases
 
     # Test 2: adding values (duplicates) doesn't insert any new values
     my_roles_struct.add_values()
@@ -156,9 +154,15 @@ def test_get_existing_value_keys(my_roles_struct):
     # Test 2: get_existing_value_keys() returns the state after adding keys
     my_roles_struct.add_values()
     existing_value_keys2 = my_roles_struct.get_existing_value_keys(yaml_key)
-    assert existing_value_keys2 == existing_value_keys1 + ["user3_prod", "user3_prep"]
+    keys_to_check = existing_value_keys1 + ["user3_prod", "user3_prep"]
+    assert len(keys_to_check) == len(existing_value_keys2)
+    for key_to_check in keys_to_check:
+        assert key_to_check in existing_value_keys2
 
     # Test 3: get_existing_value_keys() returns the state after removing keys
     my_roles_struct._remove_databases()
     existing_value_keys3 = my_roles_struct.get_existing_value_keys(yaml_key)
-    assert existing_value_keys3 == ["covid19", "user3_prod", "user3_prep"]
+    assert len(existing_value_keys3) == 3
+    keys_to_check = ["covid19", "user3_prod", "user3_prep"]
+    for key_to_check in keys_to_check:
+        assert key_to_check in existing_value_keys3

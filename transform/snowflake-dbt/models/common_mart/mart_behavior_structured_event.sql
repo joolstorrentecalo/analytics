@@ -49,7 +49,12 @@ structured_behavior AS (
     dim_project_id,
     dim_behavior_operating_system_sk,
     dim_behavior_browser_sk,
-    dim_plan_sk
+    dim_plan_sk,
+    user_region,
+    user_region_name,
+    user_city,
+    user_country,
+    user_timezone_name
   FROM {{ ref('fct_behavior_structured_event') }}
   WHERE is_staging_event = FALSE
   {% if is_incremental() %}
@@ -88,6 +93,11 @@ report AS (
     structured_behavior.has_gitlab_service_ping_context,
     structured_behavior.has_gitlab_experiment_context,
     structured_behavior.has_customer_standard_context,
+    structured_behavior.user_region,
+    structured_behavior.user_region_name,
+    structured_behavior.user_city,
+    structured_behavior.user_country,
+    structured_behavior.user_timezone_name,
     event.event_category,
     event.event_action,
     event.event_label,
@@ -128,7 +138,7 @@ report AS (
 {{ dbt_audit(
     cte_ref="report",
     created_by="@pempey",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2023-02-22",
-    updated_date="2024-04-12"
+    updated_date="2024-06-17"
 ) }}

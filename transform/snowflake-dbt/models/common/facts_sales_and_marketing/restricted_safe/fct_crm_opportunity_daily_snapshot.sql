@@ -27,7 +27,7 @@ final AS (
     {{ get_keyed_nulls('prep_crm_opportunity.dim_crm_user_id') }}                                                               AS dim_crm_user_id,
     {{ get_keyed_nulls('prep_crm_opportunity.dim_crm_account_user_id') }}                                                       AS dim_crm_account_user_id,
     {{ get_keyed_nulls('order_type.dim_order_type_id') }}                                                                       AS dim_order_type_id,
-    {{ get_keyed_nulls('order_type_live.dim_order_type_id') }}                                                                  AS dim_order_type_live_id,
+    {{ get_keyed_nulls('order_type_current.dim_order_type_id') }}                                                               AS dim_order_type_current_id,
     {{ get_keyed_nulls('dr_partner_engagement.dim_dr_partner_engagement_id') }}                                                 AS dim_dr_partner_engagement_id,
     {{ get_keyed_nulls('channel_type.dim_channel_type_id') }}                                                                   AS dim_channel_type_id,
     {{ get_keyed_nulls('sales_qualified_source.dim_sales_qualified_source_id') }}                                               AS dim_sales_qualified_source_id,
@@ -131,7 +131,18 @@ final AS (
         THEN dim_crm_account_user_role_level_5_id
       ELSE dim_crm_opp_owner_role_level_5_id
     END                                                                                                                         AS dim_crm_current_account_set_role_level_5_id,
-    
+
+    --live fields
+    prep_crm_opportunity.sales_qualified_source_live,
+    prep_crm_opportunity.sales_qualified_source_grouped_live,
+    prep_crm_opportunity.is_edu_oss_live,
+    prep_crm_opportunity.opportunity_category_live,
+    prep_crm_opportunity.is_jihu_account_live,
+    prep_crm_opportunity.deal_path_live,
+    prep_crm_opportunity.parent_crm_account_geo_live,
+    prep_crm_opportunity.order_type_live,
+    prep_crm_opportunity.order_type_grouped_live,
+
     prep_crm_opportunity.order_type,
     prep_crm_opportunity.opportunity_term_base,
     prep_crm_opportunity.sales_qualified_source,
@@ -244,7 +255,7 @@ final AS (
     prep_crm_opportunity.subscription_start_date,
     prep_crm_opportunity.subscription_end_date,
     prep_crm_opportunity.true_up_value,
-    prep_crm_opportunity.order_type_live,
+    prep_crm_opportunity.order_type_current,
     prep_crm_opportunity.order_type_grouped,
     prep_crm_opportunity.growth_type,
     prep_crm_opportunity.arr_basis,
@@ -602,8 +613,8 @@ final AS (
     ON prep_crm_opportunity.sales_qualified_source = sales_qualified_source.sales_qualified_source_name
   LEFT JOIN order_type
     ON prep_crm_opportunity.order_type = order_type.order_type_name
-  LEFT JOIN order_type AS order_type_live
-    ON prep_crm_opportunity.order_type_live = order_type_live.order_type_name
+  LEFT JOIN order_type AS order_type_current
+    ON prep_crm_opportunity.order_type_current = order_type_current.order_type_name
   LEFT JOIN deal_path
     ON prep_crm_opportunity.deal_path = deal_path.deal_path_name
   LEFT JOIN sales_segment

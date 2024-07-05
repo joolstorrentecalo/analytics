@@ -18,7 +18,7 @@ final AS (
     fct_crm_opportunity.snapshot_id,
     fct_crm_opportunity.dim_sales_qualified_source_id,
     fct_crm_opportunity.dim_order_type_id,
-    fct_crm_opportunity.dim_order_type_live_id,
+    fct_crm_opportunity.dim_order_type_current_id,
     
     fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
 
@@ -45,7 +45,7 @@ final AS (
     fct_crm_opportunity.sales_qualified_source_name,
     fct_crm_opportunity.sales_qualified_source_grouped,
     fct_crm_opportunity.order_type,
-    fct_crm_opportunity.order_type_live,
+    fct_crm_opportunity.order_type_current,
     fct_crm_opportunity.order_type_grouped,
     fct_crm_opportunity.stage_name,
     fct_crm_opportunity.deal_path_name,

@@ -133,6 +133,10 @@
       dim_crm_account.last_at_risk_update_comments,
       dim_crm_account.bdr_prospecting_status,
       dim_crm_account.is_focus_partner,
+      dim_crm_account.bdr_next_steps,
+      dim_crm_account.bdr_account_research,
+      dim_crm_account.bdr_account_strategy,
+      dim_crm_account.account_bdr_assigned_user_role,
 
       --6 sense fields
 
@@ -195,6 +199,8 @@
       dim_crm_account.customer_since_date,
       dim_crm_account.gs_first_value_date,
       dim_crm_account.gs_last_csm_activity_date,
+      dim_crm_account.bdr_recycle_date,
+      dim_crm_account.actively_working_start_date,
 
       --measures
       fct_crm_account.count_active_subscription_charges,

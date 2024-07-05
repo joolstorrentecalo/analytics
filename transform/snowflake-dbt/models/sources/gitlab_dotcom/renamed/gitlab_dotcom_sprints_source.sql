@@ -11,7 +11,6 @@ WITH source AS (
       updated_at::TIMESTAMP           AS updated_at,
       start_date::DATE                AS start_date,
       due_date::DATE                  AS due_date,
-      project_id::NUMBER              AS project_id,
       group_id::NUMBER                AS group_id,
       iid::NUMBER                     AS sprint_iid,
       cached_markdown_version::NUMBER AS cached_markdown_version,

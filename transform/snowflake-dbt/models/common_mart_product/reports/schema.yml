@@ -788,10 +788,6 @@ models:
       description: '{{ doc("ci_builds_28_days_event_desc") }}'
       tests:
         - dbt_utils.at_least_one
-    - name: audit_features_28_days_user
-      description: '{{ doc("audit_features_28_days_user_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
     - name: groups_all_time_event
       description: '{{ doc("groups_all_time_event_desc") }}'
       tests:
@@ -1160,10 +1156,6 @@ models:
         - dbt_utils.at_least_one
     - name: ci_builds_28_days_event
       description: '{{ doc("ci_builds_28_days_event_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
-    - name: audit_features_28_days_user
-      description: '{{ doc("audit_features_28_days_user_desc") }}'
       tests:
         - dbt_utils.at_least_one
     - name: groups_all_time_event
@@ -2030,6 +2022,20 @@ models:
       description: ' {{ doc("code_suggestions_has_advanced_context") }} '
     - name: is_direct_connection
       description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+    - name: gitlab_global_user_id
+      description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+    - name: ultimate_parent_namespace_ids
+      description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }}'
+    - name: dim_installation_ids
+      description: '{{ doc("code_suggestions_dim_installation_ids") }}'
+    - name: dim_crm_account_ids
+      description: '{{ doc("code_suggestions_dim_crm_account_ids") }}'
+    - name: crm_account_names
+      description: '{{ doc("code_suggestions_crm_account_names") }}'
+    - name: namespace_is_internal
+      description: '{{ doc("code_suggestions_namespace_is_internal") }}'
+    - name: product_deployment_type
+      description: ' {{ doc("product_deployment_type") }} '
 
 - name: rpt_user_based_metric_counts_namespace_monthly
   description: '{{ doc("rpt_user_based_metric_counts_namespace_monthly") }}'

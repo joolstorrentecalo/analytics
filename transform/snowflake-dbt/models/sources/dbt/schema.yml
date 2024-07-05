@@ -35,6 +35,9 @@ models:
     - name: dbt_source_test_results_source
       description: Run results for dbt test specifically on sources.
 
+    - name: dbt_gdpr_logs_source
+      description: GDPR process deletion logs
+
     - name: dbt_test_results_source
       description: "DBT test results by name and time"
       columns:

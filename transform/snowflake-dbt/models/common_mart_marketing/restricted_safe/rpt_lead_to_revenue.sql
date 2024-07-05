@@ -5,7 +5,7 @@
 {{ simple_cte([
     ('person_base','mart_crm_person'),
     ('dim_crm_person','dim_crm_person'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist', 'mart_crm_opportunity_stamped_hierarchy_hist'), 
+    ('mart_crm_opportunity', 'mart_crm_opportunity'), 
     ('map_alternative_lead_demographics','map_alternative_lead_demographics'),
     ('mart_crm_touchpoint', 'mart_crm_touchpoint'),
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
@@ -76,6 +76,7 @@
 
   --Account Data
       mart_crm_account.crm_account_name,
+      mart_crm_account.crm_account_type,
       mart_crm_account.parent_crm_account_name,
       mart_crm_account.parent_crm_account_lam,
       mart_crm_account.parent_crm_account_lam_dev_count,
@@ -113,6 +114,17 @@
       mart_crm_touchpoint.bizible_landing_page_utm_budget,
       mart_crm_touchpoint.bizible_landing_page_utm_allptnr,
       mart_crm_touchpoint.bizible_landing_page_utm_partnerid,
+      mart_crm_touchpoint.utm_campaign_date,
+      mart_crm_touchpoint.utm_campaign_region,
+      mart_crm_touchpoint.utm_campaign_budget,
+      mart_crm_touchpoint.utm_campaign_type,
+      mart_crm_touchpoint.utm_campaign_gtm,
+      mart_crm_touchpoint.utm_campaign_language,
+      mart_crm_touchpoint.utm_campaign_name,
+      mart_crm_touchpoint.utm_campaign_agency,
+      mart_crm_touchpoint.utm_content_offer,
+      mart_crm_touchpoint.utm_content_asset_type,
+      mart_crm_touchpoint.utm_content_industry,
       mart_crm_touchpoint.campaign_rep_role_name,
       mart_crm_touchpoint.touchpoint_segment,
       mart_crm_touchpoint.gtm_motion,
@@ -152,6 +164,7 @@
       mart_crm_account.dim_parent_crm_account_id,
       mart_crm_attribution_touchpoint.dim_crm_touchpoint_id,
       mart_crm_attribution_touchpoint.dim_campaign_id,
+      opp.contract_reset_opportunity_id,
       opp.dim_crm_user_id AS opp_dim_crm_user_id,
     
     --Opp Data
@@ -187,6 +200,14 @@
       opp.is_eligible_age_analysis,
       opp.lead_source,
       opp.source_buckets,
+      opp.is_renewal,
+      opp.is_eligible_open_pipeline,
+      opp.pipeline_created_date,
+      opp.opportunity_category,
+      opp.stage_name,
+      opp.is_jihu_account,
+      opp.is_edu_oss,
+      opp.stage_1_discovery_date,
 
       --Account Data
       mart_crm_account.crm_account_name,
@@ -194,6 +215,7 @@
       mart_crm_account.parent_crm_account_lam,
       mart_crm_account.parent_crm_account_lam_dev_count,
       opp.parent_crm_account_upa_country,
+      mart_crm_account.crm_account_type,
     
     -- Touchpoint Data
       'Attribution Touchpoint' AS touchpoint_type,
@@ -221,6 +243,17 @@
       mart_crm_attribution_touchpoint.bizible_landing_page_utm_budget,
       mart_crm_attribution_touchpoint.bizible_landing_page_utm_allptnr,
       mart_crm_attribution_touchpoint.bizible_landing_page_utm_partnerid,
+      mart_crm_attribution_touchpoint.utm_campaign_date,
+      mart_crm_attribution_touchpoint.utm_campaign_region,
+      mart_crm_attribution_touchpoint.utm_campaign_budget,
+      mart_crm_attribution_touchpoint.utm_campaign_type,
+      mart_crm_attribution_touchpoint.utm_campaign_gtm,
+      mart_crm_attribution_touchpoint.utm_campaign_language,
+      mart_crm_attribution_touchpoint.utm_campaign_name,
+      mart_crm_attribution_touchpoint.utm_campaign_agency,
+      mart_crm_attribution_touchpoint.utm_content_offer,
+      mart_crm_attribution_touchpoint.utm_content_asset_type,
+      mart_crm_attribution_touchpoint.utm_content_industry,
       mart_crm_attribution_touchpoint.bizible_integrated_campaign_grouping,
       mart_crm_attribution_touchpoint.touchpoint_segment,
       mart_crm_attribution_touchpoint.campaign_rep_role_name,
@@ -380,14 +413,14 @@
           THEN SUM(mart_crm_attribution_touchpoint.linear_net_arr) 
         ELSE 0 
       END AS won_linear_net_arr
-    FROM mart_crm_opportunity_stamped_hierarchy_hist opp
+    FROM mart_crm_opportunity opp
     LEFT JOIN mart_crm_attribution_touchpoint
       ON opp.dim_crm_opportunity_id=mart_crm_attribution_touchpoint.dim_crm_opportunity_id
     FULL JOIN mart_crm_account
       ON opp.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE opp.created_date >= '2021-02-01'
       OR opp.created_date IS NULL
-    {{dbt_utils.group_by(n=90)}}
+    {{dbt_utils.group_by(n=112)}}
     
 ), cohort_base_combined AS (
   
@@ -404,6 +437,7 @@
       COALESCE (person_base_with_tp.dim_campaign_id,opp_base_with_batp.dim_campaign_id) AS dim_campaign_id, 
       dim_crm_user_id,
       opp_dim_crm_user_id,
+      contract_reset_opportunity_id,
   
   --Person Data
       email_hash,
@@ -488,9 +522,18 @@
       crm_opp_owner_area_stamped,
       crm_opp_owner_geo_stamped,
       product_category,
+      is_renewal,
+      is_eligible_open_pipeline,
+      pipeline_created_date,
+      opportunity_category,
+      stage_name,
+      is_jihu_account,
+      is_edu_oss,
+      stage_1_discovery_date,
 
   --Account Data
       COALESCE(person_base_with_tp.crm_account_name,opp_base_with_batp.crm_account_name) AS crm_account_name,
+      COALESCE(person_base_with_tp.crm_account_type,opp_base_with_batp.crm_account_type) AS crm_account_type,
       COALESCE(person_base_with_tp.parent_crm_account_name,opp_base_with_batp.parent_crm_account_name) AS parent_crm_account_name,
       COALESCE(person_base_with_tp.parent_crm_account_lam,opp_base_with_batp.parent_crm_account_lam) AS parent_crm_account_lam,
       COALESCE(person_base_with_tp.parent_crm_account_lam_dev_count,opp_base_with_batp.parent_crm_account_lam_dev_count) AS parent_crm_account_lam_dev_count,
@@ -541,6 +584,17 @@
       COALESCE(person_base_with_tp.bizible_landing_page_utm_budget,opp_base_with_batp.bizible_landing_page_utm_budget) AS bizible_landing_page_utm_budget, 
       COALESCE(person_base_with_tp.bizible_landing_page_utm_allptnr,opp_base_with_batp.bizible_landing_page_utm_allptnr) AS bizible_landing_page_utm_allptnr, 
       COALESCE(person_base_with_tp.bizible_landing_page_utm_partnerid,opp_base_with_batp.bizible_landing_page_utm_partnerid) AS bizible_landing_page_utm_partnerid, 
+      COALESCE(person_base_with_tp.utm_campaign_date,opp_base_with_batp.utm_campaign_date) AS bizible_utm_campaign_date,
+      COALESCE(person_base_with_tp.utm_campaign_region,opp_base_with_batp.utm_campaign_region) AS bizible_utm_campaign_region,
+      COALESCE(person_base_with_tp.utm_campaign_budget,opp_base_with_batp.utm_campaign_budget) AS bizible_utm_campaign_budget,
+      COALESCE(person_base_with_tp.utm_campaign_type,opp_base_with_batp.utm_campaign_type) AS bizible_utm_campaign_type,
+      COALESCE(person_base_with_tp.utm_campaign_gtm,opp_base_with_batp.utm_campaign_gtm) AS bizible_utm_campaign_gtm,
+      COALESCE(person_base_with_tp.utm_campaign_language,opp_base_with_batp.utm_campaign_language) AS bizible_utm_campaign_language,
+      COALESCE(person_base_with_tp.utm_campaign_name,opp_base_with_batp.utm_campaign_name) AS bizible_utm_campaign_name,
+      COALESCE(person_base_with_tp.utm_campaign_agency,opp_base_with_batp.utm_campaign_agency) AS bizible_utm_campaign_agency,
+      COALESCE(person_base_with_tp.utm_content_offer,opp_base_with_batp.utm_content_offer) AS bizible_utm_content_offer,
+      COALESCE(person_base_with_tp.utm_content_asset_type,opp_base_with_batp.utm_content_asset_type) AS bizible_utm_content_asset_type,
+      COALESCE(person_base_with_tp.utm_content_industry,opp_base_with_batp.utm_content_industry) AS bizible_utm_content_industry,
       new_lead_created_sum,
       count_true_inquiry,
       inquiry_sum, 
@@ -671,5 +725,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-05-30",
+    updated_date="2024-07-01",
   ) }}

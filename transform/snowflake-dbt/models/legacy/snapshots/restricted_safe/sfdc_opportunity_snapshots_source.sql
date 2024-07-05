@@ -52,6 +52,7 @@ WITH source AS (
         leadsource                                                                          AS lead_source,
         merged_opportunity__c                                                               AS merged_opportunity_id,
         duplicate_opportunity__c                                                            AS duplicate_opportunity_id,
+        contract_reset_opportunity__c                                                       AS contract_reset_opportunity_id,
         account_owner__c                                                                    AS account_owner,
         opportunity_owner__c                                                                AS opportunity_owner,
         manager_current__c                                                                  AS opportunity_owner_manager,
@@ -69,7 +70,6 @@ WITH source AS (
         type                                                                                AS sales_type,
         {{  sfdc_source_buckets('leadsource') }}
         stagename                                                                           AS stage_name,
-        revenue_type__c                                                                     AS order_type,
         {{ deal_path_cleaning('deal_path__c') }}                                            AS deal_path,
 
         -- opportunity information
@@ -122,7 +122,7 @@ WITH source AS (
         start_date__c::DATE                                                                 AS subscription_start_date,
         end_date__c::DATE                                                                   AS subscription_end_date,
         true_up_value__c                                                                    AS true_up_value,
-        order_type_live__c                                                                  AS order_type_live,
+        order_type_live__c                                                                  AS order_type_current,
         order_type_test__c                                                                  AS order_type_stamped,
         CASE
           WHEN order_type_stamped = '1. New - First Order'

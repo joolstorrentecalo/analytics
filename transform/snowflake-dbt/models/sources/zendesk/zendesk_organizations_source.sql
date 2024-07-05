@@ -18,7 +18,7 @@ renamed AS (
         tags                                                AS organization_tags,
         organization_fields['aar']::NUMBER                  AS arr,
         organization_fields['market_segment']::VARCHAR      AS organization_market_segment,
-
+        organization_fields['org_region']::VARCHAR          AS organization_region,
         --dates
         created_at,
         updated_at

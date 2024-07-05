@@ -47,6 +47,7 @@ renamed AS (
     leadsource                                                                       AS lead_source,
     merged_opportunity__c                                                            AS merged_opportunity_id,
     duplicate_opportunity__c                                                         AS duplicate_opportunity_id,
+    contract_reset_opportunity__c                                                    AS contract_reset_opportunity_id,
     account_owner__c                                                                 AS account_owner,
     opportunity_owner__c                                                             AS opportunity_owner,
     manager_current__c                                                               AS opportunity_owner_manager,
@@ -63,7 +64,6 @@ renamed AS (
     type                                                                             AS sales_type,
     {{ sfdc_source_buckets('leadsource') }}
     stagename                                                                        AS stage_name,
-    revenue_type__c                                                                  AS order_type,
     {{ deal_path_cleaning('deal_path__c') }}                                                                                  AS deal_path,
 
     -- opportunity information
@@ -96,10 +96,9 @@ renamed AS (
     downgrade_iacv__c                                                                AS downgrade_iacv,
     renewal_acv__c                                                                   AS renewal_acv,
     renewal_amount__c                                                                AS renewal_amount,
-    {{ sales_qualified_source_cleaning('sql_source__c') }}
-      AS sales_qualified_source,
-    {{ sales_qualified_source_grouped('sales_qualified_source') }}                                                                                  AS sales_qualified_source_grouped,
-    {{ sqs_bucket_engagement('sales_qualified_source') }} AS sqs_bucket_engagement,
+    {{ sales_qualified_source_cleaning('sql_source__c') }}                           AS sales_qualified_source,
+    {{ sales_qualified_source_grouped('sales_qualified_source') }}                   AS sales_qualified_source_grouped,
+    {{ sqs_bucket_engagement('sales_qualified_source') }}                            AS sqs_bucket_engagement,
     sdr_pipeline_contribution__c                                                     AS sdr_pipeline_contribution,
     solutions_to_be_replaced__c                                                      AS solutions_to_be_replaced,
     x3_technical_evaluation_date__c
@@ -118,7 +117,7 @@ renamed AS (
     start_date__c::DATE                                                              AS subscription_start_date,
     end_date__c::DATE                                                                AS subscription_end_date,
     NULL                                                                             AS true_up_value,
-    order_type_live__c                                                               AS order_type_live,
+    order_type_live__c                                                               AS order_type_current,
     order_type_test__c                                                               AS order_type_stamped,
     CASE
       WHEN order_type_stamped = '1. New - First Order'

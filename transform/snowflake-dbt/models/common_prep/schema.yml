@@ -2838,57 +2838,73 @@ models:
   - name: prep_snowplow_sessions_all
     description: '{{ doc("prep_snowplow_sessions_all") }}'
 
-  - name: PREP_CRM_CASE
-    description: '{{ doc("PREP_CRM_CASE") }}'
+  - name: prep_crm_case
+    description: '{{ doc("prep_crm_case") }}'
     columns:
       - name: case_id
       - name: dim_crm_case_sk
         description: surrogate key generated with dbt_utils
       - name: dim_crm_case_pk
         description: primary key
-      - name: dim_crm_account_id,
-      - name: business_hours_id,
-      - name: case_number,
-      - name: contact_id,
-      - name: from_chatter_feed_id,
-      - name: owner_id AS dim_crm_user_id,
-      - name: record_type_id,
-      - name: source_id,
-      - name: opportunity_id AS dim_crm_opportunity_id,
-      - name: created_by_id,
-      - name: closed_date,
-      - name: description,
-      - name: is_closed,
-      - name: is_closed_on_create,
-      - name: is_escalated,
-      - name: origin,
-      - name: priority,
-      - name: reason,
-      - name: resolution_action,
-      - name: status,
-      - name: subject,
-      - name: case_type,
-      - name: created_date,
-      - name: spam_checkbox,
-      - name: context,
-      - name: feedback,
-      - name: first_responded_date,
-      - name: time_to_first_response,
-      - name: next_steps,
-      - name: next_steps_date,
-      - name: is_deleted,
-      - name: contact_email,
-      - name: contact_fax,
-      - name: contact_mobile,
-      - name: contact_phone,
-      - name: supplied_company,
-      - name: supplied_email,
-      - name: supplied_name,
-      - name: supplied_phone,
+      - name: dim_crm_account_id
+      - name: business_hours_id
+      - name: case_number
+      - name: contact_id
+      - name: from_chatter_feed_id
+      - name: owner_id AS dim_crm_user_id
+      - name: record_type_id
+      - name: source_id
+      - name: opportunity_id AS dim_crm_opportunity_id
+      - name: created_by_id
+      - name: closed_date
+      - name: description
+      - name: is_closed
+      - name: is_closed_on_create
+      - name: is_escalated
+      - name: origin
+      - name: priority
+      - name: reason
+      - name: resolution_action
+      - name: status
+      - name: subject
+      - name: case_type
+      - name: created_date
+      - name: spam_checkbox
+      - name: context
+      - name: feedback
+      - name: first_responded_date
+      - name: time_to_first_response
+      - name: next_steps
+      - name: next_steps_date
+      - name: is_deleted
+      - name: contact_email
+      - name: contact_fax
+      - name: contact_mobile
+      - name: contact_phone
+      - name: supplied_company
+      - name: supplied_email
+      - name: supplied_name
+      - name: supplied_phone
       - name: days_create_to_close
-        description: DATEDIFF('DAY',source.created_date,source.closed_date),
+        description: DATEDIFF('DAY',source.created_date,source.closed_date)
       - name: days_create_to_today
-        description: DATEDIFF('DAY',source.created_date,CURRENT_DATE),
-      - name: last_modified_by_id,
-      - name: last_modified_date,
+        description: DATEDIFF('DAY',source.created_date,CURRENT_DATE)
+      - name: last_modified_by_id
+      - name: last_modified_date
       - name: systemmodstamp
+
+  - name: prep_crm_case_history
+    description: '{{ doc("prep_crm_case_history") }}'
+    columns:
+      - name: case_history_id
+        description: primary key for the field value change
+      - name: case_id
+        description: id of the SFDC case that had a tracked field value change
+      - name: created_by_id
+        description: SFDC user id of the user that made the change
+      - name: case_field
+      - name: data_type
+      - name: new_value
+      - name: old_value
+      - name: is_deleted
+      

@@ -82,6 +82,28 @@ models:
           description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
         - name: touchpoint_offer_type_grouped
           description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
+        - name: utm_campaign_date
+          description: The date portion of the new utm_campaign structure.
+        - name: utm_campaign_region
+          description: The region portion of the new utm_campaign structure.
+        - name: utm_campaign_budget
+          description: The budget portion of the new utm_campaign structure.
+        - name: utm_campaign_type
+          description: The campaign type portion of the new utm_campaign structure.
+        - name: utm_campaign_gtm
+          description: The gtm portion of the new utm_campaign structure.
+        - name: utm_campaign_language
+          description: The language portion of the new utm_campaign structure.
+        - name: utm_campaign_name
+          description: The name portion of the new utm_campaign structure.
+        - name: utm_campaign_agency
+          description: The agency portion of the new utm_campaign structure.
+        - name: utm_content_offer
+          description: The offer portion of the new utm_content structure.
+        - name: utm_content_asset_type
+          description: The asset type portion of the new utm_content structure.
+        - name: utm_content_industry
+          description: The industry portion of the new utm_content structure.
 
     - name: mart_crm_touchpoint
       description: Model containing Bizible touchpoints (non-attribution) along with contact, lead, account, and campaign details.
@@ -139,6 +161,28 @@ models:
           description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
         - name: touchpoint_offer_type_grouped
           description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
+        - name: utm_campaign_date
+          description: The date portion of the new utm_campaign structure.
+        - name: utm_campaign_region
+          description: The region portion of the new utm_campaign structure.
+        - name: utm_campaign_budget
+          description: The budget portion of the new utm_campaign structure.
+        - name: utm_campaign_type
+          description: The campaign type portion of the new utm_campaign structure.
+        - name: utm_campaign_gtm
+          description: The gtm portion of the new utm_campaign structure.
+        - name: utm_campaign_language
+          description: The language portion of the new utm_campaign structure.
+        - name: utm_campaign_name
+          description: The name portion of the new utm_campaign structure.
+        - name: utm_campaign_agency
+          description: The agency portion of the new utm_campaign structure.
+        - name: utm_content_offer
+          description: The offer portion of the new utm_content structure.
+        - name: utm_content_asset_type
+          description: The asset type portion of the new utm_content structure.
+        - name: utm_content_industry
+          description: The industry portion of the new utm_content structure.
 
     - name: mart_crm_person
       description: Model with person and MQL business logic.
@@ -707,6 +751,47 @@ models:
           description: The bizible touchpoint marketing channel, of the most recent touchpoint. 
         - name: bizible_most_recent_marketing_channel_path
           description: The bizible touchpoint marketing channel path, of the most recent touchpoint.
+        - name: utm_campaign_date
+          description: The date portion of the new utm_campaign structure.
+        - name: utm_campaign_region
+          description: The region portion of the new utm_campaign structure.
+        - name: utm_campaign_budget
+          description: The budget portion of the new utm_campaign structure.
+        - name: utm_campaign_type
+          description: The campaign type portion of the new utm_campaign structure.
+        - name: utm_campaign_gtm
+          description: The gtm portion of the new utm_campaign structure.
+        - name: utm_campaign_language
+          description: The language portion of the new utm_campaign structure.
+        - name: utm_campaign_name
+          description: The name portion of the new utm_campaign structure.
+        - name: utm_campaign_agency
+          description: The agency portion of the new utm_campaign structure.
+        - name: utm_content_offer
+          description: The offer portion of the new utm_content structure.
+        - name: utm_content_asset_type
+          description: The asset type portion of the new utm_content structure.
+        - name: utm_content_industry
+          description: The industry portion of the new utm_content structure.
+        - name: is_renewal
+          description: Boolean flag from the Opportunity in SFDC - indicates if it is a renewal. 
+        - name: is_eligible_open_pipeline
+          description: Boolean flag from the Opportunity in SFDC - indicates if it is eligible to be counted as pipeline. 
+        - name: pipeline_created_date
+          description: Date from the Opportunity in SFDC - indicates the date that pipeline was added to the opp.
+        - name: opportunity_category
+          description: Text field from the Opportunity in SFDC - indicates the current category of the opp.
+        - name: stage_name
+          description: Text field from the Opportunity in SFDC - indicates the current stage of the opp. 
+        - name: is_jihu_account
+          description: Boolean flag from the Account in SFDC - indicates if it is a JIHU account.
+        - name: is_edu_oss
+          description: Boolean flag from the Opportunity in SFDC - indicates if it is an edu/oss opp.
+        - name: stage_1_discovery_date
+          description: Date field from the Opportunity in SFDC - indicates the date that the opp reached stage 1.
+        - name: crm_account_type
+          description: Text field from the Account in SFDC - indicates the Type of the account.  
+
 
     - name: rpt_l2r_campaign_interactions
       description: Tableau-specific table that unions `mart_crm_touchpoint` with person, campaign data joined on and `mart_crm_attribution_touchpoint` with person, campaign and oppunitiy data 
@@ -779,6 +864,28 @@ models:
           description: Campagin field of the Alliance partner name
         - name: crm_account_type
           description: The account type from SFDC (Customer, Former Customer, etc...)
+        - name: utm_campaign_date
+          description: The date portion of the new utm_campaign structure.
+        - name: utm_campaign_region
+          description: The region portion of the new utm_campaign structure.
+        - name: utm_campaign_budget
+          description: The budget portion of the new utm_campaign structure.
+        - name: utm_campaign_type
+          description: The campaign type portion of the new utm_campaign structure.
+        - name: utm_campaign_gtm
+          description: The gtm portion of the new utm_campaign structure.
+        - name: utm_campaign_language
+          description: The language portion of the new utm_campaign structure.
+        - name: utm_campaign_name
+          description: The name portion of the new utm_campaign structure.
+        - name: utm_campaign_agency
+          description: The agency portion of the new utm_campaign structure.
+        - name: utm_content_offer
+          description: The offer portion of the new utm_content structure.
+        - name: utm_content_asset_type
+          description: The asset type portion of the new utm_content structure.
+        - name: utm_content_industry
+          description: The industry portion of the new utm_content structure.
 
     - name: rpt_l2r_community_data
       description: Tableau-specific table that joins Zuora, Opportunity, and Lead To Revenue data to hone in on the community-owned opportunities and their related data points. 

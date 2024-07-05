@@ -6,7 +6,7 @@
 
 -- depends_on: {{ ref('internal_gitlab_namespaces') }}
 
-WITH RECURSIVE namespaces AS (
+WITH namespaces AS (
 
     SELECT *
     FROM {{ref('gitlab_dotcom_namespaces')}}
@@ -22,46 +22,18 @@ WITH RECURSIVE namespaces AS (
     SELECT *
     FROM {{ref('gitlab_dotcom_plans')}}
 
-), recursive_namespaces(namespace_id, parent_id, upstream_lineage) AS (
+), 
 
-  -- Select all namespaces without parents
-  SELECT
+extracted AS (
+  SELECT 
     namespace_id,
-    namespaces.parent_id,
-    TO_ARRAY(namespace_id)                                      AS upstream_lineage -- Initiate lineage array
+    parent_id,
+    lineage AS upstream_lineage,
+    ultimate_parent_id
   FROM namespaces
-  WHERE namespaces.parent_id IS NULL
+),
 
-  UNION ALL
-
-  -- Recursively iterate through each of the children namespaces
-  SELECT
-    iter.namespace_id,
-    iter.parent_id,
-    ARRAY_INSERT(anchor.upstream_lineage, 0, iter.namespace_id)  AS upstream_lineage -- Copy the lineage array of parent, inserting self at start
-  FROM recursive_namespaces AS anchor -- Parent namespace
-    INNER JOIN namespaces AS iter -- Child namespace
-      ON anchor.namespace_id = iter.parent_id
-
-), extracted AS (
-
-  SELECT
-    *,
-    GET(upstream_lineage, ARRAY_SIZE(upstream_lineage)-1)::NUMERIC AS ultimate_parent_id -- Last item is the ultimate parent.
-  FROM recursive_namespaces
-
-  UNION ALL
-  /* Union all children with deleted ancestors. These are missed by the top-down recursive CTE.
-     This is quite rare (n=82 on 2020-01-06) but need to be included in this model for full coverage. */
-  SELECT
-    namespaces.namespace_id, 
-    namespaces.parent_id,
-    ARRAY_CONSTRUCT() AS upstream_lineage, -- Empty Array.
-    0                 AS ultimate_parent_id
-  FROM namespaces
-  WHERE namespace_id NOT IN (SELECT DISTINCT namespace_id FROM recursive_namespaces)
-
-), with_plans AS (
+with_plans AS (
 
   SELECT
     extracted.*,

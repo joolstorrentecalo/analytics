@@ -25,6 +25,8 @@ sources:
       - name: manifest
         description: This is the compiled dbt project along with packages
         identifier: manifest
+      - name: gdpr_logs
+        description: GDPR deletion logs
       - name: source_tests
         description: This is for the results from testing source data.
         identifier: source_tests_run_results

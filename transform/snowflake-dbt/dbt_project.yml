@@ -71,6 +71,7 @@ vars:
   tomorrow: DATEADD('day',1,CURRENT_DATE())
   sample_suffix: __sample
   local_data: sample
+  dev_db_object_expiration: -80
 
 
   warehouse_name: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"

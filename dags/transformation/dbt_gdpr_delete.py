@@ -75,15 +75,14 @@ secrets_list = [
     SALT_NAME,
     SALT_PASSWORD,
     SNOWFLAKE_ACCOUNT,
-    SNOWFLAKE_USER,
-    SNOWFLAKE_PASSWORD,
-    SNOWFLAKE_LOAD_PASSWORD,
     SNOWFLAKE_LOAD_ROLE,
     SNOWFLAKE_LOAD_USER,
     SNOWFLAKE_LOAD_WAREHOUSE,
+    SNOWFLAKE_LOAD_PASSWORD,
+    SNOWFLAKE_USER,
     SNOWFLAKE_TRANSFORM_ROLE,
-    SNOWFLAKE_TRANSFORM_WAREHOUSE,
     SNOWFLAKE_TRANSFORM_SCHEMA,
+    SNOWFLAKE_TRANSFORM_WAREHOUSE,
     MCD_DEFAULT_API_ID,
     MCD_DEFAULT_API_TOKEN,
     SNOWFLAKE_STATIC_DATABASE,
@@ -102,9 +101,8 @@ dag = DAG(
 dbt_gdpr_deletes_command = f"""
     {pull_commit_hash} &&
     {dbt_install_deps_cmd} &&
-    dbt --no-use-colors run-operation gdpr_bulk_delete --profiles-dir profile --target prod; ret=$?;
-    montecarlo import dbt-run --manifest target/manifest.json --run-results target/run_results.json --project-name gitlab-analysis;
-    python ../../orchestration/upload_dbt_file_to_snowflake.py results; exit $ret
+    dbt --no-use-colors --log-path gdpr_run_logs --log-format json run-operation gdpr_bulk_delete --profiles-dir profile --target prod_cleanup; ret=$?;
+    python ../../orchestration/upload_dbt_file_to_snowflake.py gdpr_logs; exit $ret
 """
 
 dbt_gdpr_deletes_command_task = KubernetesPodOperator(

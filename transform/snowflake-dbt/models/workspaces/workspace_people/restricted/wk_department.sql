@@ -29,6 +29,8 @@ SELECT
       THEN 'Marketing (SDR)'
     WHEN department = 'Meltano'
       THEN 'Engineering'
+    WHEN department = 'UX'
+      THEN 'Product'
     ELSE division
   END AS modified_division,
   cost_center,

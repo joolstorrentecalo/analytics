@@ -114,7 +114,7 @@ WITH sfdc_users_xf AS (
        deal_path_name,
        order_type,
        order_type_grouped,
-       order_type_live,
+       order_type_current,
        dr_partner_engagement_name,
        alliance_type_name,
        alliance_type_short_name,

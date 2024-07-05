@@ -346,10 +346,9 @@ snowflake_provisioning_snowflake_users:
 
     - echo "Below are CI job arguments, missing key/values will use default Python values:"
     - echo -e "IS_TEST_RUN=$IS_TEST_RUN_FINAL\n\
-               USERS_TO_ADD=$USERS_TO_ADD_FINAL\n
                IS_DEV_DB=$IS_DEV_DB_FINAL"
 
-    - python3 provision_users/provision_users.py $IS_TEST_RUN_FINAL $USERS_TO_ADD_FINAL $IS_DEV_DB_FINAL
+    - python3 provision_users/provision_users.py $IS_TEST_RUN_FINAL $IS_DEV_DB_FINAL
 
 snowflake_provisioning_roles_yaml:
   <<: *snowflake_provisioning_automation

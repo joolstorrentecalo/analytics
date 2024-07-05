@@ -60,3 +60,5 @@ models:
   description: Output of Finance's analysis determining timing differences between bookings and billings
 - name: driveload_pending_invoices_report_source
   description: Report of future dated pending invoices in Zuora (e.g. for multiyear ramp orders billed annually)
+- name: driveload_invoice_aging_detail_source
+  description: Report of historical invoice balances and days overdue per accounting period as in Zuora

@@ -781,6 +781,12 @@ This is the primary events view which is the union of the Fishtown and GitLab ta
 
 {% enddocs %}
 
+{% docs prep_snowplow_unnested_events_all_30 %}
+
+This model prepares Snowplow event data by unioning data from the Fishtown and GitLab tables across the last 30 days of snowplow_YYYY_MM schemas. All of the unstructured including both staging and non-staging events are unpacked. It is similar to `prep_snowplow_unnested_events_all` key difference is that `prep_snowplow_unnested_events_all_30` unions data from the last 30 days of Snowplow event schemas (snowplow_YYYY_MM), while `prep_snowplow_unnested_events_all` unions data from the last 800 days (approximately 26 months).
+
+{% enddocs %}
+
 {% docs prep_billing_account %}
 
 Prep model for merging the billing accounts data from both Zuora and CDot sources. This model will be used as a source model for creating `dim_billing_account` core business data object downstream.
@@ -877,3 +883,8 @@ This table contains data about SFDC case objects.
 
 {% enddocs %}
 
+{% docs prep_crm_case_history %}
+
+This table contains all changes to SFDC Case fields if field history tracking is enabled for that field within SFDC settings.
+
+{% enddocs %}

@@ -224,10 +224,12 @@ And the `config_docker` file will be used by the docker containers when you are 
 - [ ] Install [Rancher Desktop](https://rancherdesktop.io/) using the UI install specified for your system
   - [ ] Make sure to download Rancher Desktop version `1.4.1` - you can find the correct version for your system here https://github.com/rancher-sandbox/rancher-desktop/releases/tag/v1.4.1
   - [ ] If you have trouble installing v1.4.1 on a new Mac M1 machine, try v1.2.1, which has been tested and it is known it works
-  - [ ] Airflow does not require a huge amount of resources, 4GB of RAM and 2 CPUs should be sufficient.  
-  - [ ] Ensure that you select the `dockerd` container runtime in `Kubernetes Settings`. 
+  - [ ] If that also does not work, try v1.13.1 (You can get it here: https://github.com/rancher-sandbox/rancher-desktop/releases/tag/v1.13.1)
+  - [ ] Airflow does not require a huge amount of resources, 4GB of RAM and 2 CPUs should be sufficient.
+  - [ ] Ensure that you select the `dockerd` container runtime in `Kubernetes Settings`.
+      - [ ] If you installed v1.13.1 you can find `dockerd` under Preferences and then Container Engine. It can happen that the Preferences screen does not load. A restart of your machine should help.
   - [ ] Ensure that you select to create symbologic links to the docker command line path (`/usr/local/bin/docker`) in the `Supporting Utilities` section. 
-  - [ ] Install the docker-compose cli by running through the below: 
+  - [ ] Install the docker-compose cli by running through the below:
     - `brew install docker docker-compose`
     - Confirm install
     - `docker-compose --version`

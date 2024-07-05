@@ -6,6 +6,24 @@ models:
         - name: date_part
           tests:
             - not_null
+        - name: geo_city
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_continent
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_country
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_metro
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_region
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_sub_continent
+          meta:
+            masking_policy: analyst_marketing_sensitive
     - name: google_analytics_4_pseudonymous_users_source
       columns:
         - name: pseudo_user_id
@@ -14,6 +32,18 @@ models:
         - name: date_part
           tests:
             - not_null
+        - name: geo_city
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_continent
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_country
+          meta:
+            masking_policy: analyst_marketing_sensitive
+        - name: geo_region
+          meta:
+            masking_policy: analyst_marketing_sensitive
     - name: google_analytics_4_user_audiences_source
       columns:
         - name: date_part

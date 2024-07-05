@@ -155,6 +155,13 @@ suggestion_level AS (
     requested.language_server_version,
     requested.is_invoked,
     requested.has_advanced_context,
+    requested.gitlab_global_user_id,
+    requested.ultimate_parent_namespace_ids,
+    requested.dim_installation_ids,
+    requested.dim_crm_account_ids,
+    requested.crm_account_names,
+    requested.namespace_is_internal,
+    requested.product_deployment_type,
 
     --model_engine, model_name, accepted_option, suggestion_source, and options_count, is_direct_connection are not available on requested event. If not limited to a single possible event type, default to loaded event, fall back to others to maximize coverage
     accepted.accepted_option,
@@ -240,6 +247,6 @@ suggestion_level AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-06-12"
+    updated_date="2024-06-28"
 ) }}
 

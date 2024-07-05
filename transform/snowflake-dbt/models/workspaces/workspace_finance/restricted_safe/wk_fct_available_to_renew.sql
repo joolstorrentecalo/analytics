@@ -29,38 +29,17 @@
     sub.termstartdate                AS term_start_date,
     sub.termenddate                  AS term_end_date,
     rampid                           AS ramp_id, ---Identifies ramps booked via current Ramp functionality
-    CASE when sub.rampid <> '' OR sub.rampid IS NOT NULL THEN rampid
-    ELSE 'Not a ramp' END            AS is_ramp,
-    MULTIYEARDEALSUBSCRIPTIONLINKAGE__C AS myb_opportunity_id,---Equivalent to SSP ID in SF, deprecated now, used for identifying Legacy ramps
+    CASE WHEN sub.rampid != '' OR  (MULTIYEARDEALSUBSCRIPTIONLINKAGE__C != '' AND MULTIYEARDEALSUBSCRIPTIONLINKAGE__C IS NOT NULL 
+      AND MULTIYEARDEALSUBSCRIPTIONLINKAGE__C != 'Not a ramp') THEN 'Yes' 
+    ELSE 'No' END AS is_ramp,
+    MULTIYEARDEALSUBSCRIPTIONLINKAGE__C AS myb_opportunity_id,---Equivalent to SSP ID in SF, deprecated now, used for identifying Legacy ramps,only the first year of ramp can ve identified by this opp_id
     sub.opportunityid__c                AS opportunity_id
   FROM {{ source('zuora', 'subscription') }} sub
 
 ---Legacy Zuora Ramps 
 ---Historical Ramp Deals for data >= Sep 2021
 ---myb_opportunity_id should have a value of SSP_ID
-), zuora_legacy_ramps AS (
-
-    SELECT 
-      dim_crm_account_id,
-      subscription_id,
-      subscription_name,
-      subscription_version,
-      subscription_status,
-      term_start_date,
-      term_end_date,
-      ramp_id,
-      is_ramp,
-      myb_opportunity_id,
-      opportunity_id
-    FROM dim_subscription_source
-    WHERE 
-      myb_opportunity_id != '' 
-      AND myb_opportunity_id IS NOT NULL 
-      AND myb_opportunity_id!= 'Not a ramp' 
-      AND (is_ramp = '' OR is_ramp IS NULL)
-      
-
----Current Ramps from Zuora Ramps Functionality
+---Identifying all ramps from Zuora
 ), zuora_ramps AS (
 
     SELECT 
@@ -76,10 +55,9 @@
       myb_opportunity_id,
       opportunity_id
     FROM dim_subscription_source
-      WHERE ramp_id <> '' 
-      AND ramp_id IS NOT NULL
-      AND ramp_id <> 'Not a ramp'
-
+    WHERE 
+      is_ramp = 'Yes'
+      
 
 --- Legacy SF Ramps 
 --- Historical Ramp Deals for data <= October 2021
@@ -114,13 +92,11 @@
       dim_crm_opportunity.dim_crm_opportunity_id, 
       CASE
        WHEN sheetload_map_ramp_deal.dim_crm_opportunity_id IS NOT NULL THEN sheetload_map_ramp_deal."Overwrite_SSP_ID" 
-       WHEN zuora_legacy_ramps.opportunity_id IS NOT NULL THEN zuora_legacy_ramps.myb_opportunity_id
        WHEN zuora_ramps.opportunity_id IS NOT NULL THEN zuora_ramps.myb_opportunity_id
-        WHEN ramp_deals.dim_crm_opportunity_id IS NOT NULL THEN ramp_deals.ssp_id     
+       WHEN ramp_deals.dim_crm_opportunity_id IS NOT NULL THEN ramp_deals.ssp_id     
       END AS ramp_ssp_id_init,
-      CASE WHEN ramp_ssp_id_init <> 'Not a ramp' THEN ramp_ssp_id_init
+      CASE WHEN ramp_ssp_id_init != 'Not a ramp' THEN ramp_ssp_id_init
       ELSE LEFT(zuora_ramps.opportunity_id, 15) END AS ramp_ssp_id,
-      zuora_legacy_ramps.opportunity_id as zuora_legacy_opp_id,
       zuora_ramps.opportunity_id as zuora_opp_id,
       sheetload_map_ramp_deal.dim_crm_opportunity_id as sheetload_opp_id,
       ramp_deals.dim_crm_opportunity_id as sf_ramp_deal_opp_id
@@ -129,8 +105,6 @@
      ON sheetload_map_ramp_deal.dim_crm_opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id 
     LEFT JOIN ramp_deals          
      ON ramp_deals.dim_crm_opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id
-    LEFT JOIN zuora_legacy_ramps
-     ON zuora_legacy_ramps.opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id
     LEFT JOIN zuora_ramps
      ON zuora_ramps.opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id
     WHERE ramp_ssp_id IS NOT NULL 
@@ -142,10 +116,10 @@
     SELECT 
       ramp_deals_ssp_id_multiyear_linkage.ramp_ssp_id,
       dim_subscription.*,
-      CASE
-         WHEN LEAD(term_start_month) OVER (PARTITION BY dim_subscription.subscription_name ORDER BY subscription_version) = term_start_month THEN TRUE
+    CASE WHEN ramp_ssp_id IS NULL AND LEAD(term_start_month) OVER (PARTITION BY dim_subscription.subscription_name ORDER BY ramp_ssp_id,subscription_version) = term_start_month THEN TRUE					 
+         WHEN RAMP_SSP_ID IS NOT NULL THEN FALSE														
          ELSE FALSE
-      END AS is_dup_term				
+    END AS is_dup_term				
     FROM dim_subscription			
     LEFT JOIN ramp_deals_ssp_id_multiyear_linkage				
      ON dim_subscription.dim_crm_opportunity_id = ramp_deals_ssp_id_multiyear_linkage.dim_crm_opportunity_id
@@ -343,7 +317,7 @@ cte_ref="final",
 created_by="@snalamaru",
 updated_by="@snalamaru",
 created_date="2024-04-01",
-updated_date="2024-05-29"
+updated_date="2024-06-20"
 ) }}
 
 

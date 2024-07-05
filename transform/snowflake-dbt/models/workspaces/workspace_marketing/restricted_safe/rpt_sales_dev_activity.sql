@@ -75,6 +75,12 @@
     mart_crm_opportunity_stamped_hierarchy_hist.is_eligible_open_pipeline,
     mart_crm_opportunity_stamped_hierarchy_hist.opportunity_business_development_representative,
     mart_crm_opportunity_stamped_hierarchy_hist.opportunity_sales_development_representative,
+    mart_crm_account.bdr_next_steps,
+    mart_crm_account.bdr_account_research,
+    mart_crm_account.bdr_account_strategy,
+    mart_crm_account.account_bdr_assigned_user_role,
+    mart_crm_account.bdr_recycle_date,
+    mart_crm_account.actively_working_start_date,
     CASE 
     WHEN mart_crm_opportunity_stamped_hierarchy_hist.opportunity_business_development_representative IS NOT NULL 
     THEN 'BDR' 
@@ -370,6 +376,12 @@
     opp_to_lead.is_net_arr_pipeline_created,
     opp_to_lead.is_eligible_age_analysis,
     opp_to_lead.is_eligible_open_pipeline,
+    opp_to_lead.bdr_next_steps,
+    opp_to_lead.bdr_account_research,
+    opp_to_lead.bdr_account_strategy,
+    opp_to_lead.account_bdr_assigned_user_role,
+    opp_to_lead.bdr_recycle_date,
+    opp_to_lead.actively_working_start_date,
     sales_dev_hierarchy.*
   FROM mart_crm_person
   LEFT JOIN dim_date dim_mql_date
@@ -480,6 +492,12 @@ LEFT JOIN sales_dev_hierarchy
     opps_missing_link.is_net_arr_pipeline_created,
     opps_missing_link.is_eligible_age_analysis,
     opps_missing_link.is_eligible_open_pipeline,
+    opps_missing_link.bdr_next_steps,
+    opps_missing_link.bdr_account_research,
+    opps_missing_link.bdr_account_strategy,
+    opps_missing_link.account_bdr_assigned_user_role,
+    opps_missing_link.bdr_recycle_date,
+    opps_missing_link.actively_working_start_date,
     sales_dev_hierarchy.*
   FROM opps_missing_link
   LEFT JOIN sales_dev_hierarchy 
@@ -492,5 +510,5 @@ LEFT JOIN sales_dev_hierarchy
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-09-06",
-    updated_date="2024-05-07",
+    updated_date="2024-06-26",
   ) }}

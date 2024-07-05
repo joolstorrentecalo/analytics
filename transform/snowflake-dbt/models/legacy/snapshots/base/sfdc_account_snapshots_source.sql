@@ -98,6 +98,12 @@ renamed AS (
     number_of_employees_manual_source_admin__c AS admin_manual_source_number_of_employees,
     account_address_manual_source_admin__c AS admin_manual_source_account_address,
     focus_partner__c AS is_focus_partner,
+    bdr_next_steps__c AS bdr_next_steps,
+    bdr_next_step_date__c::DATE AS bdr_recycle_date,
+    actively_working_start_date__c::DATE AS actively_working_start_date,
+    bdr_account_research__c AS bdr_account_research,
+    bdr_account_strategy__c AS bdr_account_strategy,
+    account_bdr_assigned_user_role__c AS account_bdr_assigned_user_role,
 
     --6 Sense Fields
     x6sense_6qa__c::BOOLEAN AS has_six_sense_6_qa,

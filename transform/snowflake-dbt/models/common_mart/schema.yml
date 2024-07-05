@@ -1418,6 +1418,16 @@ models:
       description: '{{ doc("has_gitlab_experiment_context") }}'
     - name: has_customer_standard_context
       description: '{{ doc("has_customer_standard_context") }}'
+    - name: user_city
+      description: '{{ doc("user_city") }}'
+    - name: user_country
+      description: '{{ doc("user_country") }}'
+    - name: user_region
+      description: '{{ doc("user_region") }}'
+    - name: user_region_name
+      description: '{{ doc("user_region_name") }}'
+    - name: user_timezone_name
+      description: '{{ doc("user_timezone_name") }}'
     - name: browser_name
       description: '{{ doc("browser_name") }}'
     - name: dim_behavior_browser_sk

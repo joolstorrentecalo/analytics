@@ -1401,9 +1401,9 @@ The name of the associated sales funnel KPI.
 
 {% enddocs %}
 
-{% docs order_type_live %}
+{% docs order_type_current %}
 
-The current Order Type of an opportunity, potentially after it has been stamped on its close date. Per the [documentation in Salesforce](https://gitlab.my.salesforce.com/00N4M00000Ib8Ok?setupid=OpportunityFields), This field is used to track movement of values post deal close and is for analysis purposes only.
+The current Order Type of an opportunity, potentially after it has been stamped on its close date. Per the [documentation in Salesforce](https://gitlab.my.salesforce.com/00N4M00000Ib8Ok?setupid=OpportunityFields), this field is used to track movement of values post deal close and is for analysis purposes only.
 
 {% enddocs %}
 

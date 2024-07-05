@@ -162,3 +162,13 @@ macros:
         type: string
       - name: fulfillment_partner_name
         type: string
+  - name: utm_campaign_parsing
+    description: Parses the new Marketing utm_campaign parameter into its consituent pieces, to be used in marketing reporting. 
+    arguments:
+      - name: utm_column_name
+        type: string
+  - name: utm_content_parsing
+    description: Parses the new Marketing utm_content parameter into its consituent pieces, to be used in marketing reporting. 
+    arguments:
+      - name: utm_column_name
+        type: string

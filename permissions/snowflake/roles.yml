@@ -932,6 +932,7 @@ roles:
             - prod.workspace_data_science
             - prod.common
             - prod.common_prep
+            - prod.common_mapping
             - prod.legacy
             - prod.common_mart_product
             - prod.restricted_safe_common_mart_sales
@@ -967,6 +968,7 @@ roles:
             - prep.sfdc.*
             - prod.common.*
             - prod.common_prep.*
+            - prod.common_mapping.*
             - prod.legacy.*
             - prod.common_mart_product.*
             - prod.restricted_safe_common_mart_sales.*
@@ -1444,7 +1446,7 @@ roles:
             - prep.sensitive.customers_db_customers_pii
   - prod_reporting:
       member_of:
-        - boneyard 
+        - boneyard
       privileges:
         databases:
           read:
@@ -1509,9 +1511,6 @@ roles:
             - prod.restricted_safe_workspace_finance
             - prod.restricted_safe_workspace_marketing
             - prod.restricted_safe_workspace_sales
-
-
-
         tables:
           read:
             - prod.restricted_safe_common.*
@@ -2974,6 +2973,7 @@ roles:
         - data_manager
         - marketo
         - orgadmin
+        - snowflake_analyst
         - snowflake_analyst_safe
         - salesforce_sandbox
         - xactly
@@ -3411,6 +3411,7 @@ roles:
   - dcharukulvanich:
       member_of:
         - analyst_marketing
+        - analyst_marketing_sensitive
         - snowflake_analyst_safe
       warehouses:
         - dev_xs
@@ -3659,8 +3660,6 @@ roles:
         - snowflake_analyst_safe
       warehouses:
         - dev_xs
-      warehouses:
-        - dev_xs
   - eneuberger:
       member_of:
         - analyst_growth
@@ -3809,6 +3808,7 @@ roles:
         - data_team_analyst
         - data_manager
         - marketo
+        - snowflake_analyst
         - snowflake_analyst_safe
         - salesforce_sandbox
         - xactly
@@ -4174,11 +4174,6 @@ roles:
   - jpereira:
       member_of:
         - snowflake_analyst
-      warehouses:
-        - dev_xs
-  - jpetr:
-      member_of:
-        - analyst_sales
       warehouses:
         - dev_xs
   - jrubi:
@@ -4564,6 +4559,7 @@ roles:
         - analyst_engineering
       warehouses:
         - dev_xs
+        - reporting
       owns:
         databases:
           - lmai_prep
@@ -5792,17 +5788,6 @@ roles:
         - workday_hcm
       warehouses:
         - dev_xs
-  - smishra:
-      member_of:
-        - adaptive
-        - analyst_finance
-        - customers_db
-        - analyst_marketing
-        - data_team_analyst
-        - snowflake_analyst_safe
-        - xactly
-      warehouses:
-        - dev_xs
   - snalamaru:
       member_of:
         - analytics_engineer_core
@@ -6050,6 +6035,12 @@ roles:
         - xactly
       warehouses:
         - dev_xs
+  - lanzures:
+      member_of:
+        - snowflake_account_usage
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - trizzi:
       member_of:
         - snowflake_analyst
@@ -6067,6 +6058,11 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - ahohenner:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - tzallmann:
       member_of:
         - snowflake_analyst
@@ -6077,6 +6073,7 @@ roles:
         - analytics_engineer_core
         - analyst_engineering
         - analyst_growth
+        - customers_db
         - data_team_analyst
         - gainsight_customer_success
         - snowflake_analyst_safe
@@ -6139,6 +6136,11 @@ roles:
         - snowflake_analyst_safe
       warehouses:
         - dev_xs
+  - gyoung:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - vmairet:
       member_of:
         - snowflake_analyst
@@ -6196,6 +6198,11 @@ roles:
           write:
             - vprakash_prep.*.*
             - vprakash_prod.*.*
+  - bwilkerson:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - vtatarintev:
       member_of:
         - snowflake_analyst
@@ -6221,6 +6228,21 @@ roles:
   - whaber:
       member_of: []
       warehouses: []
+  - nprabakaran:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - jroodnick:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - jbaumgardner:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - wleidheiser:
       member_of:
         - snowflake_analyst_safe
@@ -6245,6 +6267,16 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - mek:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - rchong:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - rchanila:
       member_of:
         - snowflake_analyst
@@ -6265,7 +6297,17 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - dchevalier:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - aregnery:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - vshushlin:
       member_of:
         - snowflake_analyst
       warehouses:
@@ -6282,6 +6324,31 @@ roles:
         - gitlab_dotcom
         - snowflake_analyst
         - zendesk
+      warehouses:
+        - dev_xs
+  - tganga:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - alejandro:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - ddavison:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - jmcdonnell:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - acunskis:
+      member_of:
+        - snowflake_analyst
       warehouses:
         - dev_xs
   - jblevins:
@@ -6330,6 +6397,12 @@ roles:
         - dev_xs
   - seanhall:
       member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - ballam:
+      member_of:
+        - snowflake_account_usage
         - snowflake_analyst
       warehouses:
         - dev_xs
@@ -6418,6 +6491,21 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - ichernikov:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - amcdonald:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - trea:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - jdleon:
       member_of:
         - adaptive
@@ -6454,6 +6542,46 @@ roles:
   - eludaway:
       member_of:
         - snowflake_analyst_safe
+      warehouses:
+        - dev_xs
+  - devo:
+      member_of:
+        - snowflake_db
+      warehouses:
+        - reporting
+  - wmeek:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - nwestbury:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - ttavares:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - vpatel:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - kli:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - mvanremmerden:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - bparkhomchuk:
+      member_of:
+        - snowflake_analyst
       warehouses:
         - dev_xs
 users:
@@ -6864,10 +6992,6 @@ users:
       can_login: true
       member_of:
         - jpereira
-  - jpetr:
-      can_login: true
-      member_of:
-        - jpetr
   - jrubi:
       can_login: true
       member_of:
@@ -7240,10 +7364,6 @@ users:
       can_login: true
       member_of:
         - smccormack
-  - smishra:
-      can_login: true
-      member_of:
-        - smishra
   - snalamaru:
       can_login: true
       member_of:
@@ -7389,6 +7509,10 @@ users:
       can_login: true
       member_of:
         - workato
+  - alejandro:
+      can_login: true
+      member_of:
+        - alejandro
   - aluis:
       can_login: true
       member_of:
@@ -7429,6 +7553,10 @@ users:
       can_login: true
       member_of:
         - kshirazi
+  - gyoung:
+      can_login: true
+      member_of:
+        - gyoung
   - sguyon:
       can_login: true
       member_of:
@@ -7441,6 +7569,10 @@ users:
       can_login: true
       member_of:
         - kkloss
+  - vpatel:
+      can_login: true
+      member_of:
+        - vpatel
   - mdunleavy:
       can_login: true
       member_of:
@@ -7453,26 +7585,62 @@ users:
       can_login: true
       member_of:
         - nleonard
+  - tganga:
+      can_login: true
+      member_of:
+        - tganga
   - seanhall:
       can_login: true
       member_of:
         - seanhall
+  - ahohenner:
+      can_login: true
+      member_of:
+        - ahohenner
+  - ichernikov:
+      can_login: true
+      member_of:
+        - ichernikov
   - kvasireddy:
       can_login: true
       member_of:
         - kvasireddy
+  - jroodnick:
+      can_login: true
+      member_of:
+        - jroodnick
+  - ballam:
+      can_login: true
+      member_of:
+        - ballam
   - zapier:
       can_login: true
       member_of:
         - zapier
+  - mek:
+      can_login: true
+      member_of:
+        - mek
+  - ddavison:
+      can_login: true
+      member_of:
+        - ddavison
   - gsodhi:
       can_login: true
       member_of:
         - gsodhi
+  - acunskis:
+      can_login: true
+      member_of:
+        - acunskis
   - avpfestin:
       can_login: true
       member_of:
         - avpfestin
+  - trea:
+      can_login: true
+      member_of:
+        - trea
   - acook:
       can_login: true
       member_of:
@@ -7481,14 +7649,46 @@ users:
       can_login: true
       member_of:
         - aevans
+  - wmeek:
+      can_login: true
+      member_of:
+        - wmeek
+  - rchong:
+      can_login: true
+      member_of:
+        - rchong
+  - nwestbury:
+      can_login: true
+      member_of:
+        - nwestbury
+  - vshushlin:
+      can_login: true
+      member_of:
+        - vshushlin
   - tmccaslin:
       can_login: true
       member_of:
         - tmccaslin
+  - bwilkerson:
+      can_login: true
+      member_of:
+        - bwilkerson
+  - lanzures:
+      can_login: true
+      member_of:
+        - lanzures
   - jdleon:
       can_login: true
       member_of:
         - jdleon
+  - nprabakaran:
+      can_login: true
+      member_of:
+        - nprabakaran
+  - amcdonald:
+      can_login: true
+      member_of:
+        - amcdonald
   - testtableau:
       can_login: true
       member_of:
@@ -7501,6 +7701,10 @@ users:
       can_login: true
       member_of:
         - jaltherr
+  - dchevalier:
+      can_login: true
+      member_of:
+        - dchevalier
   - plopez:
       can_login: true
       member_of:
@@ -7509,6 +7713,34 @@ users:
       can_login: true
       member_of:
         - eludaway
+  - jbaumgardner:
+      can_login: true
+      member_of:
+        - jbaumgardner
+  - devo:
+      can_login: true
+      member_of:
+        - devo
+  - ttavares:
+      can_login: true
+      member_of:
+        - ttavares
+  - kli:
+      can_login: true
+      member_of:
+        - kli
+  - mvanremmerden:
+      can_login: true
+      member_of:
+        - mvanremmerden
+  - jmcdonnell:
+      can_login: true
+      member_of:
+        - jmcdonnell
+  - bparkhomchuk:
+      can_login: true
+      member_of:
+        - bparkhomchuk
 warehouses:
   - admin:
       size: x-small

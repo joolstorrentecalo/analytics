@@ -27,7 +27,7 @@ WITH date_details AS (
       d.fiscal_quarter_name_fy              AS close_qtr,
       d.fiscal_year                         AS fiscal_close_year,
       d.first_day_of_fiscal_quarter,
-      COALESCE (o.order_type, '3. Growth')  AS order_type,
+      COALESCE (o.order_type_stamped, '3. Growth')  AS order_type,
       CASE
         WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'SMB'                                                           THEN 'SMB'
         WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'Mid-Market'                                                    THEN 'Mid-Market'
@@ -78,7 +78,7 @@ WITH date_details AS (
       d.fiscal_quarter_name_fy                  AS close_qtr,
       d.fiscal_year                             AS fiscal_close_year,
       d.first_day_of_fiscal_quarter,
-      COALESCE (o.order_type, '3. Growth')      AS order_type,
+      COALESCE (o.order_type_stamped, '3. Growth')      AS order_type,
       CASE
         WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'SMB'                                                            THEN 'SMB'
         WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'Mid-Market'                                                     THEN 'Mid-Market'

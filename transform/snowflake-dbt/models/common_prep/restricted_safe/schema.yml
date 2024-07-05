@@ -186,6 +186,33 @@ models:
       - name: closed_net_arr_in_snapshot_quarter
         description: >
           Sum of ARR from all closed opportunities (lost and won)
+      - name: sales_qualified_source_live
+        description: >
+          Sales qualified source from the live data 
+      - name: sales_qualified_source_grouped_live
+        description: >
+          Sales qualified source grouped from the live data 
+      - name: is_edu_oss_live
+        description: >
+          is_edu_oss flag from the live data 
+      - name: opportunity_category_live
+        description: >
+          Opportunity category from the live data 
+      - name: is_jihu_account_live
+        description: >
+          is_jihu_account flag from the live data 
+      - name: deal_path_live
+        description: >
+          Deal Path from the live data 
+      - name: parent_crm_account_geo_live
+        description: >
+          Parent Geo from the live data 
+      - name: order_type_live
+        description: >
+          Order type stamped from the live data 
+      - name: order_type_grouped_live
+        description: >
+          Order type (stamped) grouped from the live data 
       - name: professional_services_value
         description: >
           Amount on an opportunity that is from Professional Services only

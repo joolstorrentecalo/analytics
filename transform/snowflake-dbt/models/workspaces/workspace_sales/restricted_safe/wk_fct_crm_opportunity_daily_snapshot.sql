@@ -33,7 +33,7 @@ final AS (
     {{ get_keyed_nulls('sfdc_opportunity.dim_crm_user_id') }}                                                                   AS dim_crm_user_id,
     {{ get_keyed_nulls('prep_crm_account.dim_crm_user_id') }}                                                                   AS dim_crm_account_user_id,
     {{ get_keyed_nulls('order_type.dim_order_type_id') }}                                                                       AS dim_order_type_id,
-    {{ get_keyed_nulls('order_type_live.dim_order_type_id') }}                                                                  AS dim_order_type_live_id,
+    {{ get_keyed_nulls('order_type_current.dim_order_type_id') }}                                                               AS dim_order_type_current_id,
     {{ get_keyed_nulls('dr_partner_engagement.dim_dr_partner_engagement_id') }}                                                 AS dim_dr_partner_engagement_id,
     {{ get_keyed_nulls('alliance_type.dim_alliance_type_id') }}                                                                 AS dim_alliance_type_id,
     {{ get_keyed_nulls('alliance_type_current.dim_alliance_type_id') }}                                                         AS dim_alliance_type_current_id,
@@ -194,7 +194,7 @@ final AS (
     sales_qualified_source.sales_qualified_source_name,
     sfdc_opportunity.sales_qualified_source_grouped,
     order_type.order_type_name AS order_type,
-    order_type_live.order_type_name AS order_type_live,
+    order_type_current.order_type_name AS order_type_current,
     sfdc_opportunity.order_type_grouped,
     sfdc_opportunity.stage_name,
     deal_path.deal_path_name,
@@ -413,9 +413,8 @@ final AS (
       ON sfdc_opportunity.sales_qualified_source = sales_qualified_source.sales_qualified_source_name
     LEFT JOIN order_type
       ON sfdc_opportunity.order_type = order_type.order_type_name
-    LEFT JOIN order_type AS order_type_live
-      ON sfdc_opportunity.order_type_live = order_type_live.order_type_name
-
+    LEFT JOIN order_type AS order_type_current
+      ON sfdc_opportunity.order_type_current = order_type_current.order_type_name
   LEFT JOIN prep_crm_user
     ON sfdc_opportunity.dim_crm_user_id = prep_crm_user.dim_crm_user_id
     LEFT JOIN deal_path

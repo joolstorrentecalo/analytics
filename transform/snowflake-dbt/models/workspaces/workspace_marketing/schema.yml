@@ -113,4 +113,7 @@ models:
 
   - name: rpt_create_partner_touchpoints
     description: A view used to find marketing ready partners and create touchpoints for them with hightouch
+
+  - name: wk_rpt_l2r_cohort_model
+    description: The basis of marketing/sales cohort analyses built from L2R, with pre-defined conversion dates at a per-record granularity. 
     

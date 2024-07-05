@@ -156,6 +156,10 @@
       prep_crm_account.bdr_prospecting_status,
       prep_crm_account.is_focus_partner,
       prep_crm_account.gs_health_csm_sentiment,
+      prep_crm_account.bdr_next_steps,
+      prep_crm_account.bdr_account_research,
+      prep_crm_account.bdr_account_strategy,
+      prep_crm_account.account_bdr_assigned_user_role,
 
       --measures (maintain for now to not break reporting)
       prep_crm_account.parent_crm_account_lam,
@@ -215,6 +219,8 @@
       prep_crm_account.next_renewal_date,
       prep_crm_account.gs_first_value_date,
       prep_crm_account.gs_last_csm_activity_date,
+      prep_crm_account.bdr_recycle_date,
+      prep_crm_account.actively_working_start_date,
       cohort_date.crm_account_arr_cohort_month,
       cohort_date.crm_account_arr_cohort_quarter,
       parent_cohort_date.parent_account_arr_cohort_month,

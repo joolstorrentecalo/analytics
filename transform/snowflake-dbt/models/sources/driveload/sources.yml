@@ -34,3 +34,4 @@ sources:
       - name: marketing_press_sov
       - name: booking_to_billing_monthly_reconciliation
       - name: pending_invoices_report
+      - name: invoice_aging_detail

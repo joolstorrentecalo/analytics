@@ -170,6 +170,14 @@ models:
             - not_null
           tags: [ "tdf", "mart", "arr" ]
 
+  - name: mart_arr_weekly
+    description: A version of mart_arr aggregated by arr_week. This allows more frequent updates to the arr and quantity fields for 
+    columns:
+      - name: primary_key
+        tests:
+          - not_null
+          - unique
+
   - name: mart_charge
     description: Model combining Subscription related objects such as product details and rate plan charge details into a mart.
     columns:
@@ -401,6 +409,18 @@ models:
         description: The name of the manager of the crm account owner
       - name: executive_sponsor
         description: executive sponsor of this account
+      - name: bdr_next_steps
+        description: Outlines the next steps that connect to the prospecting strategy for this account.
+      - name: bdr_account_research
+        description: Displays the research that was made on account to justify the account's addition to a prospecting list.
+      - name: bdr_account_strategy
+        description: Aggregates the path for approaching the account into some more general buckets
+      - name: account_bdr_assigned_user_role
+        description: The region and segment specific role of the BDR assigned to an account.
+      - name: bdr_recycle_date
+        description: Automatically populates two months out from the actively working start date to indicate when an outbound account should be considered for removal from the outbound pipeline.
+      - name: actively_working_start_date
+        description: Automatically datestamps the date and time that an account was moved to a BDRs outbound prospecting list.
 
   - name: mart_crm_opportunity
     description:  >-
@@ -414,8 +434,8 @@ models:
         tags: ["tdf", "mart", "sales_funnel"]
       - name: order_type
         description: '{{ doc("order_type") }}'
-      - name: order_type_live
-        description: '{{ doc("order_type_live") }}'
+      - name: order_type_current
+        description: '{{ doc("order_type_current") }}'
       - name: vsa_readout
         description: '{{ doc("vsa_readout") }}'
       - name: vsa_start_date_net_arr
@@ -515,8 +535,8 @@ models:
           - not_null
       - name: order_type
         description: '{{ doc("order_type") }}'
-      - name: order_type_live
-        description: '{{ doc("order_type_live") }}'
+      - name: order_type_current
+        description: '{{ doc("order_type_current") }}'
       - name: vsa_readout
         description: '{{ doc("vsa_readout") }}'
       - name: vsa_start_date_net_arr
@@ -582,8 +602,8 @@ models:
         tags: ["tdf", "mart", "sales_funnel"]
       - name: order_type
         description: '{{ doc("order_type") }}'
-      - name: order_type_live
-        description: '{{ doc("order_type_live") }}'
+      - name: order_type_current
+        description: '{{ doc("order_type_current") }}'
       - name: vsa_readout
         description: '{{ doc("vsa_readout") }}'
       - name: vsa_start_date_net_arr

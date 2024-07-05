@@ -51,28 +51,31 @@ final AS (
     issues.is_created_by_bot,
     issues.weight,
 
-    IFF(dates.date_actual >= DATE_TRUNC('day', issues.closed_at), 'closed', 'opened')                                      AS issue_state,
-    issues.created_at                                                                                                      AS issue_created_at,
-    issues.closed_at                                                                                                       AS issue_closed_at,
+    IFF(dates.date_actual >= DATE_TRUNC('day', issues.closed_at), 'closed', 'opened')                                                                                                  AS issue_state,
+    issues.created_at                                                                                                                                                                  AS issue_created_at,
+    issues.closed_at                                                                                                                                                                   AS issue_closed_at,
     issues.priority_label,
-    COALESCE(severity.severity, 'No Severity')                                                                             AS severity,
-    severity.label_added_at                                                                                                AS severity_label_added_at,
-    severity.label_valid_to                                                                                                AS severity_label_valid_to,
-    COALESCE(team.assigned_team, 'Unassigned')                                                                             AS assigned_team,
-    team.label_added_at                                                                                                    AS team_label_added_at,
-    team.label_valid_to                                                                                                    AS team_label_valid_to,
-    team.label_title                                                                                                       AS team_label,
-    wf.label_added_at                                                                                                      AS workflow_label_added_at,
-    wf.label_valid_to                                                                                                      AS workflow_label_valid_to,
-    wf.workflow                                                                                                            AS workflow_label,
+    COALESCE(severity.severity, 'No Severity')                                                                                                                                         AS severity,
+    severity.label_added_at                                                                                                                                                            AS severity_label_added_at,
+    severity.label_valid_to                                                                                                                                                            AS severity_label_valid_to,
+    COALESCE(team.assigned_team, 'Unassigned')                                                                                                                                         AS assigned_team,
+    team.label_added_at                                                                                                                                                                AS team_label_added_at,
+    team.label_valid_to                                                                                                                                                                AS team_label_valid_to,
+    team.label_title                                                                                                                                                                   AS team_label,
+    wf.label_added_at                                                                                                                                                                  AS workflow_label_added_at,
+    wf.label_valid_to                                                                                                                                                                  AS workflow_label_valid_to,
+    wf.workflow                                                                                                                                                                        AS workflow_label,
     wfl.cycle,
     IFF(
       dates.date_actual > DATE_TRUNC('day', issues.closed_at), DATEDIFF('day', issues.created_at, issues.closed_at),
       DATEDIFF('day', issues.created_at, dates.date_actual)
-    )                                                                                                                      AS issue_open_age_in_days,
-    DATEDIFF('day', severity.label_added_at, dates.date_actual)                                                            AS severity_label_age_in_days,
+    )                                                                                                                                                                                  AS issue_open_age_in_days,
+    IFF(
+      dates.date_actual > DATE_TRUNC('day', issues.closed_at), DATEDIFF('day', severity.label_added_at, issues.closed_at),
+      DATEDIFF('day', severity.label_added_at, dates.date_actual)
+    )                                                                                                                                                                                  AS severity_label_age_in_days,
     assigend_users.assigned_usernames,
-    IFF(assigend_users.assigned_usernames IS NULL, TRUE, FALSE)                                                            AS is_issue_unassigned,
+    IFF(assigend_users.assigned_usernames IS NULL, TRUE, FALSE)                                                                                                                        AS is_issue_unassigned,
     issues.group_label,
     issues.section_label,
     issues.stage_label,
@@ -98,13 +101,13 @@ final AS (
         WHEN 'S3' THEN 90
         WHEN 'S4' THEN 120
       END)
-    END                                                                                                                    AS slo,
+    END                                                                                                                                                                                AS slo,
     /*
     Request to have 'risk treatment::operational requirement' exempt from past-due KPI metrics
     https://gitlab.com/gitlab-org/quality/engineering-analytics/team-tasks/-/issues/335
     */
     CASE WHEN issues.is_security THEN (CASE
-        WHEN ARRAY_CONTAINS(CAST ('risk treatment::operational requirement' AS VARIANT), issues.labels) THEN 0
+        WHEN ARRAY_CONTAINS(CAST('risk treatment::operational requirement' AS VARIANT), issues.labels) THEN 0
         WHEN severity_label_age_in_days > 30
           AND severity.severity = 'S1' THEN 1
         WHEN severity_label_age_in_days > 30
@@ -115,7 +118,7 @@ final AS (
           AND severity.severity = 'S4' THEN 1
         ELSE 0
       END) ELSE (CASE
-        WHEN ARRAY_CONTAINS(CAST ('risk treatment::operational requirement' AS VARIANT), issues.labels) THEN 0
+        WHEN ARRAY_CONTAINS(CAST('risk treatment::operational requirement' AS VARIANT), issues.labels) THEN 0
         WHEN severity_label_age_in_days > 30
           AND severity.severity = 'S1' THEN 1
         WHEN severity_label_age_in_days > 60
@@ -126,7 +129,7 @@ final AS (
           AND severity.severity = 'S4' THEN 1
         ELSE 0
       END)
-    END                                                                                                                    AS slo_breach_counter,
+    END                                                                                                                                                                                AS slo_breach_counter,
     CASE WHEN issues.is_security THEN (CASE
         WHEN severity_label_age_in_days > 30
           AND severity.severity = 'S1' THEN (severity_label_age_in_days - 30)
@@ -148,8 +151,8 @@ final AS (
           AND severity.severity = 'S4' THEN (severity_label_age_in_days - 120)
         ELSE 0
       END)
-    END                                                                                                                    AS days_past_due,
-    IFF(dates.date_actual >= DATE_TRUNC('day', issues.issue_moved_at), issues.issue_is_moved, FALSE)                       AS issue_is_moved,
+    END                                                                                                                                                                                AS days_past_due,
+    IFF(dates.date_actual >= DATE_TRUNC('day', issues.issue_moved_at), issues.issue_is_moved, FALSE)                                                                                   AS issue_is_moved,
     issues.epic_id,
     issues.epic_title,
     issues.epic_labels,
@@ -158,12 +161,12 @@ final AS (
     issues.is_customer_related,
     issues.issue_type,
     issues.due_date,
-    MAX(dates.date_actual) OVER ()                                                                                         AS last_updated_at,
-    COALESCE(date_actual = last_updated_at, FALSE)                                                                         AS most_recent,
+    MAX(dates.date_actual) OVER ()                                                                                                                                                     AS last_updated_at,
+    COALESCE(date_actual = last_updated_at, FALSE)                                                                                                                                     AS most_recent,
     ROW_NUMBER() OVER (
       PARTITION BY daily_issue_id
       ORDER BY LEAST(COALESCE(severity_label_valid_to, CURRENT_DATE), COALESCE(team_label_valid_to, CURRENT_DATE)), COALESCE(workflow_label_valid_to, CURRENT_DATE)
-    )                                                                                                                      AS rn
+    )                                                                                                                                                                                  AS rn
   FROM issues
   INNER JOIN dates
     ON COALESCE(DATE_TRUNC('day', issues.created_at), dates.date_actual) <= dates.date_actual

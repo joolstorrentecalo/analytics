@@ -11,6 +11,7 @@ And for all user removal types, requires one object only.
 """
 
 import logging
+from random import randint
 from typing import Union
 from utils_update_roles import DATABASES_KEY, ROLES_KEY, USERS_KEY
 
@@ -66,7 +67,10 @@ class RolesStruct:
             logging.info(f"{new_value_key} already exists in roles.yml, skipping")
         else:
             logging.info(f"Adding {self.yaml_key} {new_value_key}")
-            self.roles_data[self.yaml_key].append(new_value)
+            list_len = len(self.roles_data[self.yaml_key])
+            # insert at a random position (to avoid MR conflict), but close to the end of the list
+            random_insert_pos = randint(int(list_len * 0.85), list_len)
+            self.roles_data[self.yaml_key].insert(random_insert_pos, new_value)
             self.existing_value_keys.append(new_value_key)
 
     def add_values(self):

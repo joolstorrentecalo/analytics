@@ -529,6 +529,28 @@ models:
         description: The initial grouping of bizible touchpoint dimensions, creating an offer type bucket. 
       - name: touchpoint_offer_type_grouped
         description: The final grouping of bizible touchpoint dimensions, creating an offer type bucket.
+      - name: utm_campaign_date
+        description: The date portion of the new utm_campaign structure.
+      - name: utm_campaign_region
+        description: The region portion of the new utm_campaign structure.
+      - name: utm_campaign_budget
+        description: The budget portion of the new utm_campaign structure.
+      - name: utm_campaign_type
+        description: The campaign type portion of the new utm_campaign structure.
+      - name: utm_campaign_gtm
+        description: The gtm portion of the new utm_campaign structure.
+      - name: utm_campaign_language
+        description: The language portion of the new utm_campaign structure.
+      - name: utm_campaign_name
+        description: The name portion of the new utm_campaign structure.
+      - name: utm_campaign_agency
+        description: The agency portion of the new utm_campaign structure.
+      - name: utm_content_offer
+        description: The offer portion of the new utm_content structure.
+      - name: utm_content_asset_type
+        description: The asset type portion of the new utm_content structure.
+      - name: utm_content_industry
+        description: The industry portion of the new utm_content structure.
         
   - name: dim_date
     description: '{{ doc("dim_date") }}'
@@ -1874,10 +1896,6 @@ models:
           - dbt_utils.at_least_one
       - name: ci_builds_28_days_event
         description: '{{ doc("ci_builds_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: audit_features_28_days_user
-        description: '{{ doc("audit_features_28_days_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: groups_all_time_event
@@ -4011,10 +4029,6 @@ models:
         description: '{{ doc("ci_builds_28_days_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
-      - name: audit_features_28_days_user
-        description: '{{ doc("audit_features_28_days_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
       - name: groups_all_time_event
         description: '{{ doc("groups_all_time_event_desc") }}'
         tests:
@@ -4781,6 +4795,18 @@ models:
         description: The name of the manager for the tehchnical account manager who manages the account.
       - name: executive_sponsor
         description: executive sponsor of this account
+      - name: bdr_next_steps
+        description: Outlines the next steps that connect to the prospecting strategy for this account.
+      - name: bdr_account_research
+        description: Displays the research that was made on account to justify the account's addition to a prospecting list.
+      - name: bdr_account_strategy
+        description: Aggregates the path for approaching the account into some more general buckets
+      - name: account_bdr_assigned_user_role
+        description: The region and segment specific role of the BDR assigned to an account.
+      - name: bdr_recycle_date
+        description: Automatically populates two months out from the actively working start date to indicate when an outbound account should be considered for removal from the outbound pipeline.
+      - name: actively_working_start_date
+        description: Automatically datestamps the date and time that an account was moved to a BDRs outbound prospecting list.
 
 
 
@@ -5183,8 +5209,8 @@ models:
         description: Grouping of stage names where all stages with numbers <=3 are in Pipeline and all above are +4 Pipeline.
       - name: order_type
         description: '{{ doc("order_type") }}'
-      - name: order_type_live
-        description: '{{ doc("order_type_live") }}'
+      - name: order_type_current
+        description: '{{ doc("order_type_current") }}'
       - name: vsa_readout
         description: '{{ doc("vsa_readout") }}'
       - name: vsa_start_date
@@ -5522,8 +5548,8 @@ models:
         description: The ratio of incremental annual contract value to net ARR assigned to this opportunity based on its segment and order type. This field is a helper used to map old IACV values to new net ARR values, which were updated for all opportunities closed prior to 2021-02-01.
       - name: dim_order_type_id
         description: '{{ doc("order_type") }}'
-      - name: dim_order_type_live_id
-        description: '{{ doc("order_type_live") }}'
+      - name: dim_order_type_current_id
+        description: '{{ doc("order_type_current") }}'
       - name: pre_military_invasion_arr
         description: '{{ doc("pre_military_invasion_arr") }}'
       - name: won_arr_basis_for_clari
@@ -5775,6 +5801,16 @@ models:
         description: Annual Recurring Revenue value for given month
       - name: quantity
         description: Total quantity
+
+  - name: fct_mrr_weekly
+    description: One row represents Monthly Recurring Revenue per day, by rate plan charge. Excludes charges with $0 MRR.
+    columns:
+      - name: mrr_id
+        description: The unique identifier of the MRR.
+        tests:
+          - not_null
+          - unique
+        tags: ["tdf", "common", "mrr"]
 
   - name: fct_mrr_with_zero_dollar_charges
     description: One row represents Monthly Recurring Revenue per month, by rate plan charge. Includes charges with $0 MRR such as EDU/OSS charges.
@@ -6401,6 +6437,16 @@ models:
         description: '{{ doc("gsc_source") }}'
       - name: gsc_is_gitlab_team_member
         description: '{{ doc("gsc_is_gitlab_team_member") }}'
+      - name: user_city
+        description: '{{ doc("user_city") }}'
+      - name: user_country
+        description: '{{ doc("user_country") }}'
+      - name: user_region
+        description: '{{ doc("user_region") }}'
+      - name: user_region_name
+        description: '{{ doc("user_region_name") }}'
+      - name: user_timezone_name
+        description: '{{ doc("user_timezone_name") }}'
       - name: page_url_path
         description: '{{ doc("page_url_path") }}'
       - name: referer_url_path

@@ -71,7 +71,7 @@
     ON true_event_date = campaign_start.date_day
 
   WHERE true_event_date >= '2023-02-01'
-  AND campaign_type in ('Owned Event', 'Workshop', 'Executive Roundtables', 'Webcast', 'Sponsored Webcast', 'Conference')
+  AND campaign_type in ('Owned Event', 'Workshop', 'Executive Roundtables', 'Webcast', 'Sponsored Webcast', 'Conference', 'Speaking Session', 'Virtual Sponsorship', 'Self-Service Virtual Event', 'Vendor Arranged Meetings')
 ), campaign_members_with_campaigns AS (
   SELECT
 

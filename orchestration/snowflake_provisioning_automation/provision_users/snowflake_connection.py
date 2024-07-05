@@ -21,7 +21,7 @@ class SnowflakeConnection:
             self.engine = create_engine(
                 URL(
                     user=config_dict["SNOWFLAKE_PROVISIONER_USER"],
-                    password=config_dict["SNOWFLAKE_PROVISIONER_PASSWORD"],
+                    password=config_dict["SNOWFLAKE_PROVISIONER_PW"],
                     account=config_dict["SNOWFLAKE_ACCOUNT"],
                     role=role,  # needs to be passed in, can be securityadmin/sysadmin
                     warehouse=config_dict["SNOWFLAKE_PROVISIONER_WAREHOUSE"],

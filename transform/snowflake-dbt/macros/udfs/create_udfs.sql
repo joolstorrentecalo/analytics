@@ -13,6 +13,7 @@
     {{sfdc_id_15_to_18()}}
     {{regexp_substr_to_array()}}
     {{crc32()}}
+    {{parse_bigquery_object_array()}}
 
 {%- else -%}
     
@@ -23,6 +24,7 @@
     {{sfdc_id_15_to_18()}}
     {{regexp_substr_to_array()}}
     {{crc32()}}
+    {{parse_bigquery_object_array()}}
 
 {%- endif -%}
 

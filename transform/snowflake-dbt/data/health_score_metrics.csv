@@ -153,7 +153,6 @@ wave,metric_name
 7,usage_activity_by_stage_monthly.verify.ci_pipeline_schedules
 8,counts_monthly.ci_internal_pipelines
 9,counts_monthly.ci_builds
-9,counts_monthly.aggregated_metrics.compliance_features_track_unique_visits_union
 9,counts.groups
 9,redis_hll_counters.pipeline_authoring.o_pipeline_authoring_unique_users_committing_ciconfigfile_weekly
 9,usage_activity_by_stage.verify.ci_pipeline_config_repository

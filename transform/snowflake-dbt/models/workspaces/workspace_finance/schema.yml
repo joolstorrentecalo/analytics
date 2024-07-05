@@ -1111,6 +1111,8 @@ models:
     description: Output of Finance's analysis determining timing differences between bookings and billings
   - name: driveload_pending_invoices_report
     description: Report of future dates pending invoices in Zuora, e.g. for multiyear ramp order with annual payment schedule
+  - name: driveload_invoice_aging_detail
+    description: Report of historical invoice balances and days overdue per accounting period as in Zuora  
   - name: rpt_arr_no_manual_adjustment_for_sfdc_reconciliation
     description: Report view of [mart_arr](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.mart_arr) without the manual true up adjustments added from Zuora Revenue. This report is used exclusively for the montly Salesforce reconciliation process and is not to be used for financial reporting since it does not include the manually adjusted true up charges.
     columns:

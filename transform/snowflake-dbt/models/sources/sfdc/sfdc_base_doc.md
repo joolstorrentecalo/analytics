@@ -30,6 +30,12 @@ The case source table represents a case, which is a customer issue or problem. [
 
 {% enddocs %}
 
+{% docs sfdc_case_history_source %}
+
+The case history table includes any updates to Case fields with field history tracking enabled. [Link to Documentation](https://developer.salesforce.com/docs/atlas.en-us.234.0.object_reference.meta/object_reference/sforce_api_objects_casehistory.htm)
+
+{% enddocs %}
+
 {% docs sfdc_contact_source %}
 
 The contact source table contains info about your contacts, who are individuals associated with accounts in your Salesforce instance. [Link to Documentation](https://www.stitchdata.com/docs/integrations/saas/salesforce/#contact)

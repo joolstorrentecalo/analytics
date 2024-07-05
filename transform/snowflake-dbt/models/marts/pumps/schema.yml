@@ -529,10 +529,6 @@ models:
         description: '{{ doc("ci_builds_28_days_event_desc") }}'
         tests:
           - dbt_utils.at_least_one
-      - name: audit_features_28_days_user
-        description: '{{ doc("audit_features_28_days_user_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
       - name: groups_all_time_event
         description: '{{ doc("groups_all_time_event_desc") }}'
         tests:
@@ -1083,10 +1079,6 @@ models:
           - dbt_utils.at_least_one
       - name: ci_builds_28_days_event
         description: '{{ doc("ci_builds_28_days_event_desc") }}'
-        tests:
-          - dbt_utils.at_least_one
-      - name: audit_features_28_days_user
-        description: '{{ doc("audit_features_28_days_user_desc") }}'
         tests:
           - dbt_utils.at_least_one
       - name: groups_all_time_event
