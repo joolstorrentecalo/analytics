@@ -245,7 +245,7 @@
 
 .safe_models_check: &safe_models_check
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:temp_2
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
   before_script:
     - cd transform/snowflake-dbt/
     - echo $BRANCH_NAME
@@ -280,6 +280,7 @@
 
 🚫safe_model_script:
   <<: *safe_models_check
+  image: registry.gitlab.com/gitlab-data/dbt-image:temp_2
   script:
     - dbt deps $CI_PROFILE_TARGET
     - dbt --quiet ls $CI_PROFILE_TARGET --models tag:mnpi+
@@ -298,8 +299,29 @@
         config.schema:restricted_safe_workspace_sales 
         config.schema:restricted_safe_workspace_marketing
         config.schema:restricted_safe_workspace_engineering
-      --output json > safe_models.json
-    - python3 safe_model_check.py
+      --output json
+
+🚫safe_model_script_old:
+  <<: *safe_models_check
+  script:
+    - dbt deps $CI_PROFILE_TARGET
+    - dbt --quiet ls $CI_PROFILE_TARGET --models tag:mnpi+
+      --exclude
+        tag:mnpi_exception
+        config.database:$SNOWFLAKE_PREP_DATABASE
+        config.schema:restricted_safe_common
+        config.schema:restricted_safe_common_mapping
+        config.schema:restricted_safe_common_mart_finance
+        config.schema:restricted_safe_common_mart_sales
+        config.schema:restricted_safe_common_mart_marketing
+        config.schema:restricted_safe_common_mart_product
+        config.schema:restricted_safe_common_prep
+        config.schema:restricted_safe_legacy
+        config.schema:restricted_safe_workspace_finance
+        config.schema:restricted_safe_workspace_sales 
+        config.schema:restricted_safe_workspace_marketing
+        config.schema:restricted_safe_workspace_engineering
+      --output json
 
 # ======
 # Macro name Check
