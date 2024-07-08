@@ -300,7 +300,7 @@
         config.schema:restricted_safe_workspace_marketing
         config.schema:restricted_safe_workspace_engineering
       --output json > safe_models.json
-
+    - python3 safe_model_check.py
 
 🚫safe_model_script_old:
   <<: *safe_models_check
@@ -323,7 +323,6 @@
         config.schema:restricted_safe_workspace_marketing
         config.schema:restricted_safe_workspace_engineering
       --output json
-
 # ======
 # Macro name Check
 # ======
