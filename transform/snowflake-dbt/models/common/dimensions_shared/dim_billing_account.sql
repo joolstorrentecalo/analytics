@@ -3,7 +3,7 @@
         "alias": "dim_billing_account"
     })
 }}
-
+-- Test commit
 {{ simple_cte([
     ('prep_billing_account','prep_billing_account'),
     ('prep_charge_mrr', 'prep_charge_mrr'),
