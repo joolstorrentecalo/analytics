@@ -282,7 +282,7 @@
   <<: *safe_models_check
   image: registry.gitlab.com/gitlab-data/dbt-image:temp_2
   script:
-    - dbt deps $CI_PROFILE_TARGET
+    - dbt --quiet deps $CI_PROFILE_TARGET
     - dbt --quiet ls $CI_PROFILE_TARGET --models tag:mnpi+
       --exclude
         tag:mnpi_exception
@@ -299,7 +299,8 @@
         config.schema:restricted_safe_workspace_sales 
         config.schema:restricted_safe_workspace_marketing
         config.schema:restricted_safe_workspace_engineering
-      --output json
+      --output json > safe_models.json
+
 
 🚫safe_model_script_old:
   <<: *safe_models_check
