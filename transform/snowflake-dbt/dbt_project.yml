@@ -180,6 +180,10 @@ models:
         +materialized: table
         +schema: clari
 
+      commonroom:
+        +schema: commonroom
+        +tags: ["commonroom"]
+
       customers:
         +schema: customers
         sensitive:
