@@ -6475,7 +6475,7 @@ models:
     description: '{{ doc("fct_behavior_website_session") }}'
     columns:
       - name: fct_behavior_website_session_pk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
