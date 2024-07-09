@@ -16,11 +16,16 @@
     - [ ] Run CI job: Stage :snake: Python: `🧊permifrost_spec_test`
 1. [ ] Merge MR
 1. [ ] Add or remove email(s) in the [Snowflake Okta Google Group](https://groups.google.com/a/gitlab.com/g/okta-snowflake-users/members?pli=1)
+1. [ ] In the AR, write:
+    ```md
+    Provisioning has been completed, changes will take effect at 1:30AM UTC.
 
+    Please see this [handbook section](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/#logging-in-and-using-the-correct-role) for logging in.
+    ```
 
 ##### Runbook
-Refer to the [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/snowflake_provisioning_automation/snowflake_provisioning_automation.md) for more details
 
+Refer to the [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/snowflake_provisioning_automation/snowflake_provisioning_automation.md) for more details
 
 
 /label ~"Priority::1-Ops" ~"Team::Data Platform"  ~Snowflake ~Provisioning
