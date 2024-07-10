@@ -12086,4 +12086,18 @@ users:
     site_role: Viewer
     auth_setting: SAML
     groups:
-      - General All Access      
+      - General All Access
+  - user_name: jruiz-fernandez
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+      - General SAFE Access
+  - user_name: sdejong
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+      - General SAFE Access
