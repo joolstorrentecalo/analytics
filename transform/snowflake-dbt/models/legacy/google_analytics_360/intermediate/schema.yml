@@ -4,17 +4,17 @@ models:
       description: Source model for GA Session Custom Dimensions
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null
     - name: ga360_session
       description: Source model for GA Sessions
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null
     - name: ga360_session_hit
       description: Source model for GA Sessions Hit
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null

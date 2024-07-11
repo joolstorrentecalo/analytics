@@ -23,7 +23,7 @@ sources:
         columns:
           - name: id
             description: Primary Key for Accounts
-            tests:
+            data_tests:
               - dbt_utils.expression_is_true:
                   expression: "REGEXP '[0-9a-z]{32}'"
       - name: accounting_period
@@ -90,7 +90,7 @@ sources:
         columns:
           - name: accountid
             description: Primary Key for Accounts
-            tests:
+            data_tests:
               - dbt_utils.expression_is_true:
                   expression: "REGEXP '[0-9a-z]{32}'"
               - relationships:

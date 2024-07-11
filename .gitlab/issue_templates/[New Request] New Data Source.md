@@ -2,6 +2,11 @@ Please take notice of the new data source request [handbook page](https://about.
  
 ## Business Use Case (Please explain what this data will be used for):
  
+- Who will benefit from this data? Team / Department / Division / Multiple Divisions / Enterprise
+- What is the time criticality? Nice to have, within the next year, within the next 6 months, within next quarter, urgent, ASAP
+- What revenue or efficiency impact will this data have?  < $5k, < $50k, < $500k, < $5M, > $5M
+- Is there a regulatory or legal requirement? None/Nice to Have, Must Have, Fine and/or  Brand Damage <$1M, Fine and/or Brand Damage <$10M , Fine and/or Brand Damage > $10M-
+- Additional context or details to support the request for scheduling and prioritization: `          `
  
 ## Request checklist
 To support the new data source triage process, try to complete the below checklist. If there is anything not sure or unknown, you can skip that point.

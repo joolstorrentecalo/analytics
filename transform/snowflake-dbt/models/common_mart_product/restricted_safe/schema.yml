@@ -9,11 +9,11 @@ models:
           Primary key of mart_user_request. It is at the grain of the user request
           (combination of the issue_id or epic_id depending on where the request was done) and
           the links in those requests (combination of opp_id, account_id and zendesk ticket_id)
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: is_user_request_only_in_collaboration_project
         description: If TRUE means that the issue / epic user request is ONLY found in the customer collaboration project, which means the priority request_prioty will always be one, and not in an issue / epic comment or description in `gitlab-org`.

@@ -63,15 +63,15 @@ models:
     columns:
       - name: deployment_id
         description: The id assigned for each deployment in Elastic
-        tests:
+        data_tests:
           - not_null
       - name: extraction_start_date
         description: First day of the billing period. Each billing period is a month
-        tests:
+        data_tests:
           - not_null
       - name: extraction_end_date
         description: Last day of the billing period. Last day of every month
-        tests:
+        data_tests:
           - not_null
       - name: charge_type
         description: Type of the charge
@@ -100,15 +100,15 @@ models:
     columns:
       - name: deployment_id
         description: The id assigned for each deployment in Elastic
-        tests:
+        data_tests:
           - not_null
       - name: extraction_start_date
         description: First day of the billing period. Each billing period is a month
-        tests:
+        data_tests:
           - not_null
       - name: extraction_end_date
         description: Last day of the billing period. Each billing period is a month
-        tests:
+        data_tests:
           - not_null
       - name: resource_start_date
         description: When the usage of the resource started

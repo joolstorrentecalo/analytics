@@ -5,6 +5,6 @@ models:
     columns:
         - name: line_item_reference_no
           description: The primary key for oci line item cost data
-          tests:
+          data_tests:
             - unique
             - not_null

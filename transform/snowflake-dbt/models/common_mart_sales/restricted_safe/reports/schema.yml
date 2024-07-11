@@ -11,7 +11,7 @@ models:
     description: Snapshot of mart_crm_opportunity_daily_snapshot taken on the 8th calendar day after month-end close.
     columns:
       - name: crm_opportunity_snapshot_id
-        tests:
+        data_tests:
           - not_null
           - unique
     

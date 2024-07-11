@@ -12,22 +12,22 @@ models:
   description: This is the source for ABM account data
   columns:
     - name: added_date
-      tests:
+      data_tests:
         - not_null
     - name: account_id
-      tests:
+      data_tests:
         - not_null
     - name: gtm_strategy
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_ar_aging_details_source
   description: This is the source for AR aging invoice details.
   columns:
     - name: invoice_number
-      tests:
+      data_tests:
         - not_null
     - name: invoice_period
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_bizible_to_pathfactory_mapping_source
   description: Mapping file for bizible URLs to PathFactory content types. 
@@ -59,14 +59,14 @@ models:
   description: Days sales outstanding = Total Ending AR / Total Credit Sales (billing) x Number of Days in the Period
   columns:
     - name: period
-      tests:
+      data_tests:
       - not_null
       - unique
 - name: sheetload_days_to_close_source
   description: Days for accounting to close the books in Netsuite.
   columns:
     - name: close_month
-      tests:
+      data_tests:
       - not_null
       - unique
 - name: sheetload_engineering_speciality_prior_to_capture_source
@@ -77,19 +77,19 @@ models:
   description: Table of kpi targets for Field Marketing (FMM)
   columns:
     - name: field_segment
-      tests:
+      data_tests:
       - not_null
 - name: sheetload_fy23_quota_source
   description: Load of FY23 Xactly quotas used temporarily as we model for the Xactly Sales Attainment data.
   columns: 
     - name: assignment_id 
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_fy25_account_geo_map
   description: Load of FY25 Account Geo/Area mapping to accommodate FY25 MQL Target conversion rate calculation. 
   columns: 
     - name: account_id 
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_gcp_active_cud_source
   description: table of committed use discounts (CUD) in GCP
@@ -99,44 +99,44 @@ models:
   description: This is the source of Slack usage statistics exported from the [Analytics dashboard](https://slack.com/help/articles/218407447-view-your-slack-analytics-dashboard).
   columns:
   - name: entry_date
-    tests:
+    data_tests:
     - not_null
     - unique
 - name: sheetload_headcount_source
   columns:
   - name: primary_key
-    tests:
+    data_tests:
     - not_null
     - unique
 - name: sheetload_hire_forecast_source
   description: This is the source of forecasted hire counts by function and department for the end of each month.
   columns:
   - name: function
-    tests:
+    data_tests:
     - not_null
   - name: department
-    tests:
+    data_tests:
     - not_null
   - name: month_year
-    tests:
+    data_tests:
     - not_null
   - name: forecast
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_hire_plan_source
   description: This is the source of planned hire counts by function and department for the end of each month.
   columns:
   - name: function
-    tests:
+    data_tests:
     - not_null
   - name: department
-    tests:
+    data_tests:
     - not_null
   - name: month_year
-    tests:
+    data_tests:
     - not_null
   - name: plan
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_hiring_manager_survey_responses_source
   description: Responses from the hiring manager survey
@@ -168,27 +168,27 @@ models:
   description: Record of all the kpi status and commit history
   columns:
     - name: kpi_grouping
-      tests:
+      data_tests:
       - not_null
     - name: kpi_sub_grouping
     - name: kpi_name
-      tests:
+      data_tests:
       - not_null
     - name: start_date
-      tests:
+      data_tests:
       - not_null
     - name: completion_date
     - name: status
     - name: comment
     - name: in_handbook
-      tests:
+      data_tests:
       - not_null
     - name: sisense_link
     - name: gitlab_issue
     - name: commit_start
     - name: commit_handbook_v1
     - name: is_deleted
-      tests:
+      data_tests:
       - not_null
     - name: kpi_number
     - name: version_number
@@ -201,41 +201,41 @@ models:
   description: This is the source of linkedin recruiter inmail data for each month by sourcer .
   columns:
   - name: sourcer
-    tests:
+    data_tests:
     - not_null
   - name: messages_sent
-    tests:
+    data_tests:
     - not_null
   - name: responses_received
-    tests:
+    data_tests:
     - not_null
   - name: acceptances
-    tests:
+    data_tests:
     - not_null
   - name: declines
-    tests:
+    data_tests:
     - not_null
   - name: no_response
-    tests:
+    data_tests:
     - not_null
   - name: responses_rate
-    tests:
+    data_tests:
     - not_null
   - name: accept_rate
-    tests:
+    data_tests:
     - not_null
   - name: data_downloaded_month
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_location_factor_targets_source
   description: This is the list of location factor targets for each department and division as outlined in the [handbook](https://about.gitlab.com/handbook/people-operations/people-operations-metrics/#average-location-factor).
   columns:
   - name: department
-    tests:
+    data_tests:
     - not_null
     - unique
   - name: location_factor_target
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_location_factor_temporary_2020_december_source
   description: Location factors for 2020.12 only.
@@ -243,34 +243,34 @@ models:
   description: This contains a list of namespaces identified for manual downgrading and the date of the downgrade.
   columns:
   - name: namespace_id
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_manual_arr_true_up_allocation_source
   description: Manual accounting adjustment for zero dollar true ups.
   columns:
   - name: dim_subscription_id
-    tests:
+    data_tests:
     - not_null
   - name: mrr
-    tests:
+    data_tests:
     - not_null
   - name: effective_start_date
-    tests:
+    data_tests:
     - not_null
   - name: effective_end_date
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_manual_public_company_metrics_source
   description: Manual metrics related to being a public company
   columns:
   - name: quarter
-    tests:
+    data_tests:
     - not_null
   - name: year
-    tests:
+    data_tests:
     - not_null
   - name: metric_name
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_map_ramp_deals_source
   description:  In Salesforce opportunity there is a field SSP ID which maps out-year ramp opportunities to its first year opportunity. However this field was introduced end of 2021 and is blank for historical. It's used by revenue accounting team, so we can't modify/backfill this field. To accurately produce financial report, we are mapping historical ramp deals manually in GSheet which will be used for different analysis and planning work.
@@ -278,16 +278,16 @@ models:
   description: Mapping table with the sfdc user id of Sales Development Representative (SDR) and their respective BambooHR id.
   columns:
   - name: user_id
-    tests:
+    data_tests:
     - not_null
   - name: eeid
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_marketing_kpi_benchmarks_source
   description: This is the source of marketing KPI goals to be included in marketing metric reports and dashboards.
   columns:
   - name: goal_date
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_maxmind_countries_source
   description: "Countries source layer for maxmind ip-to-geo service"
@@ -295,11 +295,11 @@ models:
     - name: continent_code
     - name: continent_name
     - name: country_iso_code
-      tests:
+      data_tests:
         - unique
     - name: country_name
     - name: geoname_id
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: is_in_european_union
@@ -324,7 +324,7 @@ models:
   description: Planned values for multiple metrics as defined by Finance Team via Chase
   columns:
     - name: primary_key
-      tests:
+      data_tests:
       - not_null
       - unique
 - name: sheetload_product_maturity_historical_source
@@ -343,7 +343,7 @@ models:
   description: Source model for Scalable Employment Solution Data
   columns:
     - name: nbr_month
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: total_workforce
@@ -354,37 +354,37 @@ models:
   description: Source model for SDR ramping and status by month.
   columns:
     - name: current_month
-      tests:
+      data_tests:
         - not_null
     - name: start_month
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_sdr_count_snapshot_source
   description: Source model for SDR counts by fiscal quarter and sales segment.
   columns:
     - name: fiscal_quarter
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_sdr_bdr_metric_targets_source
   description: Source model for SDR/BDR metric targets by metric. 
   columns: 
     - name: sdr_or_bdr 
-      tests:
+      data_tests:
         - not_null
     - name: date_period
-      tests: 
+      data_tests: 
         - not_null
     - name: metric
-      tests: 
+      data_tests: 
         - not_null
     - name: target
-      tests: 
+      data_tests: 
         - not_null
 - name: sheetload_sisense_user_roles_source
   description: Source model for sisense users roles.
   columns:
     - name: id
-      tests:
+      data_tests:
         - not_null
     - name: updated_at
     - name: role_id
@@ -394,94 +394,94 @@ models:
   description: Source model for sisense users.
   columns:
     - name: id
-      tests:
+      data_tests:
         - not_null
     - name: first_name
-      tests:
+      data_tests:
         - not_null
     - name: last_name
     - name: email_address
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_social_marketing_metrics_source
   description: This is the model that captures data from social marketing metrics
   columns:
     - name: month_date
-      tests:
+      data_tests:
       - not_null
     - name: channel
-      tests:
+      data_tests:
       - not_null
     - name: brand
-      tests:
+      data_tests:
       - not_null
     - name: metric
-      tests:
+      data_tests:
       - not_null
     - name: is_organic
-      tests:
+      data_tests:
       - not_null
     - name: value
-      tests:
+      data_tests:
       - not_null
     - name: source
-      tests:
+      data_tests:
       - not_null
-  tests:
+  data_tests:
     - unique:
         column_name: "CONCAT(month_date, channel, brand, metric, is_organic)"
 - name: sheetload_social_marketing_topic_metrics_source
   description: This is the model that captures data from social marketing metrics at the Organic Social topic/campaign level. This data is sourced from Sprout Social (currently there is no API).
   columns:
     - name: month_date
-      tests:
+      data_tests:
       - not_null
     - name: sprout_tag
-      tests:
+      data_tests:
       - not_null
     - name: channel
-      tests:
+      data_tests:
       - not_null
     - name: brand
-      tests:
+      data_tests:
       - not_null
     - name: metric
-      tests:
+      data_tests:
       - not_null
-  tests:
+  data_tests:
     - unique:
         column_name: "CONCAT(month_date, sprout_tag, channel, brand, metric, is_organic)"
 - name: sheetload_territory_mapping_source
   description: Base model for marketing territory mapping.
   columns:
     - name: segment
-      tests:
+      data_tests:
         - not_null
     - name: region
-      tests:
+      data_tests:
         - not_null
     - name: territory
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_usage_ping_metrics_sections_source
   description: Classification of usage ping metrics into dev sections; used to create the Dev Section Dashboard
   columns:
     - name: metrics_path
-      tests:
+      data_tests:
         - not_null
         - unique
 - name: sheetload_yc_companies_source
   description: This is a list of YC Companies and their cohort provided by and maintained by marketing.
   columns:
     - name: company_id
-      tests:
+      data_tests:
       - not_null
       - unique
     - name: company_name
-      tests:
+      data_tests:
       - not_null
     - name: yc_batch
-      tests:
+      data_tests:
       - not_null
 - name: sheetload_hire_replan_source
   description: This is based on the Finance Replan - R4QF.
@@ -491,17 +491,17 @@ models:
   description: This sheet contains the capacity prediction from the Data Team.
   columns:
     - name: milestone_id
-      tests:
+      data_tests:
       - not_null
     - name: gitlab_handle
-      tests:
+      data_tests:
       - not_null
     - name: capacity
 - name: sheetload_sales_training_completion_dates_source
   description: Training completion dates for Sales team.
   columns:
     - name: email_address
-      tests:
+      data_tests:
       - not_null
 - name: sheetload_people_budget_source
   description: This is the budget used by the people team.
@@ -509,26 +509,26 @@ models:
   description: Ai projection for clari data
   columns:
     - name: projection_date
-      tests:
+      data_tests:
       - not_null
       - unique
 - name: sheetload_sales_funnel_targets_matrix_source
   description: Sales funnel target matrix source data
   columns:
     - name: kpi_name
-      tests:
+      data_tests:
       - not_null
     - name: month
-      tests:
+      data_tests:
       - not_null
 - name: sheetload_sales_funnel_partner_alliance_targets_matrix_source
   description: Sales funnel matrix source data for partner and alliances targets
   columns:
     - name: kpi_name
-      tests:
+      data_tests:
       - not_null
     - name: month
-      tests:
+      data_tests:
       - not_null
 - name: sheetload_rfs_support_requests_source
   description: This contains data for the pipe risk and security metrics - https://gitlab.com/gitlab-data/analytics/-/issues/6995
@@ -548,23 +548,23 @@ models:
   description: > 
     History file from the GitLab Roulette application with the current capacity and availability for every project/role combination.   
     For column descriptions see the application [documentation](https://gitlab.com/gitlab-org/gitlab-roulette/-/blob/a9ccc606396e48bc5e0e115eb6f21259e28e57c2/doc/capacity_history.md)
-  tests:
+  data_tests:
     - dbt_utils.unique_combination_of_columns:
         combination_of_columns:
           - unique_id
           - valid_from
   columns:
     - name: unique_id
-      tests:
+      data_tests:
         - not_null
     - name: gitlab_roulette_project
-      tests:
+      data_tests:
         - not_null
     - name: gitlab_roulette_role
-      tests:
+      data_tests:
         - not_null
     - name: gitlab_roulette_history_at
-      tests:
+      data_tests:
         - not_null
     - name: total_team_members
     - name: available_team_members
@@ -582,35 +582,35 @@ models:
   description: Users for SS&A Tableau row-level-security
   columns:
     - name: email
-      tests:
+      data_tests:
         - not_null
     - name: username
-      tests:
+      data_tests:
         - not_null
     - name: role
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_sales_analytics_tableau_rls_roles_source
   description: User roles for SS&A Tableau row-level-security
   columns:
     - name: role
-      tests:
+      data_tests:
         - not_null
     - name: key_segment_geo
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_ga360_custom_dimensions_source
   description: Custom Dimension Name field from Google Analytics (GA360). Custom dimensions are subject to change or new dimensions may be added. This Google Sheet will automatically update at the 1st of every month powered by a Google Apps Script function.
   columns: 
     - name: dimension_name
-      tests:
+      data_tests:
         - not_null 
     - name: dimension_index
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: dimension_scope
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_toy_marketing_handbook_source
   description: Toy dataset for ad-hoc Propensity to Purchase modeling
@@ -618,7 +618,7 @@ models:
   description: The entry and exit dates of organizations that are admitted into our Leading Organization program
   columns:
     - name: contributor_organization
-      tests:
+      data_tests:
         - not_null
         - unique
 - name: sheetload_partner_discount_summary_source
@@ -633,10 +633,10 @@ models:
   description: Sales funnel target matrix source data. New for FY25.
   columns:
     - name: kpi_name
-      tests:
+      data_tests:
       - not_null
     - name: month
-      tests:
+      data_tests:
       - not_null
 - name: sheetload_devrel_influenced_campaigns_source
   description: A list updated by the DelRel team of campaigns they have worked on.
@@ -650,7 +650,7 @@ models:
   description: The raw values for yearly targets published in the internal handbook - includes MNPI 
   columns:
     - name: yearly_name
-      tests:
+      data_tests:
       - not_null
     - name: yearly_dri
     - name: yearly_description

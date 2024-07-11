@@ -27,7 +27,7 @@ tests:
 
 target_prefix: "DBT_1_6_UPGRADE_"
 
-tests:
+data_tests:
   - name: compare_dim_date
     test_type: compare_relations
     source_db: prod

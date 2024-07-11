@@ -2,83 +2,83 @@ version: 2
 models:
   - name: adoption_by_group
     description: Adds some additional columns to `adoption_by_group_source` model that are needed for Tableau dashboard
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - group_name
             - aggregated_at
     columns:
       - name: group_name
-        tests:
+        data_tests:
           - not_null
       - name: adopted
-        tests:
+        data_tests:
           - not_null
       - name: not_adopted
-        tests:
+        data_tests:
           - not_null
       - name: total_findings
-        tests:
+        data_tests:
           - not_null
       - name: adoption_percentage
-        tests:
+        data_tests:
           - not_null
       - name: lower_bound
-        tests:
+        data_tests:
           - not_null
       - name: upper_bound
-        tests:
+        data_tests:
           - not_null
       - name: adoption_status
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['at_risk', 'on_track', 'needs_attention']
       - name: minimum_findings
-        tests:
+        data_tests:
           - not_null
       - name: is_below_findings_threshold
-        tests:
+        data_tests:
           - not_null
       - name: aggregated_at
-        tests:
+        data_tests:
           - not_null
   - name: adoption_by_group_latest
     description: Same as `adoption_by_group` but only keeps the most recent batch of data.
     columns:
       - name: group_name
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: adopted
-        tests:
+        data_tests:
           - not_null
       - name: not_adopted
-        tests:
+        data_tests:
           - not_null
       - name: total_findings
-        tests:
+        data_tests:
           - not_null
       - name: adoption_percentage
-        tests:
+        data_tests:
           - not_null
       - name: lower_bound
-        tests:
+        data_tests:
           - not_null
       - name: upper_bound
-        tests:
+        data_tests:
           - not_null
       - name: adoption_status
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['at_risk', 'on_track', 'needs_attention']
       - name: minimum_findings
-        tests:
+        data_tests:
           - not_null
       - name: is_below_findings_threshold
-        tests:
+        data_tests:
           - not_null
       - name: aggregated_at
-        tests:
+        data_tests:
           - not_null

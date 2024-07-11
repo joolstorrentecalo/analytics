@@ -783,12 +783,6 @@ tables:
       , expiration_policy_started_at
       , expiration_policy_cleanup_status
       , expiration_policy_completed_at
-      , migration_pre_import_started_at
-      , migration_pre_import_done_at
-      , migration_import_started_at
-      , migration_import_done_at
-      , migration_aborted_at
-      , migration_skipped_at
       , last_cleanup_deleted_tags_count
       FROM container_repositories
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp

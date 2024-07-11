@@ -4,7 +4,7 @@ models:
 
   - name: mart_team_member_directory
     description: '{{ doc("mart_team_member_directory") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - employee_id
@@ -12,13 +12,13 @@ models:
     columns:
       - name: dim_team_member_sk
         description: A unique ID for each team member
-        tests: 
+        data_tests: 
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team
       - name: employee_id
         description: Workday Employee Identification 
-        tests: 
+        data_tests: 
           - not_null
       - name: nationality
         description: Team member's nationality

@@ -120,6 +120,7 @@
       dim_crm_person.email_domain,
       dim_crm_person.email_domain_type,
       is_valuable_signup,
+      dim_crm_person.person_role,
       dim_crm_person.email_hash,
       dim_crm_person.status,
       dim_crm_person.sfdc_record_type,
@@ -321,5 +322,5 @@
     created_by="@iweeks",
     updated_by="@rkohnke",
     created_date="2020-12-07",
-    updated_date="2024-05-17",
+    updated_date="2024-07-03",
   ) }}  

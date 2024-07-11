@@ -6,12 +6,12 @@ models:
     columns:
       - name: primary_key
         description: Composite key for the model combining the unique identifier of the charge as well as the month the charge is effective in the term.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: fiscal_year
         description: Fiscal year when the subscription will be available to renew.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "atr"]
       - name: fiscal_quarter_name_fy
@@ -30,7 +30,7 @@ models:
         description: Unique identifier of the billing account associated with the subscription.
       - name: dim_subscription_id
         description: Unique identifier of a subscription.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "atr"]
       - name: dim_product_detail_id
@@ -45,7 +45,7 @@ models:
         description: Month when a subscription term begins.
       - name: renewal_month
         description: Month when a subscription term ends.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "atr"]
       - name: bookings_term_end_month
@@ -107,7 +107,7 @@ models:
     description: Snapshot model for `mart_available_to_renew` expanded to the daily grain. This models shows the state of what was available to renew on any given day based on snapshot data from the base `mart_available_to_renew` model.
     columns:
         - name: primary_key
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "atr" ]
 
@@ -116,12 +116,12 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: refund_amount
           description: Sum of refund amounts per period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
 
@@ -130,7 +130,7 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -139,12 +139,12 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: payments_refunds_against_future_invoices
           description: Sum of payment and refund amounts made for future dated invoices
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
 
@@ -153,17 +153,17 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: increase
           description: Sum of increased credit balance
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
         - name: decrease
           description: Sum of decreased credit balance
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
 
@@ -172,11 +172,11 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
         - name: balance
           description: Open balance in period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
 
@@ -185,17 +185,17 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: pending_invoice_amount
           description: Sum of pending amounts
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
         - name: pending_invoice_count
           description: Count of pending invoices
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ] 
 
@@ -204,16 +204,16 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
         - name: channel
           description: channel type
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
         - name: total_balance_per_channel
           description: Balance amount per channel
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ] 
 
@@ -222,11 +222,11 @@ models:
     columns:
         - name: period
           description: Accounting period
-          tests:
+          data_tests:
             - not_null
         - name: total_payment_amount
           description: payment amount
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
 
@@ -234,23 +234,23 @@ models:
     description: '{{ doc("mart_current_ar_by_aging_payment_terms") }}'
     columns:
         - name: dim_invoice_id
-          tests:
+          data_tests:
             - not_null
             - unique
           tags: [ "tdf", "mart", "zuora" ]     
         - name: balance
-          tests:
+          data_tests:
             - not_null   
 
   - name: mart_booking_by_order_type_monthly
     description: '{{ doc("mart_booking_by_order_type_monthly") }}'
     columns:
         - name: period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ] 
         - name: sales_type
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]    
 
@@ -258,11 +258,11 @@ models:
     description: '{{ doc("mart_booking_by_payment_schedule_opportunity_category_monthly") }}'
     columns:
         - name: period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]   
         - name: standard_booking_count
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]   
 
@@ -270,11 +270,11 @@ models:
     description: '{{ doc("mart_collections_monthly") }}'
     columns:
         - name: payment_period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]   
         - name: billed_period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]    
 
@@ -282,12 +282,12 @@ models:
     description: '{{ doc("mart_cdot_invoices_manual_intervention_monthly") }}'
     columns:
         - name: period
-          tests:
+          data_tests:
             - not_null
             - unique
           tags: [ "tdf", "mart", "zuora" ]   
         - name: count_all_cdot_invoices
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]
 
@@ -295,11 +295,11 @@ models:
     description: '{{ doc("mart_public_sector_ar_monthly") }}'
     columns:
         - name: period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]   
         - name: total_balance_per_segment
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]   
 
@@ -307,11 +307,11 @@ models:
     description: '{{ doc("mart_web_direct_vs_sales_assisted_ar_monthly") }}'
     columns:
         - name: period
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]   
         - name: total_balance_per_path
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "zuora" ]   
 
@@ -319,7 +319,7 @@ models:
     description: '{{ doc("mart_booking_billing_ar_monthly") }}'
     columns:
         - name: period
-          tests:
+          data_tests:
             - not_null
             - unique
           tags: [ "tdf", "mart", "zuora" ]   

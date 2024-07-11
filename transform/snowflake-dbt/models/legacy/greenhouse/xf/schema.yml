@@ -17,7 +17,7 @@ models:
     columns:
         - name: unique_key
           description: Unique key based on application_id, offer_id, candidate_id, requisition_id, and job_id
-          tests: 
+          data_tests: 
             - unique
             - not_null
         - name: application_id
@@ -156,7 +156,7 @@ models:
     description: This model is used to identify all greenhouse hires (including transfers within company). We want to capture the date the candidate truly started in bamboohr.
     columns:
       - name: unique_key
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: application_id
