@@ -14,8 +14,7 @@
       ON prep_charge.dim_crm_account_id = dim_crm_account.dim_crm_account_id
     WHERE is_included_in_arr_calc = TRUE
       AND subscription_status IN ('Active', 'Cancelled')
-      AND (mrr != 0 OR LOWER(rate_plan_charge_name) = 'max enrollment')
-
+      AND LOWER(rate_plan_charge_name) = 'max enrollment'
 
 ), dim_date_weekly AS (
 

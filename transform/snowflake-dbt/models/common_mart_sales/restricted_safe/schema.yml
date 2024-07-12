@@ -171,7 +171,7 @@ models:
           tags: [ "tdf", "mart", "arr" ]
 
   - name: mart_arr_weekly
-    description: A version of mart_arr aggregated by arr_week. This allows more frequent updates to the arr and quantity fields for 
+    description: A version of mart_arr_all aggregated by arr_week. This allows more frequent updates to the arr and quantity fields for efficient decision making.
     columns:
       - name: primary_key
         data_tests:
