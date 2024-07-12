@@ -1731,8 +1731,7 @@ This ID is generated using `event_id` and `session_end`
 
 **Tips for use:**
 - Fields with prefix `first_` or `last_` represent the first/last page view within the session.
-- Join this model to `dim_behavior_website_page` using `dim_behavior_website_page_sk` in order to pull in information about the page URL
-- Join this model to `dim_behavior_website_page` using `dim_behavior_referrer_page_sk` in order to pull in information about the referring URL
+- Join this model using `dim_behavior_referrer_page_sk` to `dim_behavior_website_page` on `dim_behavior_website_page_sk` in order to pull in information about the referring URL
 - Join this model to `dim_behavior_operating_system` using `dim_behavior_operating_system_sk` in order to pull in information about the user OS 
 - Join this model to `dim_behavior_browser` using `dim_behavior_browser_sk` in  order to pull in information about the user browser 
 

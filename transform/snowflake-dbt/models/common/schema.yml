@@ -6578,10 +6578,14 @@ models:
         description: '{{ doc("utm_term") }}'
       - name: referer_url
         description: '{{ doc("referer_url") }}'
+      - name: referer_url_query
+        description: '{{ doc("referer_url_query") }}'
       - name: referer_url_fragment
         description: '{{ doc("referer_url_fragment") }}'
       - name: referer_url_port
         description: '{{ doc("referer_url_port") }}'
+      - name: referer_medium
+        description: '{{ doc("referer_medium") }}'
       - name: session_index
         description: '{{ doc("session_index") }}'
       - name: session_cookie_index

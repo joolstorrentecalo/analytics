@@ -1825,6 +1825,18 @@ URL of the referrer page.
 
 {% enddocs %}
 
+{% docs referer_url_query %}
+
+Referer URL querystring	
+
+{% enddocs %}
+
+{% docs referer_medium %}
+
+Type of referer
+
+{% enddocs %}
+
 {% docs referer_url_fragment %}
 
 Referer URL fragment.

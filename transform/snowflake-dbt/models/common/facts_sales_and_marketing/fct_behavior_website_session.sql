@@ -98,8 +98,10 @@ SELECT
 
   -- Referer Attributes
   referer_url,
+  referer_url_query,
   referer_url_fragment,
   referer_url_port,
+  referer_medium,
 
   -- Session Attributes
   session_index,
