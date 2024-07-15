@@ -35,3 +35,9 @@ pumps:
     single: True
     owner: '@rigerta'
     stage: s3_data_science_pump
+  - model: pump_smb_daily_case_automation
+    timestamp_column: query_run_date
+    sensitive: True
+    single: True
+    owner: '@mfleisher'
+    stage: s3_data_pump
