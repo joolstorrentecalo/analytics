@@ -41,12 +41,7 @@ WITH epic_issues AS (
 ), sfdc_accounts AS (
 
     SELECT *
-    FROM {{ ref('sfdc_accounts_xf') }}
-
-), sfdc_opportunities AS (
-
-    SELECT *
-    FROM {{ ref('sfdc_opportunity_xf') }}
+    FROM {{ ref('prep_crm_account') }}
 
 ), milestones AS (
 
