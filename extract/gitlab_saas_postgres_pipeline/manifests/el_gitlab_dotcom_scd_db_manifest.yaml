@@ -54,18 +54,6 @@ tables:
       , shared_runners_duration
       , created_at
       FROM ci_namespace_monthly_usages
-  ci_pipeline_chat_data:
-    dbt_source_model: true
-    export_schema: 'gitlab_com'    
-    is_incremental: False
-    database_type: ci
-    export_table: ci_pipeline_chat_data
-    export_table_primary_key: pipeline_id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT pipeline_id
-      , chat_name_id
-      FROM ci_pipeline_chat_data
   ci_pipeline_metadata_internal_only:
     additional_filtering: WHERE project_id in {INTERNAL_PROJECT_IDS}
     dbt_source_model: true
@@ -333,48 +321,6 @@ tables:
       , merge_request_id
       , CONCAT(deployment_id,'_',merge_request_id) as deployment_merge_request_id
       FROM deployment_merge_requests
-  design_management_designs:
-    dbt_source_model: true
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'design_management_designs'
-    export_table_primary_key: CONCAT(issue_id,'_',filename)
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , project_id
-      , issue_id
-      FROM design_management_designs
-  design_management_designs_versions:
-    dbt_source_model: true
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'design_management_designs_versions'
-    export_table_primary_key: CONCAT(design_id,'_', version_id)
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT CONCAT(design_id,'_', version_id) AS id
-      , design_id
-      , version_id
-      , event
-      FROM design_management_designs_versions
-  design_management_versions:
-    dbt_source_model: true
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'design_management_versions'
-    export_table_primary_key: CONCAT(sha,'_', issue_id)
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , CAST(sha AS VARCHAR) AS sha
-      , issue_id
-      , created_at
-      , author_id
-      FROM design_management_versions
   elasticsearch_indexed_namespaces:
     # want to treat this more as an SCD since rows are deleted and want to display current state
     # see https://gitlab.com/gitlab-data/analytics/-/issues/5463#note_387839921
@@ -419,31 +365,6 @@ tables:
       , project_id
       , forked_from_project_id
       FROM fork_network_members
-  gitlab_subscription_histories:
-    dbt_source_model: true
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'gitlab_subscription_histories'
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , gitlab_subscription_created_at
-      , gitlab_subscription_updated_at
-      , start_date
-      , end_date
-      , trial_starts_on
-      , trial_ends_on
-      , namespace_id
-      , hosted_plan_id
-      , max_seats_used
-      , seats
-      , trial
-      , change_type
-      , gitlab_subscription_id
-      , created_at
-      FROM gitlab_subscription_histories
   gitlab_subscriptions:
     advanced_metadata: true
     dbt_snapshots: true
@@ -561,23 +482,6 @@ tables:
             ELSE NULL
         END as instance_url
       FROM jira_connect_installations
-  keys:
-    dbt_source_model: true
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'keys'
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , user_id
-      , created_at
-      , updated_at
-      , type
-      , public
-      , last_used_at
-      FROM keys
   label_links:
     advanced_metadata: true
     dbt_source_model: true
@@ -945,22 +849,6 @@ tables:
       , NULL AS disk_path
       , project_id
       FROM project_repositories
-  project_repository_storage_moves:
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'project_repository_storage_moves'
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , created_at
-      , updated_at
-      , project_id
-      , state
-      , NULL AS source_storage_name
-      , NULL AS destination_storage_name
-      FROM project_repository_storage_moves
   project_statistics:
     dbt_snapshots: true
     dbt_source_model: true
@@ -1078,17 +966,6 @@ tables:
       SELECT project_id
       , custom_email_enabled
       FROM service_desk_settings
-  shards:
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'shards'
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , NULL AS name
-      FROM shards
   suggestions:
     is_incremental: False
     database_type: main
@@ -1108,18 +985,6 @@ tables:
       , lines_below
       , outdated
       FROM suggestions
-  user_credit_card_validations:
-    dbt_source_model: true
-    is_incremental: False
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'user_credit_card_validations'
-    export_table_primary_key: 'user_id'
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT user_id
-      , credit_card_validated_at
-      FROM user_credit_card_validations
   user_details:
     dbt_source_model: true
     is_incremental: False

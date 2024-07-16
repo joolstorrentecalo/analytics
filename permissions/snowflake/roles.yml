@@ -350,6 +350,7 @@ roles:
         - covid19
         - dbt_analytics
         - driveload
+        - e2e_metrics
         - engineering_extracts
         - gainsight
         - gcp_billing
@@ -1680,6 +1681,20 @@ roles:
           read:
             - prep.driveload.*
             - raw.driveload.*
+  - e2e_metrics:
+      privileges:
+        databases:
+          read:
+            - prep
+            - raw
+        schemas:
+          read:
+            - prep.e2e_metrics
+            - raw.e2e_metrics
+        tables:
+          read:
+            - prep.e2e_metrics.*
+            - raw.e2e_metrics.*
   - elasticsearch_billing:
       warehouses:
         - dev_xs
@@ -1878,10 +1893,8 @@ roles:
             - raw.tap_postgres.gitlab_db_ci_group_variables
             - raw.tap_postgres.gitlab_db_ci_job_artifacts
             - raw.tap_postgres.gitlab_db_ci_pipelines
-            - raw.tap_postgres.gitlab_db_ci_pipeline_chat_data
             - raw.tap_postgres.gitlab_db_ci_pipeline_schedules
             - raw.tap_postgres.gitlab_db_ci_pipeline_schedule_variables
-            - raw.tap_postgres.gitlab_db_ci_platform_metrics
             - raw.tap_postgres.gitlab_db_ci_runners
             - raw.tap_postgres.gitlab_db_ci_runner_projects
             - raw.tap_postgres.gitlab_db_ci_stages
@@ -1896,9 +1909,6 @@ roles:
             - raw.tap_postgres.gitlab_db_cluster_projects
             - raw.tap_postgres.gitlab_db_deployments
             - raw.tap_postgres.gitlab_db_deployment_merge_requests
-            - raw.tap_postgres.gitlab_db_design_management_designs
-            - raw.tap_postgres.gitlab_db_design_management_designs_versions
-            - raw.tap_postgres.gitlab_db_design_management_versions
             - raw.tap_postgres.gitlab_db_elasticsearch_indexed_namespaces
             - raw.tap_postgres.gitlab_db_emails
             - raw.tap_postgres.gitlab_db_emails_validate
@@ -1906,24 +1916,19 @@ roles:
             - raw.tap_postgres.gitlab_db_epics
             - raw.tap_postgres.gitlab_db_epic_issues
             - raw.tap_postgres.gitlab_db_events
-            - raw.tap_postgres.gitlab_db_experiments
             - raw.tap_postgres.gitlab_db_gitlab_subscriptions
-            - raw.tap_postgres.gitlab_db_gitlab_subscription_histories
             - raw.tap_postgres.gitlab_db_group_group_links
             - raw.tap_postgres.gitlab_db_identities
             - raw.tap_postgres.gitlab_db_issues
             - raw.tap_postgres.gitlab_db_issue_assignees
             - raw.tap_postgres.gitlab_db_issue_links
             - raw.tap_postgres.gitlab_db_issue_metrics
-            - raw.tap_postgres.gitlab_db_keys
             - raw.tap_postgres.gitlab_db_labels
             - raw.tap_postgres.gitlab_db_label_links
             - raw.tap_postgres.gitlab_db_label_priorities
-            - raw.tap_postgres.gitlab_db_lfs_objects_projects
             - raw.tap_postgres.gitlab_db_lists
             - raw.tap_postgres.gitlab_db_members
             - raw.tap_postgres.gitlab_db_merge_requests
-            - raw.tap_postgres.gitlab_db_merge_requests_closing_issues
             - raw.tap_postgres.gitlab_db_merge_request_diffs
             - raw.tap_postgres.gitlab_db_merge_request_metrics
             - raw.tap_postgres.gitlab_db_milestones
@@ -1933,7 +1938,6 @@ roles:
             - raw.tap_postgres.gitlab_db_notes
             - raw.tap_postgres.gitlab_db_notification_settings
             - raw.tap_postgres.gitlab_db_oauth_access_tokens
-            - raw.tap_postgres.gitlab_db_onboarding_progresses
             - raw.tap_postgres.gitlab_db_packages_packages
             - raw.tap_postgres.gitlab_db_pages_domains
             - raw.tap_postgres.gitlab_db_plans
@@ -1946,8 +1950,6 @@ roles:
             - raw.tap_postgres.gitlab_db_project_mirror_data
             - raw.tap_postgres.gitlab_db_project_statistics
             - raw.tap_postgres.gitlab_db_prometheus_alerts
-            - raw.tap_postgres.gitlab_db_protected_branches
-            - raw.tap_postgres.gitlab_db_push_rules
             - raw.tap_postgres.gitlab_db_releases
             - raw.tap_postgres.gitlab_db_repository_languages
             - raw.tap_postgres.gitlab_db_requirements
@@ -1958,7 +1960,6 @@ roles:
             - raw.tap_postgres.gitlab_db_saml_providers
             - raw.tap_postgres.gitlab_db_services
             - raw.tap_postgres.gitlab_db_snippets
-            - raw.tap_postgres.gitlab_db_sprints
             - raw.tap_postgres.gitlab_db_subscriptions
             - raw.tap_postgres.gitlab_db_system_note_metadata
             - raw.tap_postgres.gitlab_db_terraform_states
@@ -2371,6 +2372,22 @@ roles:
             - prod.restricted_safe_common_mart_product.*
             - prod.workspace_data_science.*
             - prod.workspace_sales.*
+  - commonroom_sensitive:
+      warehouses:
+        - dev_xs
+      privileges:
+        databases:
+          read:
+            - raw
+            - prep
+        schemas:
+          read:
+            - raw.commonroom
+            - prep.commonroom
+        tables:
+          read:
+            - raw.commonroom.*
+            - prep.commonroom.*
   - restricted_workspace_people:
       warehouses:
         - reporting
@@ -2990,11 +3007,6 @@ roles:
         - salesforce
       warehouses:
         - dev_xs
-  - aherrero:
-      member_of:
-        - snowflake_analyst
-      warehouses:
-        - dev_xs
   - akramer:
       member_of: []
       warehouses: []
@@ -3397,7 +3409,6 @@ roles:
         - analyst_marketing
         - data_team_analyst
         - snowflake_analyst_safe
-        - xactly
       warehouses:
         - dev_xs
   - dmack:
@@ -3416,6 +3427,12 @@ roles:
         - linkedin_ads
       warehouses:
         - dev_xs
+  - dmurphy:
+      member_of:
+        - commonroom_sensitive
+        - snowflake_analyst
+      warehouses:
+        - reporting
   - dpeterson:
       member_of:
         - analyst_growth
@@ -3561,6 +3578,12 @@ roles:
           write:
             - raw.netsuite_fivetran.*
             - raw.workday_hcm.*
+  - fkhalid:
+      member_of:
+        - commonroom_sensitive
+        - snowflake_analyst
+      warehouses:
+        - reporting
   - frose:
       member_of:
         - snowflake_analyst
@@ -3722,6 +3745,12 @@ roles:
           write:
             - jcaine_prep.*.*
             - jcaine_prod.*.*
+  - jcoghlan:
+      member_of:
+        - commonroom_sensitive
+        - snowflake_analyst
+      warehouses:
+        - reporting
   - jcolyer:
       member_of:
         - gitlab_dotcom
@@ -3796,7 +3825,6 @@ roles:
         - zuora_stitch_rest_api
         - zuora_revenue
         - zuora_query_api
-        - jbare
       warehouses:
         - dev_xs
       owns:
@@ -3841,7 +3869,6 @@ roles:
         - analyst_finance
         - analyst_marketing
         - analyst_sales
-        - bamboohr
         - customers_db
         - data_team_analyst
         - data_science_sensitive
@@ -3849,13 +3876,9 @@ roles:
         - data_science_readonly
         - gainsight
         - gitlab_dotcom
-        - hightouch_role
-        - netsuite
         - postgres_pipeline
         - snowflake_analyst_safe
         - snowplow
-        - static_admin
-        - workday
         - feature_store
       warehouses:
         - dev_xs
@@ -4248,6 +4271,12 @@ roles:
   - lstahlman:
       member_of: []
       warehouses: []
+  - ltickett:
+      member_of:
+        - commonroom_sensitive
+        - snowflake_analyst
+      warehouses:
+        - reporting
   - lvinueza:
       member_of:
         - analyst_finance
@@ -4607,6 +4636,7 @@ roles:
         - dev_xs
   - mxiao:
       member_of:
+        - commonroom_sensitive
         - snowflake_analyst_safe
       warehouses:
         - dev_xs
@@ -4725,7 +4755,6 @@ roles:
         - salesforce_sandbox
         - xactly
         - zuora_stitch_rest_api
-        - jbare
       warehouses:
         - dev_xs
       owns:
@@ -4800,6 +4829,12 @@ roles:
           write:
             - nraisinghani_prep.*.*
             - nraisinghani_prod.*.*
+  - nveenhof:
+      member_of:
+        - commonroom_sensitive
+        - snowflake_analyst
+      warehouses:
+        - reporting
   - nwingfield:
       member_of:
         - analyst_sales
@@ -5090,6 +5125,12 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - rhook:
+      member_of:
+        - commonroom_sensitive
+        - snowflake_analyst
+      warehouses:
+        - reporting
   - rkohnke:
       member_of:
         - analyst_marketing
@@ -5696,6 +5737,11 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - gengel:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - jbaumgardner:
       member_of:
         - snowflake_analyst
@@ -5744,6 +5790,11 @@ roles:
       warehouses:
         - dev_xs
   - vshushlin:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - lzhao:
       member_of:
         - snowflake_analyst
       warehouses:
@@ -5912,11 +5963,6 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
-  - aevans:
-      member_of:
-        - snowflake_analyst
-      warehouses:
-        - dev_xs
   - tmccaslin:
       member_of:
         - snowflake_analyst
@@ -5980,6 +6026,11 @@ roles:
         - snowflake_db
       warehouses:
         - reporting
+  - nisong:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - wmeek:
       member_of:
         - snowflake_analyst
@@ -6064,10 +6115,6 @@ users:
       can_login: true
       member_of:
         - ahan
-  - aherrero:
-      can_login: true
-      member_of:
-        - aherrero
   - akramer:
       can_login: false
       member_of: []
@@ -6599,11 +6646,6 @@ users:
       can_login: true
       member_of:
         - snalamaru
-  - snowflake_provisioner:
-      can_login: true
-      member_of:
-        - sysadmin
-        - securityadmin
   - sranasinghe:
       can_login: true
       member_of:
@@ -6824,6 +6866,14 @@ users:
       can_login: true
       member_of:
         - acunskis
+  - ltickett:
+      can_login: true
+      member_of:
+        - ltickett
+  - dmurphy:
+      can_login: true
+      member_of:
+        - dmurphy
   - avpfestin:
       can_login: true
       member_of:
@@ -6836,14 +6886,22 @@ users:
       can_login: true
       member_of:
         - acook
-  - aevans:
+  - nveenhof:
       can_login: true
       member_of:
-        - aevans
+        - nveenhof
+  - jcoghlan:
+      can_login: true
+      member_of:
+        - jcoghlan
   - wmeek:
       can_login: true
       member_of:
         - wmeek
+  - lzhao:
+      can_login: true
+      member_of:
+        - lzhao
   - rchong:
       can_login: true
       member_of:
@@ -6868,6 +6926,18 @@ users:
       can_login: true
       member_of:
         - lanzures
+  - gengel:
+      can_login: true
+      member_of:
+        - gengel
+  - rhook:
+      can_login: true
+      member_of:
+        - rhook
+  - fkhalid:
+      can_login: true
+      member_of:
+        - fkhalid
   - jdleon:
       can_login: true
       member_of:
@@ -6880,6 +6950,10 @@ users:
       can_login: true
       member_of:
         - amcdonald
+  - nisong:
+      can_login: true
+      member_of:
+        - nisong
   - testtableau:
       can_login: true
       member_of:

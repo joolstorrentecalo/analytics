@@ -1085,7 +1085,6 @@ The grain of the table is the `dim_locality_id` and the `valid_from` date filed.
 **Business Logic in this Model:**
 - `is_last_ping_of_month` = last ping created per calendar month per installation (`dim_installation_id`)
 - `is_last_ping_of_week` = last ping created per calendar week per installation (`dim_installation_id`)
-- `ping_delivery_type` = `IFF(uuid/dim_instance_id = 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f', 'SaaS', 'Self-Managed')`
 - `is_internal` = TRUE WHERE:
   - uuid/dim_instance_id = 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f'
   - (OR) installation_type = 'gitlab-development-kit'
@@ -2134,5 +2133,12 @@ This query aggregates key sales metrics and attributes from the actuals table to
 Derived fact table from `fct_crm_opportunity_daily_snapshot` and `fct_sales_funnel_target_daily`. This fct table simplifies tracking sales performance by showing targets and actuals combined, every seven days within a quarter. 
 
 It combines daily targets, daily actuals along with the total quarterly targets and actuals. This model includes both the numerator and denominator for calculating coverage throughout a quarter
+
+{% enddocs %}
+
+{% docs fct_team_member_absence %}
+
+This table is a derived fact from fct_team_status and gitlab_pto. Sensitive columns are masked and only visible by team members with the `analyst_people` role assigned in Snowflake.
+The grain of this table is one row per pto_uuid per absence_date per dim_team_member_sk combination. 
 
 {% enddocs %}

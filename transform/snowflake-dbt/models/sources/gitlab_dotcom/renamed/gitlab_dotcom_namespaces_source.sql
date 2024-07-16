@@ -33,7 +33,9 @@ WITH all_namespaces AS (
     push_rule_id::INTEGER                              AS push_rule_id,
     shared_runners_enabled:BOOLEAN                     AS shared_runners_enabled,
     PARSE_JSON('[' || TRIM(traversal_ids,'{}') || ']') AS lineage,
-    lineage[0]::NUMBER                                 AS ultimate_parent_id 
+    lineage[0]::NUMBER                                 AS ultimate_parent_id,
+    pgp_is_deleted::BOOLEAN                            AS is_deleted,
+    pgp_is_deleted_updated_at::TIMESTAMP               AS is_deleted_updated_at
   FROM {{ ref('gitlab_dotcom_namespaces_dedupe_source') }}
 
 ),
@@ -78,8 +80,10 @@ combined AS (
     all_namespaces.project_creation_level                 AS project_creation_level,
     all_namespaces.push_rule_id                           AS push_rule_id,
     all_namespaces.shared_runners_enabled                 AS shared_runners_enabled,
-    all_namespaces.lineage                                 AS lineage,
-    all_namespaces.ultimate_parent_id                     AS ultimate_parent_id
+    all_namespaces.lineage                                AS lineage,
+    all_namespaces.ultimate_parent_id                     AS ultimate_parent_id,
+    all_namespaces.is_deleted                             AS is_deleted,
+    all_namespaces.is_deleted_updated_at                  AS is_deleted_updated_at
   FROM all_namespaces
   LEFT JOIN internal_namespaces
     ON all_namespaces.namespace_id = internal_namespaces.internal_namespace_id

@@ -9,13 +9,13 @@ models:
           tags:
             - tdf
             - version_db
-          tests: 
+          data_tests: 
             - not_null
         - name: usage_data_id
           tags:
             - tdf
             - version_db
-          tests:
+          data_tests:
             - not_null    
 
     - name: version_hosts_source
@@ -25,7 +25,7 @@ models:
           tags:
             - tdf
             - version_db
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: version_raw_usage_data_source
@@ -35,12 +35,12 @@ models:
           tags:
             - tdf
             - version_db
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: uploaded_at
           description: '{{ doc("version_raw_usage_data_source_uploaded_at") }}'
-          tests:
+          data_tests:
             - not_null
 
     - name: version_usage_data_source
@@ -50,7 +50,7 @@ models:
           tags:
             - tdf
             - version_db
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: uuid
@@ -59,7 +59,7 @@ models:
             sensitive: true
         - name: uploaded_at
           description: '{{ doc("version_raw_usage_data_source_uploaded_at") }}'
-          tests:
+          data_tests:
             - not_null
 
     - name: version_versions_source
@@ -69,7 +69,7 @@ models:
           tags:
             - tdf
             - version_db
-          tests:
+          data_tests:
             - not_null
             - unique            
 
@@ -80,7 +80,7 @@ models:
           tags:
             - tdf
             - version_db
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -91,6 +91,6 @@ models:
           tags:
             - tdf
             - version_db
-          tests:
+          data_tests:
             - not_null
             - unique

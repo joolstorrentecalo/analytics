@@ -42,7 +42,7 @@ models:
       description: Data tracer bullet project which analyzes the book ratings of over 11k books.
       columns:
         - name: dim_author_id
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: author_name
@@ -51,7 +51,7 @@ models:
       description: Data tracer bullet project which analyzes the book ratings of over 11k books.
       columns:
         - name: dim_publisher_id
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: publisher

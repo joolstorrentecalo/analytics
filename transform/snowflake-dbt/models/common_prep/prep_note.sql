@@ -55,7 +55,9 @@
       gitlab_dotcom_notes_dedupe_source.discussion_id::VARCHAR                                AS discussion_id,
       gitlab_dotcom_notes_dedupe_source.cached_markdown_version::NUMBER                       AS cached_markdown_version,
       gitlab_dotcom_notes_dedupe_source.resolved_by_push::BOOLEAN                             AS resolved_by_push,
-      gitlab_dotcom_system_note_metadata_source.action_type::VARCHAR                          AS action_type
+      gitlab_dotcom_system_note_metadata_source.action_type::VARCHAR                          AS action_type,
+      gitlab_dotcom_notes_dedupe_source.pgp_is_deleted::BOOLEAN                               AS is_deleted,
+      gitlab_dotcom_notes_dedupe_source.pgp_is_deleted_updated_at::TIMESTAMP                  AS is_deleted_updated_at
     FROM gitlab_dotcom_notes_dedupe_source
     LEFT JOIN prep_project ON gitlab_dotcom_notes_dedupe_source.project_id = prep_project.dim_project_id
     LEFT JOIN dim_epic ON gitlab_dotcom_notes_dedupe_source.noteable_id = dim_epic.epic_id
@@ -73,7 +75,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@mpeychet_",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2021-06-22",
-    updated_date="2023-11-22"
+    updated_date="2024-07-09"
 ) }}

@@ -5,14 +5,14 @@ models:
       description: "Static information about airflow DAGs."
       columns:
         - name: dag_id
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: is_active
-          tests:
+          data_tests:
             - not_null
         - name: is_paused
-          tests:
+          data_tests:
             - not_null
         - name: schedule_interval
         
@@ -20,13 +20,13 @@ models:
       description: "Information about individual runs of a DAG."
       columns:
         - name: dag_id
-          tests:
+          data_tests:
             - not_null
         - name: execution_date
-          tests:
+          data_tests:
             - not_null
         - name: run_state
-          tests:
+          data_tests:
             - not_null
         
         

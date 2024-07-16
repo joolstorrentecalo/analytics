@@ -4,26 +4,26 @@ models:
     - name: zendesk_group_memberships_source
       columns: 
         - name: group_membership_id
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_groups_source
       columns:
         - name: group_id
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_macros_source
       columns:
         - name: macro_id
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_organizations_source
       description: This is the source model for Zendesk organizations.
       columns:
       - name: organization_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: arr
@@ -31,21 +31,21 @@ models:
     - name: zendesk_satisfaction_ratings_source
       columns:
         - name: satisfaction_rating_id
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_sla_policies_source
       description: This is the source model for all Zendesk SLA policies totally flattened, where each criteria for a policy is its own row.
       columns:
       - name: zendesk_sla_surrogate_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: zendesk_sla_policy_id
-        tests:
+        data_tests:
           - not_null
       - name: zendesk_sla_title
-        tests:
+        data_tests:
           - not_null
       - name: zendesk_sla_description
       - name: filter_all_field
@@ -55,86 +55,86 @@ models:
       - name: filter_any_operator
       - name: filter_any_value
       - name: policy_metrics_business_hours
-        tests:
+        data_tests:
           - not_null
       - name: policy_metrics_metric
-        tests:
+        data_tests:
           - not_null
       - name: policy_metrics_priority
-        tests:
+        data_tests:
           - not_null
       - name: policy_metrics_target
-        tests:
+        data_tests:
           - not_null
     - name: zendesk_tags_source
       columns:
         - name: tag_name
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_ticket_audits_dedupe_source
       description: This is the dedupe source model for Zendesk ticket audit events.
       columns:
       - name: id
-        tests:
+        data_tests:
             - unique
     - name: zendesk_ticket_audits_source
       description: This is the source model for Zendesk ticket audit events.
       columns:
       - name: audit_id
-        tests:
+        data_tests:
             - not_null
       - name: ticket_id
-        tests:
+        data_tests:
             - not_null    
     - name: zendesk_ticket_comments_source
       columns:
       - name: ticket_comment_id
-        tests:
+        data_tests:
           - not_null
           - unique
     - name: zendesk_ticket_metrics_source
       description: This is the source model for Zendesk ticket metrics.
       columns:
       - name: ticket_id
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: ticket_metrics_id
-        tests:
+        data_tests:
             - unique
             - not_null
     - name: zendesk_tickets_dedupe_source
       description: This is the dedupe source model for Zendesk tickets.
       columns:
       - name: id
-        tests:
+        data_tests:
             - unique                
     - name: zendesk_tickets_source
       description: This is the source model for Zendesk tickets.
       columns:
       - name: ticket_id
-        tests:
+        data_tests:
             - unique
             - not_null
     - name: zendesk_ticket_fields_source
       description: This is the source model for Zendesk tickets fields.
       columns:
       - name: ticket_field_id
-        tests:
+        data_tests:
             - unique
             - not_null
     - name: zendesk_ticket_forms_source
       description: This is the source model for Zendesk tickets forms.
       columns:
       - name: ticket_form_id
-        tests:
+        data_tests:
             - unique
             - not_null
     - name: zendesk_users_source
       description: This is the source model for Zendesk users.
       columns:
       - name: user_id
-        tests:
+        data_tests:
             - unique
             - not_null

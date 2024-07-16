@@ -21,27 +21,27 @@ sources:
       - name: customers_db_customers
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_leads
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null              
       - name: customers_db_license_seat_links
         columns:
           - name: zuora_subscription_id
           - name: order_id
-            tests:
+            data_tests:
               - not_null
           - name: report_timestamp
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_license_versions
         columns:
@@ -50,72 +50,72 @@ sources:
       - name: customers_db_licenses
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_orders
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null       
       - name: customers_db_reconciliations
       - name: customers_db_trial_histories
       - name: customers_db_versions
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: item_id
-            tests:
+            data_tests:
               - not_null
           - name: created_at
-            tests:
+            data_tests:
               - not_null
         freshness: null
       - name: customers_db_billing_accounts
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_billing_account_memberships
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_cloud_activations
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_provisions
         columns:
           - name: subscription_id
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_self_managed_instance_activations
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
           - name: activated_at
@@ -125,51 +125,51 @@ sources:
       - name: customers_db_billing_account_contacts
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_trials
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: trial_account_id
           - name: quantity
           - name: product_rate_plan_id
           - name: subscription_name
-            tests:
+            data_tests:
               - not_null
           - name: start_date
           - name: end_date
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
-            tests:
+            data_tests:
               - not_null
       - name: customers_db_trial_accounts
         columns:
           - name: id
-            tests:
+            data_tests:
               - not_null
           - name: billing_account_id
-            tests:
+            data_tests:
               - not_null
           - name: company
-            tests:
+            data_tests:
               - not_null
           - name: name
-            tests:
+            data_tests:
               - not_null
           - name: email
           - name: created_at
-            tests:
+            data_tests:
               - not_null
           - name: updated_at
-            tests:
+            data_tests:
               - not_null

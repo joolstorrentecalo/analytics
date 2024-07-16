@@ -81,8 +81,6 @@ sources:
         identifier: gitlab_db_ci_namespace_monthly_usages
       - name: ci_pipeline_artifacts
         identifier: gitlab_db_ci_pipeline_artifacts
-      - name: ci_pipeline_chat_data
-        identifier: gitlab_db_ci_pipeline_chat_data
       - name: ci_pipeline_schedule_variables
         identifier: gitlab_db_ci_pipeline_schedule_variables
       - name: ci_pipeline_schedules
@@ -91,8 +89,6 @@ sources:
         identifier: gitlab_db_ci_pipelines
       - name: ci_pipelines_internal_only
         identifier: gitlab_db_ci_pipelines_internal_only
-      - name: ci_platform_metrics
-        identifier: gitlab_db_ci_platform_metrics
       - name: ci_project_monthly_usages
         identifier: gitlab_db_ci_project_monthly_usages
       - name: ci_runner_projects
@@ -163,12 +159,6 @@ sources:
         identifier: gitlab_db_deployments
       - name: deployment_merge_requests
         identifier: gitlab_db_deployment_merge_requests
-      - name: design_management_designs_versions
-        identifier: gitlab_db_design_management_designs_versions
-      - name: design_management_designs
-        identifier: gitlab_db_design_management_designs
-      - name: design_management_versions
-        identifier: gitlab_db_design_management_versions
         freshness: null
       - name: elasticsearch_indexed_namespaces
         identifier: gitlab_db_elasticsearch_indexed_namespaces
@@ -187,13 +177,9 @@ sources:
         identifier: gitlab_db_epics_internal_only
       - name: events
         identifier: gitlab_db_events
-      - name: experiment_subjects
-        identifier: gitlab_db_experiment_subjects
       - name: experiment_users
         identifier: gitlab_db_experiment_users
         freshness: null #https://gitlab.com/gitlab-data/analytics/-/merge_requests/5998
-      - name: experiments
-        identifier: gitlab_db_experiments
       - name: external_status_checks
         identifier: gitlab_db_external_status_checks
         freshness:
@@ -201,8 +187,6 @@ sources:
           error_after: {count: 15, period: day}
       - name: fork_network_members
         identifier: gitlab_db_fork_network_members
-      - name: gitlab_subscription_histories
-        identifier: gitlab_db_gitlab_subscription_histories
       - name: gitlab_subscriptions
         identifier: gitlab_db_gitlab_subscriptions
       - name: gpg_signatures
@@ -221,8 +205,6 @@ sources:
         identifier: gitlab_db_issue_metrics
       - name: issues
         identifier: gitlab_db_issues
-      - name: keys
-        identifier: gitlab_db_keys
       - name: label_links
         identifier: gitlab_db_label_links
       - name: label_priorities
@@ -231,16 +213,12 @@ sources:
         identifier: gitlab_db_labels
       - name: labels_internal_only
         identifier: gitlab_db_labels_internal_only
-      - name: lfs_objects_projects
-        identifier: gitlab_db_lfs_objects_projects
       - name: lists
         identifier: gitlab_db_lists
       - name: member_roles
         identifier: gitlab_db_member_roles
       - name: members
         identifier: gitlab_db_members
-      - name: merge_request_blocks
-        identifier: gitlab_db_merge_request_blocks
       - name: merge_request_diffs
         identifier: gitlab_db_merge_request_diffs
       - name: merge_request_metrics
@@ -251,8 +229,6 @@ sources:
         identifier: gitlab_db_merge_requests
       - name: merge_requests_internal_only
         identifier: gitlab_db_merge_requests_internal_only
-      - name: merge_requests_closing_issues
-        identifier: gitlab_db_merge_requests_closing_issues
       - name: merge_request_reviewers
         identifier: gitlab_db_merge_request_reviewers
       - name: milestone_releases
@@ -285,8 +261,6 @@ sources:
         identifier: gitlab_db_notification_settings
       - name: oauth_access_tokens
         identifier: gitlab_db_oauth_access_tokens
-      - name: onboarding_progresses
-        identifier: gitlab_db_onboarding_progresses
       - name: packages_packages
         identifier: gitlab_db_packages_packages
       - name: plans
@@ -310,8 +284,6 @@ sources:
         identifier: gitlab_db_project_mirror_data
       - name: project_repositories
         identifier: gitlab_db_project_repositories
-      - name: project_repository_storage_moves
-        identifier: gitlab_db_project_repository_storage_moves
       - name: project_security_settings
         identifier: gitlab_db_project_security_settings
       - name: project_settings
@@ -323,8 +295,6 @@ sources:
       - name: prometheus_alerts
         identifier: gitlab_db_prometheus_alerts
         freshness: null #https://gitlab.com/gitlab-data/analytics/-/issues/10835
-      - name: protected_branches
-        identifier: gitlab_db_protected_branches
       - name: protected_branch_merge_access_levels
         identifier: gitlab_db_protected_branch_merge_access_levels
       - name: protected_branch_push_access_levels
@@ -335,8 +305,6 @@ sources:
       - name: protected_environments
         identifier: gitlab_db_protected_environments
         freshness: null
-      - name: push_rules
-        identifier: gitlab_db_push_rules
       - name: remote_development_agent_configs
         identifier: gitlab_db_remote_development_agent_configs
       - name: releases
@@ -368,10 +336,6 @@ sources:
         identifier: gitlab_db_service_desk_settings
       - name: slack_integrations
         identifier: gitlab_db_slack_integrations
-      - name: shards
-        identifier: gitlab_db_shards
-      - name: sprints
-        identifier: gitlab_db_sprints
       - name: ssh_signatures
         identifier: gitlab_db_ssh_signatures
       - name: subscriptions
@@ -538,10 +502,6 @@ sources:
         freshness:
           warn_after: { count: 7, period: day }
           error_after: { count: 30, period: day }
-      - name: user_credit_card_validations
-        identifier: gitlab_db_user_credit_card_validations
-      - name: boards_epic_boards
-        identifier: gitlab_db_boards_epic_boards
       - name: merge_request_diff_commit_users
         identifier: gitlab_db_merge_request_diff_commit_users
       - name: merge_request_diff_commits

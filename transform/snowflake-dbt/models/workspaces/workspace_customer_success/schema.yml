@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: mart_product_usage_paid_user_metrics_monthly_workspace
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - snapshot_month
@@ -13,31 +13,31 @@ models:
             - dim_namespace_id
     columns:
       - name: snapshot_month
-        tests:
+        data_tests:
           - not_null
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null
       - name: snapshot_date_id
-        tests:
+        data_tests:
           - not_null
       - name: delivery_type
-        tests:
+        data_tests:
           - not_null
       - name: deployment_type
-        tests:
+        data_tests:
           - not_null
       - name: primary_key
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -45,18 +45,18 @@ models:
     description: '{{ doc("mart_product_usage_health_score") }}'
     columns:
       - name: snapshot_month
-        tests:
+        data_tests:
           - not_null
         description: Month in which the product usage was reported.
       - name: primary_key
-        tests:
+        data_tests:
           - unique
           - not_null
         description: Unique ID for the common_mart_product.mart_product_usage_paid_user_metrics_monthly table for each row of usage data. This field can be used to join to the common_mart_product.mart_product_usage_paid_user_metrics_monthly table to pull in additional usage metrics that are not used for use case adoption scoring
       - name: crm_account_name
         description: The name of the account as it appears in Salseforce
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
         description: '{{ doc("dim_crm_account_id") }}'
       - name: customer_since_date
@@ -76,21 +76,21 @@ models:
       - name: subscription_name
         description: The name of the subscription as it appears in Zuora
       - name: dim_subscription_id_original 
-        tests: 
+        data_tests: 
           - not_null
         description: Unique identifier of a subscription, does not change when amendments are made to the subscription. This ID will have multiple dim_subscription_id values associated with it for each version of the original subscription
       - name: dim_subscription_id 
-        tests: 
+        data_tests: 
           - not_null
         description: Unique identifier of a version of a subscription
       - name: ultimate_subscription_flag
         description: This field is a flag that designates if a subscription is an ultimate subscription or not. 1 = Ultimate subscription, 0 = Non-Ultimate subscription
       - name: delivery_type 
-        tests: 
+        data_tests: 
           - not_null
         description: '{{ doc("product_delivery_type") }}'
       - name: deployment_type 
-        tests: 
+        data_tests: 
           - not_null
         description: '{{ doc("ping_deployment_type") }}'
       - name: instance_type
@@ -331,7 +331,7 @@ models:
         description: The timestamp of when this model was last built/refreshed
 
   - name: wk_pump_gainsight_metrics_monthly_paid
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - snapshot_month

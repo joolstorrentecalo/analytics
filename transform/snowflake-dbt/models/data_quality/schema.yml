@@ -6,7 +6,7 @@ models:
    columns:
      - name: rule_id
        description: The unique identifier of each data quality detection rule.
-       tests:
+       data_tests:
          - not_null
          - unique
      - name: rule_name

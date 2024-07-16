@@ -20,8 +20,6 @@ macros:
     description: '{{ doc("map_state_id") }}'
   - name: resource_event_action_type
     description: '{{ doc("resource_event_action_type") }}'
-  - name: transform_clusters_applications
-    description: '{{ doc("transform_clusters_applications") }}'
   - name: user_role_mapping
     description: '{{ doc("user_role_mapping") }}'
   - name: dedupe_source

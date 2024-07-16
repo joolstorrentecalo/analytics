@@ -13,7 +13,7 @@ models:
     columns:
       - name: charge_snapshot_id
         description: A primary key for daily rate_plan_charges at the subscription, charge_id grain.
-        tests:
+        data_tests:
           - unique
           - not_null
   - name: wk_finance_mart_atr_myb_fy22_snapshot
@@ -21,26 +21,26 @@ models:
     columns:
       - name: charge_id
         description: A primary key for unique subscription charges.
-        tests:
+        data_tests:
           - unique
           - not_null
   - name: dim_product_detail_api_sandbox
     columns:
       - name: dim_product_detail_id
         description: The unique ID of each row in dim_product_detail, based on product rate plan charge ID.
-        tests:
+        data_tests:
           - unique:
               severity: warn
           - not_null:
               severity: warn
       - name: dim_product_tier_id
         description: The unique ID of a product tier determined in dim_product_tier.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_id
         description: The ID of the product that contains the product rate plan.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_name
@@ -119,7 +119,7 @@ models:
         description: "rate plan name from Zuora product source"
       - name: product_tier_historical
         description: Product pricing tiers prior to [tier renaming](https://gitlab-com.gitlab.io/packaging-and-pricing/pricing-handbook/handbook/renaming_tiers/) (early 2021).
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_delivery_type
@@ -130,21 +130,21 @@ models:
         description: "Numeric product pricing tier, independent of delivery type"
       - name: product_tier
         description: Product [pricing tiers](https://about.gitlab.com/handbook/marketing/strategic-marketing/tiers/) for both SaaS and Self-Managed customers. Includes the mapping from SaaS - Silver to SaaS - Premium, and from SaaS - Gold to SaaS - Ultimate.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
   - name: prep_product_tier_api_sandbox
     columns:
       - name: dim_product_tier_id
         description: "The unique identifier of Pricing tiers for Zuora Products"
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
               severity: warn
       - name: product_tier_historical
         description: Product pricing tiers prior to [tier renaming](https://gitlab-com.gitlab.io/packaging-and-pricing/pricing-handbook/handbook/renaming_tiers/) (early 2021).
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -153,7 +153,7 @@ models:
         description: Pulls the product tier from `product_tier_historical` with the delivery type removed
       - name: product_tier_name
         description: Product [pricing tiers](https://about.gitlab.com/handbook/marketing/strategic-marketing/tiers/) for both SaaS and Self-Managed customers. Includes the mapping from SaaS - Silver to SaaS - Premium, and from SaaS - Gold to SaaS - Ultimate.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_tier_name_short
@@ -168,7 +168,7 @@ models:
     columns:
       - name: dim_billing_account_id
         description: Unique id of the Zuora account
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -196,7 +196,7 @@ models:
     description: Prep table for Zuora Amendments that increment subscription versions. This prep table will be used in Facts and Dimensions.
     columns:
       - name: dim_amendment_id
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -205,7 +205,7 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -220,41 +220,41 @@ models:
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct
       - name: billing_account_number
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: subscription_name_slugify
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: subscription_name
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: oldest_subscription_in_cohort
       - name: subscription_lineage
       - name: arr_month
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: subscription_cohort_month
       - name: subscription_cohort_quarter
       - name: mrr
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: months_since_subscription_cohort_start
       - name: quarters_since_subscription_cohort_start
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: billing_account_name
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_tier_name
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: unit_of_measure
@@ -289,7 +289,7 @@ models:
         description: The unique identifier of the subscription
       - name: subscription_status
         description: The status of the subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -316,7 +316,7 @@ models:
         description: The month when the subscription term ends. This month is the same as the term end month or the cancelation month, as appropriate.
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -329,7 +329,7 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -341,7 +341,7 @@ models:
       - name: dim_billing_account_id_invoice_owner
       - name: dim_crm_opportunity_id
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_subscription_id_previous
@@ -350,7 +350,7 @@ models:
         description: The unique identifier of the subscription
       - name: subscription_status
         description: The status of the subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -377,7 +377,7 @@ models:
         description: The month when the subscription term ends. This month is the same as the term end month or the cancelation month, as appropriate.
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -395,7 +395,7 @@ models:
     columns:
       - name: mrr_id
         description: The unique identifier of the MRR.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -404,12 +404,12 @@ models:
         description: The identifier of date month in dim_date
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscriptions table
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_product_detail_id
         description: The identifier of product details in dim_product_detail
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_billing_account_id
@@ -427,7 +427,7 @@ models:
     columns:
       - name: mrr_id
         description: The unique identifier of the MRR.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique
@@ -435,24 +435,24 @@ models:
         description: The identifier of date month in dim_date
       - name: dim_charge_id
         description: join key for dim_charge
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_billing_account_id
         description: join key for dim_billing_account
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_crm_account_id
         description: join key for dim_crm_account
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscription table
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_product_detail_id
         description: The identifier of product details in dim_product_detail
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_billing_account_id
@@ -469,7 +469,7 @@ models:
     columns:
       - name: dim_order_id
         description: Unique identifier of an order
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -478,19 +478,19 @@ models:
       - name: order_created_date
       - name: order_date
       - name: order_number
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
               severity: warn
       - name: order_state
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
               values: ['Complete', 'Executing']
       - name: order_status
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: is_created_by_migration
@@ -498,7 +498,7 @@ models:
     columns:
       - name: dim_product_detail_id
         description: The unique ID of each row in dim_product_detail, based on product rate plan charge ID.
-        tests:
+        data_tests:
           - unique:
               severity: warn
           - not_null:
@@ -507,7 +507,7 @@ models:
         description: The unique ID of a product tier determined in dim_product_tier.
       - name: product_id
         description: The ID of the product that contains the product rate plan.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_name
@@ -586,7 +586,7 @@ models:
         description: "rate plan name from Zuora product source"
       - name: product_tier_historical
         description: Product pricing tiers prior to [tier renaming](https://gitlab-com.gitlab.io/packaging-and-pricing/pricing-handbook/handbook/renaming_tiers/) (early 2021).
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_delivery_type
@@ -597,7 +597,7 @@ models:
         description: "Numeric product pricing tier, independent of delivery type"
       - name: product_tier
         description: Product [pricing tiers](https://about.gitlab.com/handbook/marketing/strategic-marketing/tiers/) for both SaaS and Self-Managed customers. Includes the mapping from SaaS - Silver to SaaS - Premium, and from SaaS - Gold to SaaS - Ultimate.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_category
@@ -606,14 +606,14 @@ models:
     columns:
       - name: dim_product_tier_id
         description: "The unique identifier of Pricing tiers for Zuora Products"
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
               severity: warn
       - name: product_tier_historical
         description: Product pricing tiers prior to [tier renaming](https://gitlab-com.gitlab.io/packaging-and-pricing/pricing-handbook/handbook/renaming_tiers/) (early 2021).
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -622,7 +622,7 @@ models:
         description: Pulls the product tier from `product_tier_historical` with the delivery type removed
       - name: product_tier_name
         description: Product [pricing tiers](https://about.gitlab.com/handbook/marketing/strategic-marketing/tiers/) for both SaaS and Self-Managed customers. Includes the mapping from SaaS - Silver to SaaS - Premium, and from SaaS - Gold to SaaS - Ultimate.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_tier_name_short
@@ -639,7 +639,7 @@ models:
     columns:
       - name: dim_billing_account_id
         description: Unique id of the Zuora account
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -667,7 +667,7 @@ models:
     description: Prep table for Zuora Amendments that increment subscription versions. This prep table will be used in Facts and Dimensions.
     columns:
       - name: dim_amendment_id
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -676,7 +676,7 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -691,41 +691,41 @@ models:
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct
       - name: billing_account_number
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: subscription_name_slugify
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: subscription_name
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: oldest_subscription_in_cohort
       - name: subscription_lineage
       - name: arr_month
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: subscription_cohort_month
       - name: subscription_cohort_quarter
       - name: mrr
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: months_since_subscription_cohort_start
       - name: quarters_since_subscription_cohort_start
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: billing_account_name
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: product_tier_name
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: unit_of_measure
@@ -760,7 +760,7 @@ models:
         description: The unique identifier of the subscription
       - name: subscription_status
         description: The status of the subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -787,7 +787,7 @@ models:
         description: The month when the subscription term ends. This month is the same as the term end month or the cancelation month, as appropriate.
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -800,7 +800,7 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -812,7 +812,7 @@ models:
       - name: dim_billing_account_id_invoice_owner
       - name: dim_crm_opportunity_id
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_subscription_id_previous
@@ -821,7 +821,7 @@ models:
         description: The unique identifier of the subscription
       - name: subscription_status
         description: The status of the subscription
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -848,7 +848,7 @@ models:
         description: The month when the subscription term ends. This month is the same as the term end month or the cancelation month, as appropriate.
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -866,7 +866,7 @@ models:
     columns:
       - name: mrr_id
         description: The unique identifier of the MRR.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -875,12 +875,12 @@ models:
         description: The identifier of date month in dim_date
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscriptions table
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_product_detail_id
         description: The identifier of product details in dim_product_detail
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_billing_account_id
@@ -898,7 +898,7 @@ models:
     columns:
       - name: mrr_id
         description: The unique identifier of the MRR.
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique
@@ -906,24 +906,24 @@ models:
         description: The identifier of date month in dim_date
       - name: dim_charge_id
         description: join key for dim_charge
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_billing_account_id
         description: join key for dim_billing_account
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_crm_account_id
         description: join key for dim_crm_account
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscription table
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_product_detail_id
         description: The identifier of product details in dim_product_detail
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_billing_account_id
@@ -946,41 +946,41 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: Unique identifier of a billing account
-        tests:
+        data_tests:
           - not_null
       - name: adjustment
         description: Amount of ARR which needs to be adjusted for the true-up
-        tests:
+        data_tests:
           - not_null
   - name: dim_order_action_central_sandbox
     columns:
       - name: dim_order_action_id
         description: Unique identifier of a version of an order action
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
               severity: warn
       - name: dim_order_id
         description: Join key for dim_order_central_sandbox
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscriptions table
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: dim_amendment_id
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: order_action_type
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
@@ -1003,7 +1003,7 @@ models:
     columns:
       - name: dim_order_id
         description: Unique identifier of an order
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - unique:
@@ -1012,17 +1012,17 @@ models:
       - name: order_created_date
       - name: order_date
       - name: order_number
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: order_state
-        tests:
+        data_tests:
           - not_null:
               severity: warn
           - accepted_values:
               values: ['Complete', 'Executing']
       - name: order_status
-        tests:
+        data_tests:
           - not_null:
               severity: warn
       - name: is_created_by_migration
@@ -1031,7 +1031,7 @@ models:
     columns:
       - name: dim_charge_id
         description: Unique identifier for a rate plan charge in Zuora. These are transactions in Zuora Billing.
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: fct_charge_central_sandbox
@@ -1039,11 +1039,11 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null
       - name: dim_charge_id
         description: The unique identifier of a verion of a rate plan charge
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_product_detail_id
@@ -1067,7 +1067,7 @@ models:
     columns:
       - name: dim_charge_id
         description: The unique identifier of a rate plan charge
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: driveload_zuora_revenue_rc_rollforward_report
@@ -1118,39 +1118,39 @@ models:
     columns:
       - name: primary_key
         description: Primary key of the model (arr month, subscription name, product detail id),
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: billing_account_number
-        tests:
+        data_tests:
           - not_null
       - name: subscription_name_slugify
-        tests: 
+        data_tests: 
           - not_null
       - name:  subscription_name
-        tests:
+        data_tests:
           - not_null
       - name: arr_month 
-        tests:
+        data_tests:
           - not_null
       - name: mrr
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
       - name: billing_account_name 
-        tests: 
+        data_tests: 
           - not_null
       - name: product_tier_name 
-        tests:
+        data_tests:
           - not_null
 
   - name: rpt_invoice_items_detail
     description: Report that provides details of Zuora invoices. The report also enriches invoice item details with crm customer information.
     columns:
       - name: invoice_item_id
-        tests:
+        data_tests:
           - not_null
           - unique
   
@@ -1254,7 +1254,7 @@ models:
     
   - name: wk_prep_yearlies_actual
     description: a model containing actual values for the yearly items. The model contains both SAFE and MNPI data. 
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - yearly_name
@@ -1262,7 +1262,7 @@ models:
     columns:
       - name: yearly_name
         description: name of the yearly item
-        tests:
+        data_tests:
           - not_null
       - name: source_table
         description: Snowflake tables where the data is sourced
@@ -1273,7 +1273,7 @@ models:
 
   - name: wk_yearlies_target_attainment_mnpi
     description: a model containing both yearlies targets and actuals values. The model contains both SAFE and MNPI data. 
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - yearly_name

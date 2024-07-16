@@ -60,7 +60,9 @@ final AS (
     gitlab_plan_is_paid,
     namespace_member_count  AS current_member_count,
     namespace_project_count AS current_project_count,
-    has_code_suggestions_enabled
+    has_code_suggestions_enabled,
+    is_deleted,
+    is_deleted_updated_at
   FROM prep_namespace
   WHERE is_currently_valid = TRUE
 
@@ -69,7 +71,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@snalamaru",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2020-12-29",
-    updated_date="2024-01-22"
+    updated_date="2024-07-09"
 ) }}

@@ -16,9 +16,9 @@ from kube_secrets import (
     SNOWFLAKE_LOAD_WAREHOUSE,
     SNOWFLAKE_PASSWORD,
     SNOWFLAKE_USER,
-    SNOWFLAKE_PROVISIONER_USER,
-    SNOWFLAKE_PROVISIONER_PW,
-    SNOWFLAKE_PROVISIONER_WAREHOUSE,
+    PERMISSION_BOT_USER,
+    PERMISSION_BOT_PASSWORD,
+    PERMISSION_BOT_WAREHOUSE,
 )
 
 from kubernetes_helpers import get_affinity, get_toleration, is_local_test
@@ -76,7 +76,7 @@ purge_clones = KubernetesPodOperator(
 # Task 2
 drop_dev_cmd = f"""
     {clone_repo_cmd} &&
-    analytics/orchestration/drop_snowflake_objects.py drop_dev_schemas
+    analytics/orchestration/drop_snowflake_objects.py drop_stale_dev_tables
 """
 purge_dev_schemas = KubernetesPodOperator(
     **gitlab_defaults,
@@ -97,8 +97,6 @@ purge_dev_schemas = KubernetesPodOperator(
     dag=dag,
 )
 
-# Commenting out temporarily while awaiting updated NSP for `snowflake_provisioner` role
-'''
 # Task 3: deprovision stale users in Snowflake
 test_run_arg = "--test-run" if is_local_test() else "--no-test-run"
 
@@ -112,10 +110,10 @@ purge_dev_schemas = KubernetesPodOperator(
     task_id="deprovision_users",
     name="deprovision_users",
     secrets=[
-        SNOWFLAKE_PROVISIONER_USER,
-        SNOWFLAKE_PROVISIONER_PW,
+        PERMISSION_BOT_USER,
+        PERMISSION_BOT_PASSWORD,
         SNOWFLAKE_ACCOUNT,
-        SNOWFLAKE_PROVISIONER_WAREHOUSE,
+        PERMISSION_BOT_WAREHOUSE,
     ],
     env_vars=pod_env_vars,
     arguments=[deprovision_users_cmd],
@@ -123,4 +121,3 @@ purge_dev_schemas = KubernetesPodOperator(
     tolerations=get_toleration("extraction"),
     dag=dag,
 )
-'''

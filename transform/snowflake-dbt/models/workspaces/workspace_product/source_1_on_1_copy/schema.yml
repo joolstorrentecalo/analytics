@@ -93,7 +93,7 @@ models:
       - name: subscription_name
         description: Zuora subscription name
       - name: subscription_id
-        tests:
+        data_tests:
           - not_null
           - unique
         description: Zuora subscription id

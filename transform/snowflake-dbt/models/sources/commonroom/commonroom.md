@@ -41,3 +41,9 @@ No no use this column to join the data as it is internal column.
 `member_ids` is a comma separated string of the contact's tokens.
 
 {% enddocs %}
+
+{% docs _file_name %}
+
+An original file name from where a record come from. The main purpose is for tracking the lineage and data history.
+
+{% enddocs %}

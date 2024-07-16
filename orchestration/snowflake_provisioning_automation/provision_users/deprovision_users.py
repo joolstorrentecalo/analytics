@@ -18,7 +18,11 @@ import logging
 import time
 from typing import Tuple
 
-from snowflake_connection import SnowflakeConnection
+from snowflake_connection import (
+    SnowflakeConnection,
+    get_securityadmin_connection,
+    get_sysadmin_connection,
+)
 from provision_users import _provision
 from args_deprovision_users import parse_arguments
 
@@ -35,8 +39,6 @@ from utils_update_roles import (
     configure_logging,
 )
 from roles_struct import RolesStruct
-
-config_dict = os.environ.copy()
 
 
 def process_args() -> Tuple[list, list, str, str, str]:
@@ -148,17 +150,13 @@ def main():
     # else if users were NOT passed in to remove
     # then check if any snowflake_users are missing in roles.yml
     else:
-        account_usage_connection = SnowflakeConnection(
-            config_dict, "SYSADMIN", is_test_run=False
-        )
-        users_to_remove = get_users_to_remove(account_usage_connection)
-        account_usage_connection.dispose_engine()
+        sysadmin_connection = get_sysadmin_connection(is_test_run=False)
+        users_to_remove = get_users_to_remove(sysadmin_connection)
+        sysadmin_connection.dispose_engine()
     #
     logging.info(f"users_to_remove: {users_to_remove}")
 
-    securityadmin_connection = SnowflakeConnection(
-        config_dict, "SECURITYADMIN", is_test_run
-    )
+    securityadmin_connection = get_securityadmin_connection(is_test_run)
     deprovision_users(securityadmin_connection, users_to_remove)
     securityadmin_connection.dispose_engine()
 

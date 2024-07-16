@@ -151,11 +151,11 @@ transform/snowflake-dbt/models/marts/pumps_sensitive/       @jjstark @paul_armst
 
 /transform/snowflake-dbt/models/workspaces/workspace_people/         @pempey @iweeks @aperez349 @mccormack514 @lisvinueza @rakhireddy
 
-/transform/snowflake-dbt/models/workspaces/workspace_customer_success/  @mdrussell @snalamaru @chrissharp @michellecooper @bbutterfield @nk312 @jbudreski
+/transform/snowflake-dbt/models/workspaces/workspace_customer_success/  @mdrussell @snalamaru @chrissharp @michellecooper @bbutterfield @nk312 @jbudreski @iweeks
 
 /transform/snowflake-dbt/models/workspaces/workspace_product/           @cbraza @matthewpetersen @eneuberger @nraisinghani @mdrussell @snalamaru @dpeterson1 @nhervas @michellecooper @utkarsh060
 
-/transform/snowflake-dbt/models/workspaces/workspace_marketing/         @rkohnke @degan 
+/transform/snowflake-dbt/models/workspaces/workspace_marketing/         @rkohnke @degan @snalamaru @chrissharp @lisvinueza
 
 # ======
 # dbt data file Overwrites

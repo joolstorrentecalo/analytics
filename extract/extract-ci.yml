@@ -13,6 +13,7 @@
     - if [ $BRANCH_NAME = "master" ]; then export SNOWFLAKE_PROD_DATABASE="PROD"; else export SNOWFLAKE_PROD_DATABASE="${CI_COMMIT_REF_NAME^^}_PROD"; fi
     - echo $SNOWFLAKE_PREP_DATABASE
     - echo $SNOWFLAKE_PROD_DATABASE
+    - export GCP_SERVICE_CREDS=$(echo "$ENCODED_GCP" | base64 -d)
   tags:
     - analytics
 

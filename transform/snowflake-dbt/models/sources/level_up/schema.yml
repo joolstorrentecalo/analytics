@@ -4,7 +4,7 @@ models:
     description: Returns information when a user enrolls, changes status, earns a certificate, or has their access revoked in a course.
     columns:
       - name: id
-        tests:
+        data_tests:
           - not_null
       - name: company_id
       - name: course_sku
@@ -12,10 +12,10 @@ models:
       - name: company_id
       - name: notifiable_id
       - name: course_action
-        tests:
+        data_tests:
           - not_null
       - name: event_timestamp
-        tests:
+        data_tests:
           - not_null
       - name: transaction_type
       - name: username
@@ -39,7 +39,7 @@ models:
     description: Returns information when a course is completed by a user
     columns:
       - name: id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: company_id
@@ -48,7 +48,7 @@ models:
       - name: notifiable_id
       - name: course_action
       - name: event_timestamp
-        tests:
+        data_tests:
           - not_null
       - name: title
       - name: transaction_type
@@ -69,7 +69,7 @@ models:
       - name: sf_account_id
       - name: sf_contact_id
       - name: uploaded_at
-        tests:
+        data_tests:
           - not_null
   - name: level_up_course_views
     description: Returns information about pages within courses that are viewed as a learner
@@ -85,7 +85,7 @@ models:
       - name: section_slug
       - name: section_title
       - name: event_timestamp
-        tests:
+        data_tests:
           - not_null
       - name: topic_id
       - name: topic_title
@@ -105,7 +105,7 @@ models:
       - name: sf_account_id
       - name: sf_contact_id
       - name: uploaded_at
-        tests:
+        data_tests:
           - not_null
   - name: level_up_logins
     description: Returns information about logins. It includes browser & IP Address information
@@ -116,7 +116,7 @@ models:
       - name: company_subdomain
       - name: event
       - name: event_timestamp
-        tests:
+        data_tests:
           - not_null
       - name: user_agent
       - name: username
@@ -126,7 +126,7 @@ models:
       - name: sf_account_id
       - name: sf_contact_id
       - name: uploaded_at
-        tests:
+        data_tests:
           - not_null
   - name: level_up_visits
     description: Returns information about logged-in users visiting the platform
@@ -136,7 +136,7 @@ models:
       - name: company_subdomain
       - name: event
       - name: event_timestamp
-        tests:
+        data_tests:
           - not_null
       - name: username
       - name: user_id
@@ -147,5 +147,5 @@ models:
       - name: sf_account_id
       - name: sf_contact_id
       - name: uploaded_at
-        tests:
+        data_tests:
           - not_null

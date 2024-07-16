@@ -5,25 +5,25 @@ models:
     description: A log of compensation and compensation related updates. This model is temporary and is used for downstream models.
     columns:
       - name: compensation_update_id
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: employee_id
         description: Foreign Key to employee info
-        tests:
+        data_tests:
             - not_null
       - name: effective_date
         description: Date the compensation change goes into effect
-        tests:
+        data_tests:
           - not_null
       - name: compensation_type
       - name: compensation_change_reason
         description: Compensation can change because of promotions, role changes, annual reviews and for other reasons.
-        tests:
+        data_tests:
           - not_null
       - name: pay_rate
       - name: compensation_value
-        tests:
+        data_tests:
           - not_null
         meta:
           masking_policy: analyst_people_sensitive
@@ -34,12 +34,12 @@ models:
     description: This table tells us what the conversion is for local salary to USD.  Raw data format changed on 2022-04-22.
     columns:
       - name: conversion_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: employee_id 
         description: Foreign Key to employee info
-        tests:
+        data_tests:
           - not_null
       - name: effective_date
       - name: currency_conversion_factor
@@ -52,15 +52,15 @@ models:
     description: There are multiple bonuses that a team member can earn that are captured here. Raw JSON format changed on 2022-04-22.
     columns:
       - name: bonus_id
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: employee_id
         description: Foreign Key to employee info
-        tests:
+        data_tests:
             - not_null
       - name: bonus_type
-        tests:
+        data_tests:
           - not_null
 
   - name: bamboohr_directory_source
@@ -68,7 +68,7 @@ models:
     columns:
       - name: work_email
         tags: ["tdf"]
-        tests:
+        data_tests:
             - dbt_utils.expression_is_true:
                 expression: "ILIKE '%@%.%'"
   - name: bamboohr_emergency_contacts_source
@@ -92,14 +92,14 @@ models:
     description: This model shows changes in employment status (active, terminated, on leave, etc). Updates are captured in log-style.
     columns:
       - name: status_id
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: employee_id
-        tests:
+        data_tests:
             - not_null
       - name: termination_type
-        tests:
+        data_tests:
           - accepted_values:
               values: ['Termination (Involuntary)', 'Resignation (Voluntary)', 'Death']
         meta:
@@ -108,7 +108,7 @@ models:
             
   - name: bamboohr_id_employee_number_mapping_source
     description: This model is based off the custom report in bamboohr to capture additional bamboohr information. This captures a snapshot of custom fields in bamboohr everyday. Note - field names can be added at various times through this report depending on use case and it is important to understand when we started capturing these data points.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_number
@@ -148,25 +148,25 @@ models:
     description: This model shows the details (manager, department, and division) that an employee is in at a given point in time. This includes historical information.
     columns:
       - name: job_id
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: employee_id
-        tests:
+        data_tests:
             - not_null
       - name: job_title
-        tests:
+        data_tests:
             - not_null
       - name: effective_date
-        tests:
+        data_tests:
             - not_null
       - name: department
       - name: division
       - name: entity
-        tests:
+        data_tests:
             - not_null
       - name: reports_to
-        tests:
+        data_tests:
             - not_null
       - name: job_role      
 
@@ -174,12 +174,12 @@ models:
     description: Provides on-target-earning as related to sales roles.  Raw data format changes on 2022-04-22.
     columns:
       - name: target_earnings_update_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: employee_id
         description: Foreign Key to employee info
-        tests:
+        data_tests:
           - not_null
       - name: effective_date
       - name: variable_pay

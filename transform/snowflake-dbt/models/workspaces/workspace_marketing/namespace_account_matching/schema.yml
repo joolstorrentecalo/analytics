@@ -5,40 +5,40 @@ models:
   - name: wk_fct_user_namespace_account_company
     columns:
       - name: user_namespace_account_company_pk
-        tests:
+        data_tests:
           - unique
   - name: wk_mart_namespace_company_account
   - name: rpt_namespace_company_account
   - name: map_project_namespace
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - dim_project_sk
             - dim_namespace_sk
     columns:
       - name: dim_project_sk
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: dim_namespace_sk
-        tests:
+        data_tests:
           - unique
           - not_null
           
   - name: wk_fct_direct_membership
     columns:
       - name: direct_member_pk
-        tests:
+        data_tests:
           - unique
 
   - name: wk_fct_group_share
     columns:
       - name: group_share_pk
-        tests:
+        data_tests:
           - unique
 
   - name: wk_fct_user_membership
     columns:
       - name: user_membership_pk
-        tests:
+        data_tests:
           - unique

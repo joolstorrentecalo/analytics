@@ -150,7 +150,7 @@ run-dbt-docs:
 	cd transform/snowflake-dbt/ && poetry run dbt docs generate --target docs && poetry run dbt docs serve --port 8081;
 
 clean-dbt:
-	cd transform/snowflake-dbt/ && poetry run dbt clean && poetry env remove python
+	cd transform/snowflake-dbt/ && poetry run dbt clean && poetry env remove python3
 
 ########################################################################################################################
 # Python

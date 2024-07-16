@@ -35,7 +35,9 @@ WITH prep_note AS (
       discussion_id,
       cached_markdown_version,
       resolved_by_push,
-      action_type
+      action_type,
+      is_deleted,
+      is_deleted_updated_at
     FROM {{ ref('prep_note') }}
 
 )
@@ -43,7 +45,7 @@ WITH prep_note AS (
 {{ dbt_audit(
     cte_ref="prep_note",
     created_by="@mpeychet_",
-    updated_by="michellecooper",
+    updated_by="utkarsh060",
     created_date="2021-06-22",
-    updated_date="2023-11-22"
+    updated_date="2024-07-09"
 ) }}

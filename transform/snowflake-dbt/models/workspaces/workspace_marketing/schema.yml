@@ -51,11 +51,11 @@ models:
     columns:
       - name: dim_company_id
         description: The surrogate key for the dimension table. Derived from the `company_id` column.
-        tests:
+        data_tests:
           - unique
       - name: company_id
         description: A unique id for the headquarters of a company. Taken from the ZoomInfo company ID.
-        tests:
+        data_tests:
           - not_null
       - name: source_company_id
         description: The current company_id for the IDs that have been merged together.
@@ -87,11 +87,11 @@ models:
     columns:
       - name: dim_company_id
         description: The surrogate key for the dimension table. Derived from the `company_id` column.
-        tests:
+        data_tests:
           - not_null
       - name: dim_user_id
         description: The surrogate key for the dimension table. Derived from the gitlab_dotcom_user_id column.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: gitlab_dotcom_user_id

@@ -5,14 +5,14 @@ models:
     description: Audit event details parsed into key-value pairs
     columns:
       - name: audit_event_id
-        tests:
+        data_tests:
           - not_null
       - name: key_name
-        tests:
+        data_tests:
           - not_null
       - name: key_value
         meta:
           sensitive: true
       - name: created_at
-        tests:
+        data_tests:
           - not_null

@@ -4,7 +4,7 @@ models:
   - name: wk_employees
     columns:
       - name: employee_number
-        tests:
+        data_tests:
           - not_null
       - name: employee_id
       - name: first_name
@@ -40,7 +40,7 @@ models:
   - name: wk_job_history
     columns: 
       - name: employee_id
-        tests:
+        data_tests:
           - not_null
       - name: full_name
       - name: employment_status

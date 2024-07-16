@@ -87,3 +87,9 @@ A manual list of top level namespace paths and ids that should be considered int
 Prior to using Net Annual Recurring Revneue (ARR) as for financial reporting, GitLab calculated Net Incremental Annual Contract Value (IACV). This CSV maps the ratio between the two metrics by order type and user segment so older opportunities with IACV can be adjusted to show ARR.
 
 {% enddocs %}
+
+{% docs gds_case_inputs %}
+
+Replaces boneyard.case_data . Provides keys and values for SFDC case creation using the pump_smb_daily_case_automation model.
+
+{% enddocs %}

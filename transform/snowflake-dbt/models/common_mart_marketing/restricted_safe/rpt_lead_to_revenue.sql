@@ -36,6 +36,7 @@
       person_base.mql_date_latest_pt,
       person_base.accepted_date,
       person_base.status,
+      person_base.person_role,
       person_base.lead_source,
       person_base.is_inquiry,
       person_base.is_mql,
@@ -443,6 +444,7 @@
       email_hash,
       email_domain_type,
       sfdc_record_type,
+      person_role,
       person_first_country,
       person_base_with_tp.source_buckets,
       true_inquiry_date,
@@ -725,5 +727,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-07-01",
+    updated_date="2024-07-03",
   ) }}

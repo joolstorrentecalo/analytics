@@ -16,12 +16,12 @@
                 database=target.database,
                 schema=this.schema,
                 identifier=this.table,
-                ) -%}      
+                ) -%}
 
             {% if source_relation != None %}
 
                 {% set min_created_date %}
-                    SELECT LEAST(MIN(dbt_created_at), CURRENT_TIMESTAMP()) AS min_ts 
+                    SELECT LEAST(MIN(dbt_created_at), CURRENT_TIMESTAMP()) AS min_ts
                     FROM {{ this }}
                 {% endset %}
 
@@ -40,7 +40,6 @@
             CURRENT_TIMESTAMP()               AS dbt_created_at
 
         {% endif %}
-    
     {% endif %}
 
     FROM {{ cte_ref }}

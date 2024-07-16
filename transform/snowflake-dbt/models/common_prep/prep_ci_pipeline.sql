@@ -51,7 +51,9 @@
       gitlab_dotcom_ci_pipelines_source.is_protected, 
       gitlab_dotcom_ci_pipelines_source.failure_reason          AS failure_reason_id,
       {{ map_ci_pipeline_failure_reason('failure_reason_id') }} AS failure_reason,
-      gitlab_dotcom_ci_pipelines_source.ci_pipeline_iid         AS ci_pipeline_internal_id
+      gitlab_dotcom_ci_pipelines_source.ci_pipeline_iid         AS ci_pipeline_internal_id,
+      gitlab_dotcom_ci_pipelines_source.is_deleted              AS is_deleted,
+      gitlab_dotcom_ci_pipelines_source.is_deleted_updated_at   AS is_deleted_updated_at
     FROM gitlab_dotcom_ci_pipelines_source
     LEFT JOIN prep_project ON gitlab_dotcom_ci_pipelines_source.project_id = prep_project.dim_project_id
     LEFT JOIN dim_namespace_plan_hist ON prep_project.ultimate_parent_namespace_id = dim_namespace_plan_hist.dim_namespace_id
@@ -66,7 +68,7 @@
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet_",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2021-06-10",
-    updated_date="2023-10-30"
+    updated_date="2024-07-09"
 ) }}

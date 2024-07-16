@@ -22,30 +22,30 @@ models:
   columns:
   - name: completed_date
     description: The date the form was submitted.
-    tests:
+    data_tests:
     - not_null
   - name: submitter_name
     description: The name of the submitter, if one was provided.
   - name: correct_responses
     description: The number of correctly submitted responses.
-    tests:
+    data_tests:
     - not_null
   - name: total_responses
     description: The number of total responses submited.
-    tests:
+    data_tests:
     - not_null
   - name: is_team_member
     description: A boolean flag that looks for an `@gitlab.com` email address to identify if someone is a team member.
-    tests:
+    data_tests:
     - not_null
   - name: submitter_email
     description: If the person is a team member, share their email; otherwise, this is a hash.
   - name: certificate_name
     description: The name of the certificate- there are multiple kinds (Values, Ally, Certification, etc.)
-    tests:
+    data_tests:
     - not_null
   - name: last_updated_at
-    tests:
+    data_tests:
     - not_null
 - name: sheetload_clari_forecast
 - name: sheetload_clari_ai_projection
@@ -112,14 +112,14 @@ models:
   description: Base model for marketing territory mapping.
   columns:
     - name: segment
-      tests:
+      data_tests:
         - not_null
     - name: region
-      tests:
+      data_tests:
         - not_null
     - name: area
     - name: territory
-      tests:
+      data_tests:
         - not_null
 - name: sheetload_values_certificate
 - name: sheetload_yc_companies
@@ -142,14 +142,14 @@ models:
   description: This provides a data model of the headcount and hire planned by month broken into 3 levels - company, division, and department. This combines the hire_plan_xf model for data between 2019.02 and 2020.05, and uses rehire_plan from 2020.06 onwards. The headcount plan was changed in 2020 to account for COVID impact.
   columns:
     - name: month_date
-      tests:
+      data_tests:
         - not_null
     - name: breakout_type
       description: Identifies if the plan is at a department or division level, or aggregated up to all company.
-      tests:
+      data_tests:
         - not_null
     - name: department
-      tests:
+      data_tests:
         - not_null
     - name: division
     - name: planned_headcount
@@ -175,7 +175,7 @@ models:
   description: Internal MR ID that were deleted and not captured by our system.
   columns:
     - name: deleted_merge_request_id
-      tests:
+      data_tests:
         - not_null
         - unique
 - name: sheetload_sales_analytics_tableau_rls_users
@@ -186,12 +186,12 @@ models:
   description: Custom Dimension Name field from Google Analytics (GA360). Custom dimensions are subject to change or new dimensions may be added. This Google Sheet will automatically update at the 1st of every month powered by a Google Apps Script function.
   columns: 
     - name: dimension_name
-      tests:
+      data_tests:
         - not_null 
     - name: dimension_index
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: dimension_scope
-      tests:
+      data_tests:
         - not_null

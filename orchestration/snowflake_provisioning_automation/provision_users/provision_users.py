@@ -22,7 +22,11 @@ import time
 from typing import Tuple
 
 from args_provision_users import parse_arguments
-from snowflake_connection import SnowflakeConnection
+from snowflake_connection import (
+    SnowflakeConnection,
+    get_securityadmin_connection,
+    get_sysadmin_connection,
+)
 from convert_sql_templates import convert_to_sql_statements
 
 # needed to import shared utils module
@@ -47,24 +51,6 @@ def process_args() -> Tuple[list, bool, bool]:
         args.test_run,
     )
     return parsed_args
-
-
-def _get_snowflake_connection(role: str, is_test_run: bool):
-    """helper method to return snowflake_connection for particular role"""
-    config_dict = os.environ.copy()
-    return SnowflakeConnection(config_dict, role, is_test_run)
-
-
-def get_securityadmin_connection(is_test_run: bool):
-    """return securityadmin snowflake connection"""
-    role = "SECURITYADMIN"
-    return _get_snowflake_connection(role, is_test_run)
-
-
-def get_sysadmin_connection(is_test_run: bool):
-    """return sysadmin snowflake connection"""
-    role = "SYSADMIN"
-    return _get_snowflake_connection(role, is_test_run)
 
 
 def _provision(

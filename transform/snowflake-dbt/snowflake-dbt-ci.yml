@@ -139,7 +139,7 @@
     - dbt deps $CI_PROFILE_TARGET
     - dbt $DBT_CI_STATEMENT $CI_PROFILE_TARGET || FAILED=true
     - if [ $FAILED ]; then echo "Invocation process failed" && exit 5; fi
-  
+
 
 📚✏️generate_dbt_docs:
   image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
@@ -271,7 +271,6 @@
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config # Adds gitlab.com as known host
   tags:
     - analytics
-  when: manual
   only:
     changes:
       - "transform/snowflake-dbt/models/**/*.sql"
@@ -296,7 +295,7 @@
         config.schema:restricted_safe_common_prep
         config.schema:restricted_safe_legacy
         config.schema:restricted_safe_workspace_finance
-        config.schema:restricted_safe_workspace_sales 
+        config.schema:restricted_safe_workspace_sales
         config.schema:restricted_safe_workspace_marketing
         config.schema:restricted_safe_workspace_engineering
       --output json > safe_models.json

@@ -23,6 +23,8 @@ WITH source AS
            profiles::VARCHAR                                                                 AS profiles,
            segment_names::VARCHAR                                                            AS segment_names,
            tags::VARCHAR                                                                     AS tags,
+           job_title::VARCHAR                                                                AS job_title,
+           last_organization::VARCHAR                                                        AS last_organization,
            _uploaded_at::TIMESTAMP                                                           AS _uploaded_at,
            _file_name::VARCHAR                                                               AS _file_name
     FROM source

@@ -35,6 +35,8 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       dim_namespace.gitlab_plan_id                                AS current_gitlab_plan_id,
       plan.plan_name_modified                                     AS current_gitlab_plan_title,
       dim_namespace.current_project_count,
+      dim_namespace.is_deleted,
+      dim_namespace.is_deleted_updated_at,
       DATEDIFF(day, namespace_created_date, current_date)         AS days_since_namespace_creation,
       MIN(pql.created_at)::DATE                                   AS handraise_pql_date,
       MAX(IFF(TIMESTAMPDIFF(minute, members.invite_accepted_at, namespace_created_at) BETWEEN 0 AND 2, 1, 0))
@@ -52,7 +54,7 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
     WHERE namespace_is_internal = FALSE
       AND namespace_creator_is_blocked = FALSE
       AND namespace_is_ultimate_parent = TRUE
-    GROUP BY 1,2,3,4,5,6,7,8,9,10,11
+    GROUP BY ALL
 
 ), trials AS ( -- Current trial data does not specify what type of trial was started
     
@@ -287,8 +289,8 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       namespaces.ultimate_parent_namespace_id,
       namespaces.namespace_created_at, 
       namespaces.namespace_created_date,
-	  DATE_TRUNC('month', namespaces.namespace_created_date)            AS namespace_created_month,
-      DATE_TRUNC('week', namespaces.namespace_created_date)             AS namespace_created_week,
+	    DATE_TRUNC('month', namespaces.namespace_created_date)               AS namespace_created_month,
+      DATE_TRUNC('week', namespaces.namespace_created_date)                AS namespace_created_week,
       namespaces.creator_id,
       creator_attributes.sfdc_record_id, -- Joined from dim_crm_person through dim_marketing_contact
       namespaces.namespace_type, -- Not limited to Group namespaces to facilitate broader analyses if needed 
@@ -300,7 +302,7 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       namespaces.days_since_namespace_creation,
       namespaces.handraise_pql_date,
       IFF(namespaces.is_namespace_created_within_2min_of_creator_invite_acceptance = 1, TRUE, FALSE) 
-                                                                          AS is_namespace_created_within_2min_of_creator_invite_acceptance, --consistent TRUE/FALSE formatting to match the rest of the resulting boolean values
+                                                                           AS is_namespace_created_within_2min_of_creator_invite_acceptance, --consistent TRUE/FALSE formatting to match the rest of the resulting boolean values
       trials.trial_start_date,
       trials.trial_type,
       trials.trial_type_name,
@@ -344,9 +346,11 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       COALESCE(total_stages_adopted, 0)                                     AS total_stages_adopted, --stages per ultimate namespace up to current
       billable_members.billable_member_count                                AS current_billable_member_count,
       storage.storage_gib                                                   AS current_month_storage_gib,
-	  first_last_activity.min_event_date                                    AS first_activity_date,
+	    first_last_activity.min_event_date                                    AS first_activity_date,
       first_last_activity.max_event_date                                    AS latest_activity_date,
-      team_activation.team_activation_date
+      team_activation.team_activation_date,
+      namespaces.is_deleted,
+      namespaces.is_deleted_updated_at
     FROM namespaces 
     LEFT JOIN trials
       ON namespaces.ultimate_parent_namespace_id = trials.ultimate_parent_namespace_id
@@ -368,7 +372,7 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
       ON namespaces.ultimate_parent_namespace_id = billable_members.ultimate_parent_namespace_id
     LEFT JOIN storage
       ON namespaces.ultimate_parent_namespace_id = storage.ultimate_parent_namespace_id
-	LEFT JOIN first_last_activity
+	  LEFT JOIN first_last_activity
       ON namespaces.ultimate_parent_namespace_id = first_last_activity.ultimate_parent_namespace_id 
     LEFT JOIN team_activation
       ON namespaces.ultimate_parent_namespace_id = team_activation.ultimate_parent_namespace_id  
@@ -381,5 +385,5 @@ namespaces AS ( --All currently existing namespaces within Gitlab.com. Filters o
     created_by="@snalamaru",
     updated_by="@utkarsh060",
     created_date="2023-11-10",
-    updated_date="2024-04-12"
+    updated_date="2024-07-09"
 ) }}

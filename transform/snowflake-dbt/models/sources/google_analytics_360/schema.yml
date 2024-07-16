@@ -5,11 +5,11 @@ models:
       description: Custom dimensions as found in Google Analytics Properties > Custom Definitions
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null
     - name: ga360_session_source
       description: "https://support.google.com/analytics/answer/2731565?hl=en"
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - visit_id
@@ -17,18 +17,18 @@ models:
               - visit_start_time
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null
         - name: visitor_id
-          tests:
+          data_tests:
             - not_null
         - name: visit_start_time
-          tests:
+          data_tests:
             - not_null
         - name: export_date
           description: Date the data is exported from Google Analytics into Big Query
     - name: ga360_session_hit_source
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null

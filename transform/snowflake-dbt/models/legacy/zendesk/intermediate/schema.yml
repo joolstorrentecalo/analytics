@@ -5,10 +5,10 @@ models:
       description: This is the base model for Zendesk ticket audit events.
       columns:
       - name: audit_id
-        tests:
+        data_tests:
             - not_null
       - name: ticket_id
-        tests:
+        data_tests:
             - not_null
     - name: zendesk_ticket_custom_fields
       description: Dimension / base model of only custom fields available for tickets with extra infromation.
@@ -18,22 +18,22 @@ models:
       description: This is the fully exploded, sensitive, zendesk ticket custom field values.
       columns:
       - name: ticket_custom_field_id
-        tests:
+        data_tests:
           - not_null:
               severity: warn
     - name: zendesk_ticket_metrics
       description: This is the base model for Zendesk ticket metrics.
       columns:
       - name: ticket_id
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: ticket_metrics_id
-        tests:
+        data_tests:
             - unique
             - not_null                  
     - name: zendesk_ticket_tags
       columns:
         - name: ticket_id
-          tests:
+          data_tests:
             - not_null
