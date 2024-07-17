@@ -21,7 +21,7 @@
   <<: *extract_definition
   script:
     - python3 -m pip install pytest-cov
-    - python3 -m pytest --cov --cov-report term --cov-report xml:coverage.xml
+    - python3 -m pytest --cov --cov-report term --cov-report xml:coverage.xml --junitxml=junit.xml
   only:
     changes:
       - "**/*.py"
@@ -33,7 +33,7 @@
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-      junit: coverage.xml
+      junit: junit.xml
     expire_in: 1 day
     when: on_success
 
