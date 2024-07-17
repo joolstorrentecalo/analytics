@@ -20,7 +20,8 @@
 ✅python_pytest:
   <<: *extract_definition
   script:
-    - python pytest --cov-report -v
+    - python3 -m pip install pytest-cov
+    - python3 -m pytest --cov-report -v
     - coverage report
     - coverage xml
   only:
