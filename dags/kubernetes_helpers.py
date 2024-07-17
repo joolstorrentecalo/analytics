@@ -1,6 +1,6 @@
 from os import environ as env
 
-
+# .
 def get_affinity_with_key_value(key, values):
     return {
         "nodeAffinity": {
