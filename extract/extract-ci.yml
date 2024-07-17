@@ -20,7 +20,7 @@
 ✅python_pytest:
   <<: *extract_definition
   script:
-    - python -m pytest --cov-report -v
+    - python pytest --cov-report -v
     - coverage report
     - coverage xml
   only:
