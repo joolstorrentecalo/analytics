@@ -4,7 +4,7 @@
     ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
     ('dim_crm_user','dim_crm_user'),
     ('mart_crm_person','mart_crm_person'),
-    ('sfdc_lead','sfdc_lead'),
+    ('sfdc_lead','sfdc_lead_source'),
     ('mart_crm_account','mart_crm_account'),
     ('mart_crm_event','mart_crm_event'),
     ('mart_crm_task','mart_crm_task'),
@@ -115,7 +115,8 @@
     ON mart_crm_person.sfdc_record_id = sfdc_lead.converted_contact_id  
   LEFT JOIN sales_dev_opps 
     ON converted_opportunity_id = dim_crm_opportunity_id 
-  WHERE converted_contact_id IS NOT NULL 
+  WHERE converted_contact_id IS NOT NULL
+  AND sfdc_lead.is_deleted = FALSE
 
 ), contacts_on_opps AS (
 

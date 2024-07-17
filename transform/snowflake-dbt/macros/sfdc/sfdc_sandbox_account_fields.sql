@@ -121,7 +121,7 @@ WITH map_merged_crm_account AS (
 ), sfdc_record_type AS (
 
     SELECT *
-    FROM {{ ref('sfdc_record_type') }}
+    FROM {{ ref('sfdc_record_type_source') }}
 
 ), pte_scores AS (
 

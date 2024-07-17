@@ -8,9 +8,8 @@
     ('dim_crm_user','dim_crm_user'),
     ('dim_date', 'dim_date'),
     ('mart_crm_person','mart_crm_person'),
-    ('sfdc_campaign_member','sfdc_campaign_member'),
     ('mart_crm_account','mart_crm_account'),
-    ('sfdc_campaign_member', 'sfdc_campaign_member'),
+    ('sfdc_campaign_member', 'sfdc_campaign_member_source'),
     ('wk_marketo_activity_fill_out_form', 'wk_marketo_activity_fill_out_form'),
     ('wk_marketo_activity_add_to_sfdc_campaign', 'wk_marketo_activity_add_to_sfdc_campaign')
   ]) 
@@ -177,6 +176,7 @@
   -- partner from campaigns
   LEFT JOIN mart_crm_account AS campaign_partner_account
     ON campaigns.campaign_partner_crm_id = campaign_partner_account.dim_crm_account_id
+  WHERE sfdc_campaign_member.is_deleted = FALSE
 
 ), marketo_query_params as (
     /*

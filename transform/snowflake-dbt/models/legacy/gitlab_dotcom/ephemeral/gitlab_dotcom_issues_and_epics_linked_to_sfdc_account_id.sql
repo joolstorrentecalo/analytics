@@ -42,22 +42,28 @@ WITH gitlab_issues AS (
 ), sfdc_accounts AS (
 
     SELECT *
-    FROM {{ ref('prep_crm_account')}}
+    FROM {{ ref('sfdc_account_source')}}
+    WHERE account_id IS NOT NULL
+    AND is_deleted = FALSE
 
 ), sfdc_contacts AS (
 
     SELECT *
-    FROM {{ ref('sfdc_contact_xf')}}
+    FROM {{ ref('sfdc_contact_source')}}
+    WHERE is_deleted = FALSE
 
 ), sfdc_leads AS (
 
     SELECT *
-    FROM {{ ref('sfdc_lead_xf')}}
+    FROM {{ ref('sfdc_lead_source')}}
+    WHERE is_deleted = FALSE
 
 ), sfdc_opportunities AS (
 
     SELECT *
-    FROM {{ ref('sfdc_opportunity_xf')}}
+    FROM {{ ref('sfdc_opportunity_source')}}
+    WHERE account_id IS NOT NULL
+    AND is_deleted = FALSE
 
 ), zendesk_tickets AS (
 

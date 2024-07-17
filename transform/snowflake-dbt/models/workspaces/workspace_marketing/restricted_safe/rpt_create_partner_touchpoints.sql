@@ -4,7 +4,7 @@
     ('mart_crm_event','mart_crm_event'),
     ('mart_crm_task','mart_crm_task'),
     ('mart_crm_account', 'mart_crm_account'),
-    ('sfdc_campaign_member', 'sfdc_campaign_member'),
+    ('sfdc_campaign_member', 'sfdc_campaign_member_source'),
     ('mart_crm_opportunity', 'mart_crm_opportunity'),
     ('mart_crm_person', 'mart_crm_person'),
     ('dim_date', 'dim_date') 
@@ -76,6 +76,7 @@ activities as (
     where 
     campaign_id = '7014M000001dosSQAQ'
     and lead_source in ('Partner Qualified Lead','Channel Qualified Lead')
+    and sfdc_campaign_member.is_deleted = FALSE
     
 ), find_deal_reg_of_partners as (
     select

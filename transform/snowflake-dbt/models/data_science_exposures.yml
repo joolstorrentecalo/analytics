@@ -112,7 +112,7 @@ exposures:
       - ref('gitlab_dotcom_users_xf')
       - ref('mart_crm_opportunity_daily_snapshot')
       - ref('mart_crm_attribution_touchpoint')
-      - ref('sfdc_task')
+      - ref('sfdc_task_source')
       - ref('sfdc_lead_source')      
       - ref('fct_behavior_structured_event')
       - ref('dim_behavior_event')

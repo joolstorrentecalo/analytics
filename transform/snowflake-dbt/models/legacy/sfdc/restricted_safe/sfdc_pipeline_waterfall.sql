@@ -9,7 +9,9 @@ WITH date_details AS (
 ), sfdc_accounts_xf AS (
 
     SELECT *
-    FROM {{ ref('sfdc_accounts_xf') }}
+    FROM {{ ref('sfdc_account_source')}}
+    WHERE account_id IS NOT NULL
+    AND is_deleted = FALSE
 
 ), sfdc_opportunity_snapshot_history AS (
 
@@ -19,7 +21,9 @@ WITH date_details AS (
 ), sfdc_opportunity_xf AS (
 
     SELECT *
-    FROM {{ ref('sfdc_opportunity_xf') }}
+    FROM {{ ref('sfdc_opportunity_source')}}
+    WHERE account_id IS NOT NULL
+    AND is_deleted = FALSE
 
 ), beginning AS(
 
@@ -29,10 +33,10 @@ WITH date_details AS (
       d.first_day_of_fiscal_quarter,
       COALESCE (o.order_type_stamped, '3. Growth')  AS order_type,
       CASE
-        WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'SMB'                                                           THEN 'SMB'
-        WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'Mid-Market'                                                    THEN 'Mid-Market'
-        WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment IN ('Large', 'US West', 'US East', 'Public Sector''EMEA', 'APAC') THEN 'Large'
-        ELSE a.ultimate_parent_account_segment
+        WHEN (a.ultimate_parent_sales_segment = 'Unknown' OR a.ultimate_parent_sales_segment IS NULL) AND o.user_segment = 'SMB'                                                           THEN 'SMB'
+        WHEN (a.ultimate_parent_sales_segment = 'Unknown' OR a.ultimate_parent_sales_segment IS NULL) AND o.user_segment = 'Mid-Market'                                                    THEN 'Mid-Market'
+        WHEN (a.ultimate_parent_sales_segment = 'Unknown' OR a.ultimate_parent_sales_segment IS NULL) AND o.user_segment IN ('Large', 'US West', 'US East', 'Public Sector''EMEA', 'APAC') THEN 'Large'
+        ELSE a.ultimate_parent_sales_segment
       END                                   AS sales_segment,
       h.stage_name,
       CASE
@@ -80,10 +84,10 @@ WITH date_details AS (
       d.first_day_of_fiscal_quarter,
       COALESCE (o.order_type_stamped, '3. Growth')      AS order_type,
       CASE
-        WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'SMB'                                                            THEN 'SMB'
-        WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment = 'Mid-Market'                                                     THEN 'Mid-Market'
-        WHEN (a.ultimate_parent_account_segment = 'Unknown' OR a.ultimate_parent_account_segment IS NULL) AND o.user_segment IN ('Large', 'US West', 'US East', 'Public Sector''EMEA', 'APAC')  THEN 'Large'
-        ELSE a.ultimate_parent_account_segment
+        WHEN (a.ultimate_parent_sales_segment = 'Unknown' OR a.ultimate_parent_sales_segment IS NULL) AND o.user_segment = 'SMB'                                                            THEN 'SMB'
+        WHEN (a.ultimate_parent_sales_segment = 'Unknown' OR a.ultimate_parent_sales_segment IS NULL) AND o.user_segment = 'Mid-Market'                                                     THEN 'Mid-Market'
+        WHEN (a.ultimate_parent_sales_segment = 'Unknown' OR a.ultimate_parent_sales_segment IS NULL) AND o.user_segment IN ('Large', 'US West', 'US East', 'Public Sector''EMEA', 'APAC')  THEN 'Large'
+        ELSE a.ultimate_parent_sales_segment
       END                                       AS sales_segment,
       h.stage_name,
       CASE

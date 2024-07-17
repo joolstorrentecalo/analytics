@@ -7,7 +7,7 @@ WITH sfdc_opportunity_xf AS (
       net_incremental_acv,
       opportunity_id,
       sales_type
-    FROM {{ ref('sfdc_opportunity_xf') }}
+    FROM {{ ref('sfdc_opportunity_source') }}
     WHERE stage_name = 'Closed Won'
       AND invoice_number IS NOT NULL  
 

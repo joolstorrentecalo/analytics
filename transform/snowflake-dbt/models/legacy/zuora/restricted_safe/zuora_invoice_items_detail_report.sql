@@ -7,13 +7,14 @@ WITH date_table AS (
 ), sfdc_accounts AS (
 
     SELECT *
-    FROM {{ ref('sfdc_accounts_xf') }}
+    FROM {{ ref('prep_crm_account') }}
+    WHERE is_deleted = FALSE
 
 ), sfdc_deleted_accounts AS (
 
     SELECT *
     FROM {{ ref('prep_crm_account') }}
-    WHERE is_deleted = True
+    WHERE is_deleted = TRUE
 
 ), zuora_accounts AS (
 
