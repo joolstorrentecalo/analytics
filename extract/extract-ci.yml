@@ -21,7 +21,7 @@
   <<: *extract_definition
   script:
     - python3 -m pip install pytest-cov
-    - python3 -m pytest --cov-report=analytics -v
+    - python3 -m pytest --cov-report=xml -v
     - coverage report
     - coverage xml
   only:
