@@ -196,17 +196,6 @@ clone_stop:
       - merge_requests
   allow_failure: true
 
-.python_testing: &python_testing
-  stage: 🐍 Python
-  tags:
-    - analytics
-  image: registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.8
-  only:
-    changes:
-      - "**/*.py"
-    refs:
-      - merge_requests
-  allow_failure: true
 
 ⚫python_black:
   <<: *python_critical_check
@@ -241,17 +230,7 @@ clone_stop:
     - echo "Changed files are $CHANGED_FILES"
     - vulture $CHANGED_FILES --min-confidence 100
 
-✅python_pytest:
-  <<: *python_testing
-  script:
-    - python -m pytest -vv -x --junitxml=report.xml
-  artifacts:
-    reports:
-      junit: ${CI_PROJECT_DIR}/report.xml
-    paths:
-      - ${CI_PROJECT_DIR}/.coverage.${CI_JOB_ID}
-    expire_in: 1 day
-    when: on_success
+
 
 # ======
 # Snowflake Permissions Validator

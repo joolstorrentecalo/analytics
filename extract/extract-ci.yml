@@ -1,7 +1,7 @@
 # Job definitions
 #
 .job_template: &extract_definition
-  image: registry.gitlab.com/gitlab-data/data-image/data-image:v1.0.31
+  image: registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.8
   stage: 🚂 Extract
   before_script:
     - export PATH="$CI_PROJECT_DIR/orchestration/:$PATH"
@@ -16,6 +16,24 @@
     - export GCP_SERVICE_CREDS=$(echo "$ENCODED_GCP" | base64 -d)
   tags:
     - analytics
+
+✅python_pytest:
+  <<: *extract_definition
+  script:
+    - python -m pytest -vv -x --junitxml=report.xml
+  only:
+    changes:
+      - "**/*.py"
+    refs:
+      - merge_requests
+  allow_failure: true
+  artifacts:
+    reports:
+      junit: ${CI_PROJECT_DIR}/report.xml
+    paths:
+      - ${CI_PROJECT_DIR}/.coverage.${CI_JOB_ID}
+    expire_in: 1 day
+    when: on_success
 
 💀boneyard_sheetload:
   <<: *extract_definition
