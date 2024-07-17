@@ -22,6 +22,8 @@ models:
         data_tests:
           - not_null
           - unique
+  - name: zuora_booking_transaction_source
+    description: Source layer for Zuora Booking Transactions for renaming
   - name: zuora_contact_source
     description: Source layer for Zuora Contacts for cleaning and renaming
   - name: zuora_credit_balance_adjustment_source

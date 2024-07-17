@@ -94,3 +94,6 @@ sources:
                   to: source('zuora', 'account')
                   field: id
                   severity: warn
+      - name: booking_transaction
+        identifier: bookingtransaction
+        description: '{{ doc("zuora_booking_transaction_source") }}'

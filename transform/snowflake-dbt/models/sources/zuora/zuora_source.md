@@ -10,6 +10,12 @@ This is the source table for the accounting period table. [Link to Documentation
 
 {% enddocs %}
 
+{% docs zuora_booking_transaction_source %}
+
+This is the source table for the booking transactions. [Link to Documentation](https://knowledgecenter.zuora.com/Zuora_Billing/Enable_Order_to_Revenue/Booking_Transactions/AA_Overview_of_Booking_Transaction)
+
+{% enddocs %}
+
 {% docs zuora_contact_source %}
 
 The contact source table contains info about an account’s point-of-contact. [Link to Documentation](https://www.stitchdata.com/docs/integrations/saas/zuora#contact)

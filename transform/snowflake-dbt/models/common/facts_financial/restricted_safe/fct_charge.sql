@@ -40,6 +40,7 @@ WITH prep_charge AS (
       prep_charge.arr,
       prep_charge.previous_arr,
       prep_charge.delta_arr,
+      prep_charge.delta_mrc,
       prep_charge.quantity,
       prep_charge.previous_quantity,
       prep_charge.delta_quantity,
@@ -62,7 +63,7 @@ WITH prep_charge AS (
 {{ dbt_audit(
     cte_ref="fct_charge",
     created_by="@iweeks",
-    updated_by="@chrissharp",
+    updated_by="@apiaseczna",
     created_date="2021-06-07",
-    updated_date="2023-02-20"
+    updated_date="2024-07-13"
 ) }}

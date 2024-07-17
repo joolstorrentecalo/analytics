@@ -5307,6 +5307,8 @@ models:
         description: The default quantity of units
       - name: mrr
         description: Monthly recurring revenue (MRR) is the amount of recurring charges in a given month. The MRR calculation doesn't include one-time charges nor usage charges.
+      - name: delta_mrc
+        description: A delta monthly recurring charge is the change in monthly recurring revenue caused by an amendment or a new subscription. This is the value at the charge segment level.
       - name: rate_plan_charge_segment
         description: The identifying number of the subscription rate plan segment. Segments are numbered sequentially, starting with 1.
       - name: rate_plan_charge_version

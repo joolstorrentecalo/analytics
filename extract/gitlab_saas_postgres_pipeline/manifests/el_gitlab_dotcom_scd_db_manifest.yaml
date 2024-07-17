@@ -746,6 +746,7 @@ tables:
     import_query: |-
       SELECT project_id
       , framework_id
+      , id
       FROM project_compliance_framework_settings
   project_error_tracking_settings:
     is_incremental: False
