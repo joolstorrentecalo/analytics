@@ -241,6 +241,11 @@ clone_stop:
     - echo "Changed files are $CHANGED_FILES"
     - vulture $CHANGED_FILES --min-confidence 100
 
+✅python_bandit:
+  <<: *python_check
+  script:
+    - bandit -r .
+
 ✅python_pytest:
   <<: *python_testing
   script:
