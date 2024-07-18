@@ -176,6 +176,22 @@ def dbt_tasks(dbt_module_name, dbt_task_name):
     return snapshot_task, dedupe_dbt_model_task, source_schema_model_test
 
 
+# Create function which check if the task run is the first run of the  day if not first then skip second run
+
+def is_first_run_of_day(**context):
+    execution_date = context['execution_date']
+    dag = context['dag']
+    
+    # Get the previous successful run
+    dag_runs = dag.get_past_dag_runs(state='success')
+    if not dag_runs:
+        return True
+    
+    last_run = dag_runs[0].execution_date
+    
+    # Check if the current run is on a different day than the last successful run
+    return execution_date.date() != last_run.date()
+
 # Loop through each config_dict and generate a DAG
 for source_name, config in config_dict.items():
     dbt_dag_args["start_date"] = config["start_date"]
@@ -196,8 +212,14 @@ for source_name, config in config_dict.items():
             dbt_dedupe_model_run,
             dbt_source_schema_model_test,
         ) = dbt_tasks(dbt_name, dbt_task_identifier)
+        # Add a check for first run of the day
+        is_first_run = PythonOperator(
+            task_id='check_first_run',
+            python_callable=is_first_run_of_day,
+            provide_context=True,
+        )
 
     # DAG flow using 3 DBT steps
-    dbt_snapshot_task >> dbt_dedupe_model_run >> dbt_source_schema_model_test
+    dbt_snapshot_task >> dbt_dedupe_model_run >> is_first_run >>dbt_source_schema_model_test
 
     globals()[f"{config['dag_name']}"] = dbt_transform_dag
