@@ -9,7 +9,7 @@ one is a current week forecast, and the other is a historical quarter forecast.
 
 Which endpoint to call is determind by which DAG  it is (daily vs quarterly)
 
-The resulting json object is saved to a file and uploaded to Snowflake
+The resulting json object is saved to a file and uploaded to Snowflake.
 """
 
 import os
