@@ -323,7 +323,7 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('sfdc_account')
+              to: ref('sfdc_account_source')
               field: account_id
       - name: ebr_id
         tags: ["tdf", "sfdc"]
@@ -406,7 +406,7 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('sfdc_opportunity_stage')
+              to: ref('sfdc_opportunity_stage_source')
               field: primary_label
       - name: division_sales_segment_stamped
         description: Stamped version of the account division sales segment.
