@@ -176,7 +176,6 @@ def dbt_tasks(dbt_module_name, dbt_task_name):
     return snapshot_task, dedupe_dbt_model_task, source_schema_model_test
 
 
-# Create function which check if the task run is the first run of the  day if not first then skip second run
 
 def is_first_run_of_day(**context):
     execution_date = context['execution_date']
