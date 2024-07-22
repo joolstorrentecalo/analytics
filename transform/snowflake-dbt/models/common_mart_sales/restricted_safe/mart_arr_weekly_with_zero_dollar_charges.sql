@@ -1,5 +1,10 @@
+{{ config({
+        "alias": "mart_arr_all_weekly"
+    })
+}}
+
 {{ simple_cte([
-    ('fct_mrr_weekly', 'fct_mrr_weekly'),
+    ('fct_mrr_weekly', 'fct_mrr_weekly_with_zero_dollar_charges'),
     ('dim_billing_account', 'dim_billing_account'),
     ('dim_product_detail', 'dim_product_detail'),
     ('dim_subscription', 'dim_subscription'),
@@ -134,10 +139,5 @@
 
 )
 
-{{ dbt_audit(
-    cte_ref="joined",
-    created_by="@chrissharp",
-    updated_by="@chrissharp",
-    created_date="2024-06-28",
-    updated_date="2024-06-28"
-) }}
+SELECT *
+FROM joined

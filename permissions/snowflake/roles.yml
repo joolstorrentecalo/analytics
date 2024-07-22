@@ -485,6 +485,7 @@ roles:
           read:
             - prep.sensitive.mart_marketing_contact
             - prod.pumps_sensitive.pump_marketing_contact
+            - prod.pumps_sensitive.pump_smb_daily_case_automation
   - analyst_people_sensitive:
       warehouses:
         - dev_xs
@@ -1756,6 +1757,17 @@ roles:
         tables:
           read:
             - feature_store.feast.*
+  - fivetran_log:
+      privileges:
+        databases:
+          read:
+            - raw
+        schemas:
+          read:
+            - raw.fivetran_log
+        tables:
+          read:
+            - raw.fivetran_log.*
   - gainsight_pump:
       warehouses:
         - gainsight_xs
@@ -4937,6 +4949,7 @@ roles:
         - analyst_people
         - analyst_sales
         - bamboohr
+        - fivetran_log
         - prometheus
         - pto
         - snowflake_analyst_safe
@@ -5727,6 +5740,12 @@ roles:
   - whaber:
       member_of: []
       warehouses: []
+  - ekim:
+      member_of:
+        - analyst_finance
+        - snowflake_analyst_safe
+      warehouses:
+        - dev_xs
   - nprabakaran:
       member_of:
         - snowflake_analyst
@@ -6059,6 +6078,16 @@ roles:
   - mvanremmerden:
       member_of:
         - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - adwivedi:
+      member_of:
+        - adaptive
+        - analyst_finance
+        - customers_db
+        - analyst_marketing
+        - data_team_analyst
+        - snowflake_analyst_safe
       warehouses:
         - dev_xs
   - bparkhomchuk:
@@ -6894,6 +6923,10 @@ users:
       can_login: true
       member_of:
         - jcoghlan
+  - ekim:
+      can_login: true
+      member_of:
+        - ekim
   - wmeek:
       can_login: true
       member_of:
@@ -6918,6 +6951,10 @@ users:
       can_login: true
       member_of:
         - tmccaslin
+  - adwivedi:
+      can_login: true
+      member_of:
+        - adwivedi
   - bwilkerson:
       can_login: true
       member_of:

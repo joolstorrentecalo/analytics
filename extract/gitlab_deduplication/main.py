@@ -70,7 +70,7 @@ def create_backup_table(
     bkp_table_name, original_table_name = create_table_name(
         table_prefix=table_prefix, table_name=table_name
     )
-    query_create_backup_table = f"CREATE TABLE {raw_database}.{backup_schema_name}.{bkp_table_name} CLONE {raw_database}.{raw_schema}.{original_table_name}; "
+    query_create_backup_table = f"CREATE TABLE IF NOT EXISTS {raw_database}.{backup_schema_name}.{bkp_table_name} CLONE {raw_database}.{raw_schema}.{original_table_name}; "
 
     logging.info(f"Backup table DDL : {query_create_backup_table}")
     backup_table = query_executor(snowflake_engine, query_create_backup_table)
@@ -95,10 +95,7 @@ def create_temp_table_ddl(manifest_dict: Dict, table_name: str):
                                             ELSE column_name
                                             END ,',\n') WITHIN GROUP (ORDER BY ordinal_position ASC)
                                             , ' \n FROM {raw_database}.{backup_schema}.{bkp_table_name}' ,
-                             '\n GROUP BY  \n',
-                                    (SELECT LISTAGG(column_name,',\n') WITHIN GROUP (ORDER BY ordinal_position ASC) FROM {raw_database}.information_schema.columns
-                                    WHERE LOWER(table_name) = ('{original_table_name}')
-                                    AND LOWER(column_name) NOT IN ('_uploaded_at','_task_instance')),');')
+                             '\n GROUP BY ALL);')
                                     from {raw_database}.information_schema.columns
                                     where LOWER(table_name) = '{original_table_name}';"""
 
@@ -206,7 +203,8 @@ def main(table_name: str) -> None:
     manifest_dict = get_yaml_file(path=file_name)
 
     # Update database name to the manifest for in case of MR branch.
-    manifest_dict.update({"raw_database": env.copy()["SNOWFLAKE_LOAD_DATABASE"]})
+    raw_database = f'"{env.copy()["SNOWFLAKE_LOAD_DATABASE"]}"'
+    manifest_dict.update({"raw_database": raw_database})
 
     # Create backup table
     create_clone_table = create_backup_table(manifest_dict, table_name)

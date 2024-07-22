@@ -3000,4 +3000,5 @@ models:
       - name: new_value
       - name: old_value
       - name: is_deleted
+      - name: field_modified_at
       

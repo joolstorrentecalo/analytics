@@ -15,7 +15,7 @@ final AS (
     payload:fields.job_url::VARCHAR          AS job_url,
     payload:fields.timestamp::VARCHAR        AS timestamp,
     payload:name::VARCHAR                    AS name,
-    payload:time::VARCHAR                    AS time,
+    payload:time::TIMESTAMP                  AS time,
     payload:tags.fabrication_method::VARCHAR AS tags_fabrication_method,
     payload:tags.http_method::VARCHAR        AS tags_http_method,
     payload:tags.merge_request::BOOLEAN      AS is_merge_request,

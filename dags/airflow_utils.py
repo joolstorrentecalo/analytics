@@ -1,10 +1,10 @@
 """ This file contains common operators/functions to be used across multiple DAGs """
 
 import os
-import urllib.parse
 import pathlib
+import urllib.parse
 from datetime import date, timedelta
-from typing import List, Dict
+from typing import Dict, List
 
 from airflow.models import Variable
 from airflow.providers.slack.operators.slack import SlackAPIPostOperator
@@ -18,7 +18,7 @@ else:
 SSH_REPO = "git@gitlab.com:gitlab-data/analytics.git"
 HTTP_REPO = "https://gitlab.com/gitlab-data/analytics.git"
 DATA_IMAGE = "registry.gitlab.com/gitlab-data/data-image/data-image:v1.0.31"
-DATA_IMAGE_3_10 = "registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.8"
+DATA_IMAGE_3_10 = "registry.gitlab.com/gitlab-data/data-image/data-image:v2.0.9"
 DBT_IMAGE = "registry.gitlab.com/gitlab-data/dbt-image:v0.0.6"
 PERMIFROST_IMAGE = "registry.gitlab.com/gitlab-data/permifrost:v0.15.4"
 ANALYST_IMAGE = "registry.gitlab.com/gitlab-data/analyst-image:v0.0.2"
@@ -261,6 +261,10 @@ def slack_succeeded_task(context):
     return slack_alert.execute(context=None)
 
 
+def number_of_dbt_threads_argument(number_of_threads):
+    return f"--threads {number_of_threads}"
+
+
 # GitLab default settings for all DAGs
 gitlab_defaults = dict(
     get_logs=True,
@@ -366,7 +370,3 @@ dbt_install_deps_and_seed_nosha_cmd = f"""
 
 # command to exclude models (for test models) in dbt test command
 run_command_test_exclude = "--exclude staging.gitlab_com edm_snapshot"
-
-
-def number_of_dbt_threads_argument(number_of_threads):
-    return f"--threads {number_of_threads}"

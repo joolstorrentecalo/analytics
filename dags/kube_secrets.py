@@ -393,8 +393,15 @@ ADAPTIVE_PASSWORD = Secret(
     "ADAPTIVE_PASSWORD",
 )
 
-## OCI Usage Extraction
+# Kantata reports extraction credentials
+KANTATA_OAUTH_TOKEN = Secret(
+    "env",
+    "KANTATA_OAUTH_TOKEN",
+    "airflow",
+    "KANTATA_OAUTH_TOKEN",
+)
 
+# OCI Usage Extraction
 OCI_FINGERPRINT = Secret("env", "OCI_FINGERPRINT", "airflow", "OCI_FINGERPRINT")
 
 OCI_KEY_CONTENT = Secret("env", "OCI_KEY_CONTENT", "airflow", "OCI_KEY_CONTENT")

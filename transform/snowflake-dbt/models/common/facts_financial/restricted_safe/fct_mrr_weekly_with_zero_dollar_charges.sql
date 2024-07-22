@@ -1,3 +1,7 @@
+{{ config({
+    "alias": "fct_mrr_all_weekly"
+}) }}
+
 {{ simple_cte([
     ('dim_date', 'dim_date'),
     ('prep_charge', 'prep_charge_mrr'),
@@ -12,9 +16,8 @@
     FROM prep_charge
     LEFT JOIN dim_crm_account
       ON prep_charge.dim_crm_account_id = dim_crm_account.dim_crm_account_id
-    WHERE is_included_in_arr_calc = TRUE
-      AND subscription_status IN ('Active', 'Cancelled')
-      AND (mrr != 0 OR LOWER(rate_plan_charge_name) = 'max enrollment')
+    WHERE subscription_status NOT IN ('Draft')
+      AND charge_type = 'Recurring'
 
 
 ), dim_date_weekly AS (
