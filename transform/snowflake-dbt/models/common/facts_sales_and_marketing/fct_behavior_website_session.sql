@@ -14,33 +14,22 @@
 
 SELECT
   -- Primary Key
-  {{ dbt_utils.generate_surrogate_key(['session_id','session_end']) }}                           AS fct_behavior_website_session_pk,
+  fct_behavior_website_session_pk,
 
   -- Natural Keys
   app_id,
   session_id,
 
   -- Foreign Keys
-  {{ dbt_utils.generate_surrogate_key([
-    'browser_name',
-    'browser_major_version',
-    'browser_minor_version',
-    'browser_language'])
-  }}                                                                                             AS dim_behavior_browser_sk,
-
-  {{ dbt_utils.generate_surrogate_key([
-    'os_name',
-    'os_timezone'
-  ]) }}                                                                                          AS dim_behavior_operating_system_sk,
-
-  {{ dbt_utils.generate_surrogate_key(['first_page_url', 'app_id', 'first_page_url_scheme']) }}  AS dim_behavior_website_page_sk,
-  
-  {{ dbt_utils.generate_surrogate_key(['referer_url', 'app_id', 'referer_url_scheme']) }}        AS dim_behavior_referrer_page_sk,
+  dim_behavior_browser_sk,
+  dim_behavior_operating_system_sk,
+  dim_behavior_website_page_sk,
+  dim_behavior_referrer_page_sk,
 
   --Time Attributes
+  behavior_at,
   session_start,
   session_end,
-  session_start                                                                                  AS behavior_at,
   session_start_local,
   session_end_local,
 
@@ -70,11 +59,11 @@ SELECT
   last_gsc_source,
 
   -- User Location Attributes
-  COALESCE(geo_city, 'Unknown')::VARCHAR                                                           AS user_city,
-  COALESCE(geo_country, 'Unknown')::VARCHAR                                                        AS user_country,
-  COALESCE(geo_region, 'Unknown')::VARCHAR                                                         AS user_region,
-  COALESCE(geo_region_name, 'Unknown')::VARCHAR                                                    AS user_region_name,
-  COALESCE(geo_timezone, 'Unknown')::VARCHAR                                                       AS user_timezone_name,
+  user_city,
+  user_country,
+  user_region,
+  user_region_name,
+  user_timezone_name,
 
   -- First page Attributes
   first_page_title,
@@ -89,12 +78,12 @@ SELECT
   exit_page_url,
 
   -- UTM Attributes
-  {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='glm_source') }}   AS glm_source,
-  {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_campaign') }} AS utm_campaign,
-  {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_content') }}  AS utm_content,
-  {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_medium') }}   AS utm_medium,
-  {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_source') }}   AS utm_source,
-  {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_term') }}     AS utm_term,
+  glm_source,
+  utm_campaign,
+  utm_content,
+  utm_medium,
+  utm_source,
+  utm_term,
 
   -- Referer Attributes
   referer_url,
@@ -107,9 +96,9 @@ SELECT
   session_index,
   session_cookie_index,
   page_views,
-  user_bounced                                                                                   AS is_user_bounced,
-  time_engaged_in_s                                                                              AS engaged_seconds,
-  time_engaged_in_s_tier                                                                         AS engaged_seconds_range
+  is_user_bounced,
+  engaged_seconds,
+  engaged_seconds_range
 FROM sessions
 
 {% if is_incremental() %}
