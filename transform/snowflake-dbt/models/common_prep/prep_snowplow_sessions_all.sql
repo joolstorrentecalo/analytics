@@ -77,11 +77,10 @@ SELECT
   referer_url_query,
   referer_url_fragment,
   referer_url_port,
-  referer_medium,
   session_index,
   session_cookie_index,
   page_views,
-  user_bounced                                                                                   AS is_user_bounced,
+  user_bounced                                                                                   AS is_session_bounced,
   time_engaged_in_s                                                                              AS engaged_seconds,
   time_engaged_in_s_tier                                                                         AS engaged_seconds_range
 FROM unioned_view
