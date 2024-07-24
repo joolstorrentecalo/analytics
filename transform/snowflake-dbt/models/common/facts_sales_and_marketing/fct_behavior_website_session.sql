@@ -17,7 +17,6 @@ SELECT
   fct_behavior_website_session_pk,
 
   -- Natural Keys
-  app_id,
   session_id,
 
   -- Foreign Keys
@@ -33,12 +32,12 @@ SELECT
   session_start_local,
   session_end_local,
 
-  -- User Attributes
+  -- Degenerate Dimensions (User Attributes)
   inferred_user_id,
   user_snowplow_domain_id,
   user_snowplow_crossdomain_id,
 
-  -- First Gitlab Standard Context Attributes
+  -- Degenerate Dimensions (First Gitlab Standard Context Attributes)
   first_gsc_pseudonymized_user_id,
   first_gsc_project_id,
   first_gsc_namespace_id,
@@ -48,7 +47,7 @@ SELECT
   first_gsc_plan,
   first_gsc_source,
 
-  -- Last Gitlab Standard Context Attributes
+  -- Degenerate Dimensions (Last Gitlab Standard Context Attributes)
   last_gsc_pseudonymized_user_id,
   last_gsc_project_id,
   last_gsc_namespace_id,
@@ -58,14 +57,14 @@ SELECT
   last_gsc_plan,
   last_gsc_source,
 
-  -- User Location Attributes
+  -- Degenerate Dimensions (User Location Attributes)
   user_city,
   user_country,
   user_region,
   user_region_name,
   user_timezone_name,
 
-  -- First page Attributes
+  -- Degenerate Dimensions (First page Attributes)
   first_page_title,
   first_page_url,
   first_page_url_fragment,
@@ -77,26 +76,27 @@ SELECT
 
   exit_page_url,
 
-  -- UTM Attributes
+  -- Degenerate Dimensions (UTM Attributes)
   glm_source,
+  glm_content,
   utm_campaign,
   utm_content,
   utm_medium,
   utm_source,
   utm_term,
 
-  -- Referer Attributes
+  -- Degenerate Dimensions (Referer Attributes)
   referer_url,
   referer_url_query,
   referer_url_fragment,
   referer_url_port,
-  referer_medium,
 
-  -- Session Attributes
+  -- Degenerate Dimensions (Session Attributes)
+  app_id,
   session_index,
   session_cookie_index,
   page_views,
-  is_user_bounced,
+  is_session_bounced,
   engaged_seconds,
   engaged_seconds_range
 FROM sessions

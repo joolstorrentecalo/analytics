@@ -13,7 +13,7 @@ WITH unioned_view AS (
 )
 
 SELECT 
-  {{ dbt_utils.generate_surrogate_key(['session_id']) }}                                         AS fct_behavior_website_session_pk,
+  {{ dbt_utils.generate_surrogate_key(['session_id', 'session_end']) }}                          AS fct_behavior_website_session_pk,
   app_id,
   session_id,
   {{ dbt_utils.generate_surrogate_key([
@@ -66,6 +66,7 @@ SELECT
   first_page_url_scheme,
   exit_page_url,
   {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='glm_source') }}    AS glm_source,
+  {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='glm_content') }}   AS glm_content,
   {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_campaign') }}  AS utm_campaign,
   {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_content') }}   AS utm_content,
   {{ dbt_utils.get_url_parameter(field='first_page_url_query', url_parameter='utm_medium') }}    AS utm_medium,
