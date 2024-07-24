@@ -189,7 +189,7 @@ class PostgresPipelineTable:
         target_engine: Engine,
         metadata_engine: Engine,
         database_type: str,
-    ) -> bool:  ## edit this for cells iteration 2
+    ) -> bool:
         load_by_id_export_type = "backfill"
         (
             is_backfill_needed,
