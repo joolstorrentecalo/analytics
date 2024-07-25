@@ -34,7 +34,9 @@ WITh prep AS (
       is_protected, 
       failure_reason_id,
       failure_reason,
-      ci_pipeline_internal_id
+      ci_pipeline_internal_id,
+      is_deleted,
+      is_deleted_updated_at
     FROM prep
 
 )
@@ -42,7 +44,7 @@ WITh prep AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mpeychet_",
-    updated_by="@mpeychet_",
+    updated_by="@utkarsh060",
     created_date="2021-06-10",
-    updated_date="2021-06-10"
+    updated_date="2024-07-09"
 ) }}

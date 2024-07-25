@@ -57,6 +57,7 @@ def load_incremental(
     source_table_name: str,
     table_dict: Dict[Any, Any],
     table_name: str,
+    database_type: str,
 ) -> bool:
     """
     Load tables incrementally based off of the execution date.
@@ -149,7 +150,14 @@ def load_incremental(
         return False
     query = f"{raw_query.format(**env)} {additional_filtering}"
 
-    chunk_and_upload(query, source_engine, target_engine, table_name, source_table_name)
+    chunk_and_upload(
+        query,
+        source_engine,
+        target_engine,
+        table_name,
+        source_table_name,
+        database_type,
+    )
 
     return True
 
@@ -160,6 +168,7 @@ def trusted_data_pgp(
     source_table_name: str,
     table_dict: Dict[Any, Any],
     table_name: str,
+    database_type: str,
 ) -> bool:
     """
     This function is being used for trusted data framework.
@@ -178,6 +187,7 @@ def trusted_data_pgp(
         target_engine,
         table_name,
         source_table_name,
+        database_type,
         advanced_metadata,
         False,
     )
@@ -191,6 +201,7 @@ def load_scd(
     source_table_name: str,
     table_dict: Dict[Any, Any],
     table_name: str,
+    database_type: str,
 ) -> bool:
     """
     Load tables that are slow-changing dimensions.
@@ -219,6 +230,7 @@ def load_scd(
         target_engine,
         table_name,
         source_table_name,
+        database_type,
         advanced_metadata,
         backfill,
     )
@@ -233,6 +245,7 @@ def load_ids(
     load_by_id_export_type,
     extract_chunksize,
     csv_chunksize,
+    database_type: str,
 ) -> bool:
     """Load a query by chunks of IDs instead of all at once."""
 
@@ -275,6 +288,7 @@ def load_ids(
         initial_load_start_date = chunk_and_upload_metadata(
             filtered_query,
             primary_key,
+            database_type,
             max_pk,
             initial_load_start_date,
             database_kwargs,
@@ -318,6 +332,7 @@ def check_new_tables(
             target_engine,
             table_name,
             table,
+            database_type,
             advanced_metadata,
             backfill=True,
         )

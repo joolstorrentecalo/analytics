@@ -7,7 +7,7 @@ models:
       - name: arr
         description: "Calculated as 12 * MRR value"
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: is_reseller
@@ -15,34 +15,34 @@ models:
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
       - name: billing_account_number
-        tests:
+        data_tests:
           - not_null
       - name: subscription_name_slugify
-        tests:
+        data_tests:
           - not_null
       - name: subscription_name
-        tests:
+        data_tests:
           - not_null
       - name: oldest_subscription_in_cohort
       - name: subscription_lineage
       - name: arr_month
-        tests:
+        data_tests:
           - not_null
       - name: subscription_cohort_month
       - name: subscription_cohort_quarter
       - name: mrr
-        tests:
+        data_tests:
           - not_null
       - name: months_since_subscription_cohort_start
       - name: quarters_since_subscription_cohort_start
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
       - name: billing_account_name
-        tests:
+        data_tests:
           - not_null
       - name: product_tier_name
-        tests:
+        data_tests:
           - not_null
       - name: unit_of_measure
       - name: quantity
@@ -86,7 +86,7 @@ models:
       - name: arr
         description: "Calculated as 12 * MRR value"
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: is_reseller
@@ -94,34 +94,34 @@ models:
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
       - name: billing_account_number
-        tests:
+        data_tests:
           - not_null
       - name: subscription_name_slugify
-        tests:
+        data_tests:
           - not_null
       - name: subscription_name
-        tests:
+        data_tests:
           - not_null
       - name: oldest_subscription_in_cohort
       - name: subscription_lineage
       - name: arr_month
-        tests:
+        data_tests:
           - not_null
       - name: subscription_cohort_month
       - name: subscription_cohort_quarter
       - name: mrr
-        tests:
+        data_tests:
           - not_null
       - name: months_since_subscription_cohort_start
       - name: quarters_since_subscription_cohort_start
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
       - name: billing_account_name
-        tests:
+        data_tests:
           - not_null
       - name: product_tier_name
-        tests:
+        data_tests:
           - not_null
       - name: unit_of_measure
       - name: quantity
@@ -151,7 +151,7 @@ models:
     description: Daily snapshots of MRR/ARR by month values per customer, subscription and product. Built using the snapshotted source tables.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - unique:
               config:
                 where: "arr_month >= DATEADD('month',-3,CURRENT_DATE())"
@@ -166,15 +166,15 @@ models:
     description: Simpler incremental version of the mart_arr snapshot model
     columns:
         - name: primary_key
-          tests:
+          data_tests:
             - not_null
           tags: [ "tdf", "mart", "arr" ]
 
-  - name: mart_arr_weekly
-    description: A version of mart_arr aggregated by arr_week. This allows more frequent updates to the arr and quantity fields for 
+  - name: mart_arr_weekly_with_zero_dollar_charges
+    description: A version of mart_arr aggregated by arr_week. This allows more frequent updates to the arr and quantity fields for faster analysis.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -183,7 +183,7 @@ models:
     columns:
       - name: dim_charge_id
         description: The unique identifier of a rate plan charge
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: was_purchased_through_reseller
@@ -344,7 +344,7 @@ models:
     description: Model containing Salesforce crm accounts details for existing and historical customers.
     columns:
       - name: dim_crm_account_id
-        tests:
+        data_tests:
             - not_null
             - unique
       - name: gs_health_user_engagement
@@ -428,7 +428,7 @@ models:
       `mart_crm_opportunity_stamped_hierarchy_hist` should be used for year-over-year comparisons as it accounts for yearly changes in the sales hierarchy, views all account hierarchies through the lens of the current year hierarchy, and it reflects how the sales hierarchy is applied in practice (ie. Hybrid users are assigned to the account's hierarchy)
     columns:
       - name: dim_crm_opportunity_id
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "sales_funnel"]
@@ -520,7 +520,7 @@ models:
     description: Model with single pane of glass sales and marketing metrics, snapshotted daily.
     columns:
       - name: crm_opportunity_snapshot_id
-        tests:
+        data_tests:
             - not_null
             - unique
             - relationships:
@@ -528,10 +528,10 @@ models:
                 field: crm_opportunity_snapshot_id
         tags: ["tdf", "mart", "sales_funnel"]
       - name: dim_crm_opportunity_id
-        tests:
+        data_tests:
             - not_null
       - name: snapshot_date
-        tests:
+        data_tests:
           - not_null
       - name: order_type
         description: '{{ doc("order_type") }}'
@@ -596,7 +596,7 @@ models:
       instead of showing the value Non-Alliance it shows Channel Partners.
     columns:
       - name: dim_crm_opportunity_id
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "sales_funnel"]
@@ -664,7 +664,7 @@ models:
     description: Model with Sales targets used for planning the go to market Sales and Marketing motion.
     columns:
       - name: sales_funnel_target_id
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "sales_funnel"]
@@ -673,7 +673,7 @@ models:
     description: Model with Sales targets at a daily level and with QTD (Quater To Date), MTD (Month To Date) and YTD (Year To Date) target calculations.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "sales_funnel"]
@@ -692,7 +692,7 @@ models:
     description: Model with Sales targets for partner and alliances used for planning the go to market Sales and Marketing motion.
     columns:
       - name: sales_funnel_partner_alliance_target_id
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "sales_funnel"]
@@ -701,7 +701,7 @@ models:
     description: Model with Sales targets for partner and alliances at a daily level and with QTD (Quater To Date), MTD (Month To Date) and YTD (Year To Date) target calculations.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "sales_funnel"]
@@ -721,7 +721,7 @@ models:
     columns:
       - name: primary_key
         description: Unique identifier of a product charge on the invoice amortized by month.
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "arr"]
@@ -736,7 +736,7 @@ models:
     description: "Mart table by month pursuant to the ARR Analysis Framework at the parent customer level"
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "mart", "arr"]
@@ -745,20 +745,20 @@ models:
     description: "Mart table by month pursuant to the ARR Analysis Framework at the parent customer || product category level"
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "mart", "arr"]
       - name: product_tier_name
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "arr"]
       - name: product_delivery_type
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "arr"]
       - name: product_ranking
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "arr"]
 
@@ -766,20 +766,20 @@ models:
     description: "Mart table by month purusant to the ARR Analysis Framework at the subscription || product_category level"
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "mart", "arr"]
       - name: product_category
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "arr"]
       - name: delivery
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "arr"]
       - name: product_ranking
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "mart", "arr"]
 
@@ -787,7 +787,7 @@ models:
     description: "Mart table by month purusant to the ARR Analysis Framework at the subscription level"
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "mart", "arr"]
@@ -796,7 +796,7 @@ models:
     description: "Mart table to support retention analysis at the ultimate_parent_account || product level."
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "mart", "arr"]
@@ -806,7 +806,7 @@ models:
     columns:
     - name: fct_retention_id
       description: A unique identifier of the retention record.
-      tests:
+      data_tests:
         - not_null
         - unique
       tags: ["tdf", "mart", "arr", "retention"]
@@ -816,7 +816,7 @@ models:
     columns:
     - name: fct_retention_id
       description: A unique identifier of the retention record.
-      tests:
+      data_tests:
         - not_null
         - unique
       tags: ["tdf", "mart", "arr", "retention"]
@@ -826,11 +826,11 @@ models:
     description: '{{ doc("mart_arr_with_zero_dollar_charges") }}'
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: arr_month
-        tests:
+        data_tests:
           - not_null
       - name: fiscal_quarter_name_fy
       - name: fiscal_year
@@ -852,31 +852,31 @@ models:
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
       - name: billing_account_number
-        tests:
+        data_tests:
           - not_null
       - name: subscription_name_slugify
-        tests:
+        data_tests:
           - not_null
       - name: subscription_name
-        tests:
+        data_tests:
           - not_null
       - name: oldest_subscription_in_cohort
       - name: subscription_lineage
       - name: subscription_cohort_month
       - name: subscription_cohort_quarter
       - name: mrr
-        tests:
+        data_tests:
           - not_null
       - name: months_since_subscription_cohort_start
       - name: quarters_since_subscription_cohort_start
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
       - name: billing_account_name
-        tests:
+        data_tests:
           - not_null
       - name: product_tier_name
-        tests:
+        data_tests:
           - not_null
       - name: unit_of_measure
       - name: quantity
@@ -918,7 +918,7 @@ models:
   - name: mart_targets_actuals_7th_day_weekly_snapshot
     columns: 
       - name: targets_actuals_weekly_snapshot_pk
-        tests:
+        data_tests:
           - not_null
           - unique
           - relationships:
@@ -929,7 +929,7 @@ models:
     columns:
       - name: crm_opportunity_snapshot_id
         description: Unique identifier of a crm opportunity in the daily snapshot models
-        tests:
+        data_tests:
           - not_null
           - unique
           - relationships:
@@ -938,7 +938,7 @@ models:
   - name: mart_crm_opportunity_7th_day_weekly_snapshot_aggregate
     columns:
       - name: opportunity_weekly_snapshot_aggregate_pk
-        tests:
+        data_tests:
           - not_null
           - unique
           - relationships:

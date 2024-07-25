@@ -21,7 +21,7 @@ README.md          @iweeks @dvanrooijen2 @nmcavinue @amiebright
 [Data Engineering]
 /dags/                              @paul_armstrong @vedprakash2021 @rbacovic @jjstark
 /extract/                           @jjstark @paul_armstrong @vedprakash2021 @rbacovic
-/extract/tableau_con_man_config/    @paul_armstrong @pempey @iweeks @ttnguyen28 @nmcavinue @jjstark @vedprakash2021
+/extract/tableau_con_man_config/    @paul_armstrong @pempey @iweeks @nmcavinue @jjstark @vedprakash2021
 /load/                              @jjstark @paul_armstrong @vedprakash2021 @rbacovic
 /orchestration/                     @jjstark @paul_armstrong @vedprakash2021 @rbacovic
 /permissions/                       @dvanrooijen2 @paul_armstrong @jjstark @juwong
@@ -151,9 +151,11 @@ transform/snowflake-dbt/models/marts/pumps_sensitive/       @jjstark @paul_armst
 
 /transform/snowflake-dbt/models/workspaces/workspace_people/         @pempey @iweeks @aperez349 @mccormack514 @lisvinueza @rakhireddy
 
-/transform/snowflake-dbt/models/workspaces/workspace_customer_success/  @mdrussell @snalamaru @chrissharp @michellecooper @bbutterfield @nk312 @jbudreski
+/transform/snowflake-dbt/models/workspaces/workspace_customer_success/  @mdrussell @snalamaru @chrissharp @michellecooper @bbutterfield @nk312 @jbudreski @iweeks
 
-/transform/snowflake-dbt/models/workspaces/workspace_product/           @cbraza @matthewpetersen @eneuberger @nraisinghani @mdrussell @snalamaru @dpeterson1 @nhervas @michellecooper @utkarsh060
+/transform/snowflake-dbt/models/workspaces/workspace_product/           @cbraza @matthewpetersen @eneuberger @nraisinghani @mdrussell @snalamaru @dpeterson1 @nhervas @michellecooper @utkarsh060 @lmai1 @ddeng1 
+
+/transform/snowflake-dbt/models/workspaces/workspace_marketing/         @rkohnke @degan @dmicovic @snalamaru @chrissharp @lisvinueza
 
 # ======
 # dbt data file Overwrites

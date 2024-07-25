@@ -6,7 +6,7 @@ models:
     columns:
       - name: id
         description: The internal Omamori ID for the entity datum
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: entity_id
@@ -15,15 +15,15 @@ models:
         description: The type of entity datum
       - name: created_at
         description: When the entity datum was first imported to Omamori
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         description: When the entity datum was last synchronized
-        tests:
+        data_tests:
           - not_null
       - name: uploaded_at_gcs
         description: Datetime that source parquet file was uploaded to GCS
-        tests:
+        data_tests:
           - not_null
 
   - name: omamori_mitigation_plan_entity_data_source
@@ -31,7 +31,7 @@ models:
     columns:
       - name: id
         description: The ID for the entity datum entry in the mitigation plan
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: status
@@ -42,15 +42,15 @@ models:
         description: The ID of the associated mitigation plan
       - name: created_at
         description: When the entity datum was first scheduled for import to the mitigation plan
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         description: When the entity datum status was last changed on the mitigation plan
-        tests:
+        data_tests:
           - not_null
       - name: uploaded_at_gcs
         description: Datetime that source parquet file was uploaded to GCS
-        tests:
+        data_tests:
           - not_null
 
   - name: omamori_mitigation_plan_tags_source
@@ -58,15 +58,15 @@ models:
     columns:
       - name: id
         description: The ID for the tags inclusion on the mitigation plan
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: created_at
         description: When the tag was added to the mitigation plan
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
       - name: mitigation_plan_id
         description: The ID of the associated mitigation plan
@@ -78,15 +78,15 @@ models:
     columns:
       - name: id
         description: The ID for the tags inclusion on the mitigation plan template
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: created_at
         description: When the tag was added to the mitigation plan template
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
       - name: mitigation_plan_template_id
         description: The ID of the associated mitigation plan template
@@ -98,7 +98,7 @@ models:
     columns:
       - name: id
         description: The ID for the mitigation plan
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: entity_type
@@ -117,7 +117,7 @@ models:
         description: The ID of the rule evaluation that created the mitigation plan, if it was created by one
       - name: created_at
         description: When the mitigation plan was created
-        tests:
+        data_tests:
           - not_null
       - name: created_by_id
         description: The ID of the user who created the mitigation plan
@@ -131,11 +131,11 @@ models:
         description: The ID of the user who executed the mitigation plan
       - name: updated_at
         description: When the mitigation plan was last updated
-        tests:
+        data_tests:
           - not_null
       - name: uploaded_at_gcs
         description: Datetime that source parquet file was uploaded to GCS
-        tests:
+        data_tests:
           - not_null
 
   - name: omamori_rule_evaluation_matches_source
@@ -149,14 +149,14 @@ models:
         description: The ID of the associated rule evaluation
       - name: created_at
         description: When the match was added to the rule evaluation
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
       - name: uploaded_at_gcs
         description: Datetime that source parquet file was uploaded to GCS
-        tests:
+        data_tests:
           - not_null
 
   - name: omamori_rule_evaluations_source
@@ -164,7 +164,7 @@ models:
     columns:
       - name: id
         description: The ID for the rule evaluation
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: rule
@@ -179,15 +179,15 @@ models:
         description: How many duplicate entities in the results were removed
       - name: created_at
         description: When the rule evaluation occurred
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         description: When the rule evaluation was last updated
-        tests:
+        data_tests:
           - not_null
       - name: uploaded_at_gcs
         description: Datetime that source parquet file was uploaded to GCS
-        tests:
+        data_tests:
           - not_null
 
   - name: omamori_tags_source
@@ -195,21 +195,21 @@ models:
     columns:
       - name: id
         description: The ID for the tag
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: tag_name
         description: The tag name
       - name: created_at
         description: When the tag was created
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null
       - name: uploaded_at_gcs
         description: Datetime that source parquet file was uploaded to GCS
-        tests:
+        data_tests:
           - not_null
 
   - name: omamori_users_source
@@ -217,7 +217,7 @@ models:
     columns:
       - name: id
         description: The ID for the user
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: username
@@ -230,13 +230,13 @@ models:
         description: Whether the user is a service user (API only) or not
       - name: created_at
         description: When the user was created
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         description: When the user was last updated
-        tests:
+        data_tests:
           - not_null
       - name: uploaded_at_gcs
         description: Datetime that source parquet file was uploaded to GCS
-        tests:
+        data_tests:
           - not_null

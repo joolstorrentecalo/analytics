@@ -6,7 +6,7 @@ models:
       description: "dbt models as defined in manifest.json"
       columns:
         - name: unique_id
-          tests:
+          data_tests:
             - not_null
         - name: name
 
@@ -26,10 +26,10 @@ models:
       description: "Monitoring information about DBT sources"
       columns:
         - name: table_name
-          tests:
+          data_tests:
             - not_null
         - name: source_freshness_state
-          tests:
+          data_tests:
             - not_null
 
     - name: dbt_source_test_results_source
@@ -42,24 +42,24 @@ models:
       description: "DBT test results by name and time"
       columns:
         - name: status
-          tests:
+          data_tests:
             - not_null
         - name: message
         - name: test_execution_time_elapsed
-          tests:
+          data_tests:
             - not_null
         - name: test_unique_id
-          tests:
+          data_tests:
             - not_null
         - name: generated_at
-          tests:
+          data_tests:
             - not_null
 
     - name: dbt_test_source
-      description: "dbt tests as defined in manifest.json"
+      description: "dbt data_tests as defined in manifest.json"
       columns:
         - name: unique_id
-          tests:
+          data_tests:
             - not_null
         - name: name
         

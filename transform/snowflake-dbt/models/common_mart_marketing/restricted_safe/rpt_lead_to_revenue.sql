@@ -5,7 +5,7 @@
 {{ simple_cte([
     ('person_base','mart_crm_person'),
     ('dim_crm_person','dim_crm_person'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist', 'mart_crm_opportunity_stamped_hierarchy_hist'), 
+    ('mart_crm_opportunity', 'mart_crm_opportunity'), 
     ('map_alternative_lead_demographics','map_alternative_lead_demographics'),
     ('mart_crm_touchpoint', 'mart_crm_touchpoint'),
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
@@ -36,6 +36,7 @@
       person_base.mql_date_latest_pt,
       person_base.accepted_date,
       person_base.status,
+      person_base.person_role,
       person_base.lead_source,
       person_base.is_inquiry,
       person_base.is_mql,
@@ -76,6 +77,7 @@
 
   --Account Data
       mart_crm_account.crm_account_name,
+      mart_crm_account.crm_account_type,
       mart_crm_account.parent_crm_account_name,
       mart_crm_account.parent_crm_account_lam,
       mart_crm_account.parent_crm_account_lam_dev_count,
@@ -199,6 +201,14 @@
       opp.is_eligible_age_analysis,
       opp.lead_source,
       opp.source_buckets,
+      opp.is_renewal,
+      opp.is_eligible_open_pipeline,
+      opp.pipeline_created_date,
+      opp.opportunity_category,
+      opp.stage_name,
+      opp.is_jihu_account,
+      opp.is_edu_oss,
+      opp.stage_1_discovery_date,
 
       --Account Data
       mart_crm_account.crm_account_name,
@@ -206,6 +216,7 @@
       mart_crm_account.parent_crm_account_lam,
       mart_crm_account.parent_crm_account_lam_dev_count,
       opp.parent_crm_account_upa_country,
+      mart_crm_account.crm_account_type,
     
     -- Touchpoint Data
       'Attribution Touchpoint' AS touchpoint_type,
@@ -403,14 +414,14 @@
           THEN SUM(mart_crm_attribution_touchpoint.linear_net_arr) 
         ELSE 0 
       END AS won_linear_net_arr
-    FROM mart_crm_opportunity_stamped_hierarchy_hist opp
+    FROM mart_crm_opportunity opp
     LEFT JOIN mart_crm_attribution_touchpoint
       ON opp.dim_crm_opportunity_id=mart_crm_attribution_touchpoint.dim_crm_opportunity_id
     FULL JOIN mart_crm_account
       ON opp.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE opp.created_date >= '2021-02-01'
       OR opp.created_date IS NULL
-    {{dbt_utils.group_by(n=102)}}
+    {{dbt_utils.group_by(n=112)}}
     
 ), cohort_base_combined AS (
   
@@ -433,6 +444,7 @@
       email_hash,
       email_domain_type,
       sfdc_record_type,
+      person_role,
       person_first_country,
       person_base_with_tp.source_buckets,
       true_inquiry_date,
@@ -512,9 +524,18 @@
       crm_opp_owner_area_stamped,
       crm_opp_owner_geo_stamped,
       product_category,
+      is_renewal,
+      is_eligible_open_pipeline,
+      pipeline_created_date,
+      opportunity_category,
+      stage_name,
+      is_jihu_account,
+      is_edu_oss,
+      stage_1_discovery_date,
 
   --Account Data
       COALESCE(person_base_with_tp.crm_account_name,opp_base_with_batp.crm_account_name) AS crm_account_name,
+      COALESCE(person_base_with_tp.crm_account_type,opp_base_with_batp.crm_account_type) AS crm_account_type,
       COALESCE(person_base_with_tp.parent_crm_account_name,opp_base_with_batp.parent_crm_account_name) AS parent_crm_account_name,
       COALESCE(person_base_with_tp.parent_crm_account_lam,opp_base_with_batp.parent_crm_account_lam) AS parent_crm_account_lam,
       COALESCE(person_base_with_tp.parent_crm_account_lam_dev_count,opp_base_with_batp.parent_crm_account_lam_dev_count) AS parent_crm_account_lam_dev_count,
@@ -706,5 +727,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-06-06"
+    updated_date="2024-07-03",
   ) }}

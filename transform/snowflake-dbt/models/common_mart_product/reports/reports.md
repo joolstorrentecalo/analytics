@@ -553,3 +553,31 @@ This model is intended to provide visibility into the state of the ongoing Zoekt
 _Note: Once the Zoekt rollout is complete, revisit the cadence of this model in FY26Q1 to determine if it needs to be rebuilt less frequently or retired._
 
 {% enddocs %}
+
+{% docs rpt_behavior_code_suggestion_gateway_request %}
+
+**Description:** Table for the analysis of Code Suggestions Snowplow structured events from the AI gateway. 
+This model is limited to request events coming from the AI gateway (see details about filters below).
+
+**Data Grain:** behavior_structured_event_pk (one event per request)
+
+**Filters Applied to Model:**
+- `Inherited` - Include events containing the `code_suggestions_context`
+- Include events from the following app_id: `gitlab_ai_gateway`
+- Include events from the following event_actions: `suggestion_requested`, `suggestions_requested`
+
+**Tips for use:**
+- There is a cluster key on `behavior_at::DATE`. Using `behavior_at` in a WHERE clause or INNER JOIN will improve query performance.
+- These events originate from the AI gateway and cannot be blocked
+- There is only one event per suggestion (upon the request), which carries an `event_action` 
+of `suggestions_requested` or `suggestion_requested`. Therefore these events can only be used to get a counts of users, etc, not acceptance rate.
+- These events do not carry the suggestion identifier in `event_label`
+- These events carry the `code_suggestions_context`, but not the `ide_extension_version` context
+- To attribute usage to a specific customer, you need to flatten `ultimate_parent_namespace_ids` 
+(for GitLab.com) or `dim_installation_ids` (for Self-Managed and Dedicated)
+
+**Other Comments:**
+- Schema for `code_suggestions_context` [here](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/code_suggestions_context)
+  - Note: Not all fields in the context are available on the gateway request event (ex: `model_name` is not available)
+
+{% enddocs %}

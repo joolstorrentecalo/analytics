@@ -438,11 +438,12 @@ The name (URL) of the host. This appears as `hostname` in the ping payload.
 
 {% docs ping_delivery_type %}
 
-How the product is delivered to the installation (Self-Managed, SaaS). Currently, GitLab Dedicated installations are assigned a delivery type of `Self-Managed`. `ping_delivery_type` is determined using dim_instance_id/uuid and is defined as 
+How the product is delivered to the installation (Self-Managed, SaaS). GitLab Dedicated installations are assigned a delivery type of `SaaS`. `ping_delivery_type` is determined using `dim_instance_id`/`uuid` and `is_saas_dedicated` and is defined as 
 
 ``` sql
 CASE
   WHEN dim_instance_id = 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f' THEN 'SaaS' --dim_instance_id is synonymous with uuid
+  WHEN is_saas_dedicated = TRUE THEN 'SaaS' 
   ELSE 'Self-Managed'
 END AS ping_delivery_type
 ```
@@ -3445,3 +3446,14 @@ Primary key for the model, consisting of dim_installation_id, metrics_path, and 
 
 {% enddocs %}
 
+{% docs is_deleted %}
+ 
+The flag indicating if the record has been deleted
+
+{% enddocs %}
+
+{% docs is_deleted_updated_at %}
+ 
+The timestamp of when the `is_deleted` flag has been updated
+
+{% enddocs %}

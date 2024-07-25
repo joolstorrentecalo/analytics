@@ -31,6 +31,8 @@ SELECT
       THEN 'Engineering'
     WHEN department = 'UX'
       THEN 'Product'
+    WHEN department = 'Data'
+      THEN 'Marketing'      
     ELSE division
   END AS modified_division,
   cost_center,
@@ -65,7 +67,11 @@ SELECT
     WHEN department in ('Field Marketing', 'Partner Marketing')
       THEN 'Regional Marketing'
     WHEN department in ('Account Based Marketing', 'Campaigns', 'Search Marketing')
-      THEN 'Digital Marketing'      
+      THEN 'Digital Marketing'
+    WHEN department = 'Data'
+      THEN 'Enterprise Data'
+    WHEN department = 'Community Relations'
+      THEN 'Developer Relations'
     ELSE department
   END AS modified_department,
   CASE

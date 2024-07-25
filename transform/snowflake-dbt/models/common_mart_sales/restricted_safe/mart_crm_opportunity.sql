@@ -193,111 +193,18 @@
       fct_crm_opportunity.is_abm_tier_sao,
       fct_crm_opportunity.is_abm_tier_closed_won,
 
-      -- crm opp owner/account owner fields stamped at SAO date (only used for reporting on opps with close date < 2022-02-01)
-      dim_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped,
-      dim_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped_grouped,
-      dim_crm_opportunity.sao_crm_opp_owner_geo_stamped,
-      dim_crm_opportunity.sao_crm_opp_owner_region_stamped,
-      dim_crm_opportunity.sao_crm_opp_owner_area_stamped,
-      dim_crm_opportunity.sao_crm_opp_owner_segment_region_stamped_grouped,
-      dim_crm_opportunity.sao_crm_opp_owner_sales_segment_geo_region_area_stamped,
-
-      -- crm opp owner/account owner stamped fields stamped at close date
-      dim_crm_opportunity.crm_opp_owner_stamped_name,
-      dim_crm_opportunity.crm_account_owner_stamped_name,
-      dim_crm_user_hierarchy.crm_user_business_unit                                         AS crm_opp_owner_business_unit_stamped,
-      dim_crm_user_hierarchy.crm_user_sales_segment                                         AS crm_opp_owner_sales_segment_stamped,
-      dim_crm_user_hierarchy.crm_user_sales_segment_grouped                                 AS crm_opp_owner_sales_segment_stamped_grouped,
-      dim_crm_user_hierarchy.crm_user_geo                                                   AS crm_opp_owner_geo_stamped,
-      dim_crm_user_hierarchy.crm_user_region                                                AS crm_opp_owner_region_stamped,
-      dim_crm_user_hierarchy.crm_user_area                                                  AS crm_opp_owner_area_stamped,
-      {{ sales_segment_region_grouped('dim_crm_user_hierarchy.crm_user_sales_segment',
-        'dim_crm_user_hierarchy.crm_user_geo', 'dim_crm_user_hierarchy.crm_user_region') }}
-                                                                                            AS crm_opp_owner_sales_segment_region_stamped_grouped,
-      dim_crm_opportunity.crm_opp_owner_sales_segment_geo_region_area_stamped,
-      dim_crm_opportunity.crm_opp_owner_user_role_type_stamped,
-      dim_crm_user_hierarchy.crm_user_role_level_1                                          AS crm_opp_owner_role_level_1,
-      dim_crm_user_hierarchy.crm_user_role_level_2                                          AS crm_opp_owner_role_level_2,
-      dim_crm_user_hierarchy.crm_user_role_level_3                                          AS crm_opp_owner_role_level_3,
-      dim_crm_user_hierarchy.crm_user_role_level_4                                          AS crm_opp_owner_role_level_4,
-      dim_crm_user_hierarchy.crm_user_role_level_5                                          AS crm_opp_owner_role_level_5,
-
-      -- crm owner/sales rep live fields
-      dim_crm_user_hierarchy_live.crm_user_business_unit,
-      dim_crm_user_hierarchy_live.crm_user_sales_segment,
-      dim_crm_user_hierarchy_live.crm_user_sales_segment_grouped,
-      dim_crm_user_hierarchy_live.crm_user_geo,
-      dim_crm_user_hierarchy_live.crm_user_region,
-      dim_crm_user_hierarchy_live.crm_user_area,
-      {{ sales_segment_region_grouped('dim_crm_user_hierarchy_live.crm_user_sales_segment',
-        'dim_crm_user_hierarchy_live.crm_user_geo', 'dim_crm_user_hierarchy_live.crm_user_region') }}
-                                                                           AS crm_user_sales_segment_region_grouped,
-      dim_crm_user_hierarchy_live.crm_user_role_level_1,
-      dim_crm_user_hierarchy_live.crm_user_role_level_2,
-      dim_crm_user_hierarchy_live.crm_user_role_level_3,
-      dim_crm_user_hierarchy_live.crm_user_role_level_4,
-      dim_crm_user_hierarchy_live.crm_user_role_level_5,
-
-      
-       -- crm account owner/sales rep live fields
-      dim_crm_user_hierarchy_account_owner.crm_user_business_unit                                                       AS crm_account_user_business_unit,
-      dim_crm_user_hierarchy_account_owner.crm_user_sales_segment                                                       AS crm_account_user_sales_segment,
-      dim_crm_user_hierarchy_account_owner.crm_user_sales_segment_grouped                                               AS crm_account_user_sales_segment_grouped,
-      dim_crm_user_hierarchy_account_owner.crm_user_geo                                                                 AS crm_account_user_geo,
-      dim_crm_user_hierarchy_account_owner.crm_user_region                                                              AS crm_account_user_region,
-      dim_crm_user_hierarchy_account_owner.crm_user_area                                                                AS crm_account_user_area,
-      {{ sales_segment_region_grouped('dim_crm_user_hierarchy_account_owner.crm_user_sales_segment',
-        'dim_crm_user_hierarchy_account_owner.crm_user_geo', 'dim_crm_user_hierarchy_account_owner.crm_user_region') }}
-                                                                                                                        AS crm_account_user_sales_segment_region_grouped,
-      dim_crm_user_hierarchy_account_owner.crm_user_role_level_1                                                        AS crm_account_user_role_level_1,
-      dim_crm_user_hierarchy_account_owner.crm_user_role_level_2                                                        AS crm_account_user_role_level_2,
-      dim_crm_user_hierarchy_account_owner.crm_user_role_level_3                                                        AS crm_account_user_role_level_3,
-      dim_crm_user_hierarchy_account_owner.crm_user_role_level_4                                                        AS crm_account_user_role_level_4,
-      dim_crm_user_hierarchy_account_owner.crm_user_role_level_5                                                        AS crm_account_user_role_level_5,
-
-      -- Pipeline Velocity Account and Opp Owner Fields and Key Reporting Fields
-      dim_crm_opportunity.opportunity_owner_user_segment,
-      dim_crm_opportunity.opportunity_owner_user_geo,
-      dim_crm_opportunity.opportunity_owner_user_region,
-      dim_crm_opportunity.opportunity_owner_user_area,
-      dim_crm_opportunity.report_opportunity_user_segment,
-      dim_crm_opportunity.report_opportunity_user_geo,
-      dim_crm_opportunity.report_opportunity_user_region,
-      dim_crm_opportunity.report_opportunity_user_area,
-      dim_crm_opportunity.report_user_segment_geo_region_area,
-      dim_crm_opportunity.report_user_segment_geo_region_area_sqs_ot,
-      dim_crm_opportunity.key_segment,
-      dim_crm_opportunity.key_sqs,
-      dim_crm_opportunity.key_ot,
-      dim_crm_opportunity.key_segment_sqs,
-      dim_crm_opportunity.key_segment_ot,
-      dim_crm_opportunity.key_segment_geo,
-      dim_crm_opportunity.key_segment_geo_sqs,
-      dim_crm_opportunity.key_segment_geo_ot,
-      dim_crm_opportunity.key_segment_geo_region,
-      dim_crm_opportunity.key_segment_geo_region_sqs,
-      dim_crm_opportunity.key_segment_geo_region_ot,
-      dim_crm_opportunity.key_segment_geo_region_area,
-      dim_crm_opportunity.key_segment_geo_region_area_sqs,
-      dim_crm_opportunity.key_segment_geo_region_area_ot,
-      dim_crm_opportunity.key_segment_geo_area,
-      dim_crm_opportunity.sales_team_cro_level,
-      dim_crm_opportunity.sales_team_rd_asm_level,
-      dim_crm_opportunity.sales_team_vp_level,
-      dim_crm_opportunity.sales_team_avp_rd_level,
-      dim_crm_opportunity.sales_team_asm_level,
-      LOWER(
-        dim_crm_opportunity.crm_account_owner_sales_segment
-      ) AS account_owner_user_segment,
-      LOWER(
-        dim_crm_opportunity.crm_account_owner_geo
-      ) AS account_owner_user_geo,
-      LOWER(
-        dim_crm_opportunity.crm_account_owner_region
-      ) AS account_owner_user_region,
-      LOWER(
-        dim_crm_opportunity.crm_account_owner_area
-      ) AS account_owner_user_area,
+      -- Key Reporting Fields
+      dim_crm_opportunity.report_segment,
+      dim_crm_opportunity.report_geo,
+      dim_crm_opportunity.report_region,
+      dim_crm_opportunity.report_area,
+      dim_crm_opportunity.report_role_name,
+      dim_crm_opportunity.report_role_level_1,
+      dim_crm_opportunity.report_role_level_2,
+      dim_crm_opportunity.report_role_level_3,
+      dim_crm_opportunity.report_role_level_4,
+      dim_crm_opportunity.report_role_level_5,
+     
 
       -- Channel fields
       fct_crm_opportunity.lead_source,
@@ -612,9 +519,9 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@rakhireddy",
+    updated_by="@chrissharp",
     created_date="2020-12-07",
-    updated_date="2024-06-12"
+    updated_date="2024-06-13"
   ) }}
 
 

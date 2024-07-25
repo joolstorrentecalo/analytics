@@ -4,7 +4,7 @@
 ) }}
 
 {{ simple_cte([
-    ('fct_invoice_aging_detail', 'fct_invoice_aging_detail'),
+    ('driveload_invoice_aging_detail_source', 'driveload_invoice_aging_detail_source'),
     ('dim_crm_opportunity', 'dim_crm_opportunity'),
     ('dim_invoice', 'dim_invoice'),
     ('dim_date', 'dim_date')
@@ -15,17 +15,17 @@ segment AS (
 /* Determine purchase segment of open invoices monthly */
 
   SELECT DISTINCT
-    fct_invoice_aging_detail.dim_invoice_id,
-    DATE(DATE_TRUNC('month', fct_invoice_aging_detail.accounting_period_end_date)) AS period,
-    fct_invoice_aging_detail.account_balance_impact,
+    driveload_invoice_aging_detail_source.dim_invoice_id,
+    DATE_TRUNC('month', DATE(driveload_invoice_aging_detail_source.accounting_period_end_date))  AS period,
+    driveload_invoice_aging_detail_source.account_balance_impact,
     CASE
       WHEN dim_crm_opportunity.user_segment = 'PUBSEC'
         THEN 'PubSec'
       ELSE 'Non-PubSec'
-    END                                                                            AS segment
-  FROM fct_invoice_aging_detail
+    END                                                                                          AS segment
+  FROM driveload_invoice_aging_detail_source
   LEFT JOIN dim_invoice 
-    ON fct_invoice_aging_detail.dim_invoice_id = dim_invoice.dim_invoice_id
+    ON driveload_invoice_aging_detail_source.dim_invoice_id = dim_invoice.dim_invoice_id
   LEFT JOIN dim_crm_opportunity 
     ON dim_invoice.invoice_number = dim_crm_opportunity.invoice_number
 
@@ -51,10 +51,10 @@ total AS (
 /* Determine the total balances for all open invoices monthly */
 
   SELECT
-    DATE(DATE_TRUNC('month', fct_invoice_aging_detail.accounting_period_end_date)) AS period,
-    SUM(account_balance_impact)                                                    AS total_all_balance,
-    COUNT(account_balance_impact)                                                  AS count_all_open_invoices
-  FROM fct_invoice_aging_detail
+    DATE_TRUNC('month', DATE(driveload_invoice_aging_detail_source.accounting_period_end_date))  AS period,
+    SUM(account_balance_impact)                                                                  AS total_all_balance,
+    COUNT(account_balance_impact)                                                                AS count_all_open_invoices
+  FROM driveload_invoice_aging_detail_source
   GROUP BY period
 
 ),
@@ -93,5 +93,5 @@ cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-05-08",
-updated_date="2024-05-08"
+updated_date="2024-07-03"
 ) }}

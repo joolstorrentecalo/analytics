@@ -5,14 +5,14 @@ models:
    description: Base model for google search console data
    columns:
      - name: site
-       tests:
+       data_tests:
          - not_null
      - name: date
-       tests:
+       data_tests:
          - not_null
      - name: device
-       tests:
+       data_tests:
          - not_null
      - name: country
-       tests:
+       data_tests:
          - not_null

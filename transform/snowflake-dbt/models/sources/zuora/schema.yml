@@ -8,20 +8,22 @@ models:
     columns:
       - name: accounting_period_id
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
       - name: accounting_period_start_date
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
   - name: zuora_amendment_source
     description: Source layer for Zuora Amendments for cleaning and renaming
     columns:
       - name: amendment_id
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
           - unique
+  - name: zuora_booking_transaction_source
+    description: Source layer for Zuora Booking Transactions for renaming
   - name: zuora_contact_source
     description: Source layer for Zuora Contacts for cleaning and renaming
   - name: zuora_credit_balance_adjustment_source
@@ -30,8 +32,6 @@ models:
     description: Source layer for Zuora Discount Applied Metrics  for cleaning and renaming
   - name: zuora_invoice_source
     description: Source layer for Zuora Invoices for cleaning and renaming
-  - name: zuora_invoice_aging_detail_source
-    description: Source layer for Zuora Invoice Items for cleaning and renaming
   - name: zuora_invoice_item_source
     description: Source layer for Zuora Invoice Items for cleaning and renaming
   - name: zuora_invoice_item_adjustment_source
@@ -41,19 +41,19 @@ models:
     columns:
       - name: invoice_payment_id
         tags: ["tdf", "zuora"]      
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: invoice_id
         tags: ["tdf", "zuora"]      
-        tests:
+        data_tests:
           - not_null
   - name: zuora_payment_method_source
     description: Source layer for Zuora Payment Method
     columns:
       - name: payment_method_id
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: zuora_payment_source
@@ -69,11 +69,11 @@ models:
     columns:
       - name: product_id
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
       - name: product_name
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
   - name: zuora_rate_plan_source
     description: Source layer for Zuora Rate Plans for cleaning and renaming
@@ -86,15 +86,15 @@ models:
     columns:
       - name: revenue_schedule_item_id
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
       - name: rate_plan_charge_id
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
       - name: accounting_period_id
         tags: ["tdf", "zuora"]
-        tests:
+        data_tests:
           - not_null
   - name: zuora_refund_source
     description: Source layer for Zuora Refunds for cleaning and renaming
@@ -104,7 +104,7 @@ models:
     description: Source layer for Zuora Subscriptions for cleaning and renaming
     columns:
       - name: current_term
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: "> 0"
               severity: warn

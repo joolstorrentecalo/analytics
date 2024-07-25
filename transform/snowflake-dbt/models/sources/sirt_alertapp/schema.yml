@@ -5,7 +5,7 @@ models:
     description: Data on each media buy and corresponding performance
     columns:
       - name: alertid
-        tests:
+        data_tests:
           - not_null
       - name: ack_time
         description: time in unix epoch when ACK button is clicked
@@ -38,9 +38,9 @@ models:
         description: optional field about feedback of the alert
       - name: gcs_uploaded_at
         description: File modified_at in GCS
-        tests:
+        data_tests:
           - not_null
       - name: snowflake_uploaded_at
         description: The datetime when the GCS data was uploaded into Snowflake
-        tests:
+        data_tests:
           - not_null

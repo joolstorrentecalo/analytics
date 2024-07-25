@@ -104,3 +104,8 @@ folders:
     folder_name: invoice_aging_detail
     table_name: invoice_aging_detail
     table_replace_append: 1
+  - name: gdpr_delete_requests
+    owner: '@parmstrong'
+    folder_name: gdpr_delete_requests
+    table_name: gdpr_delete_requests
+    table_replace_append: 0

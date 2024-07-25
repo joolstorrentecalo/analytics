@@ -241,6 +241,10 @@ sheets:
   #     - sales_funnel_targets_kpi_values
   #     - sales_funnel_targets_opportunity
   #     - sales_funnel_targets_matrix
+  - name: sales_dev_role_hierarchy
+    owner: '@dmicovic'
+    tabs:
+      - sales_dev_role_hierarchy
   - name: sales_dev_targets_fy25
     owner: '@dmicovic'
     tabs:

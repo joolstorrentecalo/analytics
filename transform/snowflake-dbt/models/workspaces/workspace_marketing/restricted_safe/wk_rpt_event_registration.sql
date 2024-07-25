@@ -134,6 +134,10 @@
     sfdc_campaign_member.is_mql_after_campaign,
     sfdc_campaign_member.campaign_member_status,
     sfdc_campaign_member.campaign_member_created_date,
+    sfdc_campaign_member.utm_campaign,
+    sfdc_campaign_member.utm_medium,
+    sfdc_campaign_member.utm_source,
+    sfdc_campaign_member.last_form_submission_page,
 
     -- person
     mart_crm_person.dim_crm_user_id                            AS person_owner_id,
@@ -282,6 +286,10 @@
     campaign_members_with_campaigns.campaign_member_response_date,
     campaign_members_with_campaigns.campaign_member_status,
     campaign_members_with_campaigns.campaign_member_created_date,
+    campaign_members_with_campaigns.utm_campaign AS campaign_member_utm_campaign,
+    campaign_members_with_campaigns.utm_medium AS campaign_member_utm_medium,
+    campaign_members_with_campaigns.utm_source AS campaign_member_utm_source,
+    campaign_members_with_campaigns.last_form_submission_page AS campaign_member_last_form_submission_page,
 
     -- Marketo Info
     marketo_form_fills.form_submit_date,
@@ -328,7 +336,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@degan",
-    updated_by="@degan",
+    updated_by="@rkohnke",
     created_date="2024-05-09",
-    updated_date="2024-05-09",
+    updated_date="2024-07-02",
 ) }}

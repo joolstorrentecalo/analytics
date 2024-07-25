@@ -1,11 +1,3 @@
-{% docs gitlab_dotcom_ci_minutes_ui_namespace_replication %}
-
-This table replicates the proccess that the Gitlab UI uses to generate the CI minutes Usage Quota both for personal namespaces and top level group namespaces. The codebase logic used to build this model can be seen mapped in [this diagram](https://app.lucidchart.com/documents/view/0b8b66e6-8536-4a5d-b992-9e324581187d/0_0).
-
-It also adds two additional columns which aren't calculated in the UI, which are `limit_based_plan` and `status_based_plan` which are independent of whether there aren't projects with `shared_runners_enabled` inside the namespaces and only take into account how many minutes have been used from the monthly quota based in the plan of the namespace.
-
-{% enddocs %}
-
 {% docs gitlab_dotcom_user_custom_attributes %}
 
 This table contains all [Custom Attributes](https://docs.gitlab.com/ee/api/custom_attributes.html) associated with a User Namespace.
@@ -15,14 +7,6 @@ This table contains all [Custom Attributes](https://docs.gitlab.com/ee/api/custo
 {% docs gitlab_dotcom_environments_xf %}
 
 This model anonymizes three fields: `environment_name`, `slug`, `external_url` based on the visibility of the projects the environments are associated to 
-
-{% enddocs %}
-
-{% docs gitlab_dotcom_gitlab_internal_sprints %}
-
-This model limits the gitlab dotcom sprints table to only have records from groups gitlab-org(9970) and gitlab-com(6543), or projects that are part of product.
-
-Useful to get sprint title and description information for GitLab internal sprints.
 
 {% enddocs %}
 

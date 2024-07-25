@@ -871,9 +871,9 @@ Contains the latest Seat Link record for every installation in the source Seat L
 
 {% enddocs %}
 
-{% docs prep_snowplow_sessions_all %}
+{% docs prep_pto %}
 
-Unioned monthly partitions for all Snowplow sessions.
+Prep table to store approved absences that fall on a working day and an additional absence_status column. 
 
 {% enddocs %}
 
@@ -886,5 +886,11 @@ This table contains data about SFDC case objects.
 {% docs prep_crm_case_history %}
 
 This table contains all changes to SFDC Case fields if field history tracking is enabled for that field within SFDC settings.
+
+{% enddocs %}
+
+{% docs prep_snowplow_sessions_all %}
+
+Unioned monthly partitions for all Snowplow sessions.
 
 {% enddocs %}

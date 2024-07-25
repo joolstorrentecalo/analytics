@@ -4,26 +4,26 @@ models:
     - name: zendesk_community_relations_group_memberships_source
       columns: 
         - name: group_membership_id
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_community_relations_groups_source
       columns:
         - name: group_id
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_community_relations_macros_source
       columns:
         - name: macro_id
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_community_relations_organizations_source
       description: This is the source model for Zendesk organizations.
       columns:
       - name: organization_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: arr
@@ -31,46 +31,46 @@ models:
     - name: zendesk_community_relations_tags_source
       columns:
         - name: tag_name
-          tests:
+          data_tests:
             - not_null
             - unique
     - name: zendesk_community_relations_ticket_audits_source
       description: This is the source model for Zendesk ticket audit events.
       columns:
       - name: audit_id
-        tests:
+        data_tests:
             - not_null
       - name: ticket_id
-        tests:
+        data_tests:
             - not_null    
     - name: zendesk_community_relations_ticket_comments_source
       columns:
       - name: ticket_comment_id
-        tests:
+        data_tests:
           - not_null
           - unique
     - name: zendesk_community_relations_ticket_metrics_source
       description: This is the source model for Zendesk ticket metrics.
       columns:
       - name: ticket_id
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: ticket_metrics_id
-        tests:
+        data_tests:
             - unique
             - not_null                  
     - name: zendesk_community_relations_tickets_source
       description: This is the source model for Zendesk tickets.
       columns:
       - name: ticket_id
-        tests:
+        data_tests:
             - unique
             - not_null
     - name: zendesk_community_relations_users_source
       description: This is the source model for Zendesk users.
       columns:
       - name: user_id
-        tests:
+        data_tests:
             - unique
             - not_null

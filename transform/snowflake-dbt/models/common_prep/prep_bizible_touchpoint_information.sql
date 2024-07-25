@@ -48,7 +48,7 @@
         bizible_person_id
     FROM prep_lead
     LEFT JOIN prep_bizible
-        ON prep_lead.sfdc_record_id=prep_bizible.bizible_contact_id
+        ON prep_lead.sfdc_record_id=prep_bizible.bizible_lead_id
     UNION ALL
     SELECT
         sfdc_record_id,
@@ -166,7 +166,7 @@
 ), final AS (
 
     SELECT 
-        bizible_most_recent_touchpoint_information_final.biz_most_recent_person_id AS bizible_person_id,
+        bizible_most_recent_touchpoint_information_final.biz_most_recent_person_id AS sfdc_record_id,
         bizible_mql_touchpoint_information_final.bizible_mql_touchpoint_id,
         bizible_mql_touchpoint_information_final.bizible_mql_touchpoint_date,
         bizible_mql_touchpoint_information_final.bizible_mql_form_url,
@@ -192,5 +192,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2024-05-17",
-    updated_date="2024-05-21",
+    updated_date="2024-07-09",
   ) }}

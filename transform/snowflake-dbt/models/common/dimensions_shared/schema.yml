@@ -7,7 +7,7 @@ models:
   - name: dim_plan
     columns:
       - name: dim_plan_sk
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_plan_sk") }}'

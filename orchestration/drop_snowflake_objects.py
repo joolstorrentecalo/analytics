@@ -16,30 +16,31 @@ def get_list_of_dbs_to_keep(yaml_path="analytics/permissions/snowflake/roles.yml
         return [list(db.keys())[0].lower() for db in role_dict["databases"]]
 
 
-def get_list_of_dev_schemas(engine: Engine) -> List[str]:
+def get_list_of_stale_dev_tables(engine: Engine) -> List[str]:
     """
-    Get a list of all dev schemas.
+    Get a list of tables in development tables that are beyond the retention period defined in dbt_project.yml.
     This will make sure sensitive data is not hanging around.
     """
 
     query = """
-    SELECT distinct table_schema
-    FROM prod.information_schema.tables
-    WHERE table_catalog IN ('PROD')
-    AND lower(table_schema) LIKE '%scratch%'
+    SELECT
+      table_catalog,
+      table_schema,
+      table_name,
+    FROM prod.data_quality.stale_dev_db_tables
     """
 
     try:
-        logging.info("Getting list of schemas...")
+        logging.info("Getting list of stale dev tables...")
         connection = engine.connect()
-        schemas = [row[0] for row in connection.execute(query).fetchall()]
+        stale_tables = [row for row in connection.execute(query).fetchall()]
     except:
-        logging.info("Failed to get list of schemas...")
+        logging.info("Failed to get list of stale tables...")
     finally:
         connection.close()
         engine.dispose()
 
-    return schemas
+    return stale_tables
 
 
 def get_list_of_clones(engine: Engine) -> List[str]:
@@ -95,35 +96,43 @@ def drop_databases() -> None:
             engine.dispose()
 
 
-def drop_dev_schemas() -> None:
+def drop_stale_dev_tables() -> None:
     """
-    Drop each of the schemas that have "scratch" in their name.
+    Drop each of the stale tables
     """
 
-    logging.info("Preparing to drop schemas...")
+    logging.info("Preparing to drop stale dev tables...")
     config_dict = env.copy()
     engine = snowflake_engine_factory(config_dict, "SYSADMIN")
     logging.info(f"Engine Created: {engine}")
 
-    schemas = get_list_of_dev_schemas(engine)
-    logging.info(f"Dropping {len(schemas)} dev schemas...")
+    stale_tables = get_list_of_stale_dev_tables(engine)
+    logging.info(f"Dropping {len(stale_tables)} stale tables...")
 
-    for schema in schemas:
-        drop_query = f"""DROP SCHEMA prod."{schema}";"""
-        logging.info(f"Dropping Schema: {schema}")
-        try:
-            connection = engine.connect()
-            connection.execute(drop_query)
-        except:
-            logging.info(f"Failed to drop schema: {schema}")
-        finally:
-            connection.close()
-            engine.dispose()
+    try:
+        connection = engine.connect()
 
-    logging.info("Schemas dropped successfully.")
+        for database, schema, table in stale_tables:
+            fully_qualified_table_name = f'"{database}"."{schema}"."{table}"'
+            drop_query = f"DROP TABLE {fully_qualified_table_name};"
+            try:
+                logging.info(f"Running: {drop_query}")
+                connection.execute(drop_query)
+            except:
+                logging.info(f"Failed to drop table: {fully_qualified_table_name}")
+    except:
+        logging.info(f"Failed to connect to snowflake")
+    finally:
+        connection.close()
+        engine.dispose()
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=20)
-    Fire({"drop_dev_schemas": drop_dev_schemas, "drop_databases": drop_databases})
+    Fire(
+        {
+            "drop_stale_dev_tables": drop_stale_dev_tables,
+            "drop_databases": drop_databases,
+        }
+    )
     logging.info("Complete.")

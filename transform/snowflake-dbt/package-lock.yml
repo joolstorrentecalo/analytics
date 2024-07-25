@@ -1,0 +1,16 @@
+packages:
+  - git: git@gitlab.com:gitlab-data/snowflake_spend.git
+    revision: 142df4790acaf4a4750af25b0715e67b56ca452c
+  - git: git@gitlab.com:gitlab-data/data-tests.git
+    revision: 4b38729091937b4015f420e83080965bf8c51ca0
+  - package: dbt-labs/audit_helper
+    version: 0.9.0
+  - package: dbt-labs/dbt_utils
+    version: 1.1.1
+  - package: dbt-labs/snowplow
+    version: 0.15.1
+  - package: dbt-labs/dbt_external_tables
+    version: 0.8.7
+  - package: brooklyn-data/dbt_artifacts
+    version: 2.6.3
+sha1_hash: 997dcf0ec50d2ea296ed9df13f56bb30bfeeffdb

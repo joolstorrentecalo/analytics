@@ -3,14 +3,14 @@ version: 2
 models:
     - name: tableau_cloud_events_source
       description: "{{ doc('tableau_cloud_events') }}"
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - site_luid
               - event_id
       columns:
         - name: site_luid
-          tests:
+          data_tests:
               - not_null
         - name: historical_project_name
         - name: site_name
@@ -20,7 +20,7 @@ models:
         - name: event_name
         - name: event_type
         - name: event_id
-          tests:
+          data_tests:
               - not_null
         - name: event_at
         - name: actor_license_role
@@ -41,7 +41,7 @@ models:
 
     - name: tableau_cloud_groups_source
       description: "{{ doc('tableau_cloud_groups') }}"
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - site_luid
@@ -49,10 +49,10 @@ models:
               - user_luid
       columns:
         - name: site_luid
-          tests:
+          data_tests:
               - not_null
         - name: group_luid
-          tests:
+          data_tests:
               - not_null
         - name: user_luid
         - name: site_name
@@ -65,7 +65,7 @@ models:
 
     - name: tableau_cloud_permissions_source
       description: "{{ doc('tableau_cloud_permissions') }}"
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - site_luid
@@ -76,12 +76,12 @@ models:
       column:
         - name: grantee_type
         - name: grantee_luid
-          tests:
+          data_tests:
               - not_null
         - name: grantee_name
         - name: item_hyperlink
         - name: item_luid
-          tests:
+          data_tests:
               - not_null
         - name: item_name
         - name: item_type
@@ -89,15 +89,15 @@ models:
         - name: top_parent_project_name
         - name: controlling_permissions_project_name
         - name: capability_type
-          tests:
+          data_tests:
               - not_null
         - name: permission_value
-          tests:
+          data_tests:
               - not_null
         - name: permission_description
         - name: site_name
         - name: site_luid
-          tests:
+          data_tests:
               - not_null
         - name: user_email
         - name: user_luid
@@ -107,7 +107,7 @@ models:
         - name: uploaded_at
     - name: tableau_cloud_site_content_source
       description: "{{ doc('tableau_cloud_site_content') }}"
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - site_luid
@@ -128,7 +128,7 @@ models:
         - name: item_hyperlink
         - name: item_id
         - name: item_luid
-          tests:
+          data_tests:
               - not_null
         - name: item_name
         - name: item_parent_project_id
@@ -147,7 +147,7 @@ models:
         - name: controlling_permissions_project_name
         - name: site_hyperlink
         - name: site_luid
-          tests:
+          data_tests:
               - not_null
         - name: site_name
         - name: size_bytes
@@ -167,14 +167,14 @@ models:
 
     - name: tableau_cloud_users_source
       description: "{{ doc('tableau_cloud_users') }}"
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - site_luid
               - user_luid
       columns:
           - name: site_luid
-            tests:
+            data_tests:
               - not_null
           - name: site_name
           - name: allowed_creators
@@ -183,7 +183,7 @@ models:
           - name: allowed_viewers
           - name: user_id
           - name: user_luid
-            tests:
+            data_tests:
               - not_null
           - name: user_email
           - name: user_name

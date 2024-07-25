@@ -3,11 +3,11 @@ version: 2
 models:
   - name: rpt_duo_pro_license_utilization_monthly
     description: Workspace model for reporting on monthly Duo Pro seat utilization. Metric nuances described in column descriptions.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - reporting_month
-            - dim_crm_account_id
+            - dim_subscription_id
             - product_deployment
             - paired_tier
     columns:
@@ -30,7 +30,7 @@ models:
       - name: paired_tier
         description: Tier or tiers associated with the Duo Pro Add On purchase with reported revenue in the same month that Duo Pro revenue is reported within mart_arr.
       - name: is_product_entity_associated_w_subscription
-        description: FALSE if installation or namespace idenitfier cannot be mapped to subscription.
+        description: FALSE if installation or namespace identifier cannot be mapped to subscription.
       - name: major_minor_version_id
         description: Latest major_minor_version_id reported for SM or Dedicated installation within a month. Gitlab.com deployments are always up to date and managed by the internal GitLab team.
       - name: paid_duo_pro_seats
@@ -46,8 +46,34 @@ models:
       - name: pct_usage_seat_utilization
         description: max_duo_pro_active_users / paid_duo_pro_seats
       - name: pct_assignment_seat_utilization
-        description: number_of_seats_assigned / paid_duo_pro_seats This metric will equal 0 for all SM and Dedicated deployments sinced assigned seats are only captured for Gitlab.com accounts.
+        description: number_of_seats_assigned / paid_duo_pro_seats This metric will equal 0 for all SM and Dedicated deployments since assigned seats are only captured for Gitlab.com accounts.
       - name: standard_pct_usage_seat_utilization
         description: max_duo_pro_active_users / paid_duo_pro_seats Result cannot exceed 100%.
       - name: standard_pct_assignment_seat_utilization
         description: number_of_seats_assigned / paid_duo_pro_seats Result cannot exceed 100%.
+
+  - name:  wk_rpt_gitlab_registered_users_monthly
+    description: '{{ doc("wk_rpt_gitlab_registered_users_monthly") }}'
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - reporting_month
+            - delivery_type
+            - deployment_type
+    columns:
+      - name: reporting_month
+        description: First day of the calendar month of the Service Ping and paid seats
+      - name: is_first_day_of_last_month_of_fiscal_quarter
+        description: '{{ doc("date_is_first_day_of_last_month_of_fiscal_quarter") }}'
+      - name: fiscal_quarter_name_fy
+        description: '{{ doc("date_fiscal_quarter_name_fy") }}'
+      - name: delivery_type
+        description: '{{ doc("product_delivery_type") }}'
+      - name: deployment_type
+        description: '{{ doc("product_deployment_type") }}'
+      - name: total_user_count
+        description: The total reported count of users, based on `instance_user_count` from the last ping of the month per installation
+      - name: paid_user_count
+        description: The count of paid users, defined as the count of paid seats from base products (i.e., not add-ons). In the event that `paid_user_count` is greater than `total_user_count` (ex. some edge cases with Dedicated), `paid_user_count` is set as `total_user_count`
+      - name: free_user_count
+        description: The count of free users, defined as `total_user_count - paid_user_count`

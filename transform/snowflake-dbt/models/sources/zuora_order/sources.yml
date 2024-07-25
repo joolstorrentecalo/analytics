@@ -26,7 +26,7 @@ sources:
         columns:
           - name: id
             description: Primary Key for orders
-            tests:
+            data_tests:
               - dbt_utils.expression_is_true:
                   expression: "REGEXP '[0-9a-z]{32}'"
       - name: order_action
@@ -35,6 +35,6 @@ sources:
         columns:
           - name: id
             description: Primary Key for order actions
-            tests:
+            data_tests:
               - dbt_utils.expression_is_true:
                   expression: "REGEXP '[0-9a-z]{32}'"

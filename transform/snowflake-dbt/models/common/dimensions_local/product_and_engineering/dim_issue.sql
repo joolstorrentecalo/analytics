@@ -69,7 +69,9 @@ WITH prep_issue AS (
       is_security_issue,
       is_included_in_engineering_metrics,
       is_part_of_product,
-      is_community_contributor_related
+      is_community_contributor_related,
+      is_deleted,
+      is_deleted_updated_at
     FROM {{ ref('prep_issue') }}
 
 )
@@ -77,8 +79,7 @@ WITH prep_issue AS (
 {{ dbt_audit(
     cte_ref="prep_issue",
     created_by="@mpeychet_",
-    updated_by="@annapiaseczna",
+    updated_by="@utkarsh060",
     created_date="2021-06-17",
-    updated_date="2023-12-11"
+    updated_date="2024-07-09"
 ) }}
-

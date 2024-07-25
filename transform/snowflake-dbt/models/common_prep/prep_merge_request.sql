@@ -104,6 +104,8 @@
       gitlab_dotcom_merge_requests_source.created_at,
       gitlab_dotcom_merge_requests_source.updated_at,
       gitlab_dotcom_merge_requests_source.merge_request_last_edited_at,
+      gitlab_dotcom_merge_requests_source.is_deleted,
+      gitlab_dotcom_merge_requests_source.is_deleted_updated_at,
       agg_labels.labels,
       ARRAY_TO_STRING(agg_labels.labels,',')                                                    AS masked_label_title,
 
@@ -172,7 +174,7 @@
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet_",
-    updated_by="@annapiaseczna",
+    updated_by="@utkarsh060",
     created_date="2021-06-17",
-    updated_date="2023-12-11"
+    updated_date="2024-07-09"
 ) }}

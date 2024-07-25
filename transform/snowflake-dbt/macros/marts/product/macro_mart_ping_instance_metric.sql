@@ -129,6 +129,7 @@ joined AS (
     license_subscriptions.subscription_start_month                                                             AS subscription_start_month,
     license_subscriptions.subscription_end_month                                                               AS subscription_end_month,
     license_subscriptions.dim_billing_account_id                                                               AS dim_billing_account_id,
+    license_subscriptions.dim_crm_account_id                                                                   AS dim_crm_account_id,
     license_subscriptions.crm_account_name                                                                     AS crm_account_name,
     license_subscriptions.dim_parent_crm_account_id                                                            AS dim_parent_crm_account_id,
     license_subscriptions.parent_crm_account_name                                                              AS parent_crm_account_name,
@@ -221,6 +222,7 @@ sorted AS (
     dim_installation_id,
     latest_subscription_id,
     dim_billing_account_id,
+    dim_crm_account_id,
     dim_parent_crm_account_id,
     major_minor_version_id,
     dim_host_id,
@@ -294,9 +296,9 @@ sorted AS (
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2022-03-11",
-    updated_date="2024-04-18"
+    updated_date="2024-07-17"
 ) }}
 
 {% endmacro %}

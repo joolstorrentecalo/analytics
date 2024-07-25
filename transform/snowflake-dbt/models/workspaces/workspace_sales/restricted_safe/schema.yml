@@ -5,42 +5,42 @@ models:
     description: Forecast table combining the different API sub-payloads together
     columns:
       - name: forecast_id
-        tests:
+        data_tests:
           - not_null
       - name: user_full_name
-        tests:
+        data_tests:
           - not_null
       - name: user_email
-        tests:
+        data_tests:
           - not_null
       - name: crm_user_id
-        tests:
+        data_tests:
           - not_null
       - name: sales_team_role
-        tests:
+        data_tests:
           - not_null
       - name: parent_role
       - name: fiscal_quarter
-        tests:
+        data_tests:
           - not_null
       - name: field_name
-        tests:
+        data_tests:
           - not_null
       - name: week_number
-        tests:
+        data_tests:
           - not_null
       - name: week_start_date
-        tests:
+        data_tests:
           - not_null
       - name: week_end_date
-        tests:
+        data_tests:
           - not_null
       - name: field_type
-        tests:
+        data_tests:
           - not_null
       - name: forecast_value
       - name: is_updated
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - forecast_id
@@ -52,108 +52,108 @@ models:
     description: Prep model for SSOT sales funnel targets
     columns:
       - name: dim_crm_user_hierarchy_sk
-        tests:
+        data_tests:
           - not_null
   - name: wk_fct_sales_funnel_target
     description: Prep model for SSOT sales funnel targets
     columns:
       - name: kpi_name
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: sales_funnel_target_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_sales_funnel_kpi_sk
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
   - name: wk_prep_sales_funnel_kpi
     description: Prep model for SSOT sales funnel targets
     columns:
       - name: dim_sales_funnel_kpi_sk
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: sales_funnel_kpi_name
-        tests:
+        data_tests:
           - not_null
   - name: wk_prep_crm_user_hierarchy
     description: Prep model for SSOT sales funnel targets
     columns:
       - name: dim_crm_user_hierarchy_id
         description: Unique identifier of a sales hierarchy tier
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: wk_mart_sales_funnel_target
     description: Model with Sales targets used for planning the go to market Sales and Marketing motion.
     columns:
       - name: sales_funnel_target_id
-        tests:
+        data_tests:
             - not_null
             - unique
         tags: ["tdf", "mart", "sales_funnel"]
   - name: wk_dim_crm_user_hierarchy
     columns:
       - name: dim_crm_user_hierarchy_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
   - name: wk_dim_sales_funnel_kpi
     columns:
       - name: dim_sales_funnel_kpi_sk
-        tests:
+        data_tests:
           - not_null
   - name: wk_fct_sales_funnel_target_daily
     columns:
       - name: kpi_name
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "sales_funnel"]
       - name: sales_funnel_target_daily_pk
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
       - name: dim_sales_funnel_kpi_sk
-        tests:
+        data_tests:
           - not_null
   - name: wk_fct_sales_funnel_actual
     description: '{{ doc("fct_sales_funnel_actual") }}'
     columns:
       - name: sales_funnel_actual_sk
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: wk_rpt_crm_opportunity_reduced
     description: a table with reduced column list from mart_crm_opportunity that is used for testing entitlement tables for Tableau
     columns:
       - name: dim_crm_opportunity_id
-        tests:
+        data_tests:
             - not_null
             - unique
   - name: wk_rpt_crm_account_reduced
     description: a table with reduced column list from mart_crm_account that is used for testing entitlement tables for Tableau
     columns:
       - name: dim_crm_account_id
-        tests:
+        data_tests:
             - not_null
             - unique
   - name: wk_prep_crm_account_share_active
     description: an active account share table with reduced column list
     columns:
       - name: account_id
-        tests:
+        data_tests:
             - not_null
   - name: wk_prep_crm_opportunity_share_active
     description: an active opportunity share table with reduced column list
     columns:
       - name: opportunity_id
-        tests:
+        data_tests:
             - not_null
   - name: wk_crm_account_entitlement
     description: an account entitlment table to be used for row level security in Tableau
@@ -166,7 +166,7 @@ models:
 
   - name: wk_prep_crm_opportunity_fy25
     description: test version of prep_crm_opportunity for FY25 hierarchy
-    tests:
+    data_tests:
     - dbt_utils.unique_combination_of_columns:
         combination_of_columns:
           - dim_crm_opportunity_id
@@ -215,14 +215,14 @@ models:
     columns:
       - name: dim_crm_opportunity_id
         description: A dbt generated surrogate key combining the sfdc_record_id and the sales_accepted_date.
-        tests:
+        data_tests:
           - unique
           - not_null
   - name: wk_fct_crm_opportunity_daily_snapshot
     columns:
       - name: crm_opportunity_snapshot_id
         description: Unique identifier of a crm opportunity in the daily snapshot models
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: wk_fct_crm_opportunity_7th_day_weekly_snapshot
@@ -235,7 +235,7 @@ models:
     columns:
       - name: crm_opportunity_snapshot_id
         description: Unique identifier of a crm opportunity in the daily snapshot models
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: wk_fct_crm_opportunity_7th_day_weekly_snapshot_aggregate
@@ -264,3 +264,27 @@ models:
       actuals combined, every seven days within a quarter.
       It combines daily targets, daily actuals along with the total quarterly targets and actuals. This
       model includes both the numerator and denominator for calculating coverage throughout a quarter
+  - name: wk_sales_daily_case_automation_test
+    description: >
+      This is the test model for the PUMP version so we can test changes to the case creation logic.
+  - name: wk_sales_gds_account_snapshots
+    description: >
+      Account snapshots with business logic specific to the Global Digital SMB Sales team
+  - name: wk_sales_gds_cases
+    description: >
+      SFDC cases with Global Digital SMB business logic including activity summary
+  - name: wk_sales_gds_fo_buckets
+    description: >
+      Derives the source of first orders using namespace and trial information
+  - name: wk_sales_gds_forecast_consolidated
+    description: >
+      Monthly forecast model for the Global Digital SMB team
+  - name: wk_sales_product_price_quantity
+    description: >
+      Current price and quantity information based on ARR that can be joined to opportunities
+  - name: wk_sales_renewal_arr
+    description: >
+      Pre- and post-renewal price and quantity information based on ARR to be joined to opportunities
+  - name: wk_sales_gds_opportunities
+    description : >
+      Opportunity data with SMB-specific business logic

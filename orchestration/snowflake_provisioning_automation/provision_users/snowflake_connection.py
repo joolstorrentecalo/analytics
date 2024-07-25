@@ -2,6 +2,7 @@
 Create a connection to Snowflake with the appropriate user/role
 """
 
+import os
 from logging import info
 from snowflake.sqlalchemy import URL
 from sqlalchemy import create_engine
@@ -13,18 +14,26 @@ from typing import Any, List, Tuple
 class SnowflakeConnection:
     """Class to connect to Snowflake"""
 
-    def __init__(self, config_dict: dict, role: str, is_test_run: bool = True):
+    def __init__(
+        self,
+        user: str,
+        password: str,
+        account: str,
+        role: str,
+        warehouse: str,
+        is_test_run: bool = True,
+    ):
         self.is_test_run = is_test_run
 
         # only create engine if NOT test run
         if not self.is_test_run:
             self.engine = create_engine(
                 URL(
-                    user=config_dict["SNOWFLAKE_PROVISIONER_USER"],
-                    password=config_dict["SNOWFLAKE_PROVISIONER_PW"],
-                    account=config_dict["SNOWFLAKE_ACCOUNT"],
+                    user=user,
+                    password=password,
+                    account=account,
                     role=role,  # needs to be passed in, can be securityadmin/sysadmin
-                    warehouse=config_dict["SNOWFLAKE_PROVISIONER_WAREHOUSE"],
+                    warehouse=warehouse,
                 )
             )
 
@@ -59,3 +68,25 @@ class SnowflakeConnection:
     def dispose_engine(self):
         if not self.is_test_run:
             self.engine.dispose()
+
+
+def _get_snowflake_connection(role: str, is_test_run: bool):
+    """helper method to return snowflake_connection for particular role"""
+    config_dict = os.environ.copy()
+    user = config_dict["PERMISSION_BOT_USER"]
+    password = config_dict["PERMISSION_BOT_PASSWORD"]
+    account = config_dict["SNOWFLAKE_ACCOUNT"]
+    warehouse = config_dict["PERMISSION_BOT_WAREHOUSE"]
+    return SnowflakeConnection(user, password, account, role, warehouse, is_test_run)
+
+
+def get_securityadmin_connection(is_test_run: bool):
+    """return securityadmin snowflake connection"""
+    role = "SECURITYADMIN"
+    return _get_snowflake_connection(role, is_test_run)
+
+
+def get_sysadmin_connection(is_test_run: bool):
+    """return sysadmin snowflake connection"""
+    role = "SYSADMIN"
+    return _get_snowflake_connection(role, is_test_run)

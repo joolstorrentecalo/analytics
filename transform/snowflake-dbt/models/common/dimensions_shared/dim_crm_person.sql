@@ -37,6 +37,7 @@ WITH crm_person AS (
       behavior_score,
       title,
       country,
+      person_role,
       state,
       has_opted_out_email,
       email_bounced_date,
@@ -44,6 +45,7 @@ WITH crm_person AS (
       status,
       lead_source,
       lead_source_type,
+      inactive_contact,
       was_converted_lead,
       source_buckets,
       employee_bucket,
@@ -146,5 +148,5 @@ WITH crm_person AS (
     created_by="@jjstark",
     updated_by="@rkohnke",
     created_date="2020-09-10",
-    updated_date="2024-05-21"
+    updated_date="2024-07-15"
 ) }}

@@ -6,28 +6,28 @@ models:
     columns:
       - name: ci_build_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_ops_ci_pipelines_source
     description: Base model for ops.gitlab.net ci_pipelines
     columns:
       - name: ci_pipeline_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
   
   - name: gitlab_ops_ci_stages_source
@@ -35,12 +35,12 @@ models:
     columns:
       - name: ci_stage_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_ops_label_links_source
@@ -48,17 +48,17 @@ models:
     columns:
       - name: label_link_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
       - name: valid_from
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"        
   
@@ -69,7 +69,7 @@ models:
     columns:
       - name: label_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -78,17 +78,17 @@ models:
     columns:
       - name: member_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique:
               where: "valid_to = NULL"
       - name: valid_from
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - dbt_utils.expression_is_true:
               expression: ">= valid_from"
 
@@ -99,16 +99,16 @@ models:
     columns:
       - name: merge_request_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: is_merge_to_master
         description: >-
@@ -119,11 +119,11 @@ models:
           The source table has both "state" and "state_id" columns. We use state_id to
           infer the "state" string as we found this gives results that match the API and UI.
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: merge_request_state_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4]
@@ -133,16 +133,16 @@ models:
     columns:
       - name: project_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: has_avatar
         description: >-
@@ -176,22 +176,22 @@ models:
     columns:
       - name: user_id
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - not_null
       - name: role
         description: This is the string translation of the "role" column stored as an integer in the source database. It is converted using the `user_role_mapping` macro.
       - name: role_id
         description: This is the integer representation of a user's role, as it's stored in the database.
         tags: ["tdf","gitlab_ops"]
-        tests:
+        data_tests:
           - accepted_values:
               values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 99]

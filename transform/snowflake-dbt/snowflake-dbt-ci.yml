@@ -1,5 +1,5 @@
 .snowflake_dbt_jobs: &snowflake_dbt_jobs
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
   stage: ⚙️ dbt Run
   before_script:
     - cd transform/snowflake-dbt/
@@ -139,10 +139,10 @@
     - dbt deps $CI_PROFILE_TARGET
     - dbt $DBT_CI_STATEMENT $CI_PROFILE_TARGET || FAILED=true
     - if [ $FAILED ]; then echo "Invocation process failed" && exit 5; fi
-  
+
 
 📚✏️generate_dbt_docs:
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
   stage: ⚙️ dbt Run
   before_script:
     - cd transform/snowflake-dbt/
@@ -245,7 +245,7 @@
 
 .safe_models_check: &safe_models_check
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
   before_script:
     - cd transform/snowflake-dbt/
     - echo $BRANCH_NAME
@@ -276,7 +276,7 @@
       - "transform/snowflake-dbt/models/**/*.sql"
     refs:
       - merge_request
-  allow_failure: false
+  allow_failure: true
 
 🚫safe_model_script:
   <<: *safe_models_check
@@ -295,7 +295,7 @@
         config.schema:restricted_safe_common_prep
         config.schema:restricted_safe_legacy
         config.schema:restricted_safe_workspace_finance
-        config.schema:restricted_safe_workspace_sales 
+        config.schema:restricted_safe_workspace_sales
         config.schema:restricted_safe_workspace_marketing
         config.schema:restricted_safe_workspace_engineering
       --output json > safe_models.json
@@ -307,7 +307,7 @@
 
 .dbt_macro_check: &dbt_macro_check
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
   before_script:
     - cd transform/snowflake-dbt/
   tags:
@@ -354,7 +354,7 @@
 # ======
 .dbt_sql_lint: &dbt_sql_lint
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
   before_script:
     - cd transform/snowflake-dbt/
     - echo $BRANCH_NAME

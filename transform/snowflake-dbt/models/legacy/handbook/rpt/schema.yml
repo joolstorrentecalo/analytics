@@ -5,38 +5,38 @@ models:
     description: This is a dbt model (view) of total count of Handbook MR file changes for each specific department/division in Engineering.
     columns:
     - name: month_merged_at
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_engineering
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_ux
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_security
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_infrastructure
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_development
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_quality
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_support
-      tests:
+      data_tests:
         - not_null
   - name: rpt_people_group_handbook_update_frequency_monthly
     description: This is a dbt model (view) of total count of Handbook MR file changes for each specific department/division in the People Group.
     columns:
     - name: month_merged_at
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_people_group
-      tests:
+      data_tests:
         - not_null
     - name: mr_count_people_group_engineering
-      tests:
+      data_tests:
         - not_null

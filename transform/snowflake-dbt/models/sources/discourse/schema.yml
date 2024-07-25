@@ -6,15 +6,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
                 - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
                 - not_null
           - name: report_value
-            tests:
+            data_tests:
                 - not_null
 
     - name: consolidated_page_views
@@ -22,17 +22,17 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
                 - not_null
           - name: report_title
           - name: report_type
           - name: request_type
           - name: request_label
           - name: report_value_date
-            tests:
+            data_tests:
                 - not_null
           - name: report_value
-            tests:
+            data_tests:
                 - not_null
 
     - name: daily_engaged_users
@@ -40,15 +40,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
               - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
                 - not_null
           - name: report_value
-            tests:
+            data_tests:
                 - not_null
 
     - name: page_view_total_reqs
@@ -56,15 +56,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
             - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
             - not_null
           - name: report_value
-            tests:
+            data_tests:
             - not_null
 
     - name: posts
@@ -72,15 +72,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
               - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
               - not_null
           - name: report_value
-            tests:
+            data_tests:
               - not_null
 
     - name: signups
@@ -88,15 +88,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
                 - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
                 - not_null
           - name: report_value
-            tests:
+            data_tests:
                 - not_null
 
     - name: time_to_first_response
@@ -104,15 +104,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
                 - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
                 - not_null
           - name: report_value
-            tests:
+            data_tests:
                 - not_null
 
     - name: topics_with_no_response
@@ -120,15 +120,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
                 - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
                 - not_null
           - name: report_value
-            tests:
+            data_tests:
                 - not_null
 
     - name: visits
@@ -136,15 +136,15 @@ models:
       columns:
           - name: report_start_date
             tags: ["discourse", "social"]
-            tests:
+            data_tests:
                 - not_null
           - name: report_title
           - name: report_type
           - name: report_value_date
-            tests:
+            data_tests:
                 - not_null
           - name: report_value
-            tests:
+            data_tests:
                 - not_null
 
 

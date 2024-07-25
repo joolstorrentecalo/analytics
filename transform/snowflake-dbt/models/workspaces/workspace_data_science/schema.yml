@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: monthly_stage_usage_by_account
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - dim_crm_account_id
@@ -13,12 +13,12 @@ models:
     description: Product stage usage metrics for free and paid ultimate parent namespaces by month
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: monthly_stage_usage_by_subscription
     description: Product usage metrics by the original subscription_id
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - dim_subscription_id_original

@@ -133,14 +133,14 @@ SELECT
   dim_date.day_of_fiscal_year_normalised    AS pipeline_created_day_of_fiscal_year_normalised,
 
   --User Hierarchy
-  snapshot.report_opportunity_user_segment  AS snapshot_report_opportunity_user_segment,
-  live.report_opportunity_user_segment,
-  snapshot.report_opportunity_user_geo      AS snapshot_report_opportunity_user_segment,
-  live.report_opportunity_user_geo,
-  snapshot.report_opportunity_user_region   AS snapshot_report_opportunity_user_region,
-  live.report_opportunity_user_region,
-  snapshot.report_opportunity_user_area     AS snapshot_report_opportunity_user_area,
-  live.report_opportunity_user_area,
+  snapshot.report_segment                   AS snapshot_report_segment,
+  live.report_segment,
+  snapshot.report_geo                       AS snapshot_report_geo,
+  live.report_geo,
+  snapshot.report_region                    AS snapshot_report_region,
+  live.report_region,
+  snapshot.report_area                      AS snapshot_report_area,
+  live.report_area,
   --    report_opportunity_user_business_unit,
   --    report_opportunity_user_sub_business_unit,
   --    report_opportunity_user_division,
@@ -214,17 +214,6 @@ combined_models AS (
     opportunity_snapshot_base.parent_crm_account_area,
     opportunity_snapshot_base.account_name,
     opportunity_snapshot_base.parent_crm_account_name,
-
---User Hierarchy
-    opportunity_snapshot_base.report_opportunity_user_segment,
-    opportunity_snapshot_base.report_opportunity_user_geo,
-    opportunity_snapshot_base.report_opportunity_user_region,
-    opportunity_snapshot_base.report_opportunity_user_area,
--- DM: Removed as a part of FY25 hierarchy changes   
---    opportunity_snapshot_base.report_opportunity_user_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_sub_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_division,
---   opportunity_snapshot_base.report_opportunity_user_asm,
 
 --Opportunity Dimensions
     opportunity_snapshot_base.opportunity_category,
@@ -363,18 +352,6 @@ combined_models AS (
     opportunity_snapshot_base.parent_crm_account_area,
     opportunity_snapshot_base.account_name,
     opportunity_snapshot_base.parent_crm_account_name,
-
---User Hierarchy
-    opportunity_snapshot_base.report_opportunity_user_segment,
-    opportunity_snapshot_base.report_opportunity_user_geo,
-    opportunity_snapshot_base.report_opportunity_user_region,
-    opportunity_snapshot_base.report_opportunity_user_area,
-
--- DM: Removed as a part of FY25 hierarchy changes   
---    opportunity_snapshot_base.report_opportunity_user_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_sub_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_division,
---   opportunity_snapshot_base.report_opportunity_user_asm,
 
 --Opportunity Dimensions
     opportunity_snapshot_base.opportunity_category,

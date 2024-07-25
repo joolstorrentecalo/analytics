@@ -31,7 +31,9 @@ WITH all_merge_requests AS (
     created_at::TIMESTAMP                              AS created_at,
     updated_at::TIMESTAMP                              AS updated_at,
     last_edited_at::TIMESTAMP                          AS merge_request_last_edited_at,
-    description::VARCHAR                               AS merge_request_description
+    description::VARCHAR                               AS merge_request_description,
+    pgp_is_deleted::BOOLEAN                            AS is_deleted,
+    pgp_is_deleted_updated_at::TIMESTAMP               AS is_deleted_updated_at
 
       --merge_params // hidden for privacy
 
@@ -85,7 +87,9 @@ joined AS (
     all_merge_requests.does_allow_maintainer_to_push           AS does_allow_maintainer_to_push,
     all_merge_requests.created_at                              AS created_at,
     all_merge_requests.updated_at                              AS updated_at,
-    all_merge_requests.merge_request_last_edited_at            AS merge_request_last_edited_at
+    all_merge_requests.merge_request_last_edited_at            AS merge_request_last_edited_at,
+    all_merge_requests.is_deleted                              AS is_deleted,
+    all_merge_requests.is_deleted_updated_at                   AS is_deleted_updated_at
 
   FROM all_merge_requests
   LEFT JOIN internal_merge_requests

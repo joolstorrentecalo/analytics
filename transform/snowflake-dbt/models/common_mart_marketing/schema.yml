@@ -5,7 +5,7 @@ models:
       description: Model containing Bizible attribution touchpoints along with contact, lead, account, campaign, and opportunity details.
       columns:
         - name: dim_crm_touchpoint_id
-          tests:
+          data_tests:
               - not_null
         - name: touchpoint_person_campaign_date_id
           description: A concatenation of fields from the mart that can be used to join attribution and person touchpoints together. 
@@ -109,7 +109,7 @@ models:
       description: Model containing Bizible touchpoints (non-attribution) along with contact, lead, account, and campaign details.
       columns:
         - name: dim_crm_touchpoint_id
-          tests:
+          data_tests:
               - not_null
         - name: touchpoint_person_campaign_date_id
           description: A concatenation of fields from the mart that can be used to join attribution and person touchpoints together. 
@@ -188,7 +188,7 @@ models:
       description: Model with person and MQL business logic.
       columns:
         - name: dim_crm_person_id
-          tests:
+          data_tests:
               - not_null
               - unique
           tags: ["tdf", "mart", "sales_funnel"]
@@ -288,6 +288,8 @@ models:
           description: The bizible touchpoint marketing channel path, of the most recent touchpoint.  
         - name: net_arr_stage_1
           description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
+        - name: inactive_contact
+          description: A SFDC Contact field that shows whether or not a given contact is still with the company/account they are related to. 
 
     - name: mart_marketing_contact_no_pii
       description: Non sensitive version of the mart_marketing_contact model.
@@ -339,7 +341,7 @@ models:
       description: Maps a person (unconverted lead or a contact) to an opportunity through their associated Salesforce account and connects any of their related touchpoints.
       columns:
         - name: lead_to_revenue_id
-          tests:
+          data_tests:
               - not_null
               - unique
           description: The primary key in the lead to revenue table - a compilation of the person, touchpoint, and opportunity ids.
@@ -773,6 +775,25 @@ models:
           description: The asset type portion of the new utm_content structure.
         - name: utm_content_industry
           description: The industry portion of the new utm_content structure.
+        - name: is_renewal
+          description: Boolean flag from the Opportunity in SFDC - indicates if it is a renewal. 
+        - name: is_eligible_open_pipeline
+          description: Boolean flag from the Opportunity in SFDC - indicates if it is eligible to be counted as pipeline. 
+        - name: pipeline_created_date
+          description: Date from the Opportunity in SFDC - indicates the date that pipeline was added to the opp.
+        - name: opportunity_category
+          description: Text field from the Opportunity in SFDC - indicates the current category of the opp.
+        - name: stage_name
+          description: Text field from the Opportunity in SFDC - indicates the current stage of the opp. 
+        - name: is_jihu_account
+          description: Boolean flag from the Account in SFDC - indicates if it is a JIHU account.
+        - name: is_edu_oss
+          description: Boolean flag from the Opportunity in SFDC - indicates if it is an edu/oss opp.
+        - name: stage_1_discovery_date
+          description: Date field from the Opportunity in SFDC - indicates the date that the opp reached stage 1.
+        - name: crm_account_type
+          description: Text field from the Account in SFDC - indicates the Type of the account.  
+
 
     - name: rpt_l2r_campaign_interactions
       description: Tableau-specific table that unions `mart_crm_touchpoint` with person, campaign data joined on and `mart_crm_attribution_touchpoint` with person, campaign and oppunitiy data 
@@ -964,7 +985,7 @@ models:
       columns:
         - name: dim_marketo_person_id
           description: The Unique person ID from Marketo
-          tests:
+          data_tests:
           - not_null
           - unique
         - name: dim_crm_person_id

@@ -22,15 +22,11 @@
     ('prep_epic', 'prep_epic'),
     ('gitlab_dotcom_routes_source', 'gitlab_dotcom_routes_source'),
     ('gitlab_dotcom_award_emoji_source', 'gitlab_dotcom_award_emoji_source'),
-    ('gitlab_dotcom_work_item_type_source', 'gitlab_dotcom_work_item_type_source')
+    ('gitlab_dotcom_work_item_type_source', 'gitlab_dotcom_work_item_type_source'),
+    ('gitlab_dotcom_issues_source', 'gitlab_dotcom_issues_source')
 ]) }}
 
-, gitlab_dotcom_issues_source AS (
-
-    SELECT *
-    FROM {{ ref('gitlab_dotcom_issues_source')}}
-
-), issue_metrics AS (
+, issue_metrics AS (
 
     /* In a very small number of cases there are duplicate records for some issues with a
        created_at and updated_at time that varies by seconds from the otherwise identical record.
@@ -87,26 +83,26 @@
       {{ dbt_utils.generate_surrogate_key(['gitlab_dotcom_issues_source.issue_id']) }} AS dim_issue_sk,
 
       -- NATURAL KEY
-      gitlab_dotcom_issues_source.issue_id                                    AS issue_id,
+      gitlab_dotcom_issues_source.issue_id                                             AS issue_id,
 
       -- LEGACY NATURAL KEY
-      gitlab_dotcom_issues_source.issue_id                                    AS dim_issue_id,
+      gitlab_dotcom_issues_source.issue_id                                             AS dim_issue_id,
       
       -- FOREIGN KEYS
       prep_project.dim_project_sk,
       namespace_prep.dim_namespace_sk,
       namespace_prep.ultimate_parent_namespace_id,
       prep_epic.dim_epic_sk,
-      prep_date.date_id                                                       AS created_date_id,
-      prep_gitlab_dotcom_plan.dim_plan_sk                                     AS dim_plan_sk_at_creation,
+      prep_date.date_id                                                                AS created_date_id,
+      prep_gitlab_dotcom_plan.dim_plan_sk                                              AS dim_plan_sk_at_creation,
       prep_milestone.dim_milestone_sk,
       gitlab_dotcom_issues_source.sprint_id,
-      author.dim_user_sk                                                      AS dim_user_author_sk,
-      updated_by.dim_user_sk                                                  AS dim_user_updated_by_sk,
-      last_edited_by.dim_user_sk                                              AS dim_user_last_edited_by_sk,
-      closed_by.dim_user_sk                                                   AS dim_user_closed_by_sk,
+      author.dim_user_sk                                                               AS dim_user_author_sk,
+      updated_by.dim_user_sk                                                           AS dim_user_updated_by_sk,
+      last_edited_by.dim_user_sk                                                       AS dim_user_last_edited_by_sk,
+      closed_by.dim_user_sk                                                            AS dim_user_closed_by_sk,
       -- maintained to keep prep_event working until all of gitlab.com lineage has surrogate keys available for all event sources
-      prep_gitlab_dotcom_plan.dim_plan_id                                     AS dim_plan_id_at_creation,
+      prep_gitlab_dotcom_plan.dim_plan_id                                              AS dim_plan_id_at_creation,
       prep_project.project_id,
       gitlab_dotcom_issues_source.author_id,
 
@@ -127,9 +123,9 @@
           AND namespace_prep.namespace_is_internal = FALSE
             THEN 'private/internal - masked'
           ELSE {{field}}
-        END                                                                 AS {{field}},
+        END                                                                            AS {{field}},
       {% endfor %}
-      gitlab_dotcom_issues_source.issue_iid                                 AS issue_internal_id,
+      gitlab_dotcom_issues_source.issue_iid                                            AS issue_internal_id,
       gitlab_dotcom_issues_source.weight,
       gitlab_dotcom_issues_source.due_date,
       gitlab_dotcom_issues_source.lock_version,
@@ -137,9 +133,9 @@
       gitlab_dotcom_issues_source.has_discussion_locked,
       gitlab_dotcom_issues_source.relative_position,
       gitlab_dotcom_issues_source.service_desk_reply_to,
-      gitlab_dotcom_issues_source.state_id                                 AS issue_state_id,
-      {{ map_state_id('gitlab_dotcom_issues_source.state_id') }}           AS issue_state,
-      gitlab_dotcom_work_item_type_source.work_item_type_name              AS issue_type,
+      gitlab_dotcom_issues_source.state_id                                             AS issue_state_id,
+      {{ map_state_id('gitlab_dotcom_issues_source.state_id') }}                       AS issue_state,
+      gitlab_dotcom_work_item_type_source.work_item_type_name                          AS issue_type,
       CASE 
         WHEN prep_issue_severity.severity = 4
           THEN 'S1'
@@ -162,22 +158,22 @@
             OR ARRAY_CONTAINS('s4'::variant, agg_labels.labels)
             THEN 'S4'
         ELSE NULL
-      END                                                                   AS severity,
+      END                                                                              AS severity,
       IFF(prep_project.visibility_level = 'private',
         'private - masked',
         'https://gitlab.com/' || gitlab_dotcom_routes_source.path || '/issues/' || gitlab_dotcom_issues_source.issue_iid)
-                                                                            AS issue_url,
+                                                                                       AS issue_url,
       IFF(prep_project.visibility_level = 'private',
         'private - masked',
-        prep_milestone.milestone_title)                                     AS milestone_title,
+        prep_milestone.milestone_title)                                                AS milestone_title,
       prep_milestone.milestone_due_date,
       agg_labels.labels,
-      ARRAY_TO_STRING(agg_labels.labels,',')                           AS masked_label_title,
-      IFNULL(upvote_count.upvote_count, 0)                                  AS upvote_count,
+      ARRAY_TO_STRING(agg_labels.labels,',')                                           AS masked_label_title,
+      IFNULL(upvote_count.upvote_count, 0)                                             AS upvote_count,
       issue_metrics.first_mentioned_in_commit_at,
       issue_metrics.first_associated_with_milestone_at,
       issue_metrics.first_added_to_board_at,
-      namespace_prep.namespace_is_internal                                  AS is_internal_issue,
+      namespace_prep.namespace_is_internal                                             AS is_internal_issue,
       first_events_weight.first_weight_set_at,
       CASE
       WHEN ARRAY_CONTAINS('priority::1'::variant, agg_labels.labels)
@@ -193,25 +189,27 @@
         OR ARRAY_CONTAINS('P4'::variant, agg_labels.labels)
         THEN 'priority 4'
       ELSE 'undefined'
-    END                                                                     AS priority,
+    END                                                                                AS priority,
 
     CASE
       WHEN namespace_prep.namespace_id = 9970
         AND ARRAY_CONTAINS('security'::variant, agg_labels.labels)
         THEN TRUE
       ELSE FALSE
-    END                                                                     AS is_security_issue,
+    END                                                                                AS is_security_issue,
 
     IFF(gitlab_dotcom_issues_source.project_id IN ({{is_project_included_in_engineering_metrics()}}),
-      TRUE, FALSE)                                                          AS is_included_in_engineering_metrics,
+      TRUE, FALSE)                                                                     AS is_included_in_engineering_metrics,
     IFF(gitlab_dotcom_issues_source.project_id IN ({{is_project_part_of_product()}}),
-      TRUE, FALSE)                                                          AS is_part_of_product,
+      TRUE, FALSE)                                                                     AS is_part_of_product,
     CASE
       WHEN namespace_prep.namespace_id = 9970
         AND ARRAY_CONTAINS('community contribution'::variant, agg_labels.labels)
         THEN TRUE
       ELSE FALSE
-      END                                                                   AS is_community_contributor_related
+      END                                                                              AS is_community_contributor_related,
+    gitlab_dotcom_issues_source.is_deleted                                             AS is_deleted,
+    gitlab_dotcom_issues_source.is_deleted_updated_at                                  AS is_deleted_updated_at
     FROM gitlab_dotcom_issues_source
     LEFT JOIN agg_labels
         ON gitlab_dotcom_issues_source.issue_id = agg_labels.issue_id
@@ -260,7 +258,7 @@
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet_",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2021-06-17",
-    updated_date="2024-03-27"
+    updated_date="2024-07-09"
 ) }}

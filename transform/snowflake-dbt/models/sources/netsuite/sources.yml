@@ -34,7 +34,7 @@ sources:
       - name: transaction_lines
         columns:
           - name: transaction_id
-            tests:
+            data_tests:
               - relationships:
                   to: source('netsuite', 'transactions')
                   field: transaction_id

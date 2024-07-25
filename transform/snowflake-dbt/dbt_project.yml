@@ -180,6 +180,10 @@ models:
         +materialized: table
         +schema: clari
 
+      commonroom:
+        +schema: commonroom
+        +tags: ["commonroom"]
+
       customers:
         +schema: customers
         sensitive:
@@ -213,6 +217,10 @@ models:
         +materialized: table
         +schema: driveload
         +tags: ["driveload"]
+      
+      e2e_metrics:
+        +materialized: table
+        +schema: e2e_metrics
 
       elastic_billing:
         +materialized: table

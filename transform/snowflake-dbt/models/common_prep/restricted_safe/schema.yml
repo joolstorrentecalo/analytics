@@ -6,18 +6,18 @@ models:
     columns:
       - name: dim_charge_id
         description: The unique identifier of the rate plan charge.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_date_id
         description: The identifier of date month in dim_date
       - name: dim_subscription_id
         description: The identifier of subscription in dim_subscriptions table
-        tests:
+        data_tests:
           - not_null
       - name: dim_product_detail_id
         description: The identifier of product details in dim_product_detail
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: Zuora account id
@@ -29,13 +29,15 @@ models:
         description: Annual Recurring Revenue value for given month
       - name: quantity
         description: Total quantity
+      - name: extended_list_price
+        description: Extended List Price
   
   - name: prep_charge_mrr
     description: '{{ doc("prep_charge_mrr") }}'
     columns:
       - name: dim_charge_id
         description: The unique identifier of the rate plan charge.
-        tests:
+        data_tests:
           - not_null
           - unique
   
@@ -82,7 +84,7 @@ models:
 
   - name: prep_crm_opportunity
     description: '{{ doc("prep_crm_opportunity") }}'
-    tests:
+    data_tests:
     - dbt_utils.unique_combination_of_columns:
         combination_of_columns:
           - dim_crm_opportunity_id
@@ -229,7 +231,7 @@ models:
     columns:
       - name: dim_quote_id
         description: The unique identifier for each of the quotes.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: quote_number
@@ -245,27 +247,27 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_original
         description: Identifier of the original subscription in lineage of a given Subscription ID
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_billing_account_id
         description: ID of the Zuora account associated with a given Subscription ID
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
         description: Account ID from SFDC identifing the customer
       - name: dim_date_id
         description: The identifier of date month in dim_date
-        tests:
+        data_tests:
           - not_null
       - name: subscription_status
         description: Status of the subscription
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['Active', 'Cancelled', 'Draft', 'Expired']
@@ -302,20 +304,20 @@ models:
     description: Base model for the mart_arr snapshot data
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_mart_available_to_renew_snapshot_base
     description: Base model for the mart_available_to_renew snapshot data
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_sfdc_account
@@ -327,7 +329,7 @@ models:
         description: Dim location country name final source column
       - name: dim_crm_account_id
         description: CRM Account ID provided by Salesforce
-        tests:
+        data_tests:
           - not_null
       - name: dim_parent_crm_account_id
         description: Ulimate parent CRM Account ID provided by Salesforce
@@ -343,7 +345,7 @@ models:
     description: '{{ doc("prep_subscription_opportunity_mapping") }}'
     columns:
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: Unique identifier of a Zuora Billing account
@@ -428,20 +430,20 @@ models:
     description: Base model for the fct_retention snapshot data
     columns:
       - name: fct_retention_id
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_fct_mrr_snapshot_base
     description: Base model for the fct_mrr snapshot data
     columns:
       - name: mrr_id
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_order_action_rate_plan
@@ -476,14 +478,14 @@ models:
     description: Prep model for SSOT sales funnel targets
     columns:
       - name: dim_crm_user_hierarchy_sk
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_sales_funnel_partner_alliance_target
     description: Prep model for sales funnel partner targets
     columns:
       - name: dim_crm_user_hierarchy_sk
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_renewal_fiscal_years
@@ -494,12 +496,12 @@ models:
     columns:
       - name: dim_lead_sk
         description: The unique surrogate key of the model that is created by hashing `leads_id`. It cannot be used as a join key
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: internal_lead_id
         description: The unique id of a lead. It is system-generated and is specific for CDot only and cannot be joined to leads from other source systems
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: dim_namespace_id
@@ -556,7 +558,7 @@ models:
     columns:
       - name: yearly_name
         description: name of the yearly item
-        tests:
+        data_tests:
           - not_null
       - name: yearly_dri
         description: DRI of the yearly item
@@ -569,4 +571,35 @@ models:
       - name: is_mnpi
         description: boolean flag whether the yearly item is mnpi or not
 
-      
+  - name: prep_sales_dev_user_hierarchy
+    description: View of the Sales Dev User Hierarchy
+    tests:
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - dim_crm_user_id
+          - snapshot_date
+    columns: 
+      - name: dim_crm_user_id
+        description: The SFDC User id
+        tests:
+          - not_null
+      - name: sales_dev_rep_employee_number
+        description: The Sales Dev Rep's employee number
+      - name: sales_dev_rep_role_name
+        description: The Sales Dev Rep's Role Name from SFDC
+      - name: sales_dev_rep_full_name
+        description: The Sales Dev Rep's Full Name
+      - name: sales_dev_manager_employee_number
+        description: The Sales Dev Rep's Manager's employee number
+      - name: sales_dev_manager_user_role_name
+        description: The Sales Dev Rep's Manager's role name from SFDC.
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_leader_employee_number
+        description: The Sales Dev Rep's Leader's employee number
+      - name: sales_dev_leader_user_role_name
+        description: The Sales Dev Rep's Leader's role name from SFDC.
+      - name: sales_dev_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: snapshot_date
+        description: The date the snapshot was last updated for the hierarchy of that record. 
