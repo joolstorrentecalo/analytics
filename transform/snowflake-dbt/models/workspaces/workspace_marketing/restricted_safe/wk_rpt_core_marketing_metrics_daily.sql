@@ -92,8 +92,8 @@ WITH l2r_base AS (
         END                                       AS metric_value,
         NULL                                      AS target_value
     FROM l2r_base
-    WHERE (l2r_base.true_inquiry_date <= l2r_base.mql_date_lastest_pt
-        OR l2r_base.mql_date_lastest_pt IS NULL)
+    WHERE (l2r_base.true_inquiry_date <= l2r_base.mql_date_latest_pt
+        OR l2r_base.mql_date_latest_pt IS NULL)
 
 ), mql_prep AS (
 
@@ -107,7 +107,7 @@ WITH l2r_base AS (
         account_demographics_region               AS region,
         account_demographics_geo                  AS geo,
         person_first_country                      AS country,
-        mql_date_lastest_pt                       AS metric_date,
+        mql_date_latest_pt                        AS metric_date,
         'MQL'                                     AS metric,
         CASE 
             WHEN is_mql = 1 
@@ -117,12 +117,12 @@ WITH l2r_base AS (
         daily_allocated_target                    AS target_value
     FROM l2r_base
     LEFT JOIN target_prep
-        ON l2r_base.mql_date_lastest_pt=target_prep.target_date
+        ON l2r_base.mql_date_latest_pt=target_prep.target_date
             AND l2r_base.account_demographics_sales_segment=target_prep.crm_user_sales_segment
             AND l2r_base.account_demographics_geo=target_prep.crm_user_geo
             AND l2r_base.account_demographics_region=target_prep.crm_user_region
             AND l2r_base.person_order_type=target_prep.order_type_name
-    WHERE (l2r_base.mql_date_lastest_pt <= l2r_base.sales_accepted_date
+    WHERE (l2r_base.mql_date_latest_pt <= l2r_base.sales_accepted_date
         OR l2r_base.sales_accepted_date IS NULL)
         AND target_prep.kpi_name = 'MQL'
 
