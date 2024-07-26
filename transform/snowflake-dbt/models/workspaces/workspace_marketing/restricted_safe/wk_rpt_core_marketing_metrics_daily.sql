@@ -234,7 +234,7 @@ WITH l2r_base AS (
         target_value,
         COUNT(DISTINCT metric_value) AS metric_value
     FROM inquiry_prep
-    {{dbt_utils.group_by(n=13)}}
+    {{dbt_utils.group_by(n=9)}}
     UNION ALL 
     SELECT
         metric_date,
@@ -248,7 +248,7 @@ WITH l2r_base AS (
         target_value,
         COUNT(DISTINCT metric_value) AS metric_value
     FROM mql_prep
-    {{dbt_utils.group_by(n=13)}}
+    {{dbt_utils.group_by(n=9)}}
     UNION ALL 
     SELECT
         metric_date,
@@ -262,7 +262,7 @@ WITH l2r_base AS (
         target_value,
         COUNT(DISTINCT metric_value) AS metric_value
     FROM sao_prep
-    {{dbt_utils.group_by(n=13)}}
+    {{dbt_utils.group_by(n=9)}}
     UNION ALL 
     SELECT
         metric_date,
@@ -276,7 +276,7 @@ WITH l2r_base AS (
         target_value,
         COUNT(DISTINCT metric_value) AS metric_value
     FROM pipeline_prep
-    {{dbt_utils.group_by(n=13)}}
+    {{dbt_utils.group_by(n=9)}}
     UNION ALL 
     SELECT
         metric_date,
@@ -290,7 +290,7 @@ WITH l2r_base AS (
         target_value,
         COUNT(DISTINCT metric_value) AS metric_value
     FROM closed_won_prep
-    {{dbt_utils.group_by(n=13)}} 
+    {{dbt_utils.group_by(n=9)}} 
 
 )
 
