@@ -2,12 +2,7 @@
     materialized='table'
 ) }}
 
-{{ simple_cte([
-    ('rpt_lead_to_revenue','rpt_lead_to_revenue')
-  ]) 
-}}
-
-, cohort_base AS (
+WITH cohort_base AS (
 
     SELECT DISTINCT
         dim_crm_person_id,
@@ -56,7 +51,7 @@
         opp_created_date,
         sales_accepted_date,
         close_date
-    FROM rpt_lead_to_revenue
+    FROM {{ref('rpt_lead_to_revenue')}}
     WHERE dim_crm_person_id IS NOT NULL
         OR dim_crm_opportunity_id IS NOT NULL
 
