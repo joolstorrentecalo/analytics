@@ -2113,3 +2113,15 @@ This table is a derived fact from fct_team_status and gitlab_pto. Sensitive colu
 The grain of this table is one row per pto_uuid per absence_date per dim_team_member_sk combination. 
 
 {% enddocs %}
+
+{% docs dim_self_managed_instance_activations %}
+
+**Description:** Dimension containing self managed instance cloud activations attributes for the analysis of cloud activations.
+
+**Data Grain:** dim_self_managed_instance_activation_id
+
+**Tips for use:**
+- Join this model to `dim_subscription` using `dim_subscription_id` in  order to pull in information about the subscription details
+- Join this model to `dim_crm_account` using `dim_crm_account_id` in  order to pull in information about the existing and historical customers
+
+{% enddocs %}

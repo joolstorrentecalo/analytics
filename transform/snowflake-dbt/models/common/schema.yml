@@ -1317,7 +1317,7 @@ models:
       - name: namespace_id
         description: The id of the namespace related to the subscription.
       - name: subscription_version
-        description: The version number of the subscription
+        description: '{{ doc("subscription_version") }}'
       - name: is_auto_renew
         description: Boolean field, if true, this subscription automatically renews at the end of the subscription term
       - name: zuora_renewal_subscription_name
@@ -9831,3 +9831,44 @@ models:
           masking_policy: analyst_people_sensitive
       - name: employee_day_length
         description: How long this User's "day" is in hours
+
+  - name: dim_self_managed_instance_activations
+    description: '{{ doc("dim_self_managed_instance_activations") }}'  
+    columns:
+      - name: dim_self_managed_instance_activation_id
+        description: '{{ doc("dim_self_managed_instance_activation_id") }}'
+        data_tests:
+          - not_null
+          - unique
+      - name: dim_self_managed_instance_activation_sk
+        description: '{{ doc("dim_self_managed_instance_activation_sk") }}'
+      - name: dim_cloud_activation_id
+        description: '{{ doc("dim_cloud_activation_id") }}'
+        data_tests:
+          - not_null
+      - name: dim_self_managed_instance_id
+        description: '{{ doc("dim_self_managed_instance_id") }}'
+        data_tests:
+          - not_null
+      - name: dim_subscription_id
+        description: '{{ doc("dim_subscription_id") }}'
+      - name: dim_crm_account_id
+        description: '{{ doc("dim_crm_account_id") }}'
+      - name: term_start_date
+        description: '{{ doc("term_start_date") }}'
+      - name: term_start_month
+        description: '{{ doc("term_start_month") }}'
+      - name: term_end_month
+        description: '{{ doc("term_end_month") }}'
+      - name: subscription_version
+        description: '{{ doc("subscription_version") }}'
+      - name: cloud_activation_created_at
+        description: '{{ doc("cloud_activation_created_at") }}'
+        data_tests:
+          - not_null
+      - name: cloud_activation_activated_at
+        description: '{{ doc("cloud_activation_activated_at") }}'
+      - name: cloud_activation_updated_at
+        description: '{{ doc("cloud_activation_updated_at") }}'
+        data_tests:
+          - not_null

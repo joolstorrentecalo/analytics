@@ -894,3 +894,11 @@ This table contains all changes to SFDC Case fields if field history tracking is
 Unioned monthly partitions for all Snowplow sessions.
 
 {% enddocs %}
+
+{% docs prep_self_managed_instance_activations %}
+
+This model contains data for the self managed instance cloud activations sourced from tap-postgres table from customers.gitlab.com. It stores information about all the self managed instance cloud activations codes that were generated for Cloud licenses. Customers use this code after the installation of their GitLab self managed instance. 
+
+This model contains other join keys like `crm_account_id `, `subscription_id` etc.. to be able to join back to Salesforce, Zuora, dimdate data respectively.
+
+{% enddocs %}

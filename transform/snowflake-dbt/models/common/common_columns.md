@@ -698,6 +698,8 @@ Boolean flag set to True if the subscription is under an EDU or OSS Program. Thi
 
 {% docs dim_subscription_id %}
 
+Unique identifier of a version of a subscription
+
 {% enddocs %}
 
 {% docs dim_subscription_id_original %}
@@ -3455,5 +3457,65 @@ The flag indicating if the record has been deleted
 {% docs is_deleted_updated_at %}
  
 The timestamp of when the `is_deleted` flag has been updated
+
+{% enddocs %}
+
+{% docs term_start_date %}
+
+Date the subscription term begins, as yyyy-mm-dd. If this is a renewal subscription, this date is different from the subscription start date
+
+{% enddocs %}
+
+{% docs term_start_month %}
+
+The month when the subscription term starts. If this is a renewal subscription, this month is different from the subscription start month
+
+{% enddocs %}
+
+{% docs term_end_month %}
+
+The month when the subscription term ends. If this is a renewal subscription, this month is different from the subscription end month
+
+{% enddocs %}
+
+{% docs subscription_version %}
+
+The version number of the subscription
+
+{% enddocs %}
+
+{% docs cloud_activation_created_at %}
+
+The date when the cloud licensing was created on customer's instance
+
+{% enddocs %}
+
+{% docs cloud_activation_activated_at %}
+
+The date when the cloud licensing was activated on customer's instance
+
+{% enddocs %}
+
+{% docs cloud_activation_updated_at %}
+
+The date when the cloud activation/licensing was updated on customer's instance
+
+{% enddocs %}
+
+{% docs dim_self_managed_instance_activation_id %}
+
+The unique identifier that identifies a self managed instance cloud activation.
+
+{% enddocs %}
+
+{% docs dim_self_managed_instance_activation_sk %}
+
+The surrogate key of `prep_self_managed_instance_activations` model. Currently identified by hashing the `self_managed_instance_activation_id` field that is being sourced from customers portal at gitlab.com.
+
+{% enddocs %}
+
+{% docs dim_self_managed_instance_id %}
+
+The unique identifier that identifies a self managed instance.
 
 {% enddocs %}
