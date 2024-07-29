@@ -1,1 +1,1 @@
-{{ opportunity_marts('fct_crm_opportunity_daily_snapshot', daily) }}
+{{ opportunity_marts('fct_crm_opportunity_daily_snapshot', 'daily') }}
