@@ -113,17 +113,6 @@ update-containers:
 ########################################################################################################################
 # DBT
 ########################################################################################################################
-setup-env:
-	which python3
-	python3 -V
-	# brew update
-	# brew install pyenv
-	# pyenv install 3.10.14
-	pyenv shell 3.10.14
-	which python3
-	python3 -V
-	# curl -k -sSL https://install.python-poetry.org/ | python3 - --version 1.5.1
-
 prepare-dbt:
 	curl -k -sSL https://install.python-poetry.org/ | python3 - --version 1.5.1
 	python3 -m pip install poetry==1.5.1
