@@ -193,10 +193,16 @@
       opp.parent_crm_account_geo,
       opp.parent_crm_account_area,
       opp.parent_crm_account_territory,
-      opp.crm_opp_owner_sales_segment_stamped,
-      opp.crm_opp_owner_region_stamped,
-      opp.crm_opp_owner_area_stamped,
-      opp.crm_opp_owner_geo_stamped,
+      opp.report_segment,
+      opp.report_region,
+      opp.report_area,
+      opp.report_geo,
+      opp.report_role_name,
+      opp.report_role_level_1,
+      opp.report_role_level_2,
+      opp.report_role_level_3,
+      opp.report_role_level_4,
+      opp.report_role_level_5,
       opp.product_category,
       opp.is_eligible_age_analysis,
       opp.lead_source,
@@ -421,7 +427,7 @@
       ON opp.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE opp.created_date >= '2021-02-01'
       OR opp.created_date IS NULL
-    {{dbt_utils.group_by(n=112)}}
+    {{dbt_utils.group_by(n=118)}}
     
 ), cohort_base_combined AS (
   
@@ -519,10 +525,16 @@
       opp_base_with_batp.parent_crm_account_geo AS opp_account_demographics_geo,
       opp_base_with_batp.parent_crm_account_territory AS opp_account_demographics_territory,
       opp_base_with_batp.parent_crm_account_area AS opp_account_demographics_area,
-      crm_opp_owner_sales_segment_stamped,
-      crm_opp_owner_region_stamped,
-      crm_opp_owner_area_stamped,
-      crm_opp_owner_geo_stamped,
+      opp_base_with_batp.report_segment,
+      opp_base_with_batp.report_region,
+      opp_base_with_batp.report_area,
+      opp_base_with_batp.report_geo,
+      opp_base_with_batp.report_role_name,
+      opp_base_with_batp.report_role_level_1,
+      opp_base_with_batp.report_role_level_2,
+      opp_base_with_batp.report_role_level_3,
+      opp_base_with_batp.report_role_level_4,
+      opp_base_with_batp.report_role_level_5,
       product_category,
       is_renewal,
       is_eligible_open_pipeline,
@@ -727,5 +739,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-07-03",
+    updated_date="2024-07-24",
   ) }}

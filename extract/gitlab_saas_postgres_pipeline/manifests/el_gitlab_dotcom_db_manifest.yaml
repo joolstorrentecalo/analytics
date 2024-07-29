@@ -1310,6 +1310,25 @@ tables:
       FROM jira_tracker_data
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
+  keys:
+    dbt_source_model: true
+    is_incremental: False
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'keys'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , created_at
+      , updated_at
+      , type
+      , public
+      , last_used_at
+      FROM keys
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
   label_priorities:
     dbt_source_model: true
     deletes_exempt: True
@@ -2264,6 +2283,29 @@ tables:
       , group_id
       , deploy_key_id
       FROM protected_branch_push_access_levels
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  protected_branches:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'protected_branches'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , CASE
+            WHEN name = 'main' THEN 'main'
+            WHEN name = 'master' THEN 'master'
+            ELSE NULL
+        END as name
+      , created_at
+      , updated_at
+      , code_owner_approval_required
+      FROM protected_branches
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
   protected_environment_approval_rules:

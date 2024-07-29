@@ -16,6 +16,5 @@ pandas = "1.4.2"
 SQLAlchemy = "1.4.46"
 simple-dependency-resolver = "0.1.1"
 requests = "^2.31.0"
-sqlfluff = "2.3.5"
-sqlfluff-templater-dbt = "2.3.5"
-
+sqlfluff = "3.1.0"
+sqlfluff-templater-dbt = "3.1.0"

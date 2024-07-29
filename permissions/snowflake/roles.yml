@@ -1935,6 +1935,7 @@ roles:
             - raw.tap_postgres.gitlab_db_issue_assignees
             - raw.tap_postgres.gitlab_db_issue_links
             - raw.tap_postgres.gitlab_db_issue_metrics
+            - raw.tap_postgres.gitlab_db_keys
             - raw.tap_postgres.gitlab_db_labels
             - raw.tap_postgres.gitlab_db_label_links
             - raw.tap_postgres.gitlab_db_label_priorities
@@ -1962,6 +1963,7 @@ roles:
             - raw.tap_postgres.gitlab_db_project_mirror_data
             - raw.tap_postgres.gitlab_db_project_statistics
             - raw.tap_postgres.gitlab_db_prometheus_alerts
+            - raw.tap_postgres.gitlab_db_protected_branches
             - raw.tap_postgres.gitlab_db_releases
             - raw.tap_postgres.gitlab_db_repository_languages
             - raw.tap_postgres.gitlab_db_requirements
@@ -2218,19 +2220,6 @@ roles:
             - prep.sensitive.netsuite_transaction_lines_pii
             - prep.sensitive.netsuite_vendors_pii
             - raw.netsuite_fivetran.*
-  - oci_reports:
-      warehouses:
-        - dev_xs
-      privileges:
-        databases:
-          read:
-            - raw
-        schemas:
-          read:
-            - raw.oci_reports
-        tables:
-          read:
-            - raw.oci_reports.*
   - postgres_pipeline:
       warehouses:
         - dev_xs
@@ -2642,6 +2631,17 @@ roles:
           read:
             - prep.tableau_cloud.*
             - raw.tableau_cloud.*
+  - tableau_backend:
+      privileges:
+        databases:
+          read:
+            - raw
+        schemas:
+          read:
+            - raw.tableau_fivetran
+        tables:
+          read:
+            - raw.tableau_fivetran.*
   - version_db:
       privileges:
         databases:
@@ -3195,7 +3195,6 @@ roles:
         - analyst_engineering
         - aws_billing
         - elasticsearch_billing
-        - oci_reports
         - prometheus
         - snowflake_analyst_safe
       warehouses:
@@ -4954,6 +4953,7 @@ roles:
         - pto
         - snowflake_analyst_safe
         - snowflake
+        - tableau_backend
         - workday
         - workday_hcm
         - zengrc
@@ -6023,6 +6023,7 @@ roles:
       member_of:
         - snowflake_analyst_safe
         - data_team_analyst
+        - tableau_backend
       warehouses:
         - dev_xs
   - jaltherr:

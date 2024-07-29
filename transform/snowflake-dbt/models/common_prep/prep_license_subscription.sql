@@ -55,11 +55,12 @@ license_subscriptions AS (
     dim_license.license_expire_date                                                               AS license_expire_date,
     subscription_source.subscription_name_slugify                                                 AS original_subscription_name_slugify,
     dim_subscription.dim_subscription_id                                                          AS dim_subscription_id,
-    subscription_source.subscription_name                                                            AS subscription_name,
+    subscription_source.subscription_name                                                         AS subscription_name,
     dim_subscription.subscription_start_month                                                     AS subscription_start_month,
     dim_subscription.subscription_end_month                                                       AS subscription_end_month,
     dim_subscription.dim_subscription_id_original                                                 AS dim_subscription_id_original,
     dim_billing_account.dim_billing_account_id                                                    AS dim_billing_account_id,
+    dim_crm_accounts.dim_crm_account_id                                                           AS dim_crm_account_id,
     dim_crm_accounts.crm_account_name                                                             AS crm_account_name,
     dim_crm_accounts.dim_parent_crm_account_id                                                    AS dim_parent_crm_account_id,
     dim_crm_accounts.parent_crm_account_name                                                      AS parent_crm_account_name,
@@ -94,7 +95,7 @@ license_subscriptions AS (
     ON fct_charge.effective_start_month <= dim_date.date_day
       AND fct_charge.effective_end_month > dim_date.date_day
       AND dim_date.date_day = dim_date.first_day_of_month -- This was added to improve the cross join performance
-  {{ dbt_utils.group_by(n=21) }}
+  {{ dbt_utils.group_by(n=22) }}
 
 
 
@@ -124,7 +125,7 @@ license_subscriptions_w_latest_subscription AS (
 {{ dbt_audit(
     cte_ref="license_subscriptions_w_latest_subscription",
     created_by="@pempey",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2024-02-07",
-    updated_date="2024-04-19"
+    updated_date="2024-07-17"
 ) }}

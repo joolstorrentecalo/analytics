@@ -19,7 +19,8 @@
     ('mart_crm_task', 'mart_crm_task'),
     ('prep_billing_account_user','prep_billing_account_user'),
     ('sfdc_contact_snapshots_source','sfdc_contact_snapshots_source'),
-    ('case_data','gds_case_inputs')
+    ('case_data','gds_case_inputs'),
+    ('zuora_subscription_source', 'zuora_subscription_source')
     ]) 
 
 }},
@@ -397,11 +398,11 @@ first_high_value_case AS (
 eoa_cohorts_prep AS (
   SELECT
     mart_arr.arr_month,
-        --,ping_created_at
+    --,ping_created_at
     mart_arr.subscription_end_month,
     mart_arr.dim_crm_account_id,
     mart_arr.crm_account_name,
-        --,MART_CRM_ACCOUNT.CRM_ACCOUNT_OWNER
+    --,MART_CRM_ACCOUNT.CRM_ACCOUNT_OWNER
     mart_arr.dim_subscription_id,
     mart_arr.dim_subscription_id_original,
     mart_arr.subscription_name,
@@ -418,14 +419,14 @@ eoa_cohorts_prep AS (
     mart_arr.product_delivery_type,
     mart_arr.product_rate_plan_name,
     mart_arr.arr,
-        --,monthly_mart.max_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
-    (mart_arr.arr / NULLIFZERO(mart_arr.quantity))                                                                  AS arr_per_user,
+    --,monthly_mart.max_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
+    DIV0(mart_arr.arr, mart_arr.quantity)                                                                           AS arr_per_user,
     arr_per_user
     / 12                                                                                                            AS monthly_price_per_user,
-    mart_arr.mrr / NULLIFZERO(mart_arr.quantity)                                                                    AS mrr_check
+    DIV0(mart_arr.mrr, mart_arr.quantity)                                                                           AS mrr_check
   FROM mart_arr
-      -- LEFT JOIN RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_ACCOUNT
-      --     ON mart_arr.DIM_CRM_ACCOUNT_ID = MART_CRM_ACCOUNT.DIM_CRM_ACCOUNT_ID
+  -- LEFT JOIN RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_ACCOUNT
+  --     ON mart_arr.DIM_CRM_ACCOUNT_ID = MART_CRM_ACCOUNT.DIM_CRM_ACCOUNT_ID
   WHERE mart_arr.arr_month = '2023-01-01'
     AND mart_arr.quantity > 0
     AND mart_arr.product_tier_name LIKE '%Premium%'
@@ -437,7 +438,7 @@ eoa_cohorts_prep AS (
     AND mart_arr.dim_crm_account_id IN
     (
       SELECT dim_crm_account_id
-          --,product_rate_plan_name
+      --,product_rate_plan_name
       FROM mart_arr
       WHERE arr_month >= '2020-02-01'
         AND arr_month <= '2022-02-01'
@@ -462,8 +463,8 @@ free_promo AS (
 price_increase_prep AS (
   SELECT
     mart_charge.*,
-    mart_charge.arr / NULLIFZERO(mart_charge.quantity) AS actual_price,
-    prod.annual_billing_list_price                     AS list_price
+    DIV0(mart_charge.arr, mart_charge.quantity) AS actual_price,
+    prod.annual_billing_list_price              AS list_price
   FROM mart_charge
   INNER JOIN dim_product_detail AS prod
     ON mart_charge.dim_product_detail_id = prod.dim_product_detail_id
@@ -918,20 +919,20 @@ utilization AS (
     mart_arr.turn_on_cloud_licensing,
     mart_arr.contract_seat_reconciliation,
     mart_arr.turn_on_seat_reconciliation,
-    COALESCE(mart_arr.contract_seat_reconciliation = 'Yes' AND mart_arr.turn_on_seat_reconciliation = 'Yes', FALSE)           AS qsr_enabled_flag,
+    COALESCE(mart_arr.contract_seat_reconciliation = 'Yes' AND mart_arr.turn_on_seat_reconciliation = 'Yes', FALSE)  AS qsr_enabled_flag,
     mart_arr.product_tier_name,
     mart_arr.product_delivery_type,
     mart_arr.product_rate_plan_name,
     mart_arr.arr,
-    (mart_arr.arr / NULLIFZERO(mart_arr.quantity))                                                                            AS arr_per_user,
+    DIV0(mart_arr.arr, mart_arr.quantity)                                                                            AS arr_per_user,
     monthly_mart.max_billable_user_count,
     monthly_mart.license_user_count,
     monthly_mart.subscription_start_date,
     monthly_mart.subscription_end_date,
     monthly_mart.term_end_date,
-    monthly_mart.max_billable_user_count - monthly_mart.license_user_count                                                    AS overage_count,
-    (mart_arr.arr / NULLIFZERO(mart_arr.quantity)) * (monthly_mart.max_billable_user_count - monthly_mart.license_user_count) AS overage_amount,
-    MAX(monthly_mart.snapshot_month) OVER (PARTITION BY monthly_mart.dim_subscription_id_original)                            AS latest_overage_month
+    monthly_mart.max_billable_user_count - monthly_mart.license_user_count                                           AS overage_count,
+    DIV0(mart_arr.arr, mart_arr.quantity) * (monthly_mart.max_billable_user_count - monthly_mart.license_user_count) AS overage_amount,
+    MAX(monthly_mart.snapshot_month) OVER (PARTITION BY monthly_mart.dim_subscription_id_original)                   AS latest_overage_month
   FROM mart_arr
   LEFT JOIN monthly_mart
     ON mart_arr.dim_subscription_id_original = monthly_mart.dim_subscription_id_original
@@ -1012,10 +1013,10 @@ eoa_accounts_fy24_one AS (
     mart_arr.product_delivery_type,
     mart_arr.product_rate_plan_name,
     mart_arr.arr,
-    (mart_arr.arr / NULLIFZERO(mart_arr.quantity))                                                                  AS arr_per_user,
+    DIV0(mart_arr.arr, mart_arr.quantity)                                                                           AS arr_per_user,
     arr_per_user
     / 12                                                                                                            AS monthly_price_per_user,
-    mart_arr.mrr / NULLIFZERO(mart_arr.quantity)                                                                    AS mrr_check
+    DIV0(mart_arr.mrr, mart_arr.quantity)                                                                           AS mrr_check
   FROM mart_arr
   LEFT JOIN bronze_starter_accounts
     ON mart_arr.dim_crm_account_id = bronze_starter_accounts.dim_crm_account_id
@@ -1042,14 +1043,14 @@ prior_sub_25_eoa_prep AS (
     mart_charge.*,
     dim_subscription.dim_crm_opportunity_id,
     dim_subscription.dim_crm_opportunity_id_current_open_renewal,
-    mart_charge.previous_mrr / NULLIFZERO(mart_charge.previous_quantity) AS previous_price,
-    mart_charge.mrr / NULLIFZERO(mart_charge.quantity)                   AS price_after_renewal
+    DIV0(mart_charge.previous_mrr, mart_charge.previous_quantity) AS previous_price,
+    DIV0(mart_charge.mrr, mart_charge.quantity)                   AS price_after_renewal
   FROM mart_charge
   LEFT JOIN dim_subscription
     ON mart_charge.dim_subscription_id = dim_subscription.dim_subscription_id
   INNER JOIN eoa_accounts_fy24 ON mart_charge.dim_crm_account_id = eoa_accounts_fy24.dim_crm_account_id
-      -- left join PROD.RESTRICTED_SAFE_COMMON_MART_SALES.mart_crm_opportunity on 
-      -- dim_subscription.dim_crm_opportunity_id_current_open_renewal = mart_crm_opportunity.dim_crm_opportunity_id
+  -- left join PROD.RESTRICTED_SAFE_COMMON_MART_SALES.mart_crm_opportunity on 
+  -- dim_subscription.dim_crm_opportunity_id_current_open_renewal = mart_crm_opportunity.dim_crm_opportunity_id
   WHERE mart_charge.rate_plan_name LIKE '%Premium%'
     AND mart_charge.type_of_arr_change != 'New'
     AND mart_charge.term_start_date >= '2023-02-01'
@@ -1099,32 +1100,34 @@ duo_trials AS (
   WHERE order_number = 1
 ),
 
-payment_failure_tasks AS (
-  SELECT DISTINCT
-    dim_crm_account_id,
-    task_id,
-    task_date,
-      --dim_crm_opportunity_id, 
-    RIGHT(REGEXP_SUBSTR(full_comments, 'GitLab subscription.{12}'), 11) AS extracted_subscription_name
-  FROM mart_crm_task
-  WHERE (task_subject LIKE '%Payment Failed%' OR task_subject LIKE '%Payment failed%')
-    --AND task_id = '00TPL000006KMiV2AW'
-    AND task_date >= '2024-02-01'
-),
+-- payment_failure_tasks AS (
+--   SELECT DISTINCT
+--     dim_crm_account_id,
+--     task_id,
+--     task_date,
+--       --dim_crm_opportunity_id, 
+--     RIGHT(REGEXP_SUBSTR(full_comments, 'GitLab subscription.{12}'), 11) AS extracted_subscription_name
+--   FROM mart_crm_task
+--   WHERE (task_subject LIKE '%Payment Failed%' OR task_subject LIKE '%Payment failed%')
+--     --AND task_id = '00TPL000006KMiV2AW'
+--     AND task_date >= '2024-02-01'
+-- ),
 
 
 --Identifies subscriptions with payment failures
 failure_sub AS (
   SELECT
-    payment_failure_tasks.*,
-    dim_subscription.dim_subscription_id                         AS failure_subscription_id,
-    dim_subscription.dim_crm_opportunity_id                      AS failed_sub_oppty,
-    dim_subscription.dim_crm_opportunity_id_current_open_renewal AS failed_sub_renewal_opp,
-    dim_subscription.dim_crm_opportunity_id_closed_lost_renewal  AS failed_sub_closed_opp
-  FROM payment_failure_tasks
-  LEFT JOIN dim_subscription
-    ON payment_failure_tasks.extracted_subscription_name = dim_subscription.subscription_name
-  WHERE dim_subscription.subscription_status = 'Active'
+    dim_subscription.dim_subscription_id                                                           AS failure_subscription_id,
+    dim_subscription.dim_crm_opportunity_id                                                        AS failed_sub_oppty,
+    dim_subscription.dim_crm_opportunity_id_current_open_renewal                                   AS failed_sub_renewal_opp,
+    dim_subscription.dim_crm_opportunity_id_closed_lost_renewal                                    AS failed_sub_closed_opp,
+    dim_subscription.dim_crm_account_id,
+    CAST (RIGHT(REGEXP_SUBSTR(zuora_subscription_source.notes, 'RENEWAL_ERROR.{12}'), 10) AS DATE) AS failure_date
+  FROM dim_subscription
+  LEFT JOIN zuora_subscription_source
+    ON dim_subscription.dim_subscription_id = zuora_subscription_source.subscription_id
+  WHERE LOWER(zuora_subscription_source.notes) LIKE '%renewal_error%'
+    AND REGEXP_SUBSTR(zuora_subscription_source.notes, 'RENEWAL_ERROR.{12}') LIKE '%(20%'
 ),
 
 -----------brings together account blended date, utilization data, and autorenewal switch data 
@@ -1153,7 +1156,7 @@ all_data AS (
     failure_sub.failed_sub_oppty,
     failure_sub.failed_sub_renewal_opp,
     failure_sub.failed_sub_closed_opp,
-    failure_sub.task_date
+    failure_sub.failure_date
   FROM account_blended
   LEFT JOIN utilization
     ON utilization.dim_crm_account_id = account_blended.account_id
@@ -1284,7 +1287,7 @@ cases AS (
       WHEN auto_renewal_will_fail_logic_flag = TRUE AND (current_subscription_end_date = current_date_90_days) THEN 'Auto-Renewal Will Fail'
       WHEN eoa_renewal_flag = TRUE AND (current_subscription_end_date = current_date_90_days) THEN 'EOA Renewal'
       WHEN will_churn_flag = TRUE AND (current_subscription_end_date = current_date_90_days) THEN 'Renewal Risk: Will Churn'
-      WHEN renewal_payment_failure = TRUE AND task_date = DATEADD('day', -1, CURRENT_DATE) THEN 'Renewal with Payment Failure'
+      WHEN renewal_payment_failure = TRUE AND failure_date = DATEADD('day', -1, CURRENT_DATE) THEN 'Renewal with Payment Failure'
       WHEN
         auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date = DATEADD('day', -1, CURRENT_DATE) AND (eoa_flag = FALSE AND arr_basis > 3000)
         THEN 'Auto-Renew Recently Turned Off'
@@ -1356,8 +1359,8 @@ distinct_cases AS (
     END                   AS case_contact_id,
     case_data.case_cta,
     CASE
-        -- WHEN case_data.case_trigger_id = 9 then CONCAT(case_data.CASE_CONTEXT, ' ', ptc_insights, ' EOA Account:', eoa_flag)
-        -- WHEN case_data.case_trigger_id = 11 then CONCAT(case_data.CASE_CONTEXT, ' ', pte_insights, ' EOA Account:', eoa_flag)
+      -- WHEN case_data.case_trigger_id = 9 then CONCAT(case_data.CASE_CONTEXT, ' ', ptc_insights, ' EOA Account:', eoa_flag)
+      -- WHEN case_data.case_trigger_id = 11 then CONCAT(case_data.CASE_CONTEXT, ' ', pte_insights, ' EOA Account:', eoa_flag)
       WHEN
         case_data.case_trigger_id IN (6, 26)
         THEN CONCAT(
@@ -1514,7 +1517,7 @@ case_output AS (
 {{ dbt_audit(
     cte_ref="case_output",
     created_by="@sglad",
-    updated_by="@sglad",
+    updated_by="@mfleisher",
     created_date="2024-07-02",
-    updated_date="2024-07-02"
+    updated_date="2024-07-23"
 ) }}

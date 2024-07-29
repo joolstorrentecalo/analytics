@@ -46,7 +46,8 @@ WITH prep_charge AS (
       prep_charge.delta_quantity,
       prep_charge.delta_tcv,
       prep_charge.estimated_total_future_billings,
-
+      prep_charge.list_price,
+      prep_charge.extended_list_price,
       prep_charge.unit_of_measure,
       prep_charge.charge_type,
       prep_charge.effective_start_month,
@@ -65,5 +66,5 @@ WITH prep_charge AS (
     created_by="@iweeks",
     updated_by="@apiaseczna",
     created_date="2021-06-07",
-    updated_date="2024-07-13"
+    updated_date="2024-07-23"
 ) }}

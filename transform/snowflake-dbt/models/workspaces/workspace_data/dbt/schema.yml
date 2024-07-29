@@ -52,3 +52,5 @@ models:
       description: Model for source testing
     - name: dbt_test_results
       description: "DBT test results by name and time"
+    - name: dbt_gdpr_logs
+      description: "DBT test results by name and time"

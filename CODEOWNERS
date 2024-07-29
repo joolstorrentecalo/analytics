@@ -155,7 +155,7 @@ transform/snowflake-dbt/models/marts/pumps_sensitive/       @jjstark @paul_armst
 
 /transform/snowflake-dbt/models/workspaces/workspace_product/           @cbraza @matthewpetersen @eneuberger @nraisinghani @mdrussell @snalamaru @dpeterson1 @nhervas @michellecooper @utkarsh060 @lmai1 @ddeng1 
 
-/transform/snowflake-dbt/models/workspaces/workspace_marketing/         @rkohnke @degan @snalamaru @chrissharp @lisvinueza
+/transform/snowflake-dbt/models/workspaces/workspace_marketing/         @rkohnke @degan @dmicovic @snalamaru @chrissharp @lisvinueza
 
 # ======
 # dbt data file Overwrites

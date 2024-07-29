@@ -6,7 +6,8 @@
     ('zuora_order_action', 'zuora_order_action_source'),
     ('revenue_contract_line', 'zuora_revenue_revenue_contract_line_source'),
     ('zuora_order', 'zuora_order_source'),
-    ('charge_contractual_value', 'zuora_query_api_charge_contractual_value_source')
+    ('charge_contractual_value', 'zuora_query_api_charge_contractual_value_source'),
+    ('booking_transaction', 'zuora_booking_transaction_source')
 ])}}
 
 , sfdc_account AS (
@@ -220,6 +221,7 @@
       previous_mrr * 12                                                 AS previous_arr,
       zuora_rate_plan_charge.delta_mrc * 12                             AS delta_arc,
       delta_mrr * 12                                                    AS delta_arr,
+      booking_transaction.list_price,
       charge_contractual_value.elp                                      AS extended_list_price,
       zuora_rate_plan_charge.quantity,
       LAG(zuora_rate_plan_charge.quantity,1) OVER (PARTITION BY zuora_subscription.subscription_name, zuora_rate_plan_charge.rate_plan_charge_number
@@ -260,6 +262,8 @@
       ON zuora_rate_plan_charge.rate_plan_charge_id = charge_to_order.rate_plan_charge_id
     LEFT JOIN charge_contractual_value
       ON charge_contractual_value.rate_plan_charge_id = zuora_rate_plan_charge.rate_plan_charge_id
+    LEFT JOIN booking_transaction
+      ON booking_transaction.rate_plan_charge_id = zuora_rate_plan_charge.rate_plan_charge_id
 
  ), manual_charges_prep AS (
   
@@ -338,6 +342,7 @@
       NULL                                                                                  AS previous_arr,
       NULL                                                                                  AS delta_arc,
       NULL                                                                                  AS delta_arr,
+      NULL                                                                                  AS list_price,
       NULL                                                                                  AS extended_list_price,
       0                                                                                     AS quantity,
       NULL                                                                                  AS previous_quantity_calc,
@@ -401,5 +406,5 @@
     created_by="@iweeks",
     updated_by="@apiaseczna",
     created_date="2021-04-28",
-    updated_date="2024-07-13"
+    updated_date="2024-07-18"
 ) }}

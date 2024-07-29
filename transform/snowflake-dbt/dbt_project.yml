@@ -314,9 +314,6 @@ models:
           +schema: sensitive
           secure: true
 
-      oci_reports:
-        +schema: oci_reports
-
       omamori:
         +materialized: table
         +schema: omamori

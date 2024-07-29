@@ -1,3 +1,7 @@
+{{ config(
+    tags=["mnpi_exception"]
+) }}
+
 {{ simple_cte([
     ('dim_crm_event', 'dim_crm_event'),
     ('fct_crm_event', 'fct_crm_event')
@@ -79,5 +83,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-08-22",
-    updated_date="2023-08-23"
+    updated_date="2024-07-24"
 ) }}

@@ -1,3 +1,7 @@
+{{ config(
+    tags=["mnpi_exception"]
+) }}
+
 WITH biz_person AS (
 
     SELECT *
@@ -25,6 +29,13 @@ WITH biz_person AS (
 
     SELECT *
     FROM {{ ref('prep_location_country') }}
+
+), sfdc_account_source AS (
+
+    SELECT
+      account_id,
+      six_sense_segments
+    FROM {{ref('sfdc_account_source')}}
 
 ), crm_tasks AS (
 
@@ -138,7 +149,7 @@ WITH biz_person AS (
       master_record_id,
       owner_id,
       record_type_id,
-      account_id                                    AS dim_crm_account_id,
+      sfdc_contacts.account_id                      AS dim_crm_account_id,
       reports_to_id,
       owner_id                                      AS dim_crm_user_id,
 
@@ -268,6 +279,15 @@ WITH biz_person AS (
       ptp_namespace_id                               AS propensity_to_purchase_namespace_id,
       ptp_past_insights                              AS propensity_to_purchase_past_insights,
       ptp_past_score_group                           AS propensity_to_purchase_past_score_group,
+      has_account_six_sense_6_qa,
+      six_sense_account_6_qa_end_date,
+      six_sense_account_6_qa_start_date,
+      six_sense_account_buying_stage,
+      six_sense_account_profile_fit,
+      six_sense_contact_grade                        AS six_sense_person_grade,
+      six_sense_contact_profile                      AS six_sense_person_profile,
+      six_sense_contact_update_date                  AS six_sense_person_update_date,
+      sfdc_account_source.six_sense_segments,   
       lead_score_classification,
       is_defaulted_trial,
       NULL                                           AS zoominfo_company_employee_count,
@@ -290,6 +310,8 @@ WITH biz_person AS (
       ON sfdc_contacts.contact_id = marketo_persons.sfdc_contact_id and sfdc_type = 'Contact'
     LEFT JOIN crm_activity
       ON sfdc_contacts.contact_id=crm_activity.sfdc_record_id
+    LEFT JOIN sfdc_account_source
+      ON sfdc_contacts.account_id=sfdc_account_source.account_id
 
     UNION
 
@@ -438,6 +460,15 @@ WITH biz_person AS (
       ptp_namespace_id                               AS propensity_to_purchase_namespace_id,
       ptp_past_insights                              AS propensity_to_purchase_past_insights,
       ptp_past_score_group                           AS propensity_to_purchase_past_score_group,
+      has_account_six_sense_6_qa,
+      six_sense_account_6_qa_end_date,
+      six_sense_account_6_qa_start_date,
+      six_sense_account_buying_stage,
+      six_sense_account_profile_fit,
+      six_sense_lead_grade,
+      six_sense_lead_profile_fit,
+      six_sense_lead_update_date,
+      six_sense_segments,   
       lead_score_classification,
       is_defaulted_trial,
       zoominfo_company_employee_count,
@@ -527,5 +558,5 @@ WITH biz_person AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-12-08",
-    updated_date="2024-07-15"
+    updated_date="2024-07-24"
 ) }}

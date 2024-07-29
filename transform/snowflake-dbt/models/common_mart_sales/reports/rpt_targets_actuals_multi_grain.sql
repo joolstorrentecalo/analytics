@@ -9,7 +9,8 @@ WITH unioned AS (
     [
         ref('mart_crm_opportunity_7th_day_weekly_snapshot'),
         ref('mart_crm_opportunity_7th_day_weekly_snapshot_aggregate'),
-        ref('mart_targets_actuals_7th_day_weekly_snapshot')
+        ref('rpt_pipeline_coverage'),
+        ref('rpt_final_bookings')
     ],
     filters={
         'mart_crm_opportunity_7th_day_weekly_snapshot': 'is_current_snapshot_quarter = true',
@@ -21,16 +22,6 @@ WITH unioned AS (
 
 SELECT 
   unioned.*,
-  NULL AS day_of_week,
-  NULL AS first_day_of_fiscal_year,
-  NULL AS first_day_of_week,
-  NULL AS fiscal_month_name_fy,
-  NULL AS fiscal_quarter_name_fy,
-  NULL AS last_day_of_fiscal_quarter,
-  NULL AS last_day_of_fiscal_year,
-  NULL AS last_day_of_month,
-  NULL AS last_day_of_week,
-  NULL AS dim_order_type_current_id,
   MAX(CASE 
         WHEN source != 'targets_actuals' AND snapshot_date < CURRENT_DATE() THEN snapshot_date 
         ELSE NULL 
@@ -39,4 +30,3 @@ SELECT
                                                                         AS most_recent_snapshot_week
 FROM unioned 
 WHERE snapshot_fiscal_quarter_date >= DATEADD(QUARTER, -9, CURRENT_DATE())
-

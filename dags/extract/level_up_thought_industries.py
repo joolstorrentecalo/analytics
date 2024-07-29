@@ -6,26 +6,22 @@ import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-
 from airflow_utils import (
     DATA_IMAGE_3_10,
     clone_and_setup_extraction_cmd,
     gitlab_defaults,
-    slack_failed_task,
     gitlab_pod_env_vars,
+    slack_failed_task,
 )
-
 from kube_secrets import (
+    LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY,
     SNOWFLAKE_ACCOUNT,
     SNOWFLAKE_LOAD_PASSWORD,
     SNOWFLAKE_LOAD_ROLE,
     SNOWFLAKE_LOAD_USER,
     SNOWFLAKE_LOAD_WAREHOUSE,
-    LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY,
 )
-
 from kubernetes_helpers import get_affinity, get_toleration
 
 env = os.environ.copy()

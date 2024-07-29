@@ -124,6 +124,17 @@ WITH crm_person AS (
       is_defaulted_trial,
       lead_score_classification,
       person_first_country,
+
+    --6 Sense Fields
+      has_account_six_sense_6_qa,
+      six_sense_account_6_qa_end_date,
+      six_sense_account_6_qa_start_date,
+      six_sense_account_buying_stage,
+      six_sense_account_profile_fit,
+      six_sense_person_grade,
+      six_sense_person_profile,
+      six_sense_person_update_date,
+      six_sense_segments,  
        
     --MQL and Most Recent Touchpoint info
       bizible_mql_touchpoint_id,
@@ -148,5 +159,5 @@ WITH crm_person AS (
     created_by="@jjstark",
     updated_by="@rkohnke",
     created_date="2020-09-10",
-    updated_date="2024-07-15"
+    updated_date="2024-07-22"
 ) }}
