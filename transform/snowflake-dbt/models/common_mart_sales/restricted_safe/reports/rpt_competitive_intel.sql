@@ -69,69 +69,14 @@ opportunity.dim_crm_opportunity_id,
     opportunity.competitors IS NULL
     OR opportunity.competitors != 'None', FALSE)
     AS no_comp_opps,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_area_stamped
-    ELSE opportunity.crm_account_user_area
-  END
-    AS area,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_geo_stamped
-    ELSE opportunity.crm_account_user_geo
-  END
-    AS geo,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_region_stamped
-    ELSE opportunity.crm_account_user_region
-  END
-    AS region,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_sales_segment_stamped
-    ELSE opportunity.crm_account_user_sales_segment
-  END
-    AS segment,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_role_level_1
-    ELSE opportunity.crm_account_user_role_level_1
-  END
-    AS role_level_1,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_role_level_2
-    ELSE opportunity.crm_account_user_role_level_2
-  END
-    AS role_level_2,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_role_level_3
-    ELSE opportunity.crm_account_user_role_level_3
-  END
-    AS role_level_3,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_role_level_4
-    ELSE opportunity.crm_account_user_role_level_4
-  END
-    AS role_level_4,
-  CASE
-    WHEN
-      opportunity.close_fiscal_year = close.current_fiscal_year
-      THEN opportunity.crm_opp_owner_role_level_5
-    ELSE opportunity.crm_account_user_role_level_5
-  END
-    AS role_level_5,
+  opportunity.report_area                           AS area,
+  opportunity.report_geo                            AS geo,
+  opportunity.report_region                         AS region,
+  opportunity.report_segment                        AS segment,
+  opportunity.report_role_level_1                   AS role_level_1,
+  opportunity.report_role_level_2                   AS role_level_2,
+  opportunity.report_role_level_3                   AS role_level_3,
+  opportunity.report_role_level_4                   AS role_level_4,
   CASE
     WHEN opportunity.net_arr < 0
       THEN 'Churn/Contraction'
@@ -213,4 +158,6 @@ WHERE
     != 'Merged into another opportunity'
     AND opportunity.sales_qualified_source_name != 'Web Direct Generated'
     AND opportunity.parent_crm_account_geo != 'JIHU'
+    AND opportunity.stage_name != '9-Unqualified'
+    AND opportunity.stage_name != '10-Duplicate'
 
