@@ -13,9 +13,18 @@ WITH zuora_central_sandbox_product AS (
     FROM {{ ref('zuora_central_sandbox_product_rate_plan_source') }}
     WHERE is_deleted = FALSE
 
+), zuora_central_sandbox_product_rate_plan_charge AS (
+
+    SELECT * 
+    FROM {{ ref('zuora_central_sandbox_product_rate_plan_charge_source') }}
+
+
 ), legacy_plans AS (
 
-    SELECT
+    SELECT 
+      
+      zuora_central_sandbox_product_rate_plan_charge.product_rate_plan_charge_id    AS product_rate_plan_charge_id,
+      zuora_central_sandbox_product_rate_plan_charge.product_rate_plan_charge_name  AS product_rate_plan_charge_name,
       zuora_central_sandbox_product_rate_plan.product_rate_plan_id                  AS product_rate_plan_id,
       zuora_central_sandbox_product_rate_plan.product_rate_plan_name                AS product_rate_plan_name,
       CASE
@@ -181,15 +190,23 @@ WITH zuora_central_sandbox_product AS (
       END                                                                       AS product_tier_legacy,
       zuora_central_sandbox_product.product_tier                                AS product_tier_active,
       zuora_central_sandbox_product.category                                    AS product_category,
+      zuora_central_sandbox_product_rate_plan_charge.product_rate_plan_charge_tier       AS product_rate_plan_charge_tier,
+      zuora_central_sandbox_product_rate_plan_charge.product_rate_plan_charge_delivery   AS product_rate_plan_charge_delivery,
+      zuora_central_sandbox_product_rate_plan_charge.product_rate_plan_charge_deployment AS product_rate_plan_charge_deployment,
       zuora_central_sandbox_product_rate_plan.effective_start_date              AS effective_start_date,
       zuora_central_sandbox_product_rate_plan.effective_end_date                AS effective_end_date    
     FROM zuora_central_sandbox_product
     INNER JOIN zuora_central_sandbox_product_rate_plan
       ON zuora_central_sandbox_product.product_id = zuora_central_sandbox_product_rate_plan.product_id
+    INNER JOIN zuora_central_sandbox_product_rate_plan_charge 
+      ON zuora_central_sandbox_product.product_id = zuora_central_sandbox_product_rate_plan_charge.product_id
+      AND zuora_central_sandbox_product_rate_plan.product_rate_plan_id = zuora_central_sandbox_product_rate_plan_charge.product_rate_plan_id
 
 ), final AS (
 
     SELECT DISTINCT
+      product_rate_plan_charge_id,
+      product_rate_plan_charge_name,
       product_rate_plan_id,
       product_rate_plan_name,
       product_tier_historical,
@@ -260,6 +277,9 @@ WITH zuora_central_sandbox_product AS (
       END AS product_deployment_type,
       product_category,
       product_ranking,
+      product_rate_plan_charge_tier,
+      product_rate_plan_charge_delivery,
+      product_rate_plan_charge_deployment,
       effective_start_date,
       effective_end_date
    FROM legacy_plans
@@ -269,8 +289,8 @@ WITH zuora_central_sandbox_product AS (
 
 {{ dbt_audit(
     cte_ref="final",
-    created_by="@michellecooper",
+    created_by="@snalamaru",
     updated_by="@snalamaru",
-    created_date="2022-03-31",
-    updated_date="2024-04-10"
+    created_date="2024-07-30",
+    updated_date="2024-07-30"
 ) }}

@@ -1296,3 +1296,12 @@ models:
         description: Raw value of the actuals for the quaerter
       - name: target_attainment
         description: actuals_raw divided by targets_raw to calculate % of attainment
+
+  - name: map_product_rate_plan_charge_tier_central_sandbox
+    columns:
+      - name: product_rate_plan_charge_id
+        description: "The unique identifier of Product Rate plan charges for Zuora Rate plan charges"
+        tests:
+          - not_null
+          - unique
+
