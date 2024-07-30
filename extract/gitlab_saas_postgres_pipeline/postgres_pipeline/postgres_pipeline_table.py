@@ -208,7 +208,10 @@ class PostgresPipelineTable:
             logging.info("table does not need incremental backfill")
             return False
 
-        target_table = self.get_temp_target_table_name()
+        if database_type == "cells":
+            target_table = self.get_target_table_name() + "_CELLS_TEMP"
+        else:
+            target_table = self.get_temp_target_table_name()
         return self._do_load_by_id(
             source_engine,
             target_engine,
