@@ -2092,7 +2092,7 @@ Derived fact table from `fct_crm_opportunity_daily_snapshot`. This new table wil
 {% enddocs %}
 
 {% docs fct_crm_opportunity_7th_day_weekly_snapshot_aggregate %}
-   
+
 Derived fact table from `fct_crm_opportunity_daily_snapshot`. This new table will not include every daily snapshot.  Instead, it will feature a snapshot once every week — specifically, one snapshot every 7 days throughout each quarter.
 
 This query aggregates key sales metrics and attributes from the actuals table to the weekly grain and across multiple dimensions like sales source, order type, hierarchy, stage, deal path. This table also computes quarterly totals and adds them as non additive measures to each row, to facilitate pipeline velocity and coverage calculation in Tableau. 
@@ -2100,7 +2100,7 @@ This query aggregates key sales metrics and attributes from the actuals table to
 {% enddocs %}
 
 {% docs fct_targets_actuals_7th_day_weekly_snapshot %}
-   
+
 Derived fact table from `fct_crm_opportunity_daily_snapshot` and `fct_sales_funnel_target_daily`. This fct table simplifies tracking sales performance by showing targets and actuals combined, every seven days within a quarter. 
 
 It combines daily targets, daily actuals along with the total quarterly targets and actuals. This model includes both the numerator and denominator for calculating coverage throughout a quarter

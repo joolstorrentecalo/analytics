@@ -21,6 +21,7 @@ SELECT
 
   -- Subscription Date Information
   term_start_date,
+  term_end_date,
   term_start_month,
   term_end_month,
 

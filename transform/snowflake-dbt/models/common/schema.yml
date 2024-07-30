@@ -9846,6 +9846,8 @@ models:
         description: '{{ doc("dim_crm_account_id") }}'
       - name: term_start_date
         description: '{{ doc("term_start_date") }}'
+      - name: term_end_date
+        description: '{{ doc("term_end_date") }}'
       - name: term_start_month
         description: '{{ doc("term_start_month") }}'
       - name: term_end_month

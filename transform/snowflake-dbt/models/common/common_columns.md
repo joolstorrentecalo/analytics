@@ -3466,6 +3466,12 @@ Date the subscription term begins, as yyyy-mm-dd. If this is a renewal subscript
 
 {% enddocs %}
 
+{% docs term_end_date %}
+
+Date the subscription term ends, as yyyy-mm-dd. If this is a renewal subscription, this date is different from the subscription end date
+
+{% enddocs %}
+
 {% docs term_start_month %}
 
 The month when the subscription term starts. If this is a renewal subscription, this month is different from the subscription start month
