@@ -233,6 +233,7 @@
     dim_mql_date.fiscal_quarter_name_fy AS mql_fiscal_quarter_name,
     mart_crm_person.inquiry_date_pt,
     mart_crm_person.true_inquiry_date_pt,
+    mart_crm_person.true_inquiry_date_pt,
     dim_inquiry_date.day_of_fiscal_quarter AS inquiry_day_of_fiscal_quarter,
     dim_inquiry_date.fiscal_quarter_name_fy AS inquiry_fiscal_quarter_name,
     mart_crm_person.account_demographics_sales_segment AS person_sales_segment,
