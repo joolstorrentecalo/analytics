@@ -107,15 +107,6 @@ WITH dim_crm_account AS (
       mart_crm_person.accepted_date_pt,
       mart_crm_person.qualifying_date,
       mart_crm_person.qualifying_date_pt,
-      person_base.true_inquiry_date_pt,
-      person_base.mql_date_latest_pt,
-      person_base.legacy_mql_date_first_pt,
-      person_base.mql_sfdc_date_pt,
-      person_base.mql_date_first_pt,
-      person_base.accepted_date,
-      person_base.accepted_date_pt,
-      person_base.qualifying_date,
-      person_base.qualifying_date_pt,
 
   --Touchpoint Data
       'Person Touchpoint' AS touchpoint_type,
@@ -348,15 +339,15 @@ WITH dim_crm_account AS (
       mart_crm_person.is_defaulted_trial,
 
   --Person Dates
-      person_base.true_inquiry_date_pt,
-      person_base.mql_date_latest_pt,
-      person_base.legacy_mql_date_first_pt,
-      person_base.mql_sfdc_date_pt,
-      person_base.mql_date_first_pt,
-      person_base.accepted_date,
-      person_base.accepted_date_pt,
-      person_base.qualifying_date,
-      person_base.qualifying_date_pt,
+      mart_crm_person.true_inquiry_date_pt,
+      mart_crm_person.mql_date_latest_pt,
+      mart_crm_person.legacy_mql_date_first_pt,
+      mart_crm_person.mql_sfdc_date_pt,
+      mart_crm_person.mql_date_first_pt,
+      mart_crm_person.accepted_date,
+      mart_crm_person.accepted_date_pt,
+      mart_crm_person.qualifying_date,
+      mart_crm_person.qualifying_date_pt,
     
     -- Touchpoint Data
       'Attribution Touchpoint' AS touchpoint_type,
