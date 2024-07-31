@@ -24,7 +24,7 @@
         mql_sum,
 
     --Person Dates
-        true_inquiry_date,
+        true_inquiry_date_pt,
         mql_date_first_pt,
         mql_date_latest_pt,
 
@@ -69,9 +69,9 @@
 
     SELECT
         date_base.*,
-        true_inquiry_date,
+        true_inquiry_date_pt,
         CASE 
-            WHEN true_inquiry_date IS NOT null 
+            WHEN true_inquiry_date_pt IS NOT null 
                 THEN email_hash
             ELSE null
         END AS actual_inquiry,
@@ -90,7 +90,7 @@
         parent_crm_account_lam_dev_count
     FROM rpt_lead_to_revenue_base
     LEFT JOIN date_base
-        ON rpt_lead_to_revenue_base.true_inquiry_date=date_base.date_day    
+        ON rpt_lead_to_revenue_base.true_inquiry_date_pt=date_base.date_day    
     WHERE 1=1
     AND (account_demographics_geo != 'JIHU'
         OR account_demographics_geo IS null)
@@ -341,5 +341,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-08-22",
-    updated_date="2023-08-22",
+    updated_date="2024-07-31",
   ) }}

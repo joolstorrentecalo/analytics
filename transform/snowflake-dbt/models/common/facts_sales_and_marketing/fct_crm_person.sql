@@ -241,8 +241,11 @@ WITH account_dims_mapping AS (
       LEAST(COALESCE(inquiry_date,'9999-01-01'),COALESCE(inquiry_inferred_datetime,'9999-01-01'))               AS prep_true_inquiry_date,
       CASE 
         WHEN prep_true_inquiry_date != '9999-01-01'
-        THEN prep_true_inquiry_date
+        THEN prep_true_inquiry_date::DATE
       END                                                                                                       AS true_inquiry_date,
+      CONVERT_TIMEZONE('America/Los_Angeles', true_inquiry_date)                                                AS true_inquiry_date_pt,
+      {{ get_date_id('true_inquiry_date') }}                                                                    AS true_inquiry_date_id,
+      {{ get_date_pt_id('true_inquiry_date') }}                                                                 AS true_inquiry_date_pt_id,
       mqls.first_mql_date::DATE                                                                                 AS mql_date_first,
       mqls.first_mql_date                                                                                       AS mql_datetime_first,
       CONVERT_TIMEZONE('America/Los_Angeles', mqls.first_mql_date)                                              AS mql_datetime_first_pt,
