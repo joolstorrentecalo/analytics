@@ -9,8 +9,8 @@ from {{ref('dim_date')}}
 )
 
 
-
-opportunity.dim_crm_opportunity_id,
+SELECT
+  opportunity.dim_crm_opportunity_id,
   opportunity.opportunity_name,
   opportunity.competitors,
   opportunity.deal_path_name,
