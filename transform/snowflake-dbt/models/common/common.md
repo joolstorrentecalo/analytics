@@ -2114,11 +2114,11 @@ The grain of this table is one row per pto_uuid per absence_date per dim_team_me
 
 {% enddocs %}
 
-{% docs dim_self_managed_instance_activations %}
+{% docs fct_self_managed_instance_activations %}
 
-**Description:** Dimension containing self managed instance cloud activations attributes for the analysis of cloud activations.
+**Description:** Fact containing self managed instance cloud activations attributes for the analysis of cloud activations.
 
-**Data Grain:** dim_self_managed_instance_activation_id
+**Data Grain:** self_managed_instance_activation_id
 
 **Tips for use:**
 - Join this model to `dim_subscription` using `dim_subscription_id` in  order to pull in information about the subscription details

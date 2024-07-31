@@ -3514,7 +3514,7 @@ The date when the cloud activation/licensing was updated on customer's instance
 
 {% enddocs %}
 
-{% docs dim_self_managed_instance_activation_id %}
+{% docs self_managed_instance_activation_id %}
 
 The unique identifier that identifies a self managed instance cloud activation.
 
@@ -3529,6 +3529,8 @@ The surrogate key of `prep_self_managed_instance_activations` model. Currently i
 {% docs dim_self_managed_instance_id %}
 
 The unique identifier that identifies a self managed instance.
+
+{% enddocs %}
 
 {% docs gitlab_global_user_id %}
 

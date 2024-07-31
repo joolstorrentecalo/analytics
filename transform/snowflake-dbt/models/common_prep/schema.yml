@@ -3031,8 +3031,8 @@ models:
   - name: prep_self_managed_instance_activations
     description: '{{ doc("prep_self_managed_instance_activations") }}'
     columns:
-      - name: dim_self_managed_instance_activation_id
-        description: '{{ doc("dim_self_managed_instance_activation_id") }}'
+      - name: self_managed_instance_activation_id
+        description: '{{ doc("self_managed_instance_activation_id") }}'
         data_tests:
           - not_null
           - unique

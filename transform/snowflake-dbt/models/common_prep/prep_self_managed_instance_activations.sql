@@ -8,7 +8,7 @@
 ]) }}
 
 SELECT 
-  instance_activations.id                                                                                AS dim_self_managed_instance_activation_id,
+  instance_activations.id                                                                                AS self_managed_instance_activation_id,
   {{ dbt_utils.generate_surrogate_key(['instance_activations.id']) }}                                    AS dim_self_managed_instance_activation_sk,
   instance_activations.cloud_activation_id                                                               AS dim_cloud_activation_id,
   instance_activations.self_managed_instance_id                                                          AS dim_self_managed_instance_id,

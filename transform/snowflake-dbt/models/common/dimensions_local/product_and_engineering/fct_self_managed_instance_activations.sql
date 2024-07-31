@@ -8,7 +8,7 @@
 
 SELECT
   -- Primary Key
-  dim_self_managed_instance_activation_id,
+  self_managed_instance_activation_id,
 
   -- Surrogate Key
   dim_self_managed_instance_activation_sk,
