@@ -276,7 +276,7 @@ A custom report built in Workday. The data is extracted using Fivetran and loade
 
 {% docs cost_centers %}
 
-A custom report built in Workday. The data is extracted using Fivetran and loaded into Snowflake, with a sync frequency of 12 hours. The grain of the table is one row per dept_reference_id, which is the unique ID for the department. This table contains data regarding the department, as well as the cost center and division it belongs to.  This table doesn't capture history.
+A custom report built in Workday. The data is extracted using Fivetran and loaded into Snowflake, with a sync frequency of 12 hours. The grain of the table is one row per dept_workday_id, which is the unique ID for the department. This table contains data regarding the department, as well as the cost center and division it belongs to.  This table doesn't capture history.
 
 [This sheet](https://docs.google.com/spreadsheets/d/1-RvIjlca6b4T0XmKRdZToP2x5gLRQJ1RDj7H1vWYknc/edit) contains the links to the reports in Workday production (access restricted, Laura Janssen is the owner).
 
