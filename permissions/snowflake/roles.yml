@@ -366,7 +366,6 @@ roles:
         - snowflake_db
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
   - analyst_growth:
@@ -395,7 +394,6 @@ roles:
         - snowplow
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
       privileges:
@@ -469,7 +467,6 @@ roles:
         - marketo
         - snowflake_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
       privileges:
@@ -513,7 +510,6 @@ roles:
         - snowflake_db
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
         - restricted_workspace_people
@@ -587,7 +583,6 @@ roles:
         - snowplow
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
   - decisive_data:
@@ -2731,22 +2726,6 @@ roles:
           read:
             - prep.zendesk.*
             - raw.tap_zendesk.*
-  - zendesk_community_relations:
-      warehouses:
-        - dev_xs
-      privileges:
-        databases:
-          read:
-            - prep
-            - raw
-        schemas:
-          read:
-            - prep.zendesk_community_relations
-            - raw.tap_zendesk__community_relations
-        tables:
-          read:
-            - prep.zendesk_community_relations.*
-            - raw.tap_zendesk__community_relations.*
   - zengrc:
       warehouses:
         - dev_xs
@@ -4080,7 +4059,6 @@ roles:
         - snowflake_analyst_safe
         - snowplow
         - zendesk
-        - zendesk_community_relations
         - data_science
         - data_science_sensitive
         - feature_store

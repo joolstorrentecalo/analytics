@@ -396,6 +396,7 @@ WITH map_merged_crm_account AS (
       sfdc_account.demandbase_sessions,
       sfdc_account.demandbase_trending_offsite_intent,
       sfdc_account.demandbase_trending_onsite_engagement,
+      sfdc_account.account_domains,
       sfdc_account.is_locally_managed_account,
       sfdc_account.is_strategic_account,
       sfdc_account.partner_track,

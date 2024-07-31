@@ -1114,12 +1114,12 @@ duo_trials AS (
 --Identifies subscriptions with payment failures
 failure_sub AS (
   SELECT
-    dim_subscription.dim_subscription_id                                                           AS failure_subscription_id,
-    dim_subscription.dim_crm_opportunity_id                                                        AS failed_sub_oppty,
-    dim_subscription.dim_crm_opportunity_id_current_open_renewal                                   AS failed_sub_renewal_opp,
-    dim_subscription.dim_crm_opportunity_id_closed_lost_renewal                                    AS failed_sub_closed_opp,
+    dim_subscription.dim_subscription_id                                                          AS failure_subscription_id,
+    dim_subscription.dim_crm_opportunity_id                                                       AS failed_sub_oppty,
+    dim_subscription.dim_crm_opportunity_id_current_open_renewal                                  AS failed_sub_renewal_opp,
+    dim_subscription.dim_crm_opportunity_id_closed_lost_renewal                                   AS failed_sub_closed_opp,
     dim_subscription.dim_crm_account_id,
-    CAST (RIGHT(REGEXP_SUBSTR(zuora_subscription_source.notes, 'RENEWAL_ERROR.{12}'), 10) AS DATE) AS failure_date
+    CAST(RIGHT(REGEXP_SUBSTR(zuora_subscription_source.notes, 'RENEWAL_ERROR.{12}'), 10) AS DATE) AS failure_date
   FROM dim_subscription
   LEFT JOIN zuora_subscription_source
     ON dim_subscription.dim_subscription_id = zuora_subscription_source.subscription_id
@@ -1302,7 +1302,7 @@ cases AS (
           OR (current_subscription_end_date = current_date_270_days)
         )
         THEN 'Overage and QSR Off'
-      WHEN overage_with_qsr_off AND ha_last_90 = TRUE THEN 'Overage and QSR Off'
+      WHEN overage_with_qsr_off AND ha_last_90 = FALSE THEN 'Overage and QSR Off'
       WHEN duo_trial_flag = TRUE AND existing_duo_trial_flag = FALSE AND duo_trial_start_date > DATEADD('day', -1, CURRENT_DATE) THEN 'Duo Trial Started'
     END
       AS high_adoption_case_trigger_name
@@ -1331,15 +1331,19 @@ distinct_cases AS (
     final.account_id,
     final.calculated_tier
       AS account_tier,
+    COALESCE(ROUND(final.arr_per_user, 2), 0)
+      AS current_price,
+    COALESCE(final.future_price * 12, 0)
+      AS renewal_price,
     case_data.case_trigger_id,
     case_data.status,
     case_data.case_origin,
     case_data.type,
     CASE WHEN case_data.case_trigger_id IN (6, 26) THEN COALESCE(CONCAT(case_data.case_subject, ' ', final.latest_switch_date), case_data.case_subject)
       WHEN case_data.case_trigger_id IN (28) THEN COALESCE(CONCAT(case_data.case_subject, ' ', final.duo_trial_start_date), case_data.case_subject)
-      WHEN final.renewal_case = TRUE THEN COALESCE(CONCAT(case_data.case_subject, ' ', final.current_subscription_end_date), case_data.case_subject) ELSE
-        case_data.case_subject
-    END                   AS case_subject,
+      WHEN case_data.case_trigger_id IN (31, 32) THEN CONCAT(case_data.case_subject, ' ', final.failure_date)
+      WHEN renewal_case = TRUE AND case_data.case_trigger_id NOT IN (31, 32) THEN CONCAT(case_data.case_subject, ' ', final.close_date) ELSE case_data.case_subject
+    END                                       AS case_subject,
     CASE WHEN final.calculated_tier = 'Tier 1' THEN final.high_value_case_owner_id
       WHEN final.current_open_cases > 0 THEN final.last_case_owner_id
       ELSE case_data.owner_id
@@ -1350,10 +1354,10 @@ distinct_cases AS (
     case_data.priority,
     CASE
       WHEN case_data.case_trigger_id IN (10, 11, 12, 28) OR final.case_trigger = 'Duo Trial Started' THEN NULL ELSE final.opportunity_id
-    END                   AS case_opportunity_id,
+    END                                       AS case_opportunity_id,
     CASE
       WHEN case_data.case_trigger_id IN (28) THEN final.contact_id
-    END                   AS case_contact_id,
+    END                                       AS case_contact_id,
     case_data.case_cta,
     CASE
       -- WHEN case_data.case_trigger_id = 9 then CONCAT(case_data.CASE_CONTEXT, ' ', ptc_insights, ' EOA Account:', eoa_flag)
@@ -1371,7 +1375,11 @@ distinct_cases AS (
             ' Free Promo Flag:',
             final.free_promo_flag,
             ' Price Increase Flag:',
-            final.price_increase_promo_flag
+            final.price_increase_promo_flag,
+            ' Current Price: ',
+            COALESCE(ROUND(final.arr_per_user, 2), 0),
+            ' Renewal Price: ',
+            COALESCE(final.future_price * 12, 0)
           )
       WHEN
         case_data.case_trigger_id IN (5, 25)
@@ -1386,7 +1394,11 @@ distinct_cases AS (
             ' Free Promo Flag:',
             final.free_promo_flag,
             ' Price Increase Flag:',
-            final.price_increase_promo_flag
+            final.price_increase_promo_flag,
+            ' Current Price: ',
+            COALESCE(ROUND(final.arr_per_user, 2), 0),
+            ' Renewal Price: ',
+            COALESCE(final.future_price * 12, 0)
           )
       WHEN
         case_data.case_trigger_id = 7
@@ -1401,7 +1413,11 @@ distinct_cases AS (
             ' Free Promo Flag:',
             final.free_promo_flag,
             ' Price Increase Flag:',
-            final.price_increase_promo_flag
+            final.price_increase_promo_flag,
+            ' Current Price: ',
+            COALESCE(ROUND(final.arr_per_user, 2), 0),
+            ' Renewal Price: ',
+            COALESCE(final.future_price * 12, 0)
           )
       WHEN
         case_data.case_trigger_id = 4 AND final.auto_renewal_will_fail_logic_flag = FALSE
@@ -1416,7 +1432,11 @@ distinct_cases AS (
             ' Free Promo Flag:',
             final.free_promo_flag,
             ' Price Increase Flag:',
-            final.price_increase_promo_flag
+            final.price_increase_promo_flag,
+            ' Current Price: ',
+            COALESCE(ROUND(final.arr_per_user, 2), 0),
+            ' Renewal Price: ',
+            COALESCE(final.future_price * 12, 0)
           )
       WHEN
         case_data.case_trigger_id = 4 AND final.auto_renewal_will_fail_logic_flag = TRUE
@@ -1432,7 +1452,11 @@ distinct_cases AS (
             ' Free Promo Flag:',
             final.free_promo_flag,
             ' Price Increase Flag:',
-            final.price_increase_promo_flag
+            final.price_increase_promo_flag,
+            ' Current Price: ',
+            COALESCE(ROUND(final.arr_per_user, 2), 0),
+            ' Renewal Price: ',
+            COALESCE(final.future_price * 12, 0)
           )
       WHEN
         case_data.case_trigger_id = 12
@@ -1447,7 +1471,11 @@ distinct_cases AS (
             ' Free Promo Flag:',
             final.free_promo_flag,
             ' Price Increase Flag:',
-            final.price_increase_promo_flag
+            final.price_increase_promo_flag,
+            ' Current Price: ',
+            COALESCE(ROUND(final.arr_per_user, 2), 0),
+            ' Renewal Price: ',
+            COALESCE(final.future_price * 12, 0)
           )
       WHEN
         case_data.case_trigger_id = 16
@@ -1480,7 +1508,11 @@ distinct_cases AS (
             ' Free Promo Flag:',
             final.free_promo_flag,
             ' Price Increase Flag:',
-            final.price_increase_promo_flag
+            final.price_increase_promo_flag,
+            ' Current Price: ',
+            COALESCE(ROUND(final.arr_per_user, 2), 0),
+            ' Renewal Price: ',
+            COALESCE(final.future_price * 12, 0)
           )
       ELSE CONCAT(
           case_data.case_context,
@@ -1491,9 +1523,13 @@ distinct_cases AS (
           ' Free Promo Flag:',
           final.free_promo_flag,
           ' Price Increase Flag:',
-          final.price_increase_promo_flag
+          final.price_increase_promo_flag,
+          ' Current Price: ',
+          COALESCE(ROUND(final.arr_per_user, 2), 0),
+          ' Renewal Price: ',
+          COALESCE(final.future_price * 12, 0)
         )
-    END                   AS context
+    END                                       AS context
   FROM final
   LEFT JOIN case_data
     ON final.case_trigger = case_data.case_trigger
@@ -1516,5 +1552,5 @@ case_output AS (
     created_by="@sglad",
     updated_by="@mfleisher",
     created_date="2024-07-02",
-    updated_date="2024-07-23"
+    updated_date="2024-07-26"
 ) }}

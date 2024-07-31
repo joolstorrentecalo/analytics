@@ -104,6 +104,7 @@ renamed AS (
     bdr_account_research__c AS bdr_account_research,
     bdr_account_strategy__c AS bdr_account_strategy,
     account_bdr_assigned_user_role__c AS account_bdr_assigned_user_role,
+    domains__c AS account_domains,
 
     --6 Sense Fields
     x6sense_6qa__c::BOOLEAN AS has_six_sense_6_qa,

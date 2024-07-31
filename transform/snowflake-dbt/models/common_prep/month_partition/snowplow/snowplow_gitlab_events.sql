@@ -447,7 +447,9 @@ WITH filtered_source as (
       events_with_flattened_context.response_start,
       events_with_flattened_context.secure_connection_start,
       events_with_flattened_context.unload_event_end,
-      events_with_flattened_context.unload_event_start
+      events_with_flattened_context.unload_event_start,
+      events_with_flattened_context.instance_version,
+      events_with_flattened_context.correlation_id
 
     FROM base
     LEFT JOIN events_with_flattened_context

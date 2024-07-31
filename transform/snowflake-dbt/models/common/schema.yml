@@ -4853,6 +4853,8 @@ models:
         description: Qualified's count of sessions on the account
       - name: qualified_visitors_count
         description: Qualified's count of visitors on the account
+      - name: account_domains
+        description: All domain names associated with this account, separated by a comma.
 
   - name: dim_crm_account_daily_snapshot
     description: '{{ doc("dim_crm_account_daily_snapshot") }}'
@@ -6666,14 +6668,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -6764,6 +6766,10 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_30
     description: '{{ doc("fct_behavior_structured_event_30") }}'
@@ -6919,14 +6925,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7017,6 +7023,10 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_90
     description: '{{ doc("fct_behavior_structured_event_90") }}'
@@ -7172,14 +7182,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7270,6 +7280,10 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_experiment
     description:  '{{ doc("fct_behavior_structured_event_experiment") }}'
@@ -7546,14 +7560,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7632,6 +7646,10 @@ models:
         description: ' {{ doc("unload_event_end") }} '
       - name: unload_event_start
         description: ' {{ doc("unload_event_start") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_without_assignment_190
     description: '{{ doc("fct_behavior_structured_event_without_assignment_190") }}'
@@ -7787,14 +7805,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7873,6 +7891,10 @@ models:
         description: ' {{ doc("unload_event_end") }} '
       - name: unload_event_start
         description: ' {{ doc("unload_event_start") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
 
   - name: fct_behavior_structured_event_without_assignment_400
@@ -8029,14 +8051,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -8115,6 +8137,10 @@ models:
         description: ' {{ doc("unload_event_end") }} '
       - name: unload_event_start
         description: ' {{ doc("unload_event_start") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_redis_hll_counters
     description: '{{ doc("fct_behavior_structured_event_redis_hll_counters") }}'
@@ -9620,14 +9646,14 @@ models:
       description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
     - name: namespace_ids
       description: '{{ doc("code_suggestions_namespace_ids") }}'
-    - name: instance_id
+    - name: dim_instance_id
       description: '{{ doc("dim_instance_id") }}'
     - name: host_name
       description: '{{ doc("host_name") }}'
     - name: is_streaming
       description: '{{ doc("code_suggestions_is_streaming") }}'
     - name: gitlab_global_user_id
-      description: ' doc("code_suggestions_gitlab_global_user_id") '
+      description: ' doc("gitlab_global_user_id") '
     - name: ultimate_parent_namespace_ids
       description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }} '
     - name: subscription_names

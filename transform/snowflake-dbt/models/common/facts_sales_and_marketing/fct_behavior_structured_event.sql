@@ -134,7 +134,9 @@ structured_event_renamed AS (
       response_start,
       secure_connection_start,
       unload_event_end,
-      unload_event_start
+      unload_event_start,
+      gsc_instance_version,
+      gsc_correlation_id
 
     FROM {{ ref('prep_snowplow_unnested_events_all') }}
     WHERE event = 'struct'
@@ -175,6 +177,8 @@ structured_events_w_dim AS (
       events_with_plan.gsc_project_id                       AS dim_project_id,
       events_with_plan.dim_behavior_event_sk,
       {{ get_keyed_nulls('events_with_plan.dim_plan_sk') }} AS dim_plan_sk,
+      events_with_plan.instance_id                          AS dim_instance_id,
+      events_with_plan.host_name,
       events_with_plan.dim_plan_id,
 
       -- Time Attributes
@@ -208,6 +212,9 @@ structured_events_w_dim AS (
       events_with_plan.gsc_source,
       events_with_plan.gsc_is_gitlab_team_member,
       events_with_plan.gsc_feature_enabled_by_namespace_ids,
+      events_with_plan.gsc_instance_version,
+      events_with_plan.gsc_correlation_id,
+      events_with_plan.gitlab_global_user_id,
 
       -- Degenerate Dimensions (IDE Extension Version Context Attributes)
       events_with_plan.ide_extension_version_context,
@@ -245,10 +252,7 @@ structured_events_w_dim AS (
       events_with_plan.duo_namespace_ids,
       events_with_plan.saas_namespace_ids,
       events_with_plan.namespace_ids,
-      events_with_plan.instance_id,
-      events_with_plan.host_name,
       events_with_plan.is_streaming,
-      events_with_plan.gitlab_global_user_id,
       events_with_plan.suggestion_source,
       events_with_plan.is_invoked,
       events_with_plan.options_count,
@@ -312,5 +316,5 @@ structured_events_w_dim AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2022-09-01",
-    updated_date="2024-06-07"
+    updated_date="2024-07-26"
 ) }}

@@ -89,6 +89,7 @@
       dim_crm_account.demandbase_sessions,
       dim_crm_account.demandbase_trending_offsite_intent,
       dim_crm_account.demandbase_trending_onsite_engagement,
+      dim_crm_account.account_domains,
       dim_crm_account.is_locally_managed_account,
       dim_crm_account.is_strategic_account,
       dim_crm_account.partner_track,
@@ -265,5 +266,5 @@
     created_by="@michellecooper",
     updated_by="@rkohnke",
     created_date="2022-08-10",
-    updated_date="2024-07-18"
+    updated_date="2024-07-29"
 ) }}

@@ -2188,7 +2188,7 @@ models:
       - name: is_staging_event
         description: '{{ doc("is_staging_event") }}'
       - name: gitlab_global_user_id
-        description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+        description: '{{ doc("gitlab_global_user_id") }}'
       - name: gsc_feature_enabled_by_namespace_ids
         description: '{{ doc("gsc_feature_enabled_by_namespace_ids") }}'
       - name: suggestion_source
@@ -2203,6 +2203,12 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: correlation_id
+        description: ' { doc("gsc_correlation_id") } '
+      - name: dim_instance_id
+        description: ' { doc("dim_instance_id") } '
 
   - name: prep_snowplow_page_views_all
     description: View combining all snowplow_page_view partitions.

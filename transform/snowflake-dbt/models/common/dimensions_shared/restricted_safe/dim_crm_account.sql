@@ -112,6 +112,7 @@
       prep_crm_account.demandbase_sessions,
       prep_crm_account.demandbase_trending_offsite_intent,
       prep_crm_account.demandbase_trending_onsite_engagement,
+      prep_crm_account.account_domains,
       prep_crm_account.is_locally_managed_account,
       prep_crm_account.is_strategic_account,
       prep_crm_account.partner_track,
@@ -265,7 +266,7 @@
     created_by="@msendal",
     updated_by="@rkohnke",
     created_date="2020-06-01",
-    updated_date="2024-07-18"
+    updated_date="2024-07-29"
 ) }}
 
 

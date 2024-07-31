@@ -101,6 +101,7 @@ renamed AS (
     bdr_account_research__c AS bdr_account_research,
     bdr_account_strategy__c AS bdr_account_strategy,
     account_bdr_assigned_user_role__c AS account_bdr_assigned_user_role,
+    domains__c AS account_domains,
 
     -- account demographics fields
 
