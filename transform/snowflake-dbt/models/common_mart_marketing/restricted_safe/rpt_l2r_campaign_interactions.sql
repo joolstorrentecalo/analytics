@@ -77,7 +77,7 @@
       is_defaulted_trial,
 
   --Person Dates
-      person_base.true_inquiry_date,
+      person_base.true_inquiry_date_pt,
       person_base.mql_date_latest_pt,
       person_base.legacy_mql_date_first_pt,
       person_base.mql_sfdc_date_pt,
@@ -318,7 +318,7 @@
       person_base.is_defaulted_trial,
 
   --Person Dates
-      person_base.true_inquiry_date,
+      person_base.true_inquiry_date_pt,
       person_base.mql_date_latest_pt,
       person_base.legacy_mql_date_first_pt,
       person_base.mql_sfdc_date_pt,
@@ -491,7 +491,7 @@
       is_defaulted_trial,
 
   --Person Dates
-      true_inquiry_date,
+      true_inquiry_date_pt,
       mql_date_latest_pt,
       legacy_mql_date_first_pt,
       mql_sfdc_date_pt,
@@ -724,7 +724,7 @@
       is_defaulted_trial,
     
     --Person Dates
-      true_inquiry_date,
+      true_inquiry_date_pt,
       mql_date_latest_pt,
       legacy_mql_date_first_pt,
       mql_sfdc_date_pt,
@@ -1093,7 +1093,7 @@
     ON cohort_base_combined.dim_crm_touchpoint_id = person_history_final.dim_crm_touchpoint_id 
     AND cohort_base_combined.sfdc_record_id = person_history_final.sfdc_record_id
   LEFT JOIN dim_date inquiry_date
-    ON cohort_base_combined.true_inquiry_date = inquiry_date.date_day
+    ON cohort_base_combined.true_inquiry_date_pt = inquiry_date.date_day
   LEFT JOIN dim_date mql_date
     ON cohort_base_combined.mql_date_latest_pt = mql_date.date_day
   LEFT JOIN dim_date opp_create_date
@@ -1120,5 +1120,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-07-05",
-    updated_date="2024-07-24",
+    updated_date="2024-07-31",
   ) }}

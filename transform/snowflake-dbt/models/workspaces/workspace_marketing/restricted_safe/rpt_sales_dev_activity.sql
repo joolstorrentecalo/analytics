@@ -232,7 +232,7 @@
     dim_mql_date.day_of_fiscal_quarter AS mql_day_of_fiscal_quarter,
     dim_mql_date.fiscal_quarter_name_fy AS mql_fiscal_quarter_name,
     mart_crm_person.inquiry_date_pt,
-    mart_crm_person.true_inquiry_date,
+    mart_crm_person.true_inquiry_date_pt,
     dim_inquiry_date.day_of_fiscal_quarter AS inquiry_day_of_fiscal_quarter,
     dim_inquiry_date.fiscal_quarter_name_fy AS inquiry_fiscal_quarter_name,
     mart_crm_person.account_demographics_sales_segment AS person_sales_segment,
@@ -414,7 +414,7 @@
   LEFT JOIN dim_date dim_mql_date
    ON mart_crm_person.mql_date_latest = dim_mql_date.date_day 
   LEFT JOIN dim_date dim_inquiry_date
-   ON mart_crm_person.true_inquiry_date = dim_inquiry_date.date_day 
+   ON mart_crm_person.true_inquiry_date_pt = dim_inquiry_date.date_day 
   LEFT JOIN activity_final
     ON mart_crm_person.dim_crm_person_id = activity_final.dim_crm_person_id 
   LEFT JOIN opp_to_lead 
@@ -439,7 +439,7 @@
     NULL AS mql_day_of_fiscal_quarter,
     NULL AS mql_fiscal_quarter_name,
     NULL AS inquiry_date_pt,
-    NULL AS true_inquiry_date,
+    NULL AS true_inquiry_date_pt,
     NULL AS inquiry_day_of_fiscal_quarter,
     NULL AS inquiry_fiscal_quarter_name,
     NULL AS person_sales_segment,
@@ -617,7 +617,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@dmicovic",
+    updated_by="@rkohnke",
     created_date="2023-09-06",
     updated_date="2024-08-15",
   ) }}
