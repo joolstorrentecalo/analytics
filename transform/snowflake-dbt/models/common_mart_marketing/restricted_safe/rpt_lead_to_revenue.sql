@@ -2,78 +2,79 @@
     materialized="table"
 ) }}
 
-{{ simple_cte([
-    ('person_base','mart_crm_person'),
-    ('dim_crm_person','dim_crm_person'),
-    ('mart_crm_opportunity', 'mart_crm_opportunity'), 
-    ('map_alternative_lead_demographics','map_alternative_lead_demographics'),
-    ('mart_crm_touchpoint', 'mart_crm_touchpoint'),
-    ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
-    ('mart_crm_account', 'mart_crm_account'),
-    ('dim_date','dim_date')
-]) }}
+WITH dim_date AS (
 
+  SELECT
+    date_id,
+    date_day,
+    date_actual,
+    first_day_of_week,
+    fiscal_quarter_name_fy,
+    fiscal_year
+  FROM {{ref('dim_date')}}
+
+)
 , person_base_with_tp AS (
 
     SELECT DISTINCT
   --IDs
-      person_base.dim_crm_person_id,
-      person_base.dim_crm_account_id,
+      mart_crm_person.dim_crm_person_id,
+      mart_crm_person.dim_crm_account_id,
       mart_crm_account.dim_parent_crm_account_id,
-      dim_crm_person.sfdc_record_id,
+      mart_crm_person.sfdc_record_id,
       mart_crm_touchpoint.dim_crm_touchpoint_id,
       mart_crm_touchpoint.dim_campaign_id,
-      person_base.dim_crm_user_id,
+      mart_crm_person.dim_crm_user_id,
   
   --Person Data
-      person_base.email_hash,
-      person_base.sfdc_record_type,
-      person_base.person_first_country,
-      person_base.email_domain_type,
-      person_base.source_buckets,
-      person_base.true_inquiry_date_pt,
-      person_base.mql_date_first_pt,
-      person_base.mql_date_latest_pt,
-      person_base.accepted_date,
-      person_base.status,
-      person_base.person_role,
-      person_base.lead_source,
-      person_base.is_inquiry,
-      person_base.is_mql,
-      person_base.account_demographics_sales_segment,
-      person_base.account_demographics_region,
-      person_base.account_demographics_geo,
-      person_base.account_demographics_area,
-      person_base.account_demographics_upa_country,
-      person_base.account_demographics_territory,
-      person_base.traction_first_response_time,
-      person_base.traction_first_response_time_seconds,
-      person_base.traction_response_time_in_business_hours,
+      mart_crm_person.email_hash,
+      mart_crm_person.sfdc_record_type,
+      mart_crm_person.person_first_country,
+      mart_crm_person.email_domain_type,
+      mart_crm_person.source_buckets,
+      mart_crm_person.true_inquiry_date_pt,
+      mart_crm_person.mql_date_first_pt,
+      mart_crm_person.mql_date_latest_pt,
+      mart_crm_person.accepted_date,
+      mart_crm_person.status,
+      mart_crm_person.person_role,
+      mart_crm_person.lead_source,
+      mart_crm_person.is_inquiry,
+      mart_crm_person.is_mql,
+      mart_crm_person.account_demographics_sales_segment,
+      mart_crm_person.account_demographics_region,
+      mart_crm_person.account_demographics_geo,
+      mart_crm_person.account_demographics_area,
+      mart_crm_person.account_demographics_upa_country,
+      mart_crm_person.account_demographics_territory,
+      mart_crm_person.traction_first_response_time,
+      mart_crm_person.traction_first_response_time_seconds,
+      mart_crm_person.traction_response_time_in_business_hours,
       mart_crm_account.is_first_order_available,
-      person_base.is_bdr_sdr_worked,
+      mart_crm_person.is_bdr_sdr_worked,
       CASE
-        WHEN person_base.is_first_order_person = TRUE 
+        WHEN mart_crm_person.is_first_order_person = TRUE 
           THEN '1. New - First Order'
         ELSE '3. Growth'
       END AS person_order_type,
-      person_base.lead_score_classification,
-      person_base.is_defaulted_trial,
+      mart_crm_person.lead_score_classification,
+      mart_crm_person.is_defaulted_trial,
       
     --MQL and Most Recent Touchpoint info
-      person_base.bizible_mql_touchpoint_id,
-      person_base.bizible_mql_touchpoint_date,
-      person_base.bizible_mql_form_url,
-      person_base.bizible_mql_sfdc_campaign_id,
-      person_base.bizible_mql_ad_campaign_name,
-      person_base.bizible_mql_marketing_channel,
-      person_base.bizible_mql_marketing_channel_path,
-      person_base.bizible_most_recent_touchpoint_id,
-      person_base.bizible_most_recent_touchpoint_date,
-      person_base.bizible_most_recent_form_url,
-      person_base.bizible_most_recent_sfdc_campaign_id,
-      person_base.bizible_most_recent_ad_campaign_name,
-      person_base.bizible_most_recent_marketing_channel,
-      person_base.bizible_most_recent_marketing_channel_path,
+      mart_crm_person.bizible_mql_touchpoint_id,
+      mart_crm_person.bizible_mql_touchpoint_date,
+      mart_crm_person.bizible_mql_form_url,
+      mart_crm_person.bizible_mql_sfdc_campaign_id,
+      mart_crm_person.bizible_mql_ad_campaign_name,
+      mart_crm_person.bizible_mql_marketing_channel,
+      mart_crm_person.bizible_mql_marketing_channel_path,
+      mart_crm_person.bizible_most_recent_touchpoint_id,
+      mart_crm_person.bizible_most_recent_touchpoint_date,
+      mart_crm_person.bizible_most_recent_form_url,
+      mart_crm_person.bizible_most_recent_sfdc_campaign_id,
+      mart_crm_person.bizible_most_recent_ad_campaign_name,
+      mart_crm_person.bizible_most_recent_marketing_channel,
+      mart_crm_person.bizible_most_recent_marketing_channel_path,
 
   --Account Data
       mart_crm_account.crm_account_name,
@@ -146,83 +147,81 @@
       mart_crm_touchpoint.count_net_new_accepted AS new_accepted_sum,
       mart_crm_touchpoint.touchpoint_offer_type_grouped,
       mart_crm_touchpoint.touchpoint_offer_type   
-    FROM person_base
-    INNER JOIN dim_crm_person
-      ON person_base.dim_crm_person_id = dim_crm_person.dim_crm_person_id
-    FULL JOIN mart_crm_account
-      ON person_base.dim_crm_account_id = mart_crm_account.dim_crm_account_id
-    LEFT JOIN mart_crm_touchpoint
-      ON mart_crm_touchpoint.email_hash = person_base.email_hash
-    LEFT JOIN map_alternative_lead_demographics
-      ON person_base.dim_crm_person_id=map_alternative_lead_demographics.dim_crm_person_id
+    FROM {{ref('mart_crm_person')}}
+    FULL JOIN {{ref('mart_crm_account')}}
+      ON mart_crm_person.dim_crm_account_id = mart_crm_account.dim_crm_account_id
+    LEFT JOIN {{ref('mart_crm_touchpoint')}}
+      ON mart_crm_touchpoint.email_hash = mart_crm_person.email_hash
+    LEFT JOIN {{ref('map_alternative_lead_demographics')}}
+      ON mart_crm_person.dim_crm_person_id=map_alternative_lead_demographics.dim_crm_person_id
   
   ), opp_base_with_batp AS (
     
     SELECT
     --IDs
-      opp.dim_crm_opportunity_id,
-      opp.dim_crm_account_id,
+      mart_crm_opportunity.dim_crm_opportunity_id,
+      mart_crm_opportunity.dim_crm_account_id,
       mart_crm_account.dim_parent_crm_account_id,
       mart_crm_attribution_touchpoint.dim_crm_touchpoint_id,
       mart_crm_attribution_touchpoint.dim_campaign_id,
-      opp.contract_reset_opportunity_id,
-      opp.dim_crm_user_id AS opp_dim_crm_user_id,
+      mart_crm_opportunity.contract_reset_opportunity_id,
+      mart_crm_opportunity.dim_crm_user_id AS opp_dim_crm_user_id,
     
     --Opp Data
-      opp.opportunity_name,
-      opp.order_type AS opp_order_type,
-      opp.sdr_or_bdr,
-      opp.sales_qualified_source_name,
-      opp.deal_path_name,
-      opp.sales_type,
-      opp.sales_accepted_date,
-      opp.created_date AS opp_created_date,
-      opp.close_date,
-      opp.is_won,
-      opp.valid_deal_count,
-      opp.is_sao,
-      opp.new_logo_count,
-      opp.net_arr,
-      opp.net_arr_stage_1,
-      opp.xdr_net_arr_stage_1,
-      opp.xdr_net_arr_stage_3,
-      opp.is_net_arr_closed_deal,
-      opp.is_net_arr_pipeline_created,
-      opp.parent_crm_account_sales_segment,
-      opp.parent_crm_account_region,
-      opp.parent_crm_account_geo,
-      opp.parent_crm_account_area,
-      opp.parent_crm_account_territory,
-      opp.report_segment,
-      opp.report_region,
-      opp.report_area,
-      opp.report_geo,
-      opp.report_role_name,
-      opp.report_role_level_1,
-      opp.report_role_level_2,
-      opp.report_role_level_3,
-      opp.report_role_level_4,
-      opp.report_role_level_5,
-      opp.product_category,
-      opp.is_eligible_age_analysis,
-      opp.lead_source,
-      opp.source_buckets,
-      opp.is_renewal,
-      opp.is_eligible_open_pipeline,
-      opp.pipeline_created_date,
-      opp.opportunity_category,
-      opp.stage_name,
-      opp.is_jihu_account,
-      opp.is_edu_oss,
-      opp.stage_1_discovery_date,
-      opp.stage_3_technical_evaluation_date,
+      mart_crm_opportunity.opportunity_name,
+      mart_crm_opportunity.order_type AS opp_order_type,
+      mart_crm_opportunity.sdr_or_bdr,
+      mart_crm_opportunity.sales_qualified_source_name,
+      mart_crm_opportunity.deal_path_name,
+      mart_crm_opportunity.sales_type,
+      mart_crm_opportunity.sales_accepted_date,
+      mart_crm_opportunity.created_date AS opp_created_date,
+      mart_crm_opportunity.close_date,
+      mart_crm_opportunity.is_won,
+      mart_crm_opportunity.valid_deal_count,
+      mart_crm_opportunity.is_sao,
+      mart_crm_opportunity.new_logo_count,
+      mart_crm_opportunity.net_arr,
+      mart_crm_opportunity.net_arr_stage_1,
+      mart_crm_opportunity.xdr_net_arr_stage_1,
+      mart_crm_opportunity.xdr_net_arr_stage_3,
+      mart_crm_opportunity.is_net_arr_closed_deal,
+      mart_crm_opportunity.is_net_arr_pipeline_created,
+      mart_crm_opportunity.parent_crm_account_sales_segment,
+      mart_crm_opportunity.parent_crm_account_region,
+      mart_crm_opportunity.parent_crm_account_geo,
+      mart_crm_opportunity.parent_crm_account_area,
+      mart_crm_opportunity.parent_crm_account_territory,
+      mart_crm_opportunity.report_segment,
+      mart_crm_opportunity.report_region,
+      mart_crm_opportunity.report_area,
+      mart_crm_opportunity.report_geo,
+      mart_crm_opportunity.report_role_name,
+      mart_crm_opportunity.report_role_level_1,
+      mart_crm_opportunity.report_role_level_2,
+      mart_crm_opportunity.report_role_level_3,
+      mart_crm_opportunity.report_role_level_4,
+      mart_crm_opportunity.report_role_level_5,
+      mart_crm_opportunity.product_category,
+      mart_crm_opportunity.is_eligible_age_analysis,
+      mart_crm_opportunity.lead_source,
+      mart_crm_opportunity.source_buckets,
+      mart_crm_opportunity.is_renewal,
+      mart_crm_opportunity.is_eligible_open_pipeline,
+      mart_crm_opportunity.pipeline_created_date,
+      mart_crm_opportunity.opportunity_category,
+      mart_crm_opportunity.stage_name,
+      mart_crm_opportunity.is_jihu_account,
+      mart_crm_opportunity.is_edu_oss,
+      mart_crm_opportunity.stage_1_discovery_date,
+      mart_crm_opportunity.stage_3_technical_evaluation_date,
 
       --Account Data
       mart_crm_account.crm_account_name,
       mart_crm_account.parent_crm_account_name,
       mart_crm_account.parent_crm_account_lam,
       mart_crm_account.parent_crm_account_lam_dev_count,
-      opp.parent_crm_account_upa_country,
+      mart_crm_opportunity.parent_crm_account_upa_country,
       mart_crm_account.crm_account_type,
     
     -- Touchpoint Data
@@ -286,7 +285,7 @@
       mart_crm_attribution_touchpoint.touchpoint_sales_stage, 
       CASE
           WHEN mart_crm_attribution_touchpoint.dim_crm_touchpoint_id IS NOT null 
-            THEN opp.dim_crm_opportunity_id
+            THEN mart_crm_opportunity.dim_crm_opportunity_id
           ELSE null
       END AS influenced_opportunity_id,
       SUM(mart_crm_attribution_touchpoint.bizible_count_first_touch) AS first_opp_created,
@@ -302,132 +301,132 @@
       SUM(mart_crm_attribution_touchpoint.custom_net_arr) AS custom_net_arr,
       SUM(mart_crm_attribution_touchpoint.linear_net_arr) AS linear_net_arr,
       CASE
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_first_touch) 
         ELSE 0 
       END AS first_sao,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_u_shaped) 
         ELSE 0 
       END AS u_shaped_sao,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_w_shaped) 
         ELSE 0 
       END AS w_shaped_sao,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_first_touch) 
         ELSE 0 
       END AS full_shaped_sao,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_custom_model) 
         ELSE 0 
       END AS custom_sao,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.l_weight) 
         ELSE 0 
       END AS linear_sao,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.u_net_arr) 
         ELSE 0 
       END AS pipeline_first_net_arr,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.u_net_arr) 
         ELSE 0 
         END AS pipeline_u_net_arr,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.w_net_arr) 
         ELSE 0 
       END AS pipeline_w_net_arr,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.full_net_arr) 
         ELSE 0 
       END AS pipeline_full_net_arr,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.custom_net_arr) 
         ELSE 0 
       END AS pipeline_custom_net_arr,
       CASE 
-        WHEN opp.is_net_arr_pipeline_created = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_pipeline_created = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.linear_net_arr) 
         ELSE 0 
       END AS pipeline_linear_net_arr,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_first_touch) 
         ELSE 0 
       END AS won_first,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_u_shaped) 
         ELSE 0 
       END AS won_u,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_w_shaped) 
         ELSE 0 
       END AS won_w,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_first_touch) 
         ELSE 0 
       END AS won_full,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.bizible_count_custom_model) 
         ELSE 0 
       END AS won_custom,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.l_weight) 
         ELSE 0 
       END AS won_linear,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.first_net_arr) 
         ELSE 0 
       END AS won_first_net_arr,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.u_net_arr) 
         ELSE 0 
       END AS won_u_net_arr,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.w_net_arr) 
         ELSE 0 
       END AS won_w_net_arr,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.full_net_arr) 
         ELSE 0 
       END AS won_full_net_arr,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.custom_net_arr) 
         ELSE 0 
       END AS won_custom_net_arr,
       CASE 
-        WHEN opp.is_net_arr_closed_deal = TRUE
+        WHEN mart_crm_opportunity.is_net_arr_closed_deal = TRUE
           THEN SUM(mart_crm_attribution_touchpoint.linear_net_arr) 
         ELSE 0 
       END AS won_linear_net_arr
-    FROM mart_crm_opportunity opp
-    LEFT JOIN mart_crm_attribution_touchpoint
-      ON opp.dim_crm_opportunity_id=mart_crm_attribution_touchpoint.dim_crm_opportunity_id
-    FULL JOIN mart_crm_account
-      ON opp.dim_crm_account_id=mart_crm_account.dim_crm_account_id
-    WHERE opp.created_date >= '2021-02-01'
-      OR opp.created_date IS NULL
+    FROM {{ref('mart_crm_opportunity')}}
+    LEFT JOIN {{ref('mart_crm_attribution_touchpoint')}}
+      ON mart_crm_opportunity.dim_crm_opportunity_id=mart_crm_attribution_touchpoint.dim_crm_opportunity_id
+    FULL JOIN {{ref('mart_crm_account')}}
+      ON mart_crm_opportunity.dim_crm_account_id=mart_crm_account.dim_crm_account_id
+    WHERE mart_crm_opportunity.created_date >= '2021-02-01'
+      OR mart_crm_opportunity.created_date IS NULL
     {{dbt_utils.group_by(n=118)}}
     
 ), cohort_base_combined AS (
@@ -740,5 +739,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-07-24",
+    updated_date="2024-07-31",
   ) }}

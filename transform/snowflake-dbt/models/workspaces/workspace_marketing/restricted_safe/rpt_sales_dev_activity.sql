@@ -1,85 +1,186 @@
 {{ config(materialized='table') }}
 
-{{ simple_cte([
-    ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
-    ('dim_crm_user','dim_crm_user'),
-    ('mart_crm_person','mart_crm_person'),
-    ('sfdc_lead','sfdc_lead'),
-    ('mart_crm_account','mart_crm_account'),
-    ('mart_crm_event','mart_crm_event'),
-    ('mart_crm_task','mart_crm_task'),
-    ('mart_team_member_directory','mart_team_member_directory'),
-    ('bdg_crm_opportunity_contact_role','bdg_crm_opportunity_contact_role'),
-    ('dim_date', 'dim_date'),
-    ('prep_sales_dev_user_hierarchy', 'prep_sales_dev_user_hierarchy')
-  ]) 
-}}
+WITH dim_date AS (
 
-, sales_dev_opps AS (
+  SELECT
+    date_id,
+    date_day,
+    date_actual,
+    fiscal_year,
+    fiscal_quarter_name_fy,
+    first_day_of_week
+  FROM {{ref('dim_date')}}
+
+), mart_crm_person AS (
+
+  SELECT
+    dim_crm_person_id,
+    sfdc_record_id,
+    dim_crm_account_id,
+    true_inquiry_date_pt,
+    mql_date_latest,
+    account_demographics_sales_segment,
+    account_demographics_sales_segment_grouped,
+    account_demographics_geo,
+    is_mql,
+    is_first_order_person,
+    person_first_country,
+    lead_score_classification,
+    is_defaulted_trial,
+    lead_source,
+    status,
+    bizible_mql_form_url,
+    bizible_mql_ad_campaign_name,
+    bizible_mql_marketing_channel,
+    bizible_mql_marketing_channel_path,
+    bizible_most_recent_form_url,
+    bizible_most_recent_ad_campaign_name,
+    bizible_most_recent_marketing_channel,
+    bizible_most_recent_marketing_channel_path,
+    source_buckets,
+    email_domain_type,
+    sfdc_record_type,
+    propensity_to_purchase_score_group
+    marketo_last_interesting_moment,
+    marketo_last_interesting_moment_date
+  FROM {{ref('mart_crm_person')}}
+
+), mart_crm_account AS (
+
+  SELECT
+    dim_crm_account_id,
+    bdr_next_steps,
+    bdr_account_research,
+    bdr_account_strategy,
+    account_bdr_assigned_user_role,
+    bdr_recycle_date,
+    actively_working_start_date,
+    crm_account_owner,
+    owner_role,
+    crm_account_name,
+    crm_account_focus_account,
+    crm_account_owner_user_segment,
+    six_sense_account_profile_fit,
+    six_sense_account_reach_score,
+    six_sense_account_profile_score,
+    six_sense_account_buying_stage,
+    six_sense_account_numerical_reach_score,
+    six_sense_account_update_date,
+    six_sense_account_6_qa_start_date,
+    six_sense_account_6_qa_end_date,
+    six_sense_account_6_qa_age_days,
+    six_sense_account_intent_score,
+    six_sense_segments,
+    pte_score_group,
+    is_sdr_target_account,
+    is_first_order_available,
+    crm_account_type,
+    crm_account_industry,
+    crm_account_sub_industry,
+    parent_crm_account_territory,
+    parent_crm_account_sales_segment,
+    parent_crm_account_geo,
+    parent_crm_account_region,
+    parent_crm_account_area,
+    abm_tier,
+    crm_account_owner_id,
+    crm_account_owner,
+    owner_role
+  FROM {{ref('mart_crm_account')}}
+
+), dim_sales_dev_user_hierarchy AS (
+
+  SELECT
+    dim_crm_user_id,
+    sales_dev_rep_role_name,
+    sales_dev_rep_email,
+    sales_dev_rep_full_name,
+    sales_dev_rep_title,
+    sales_dev_rep_department,
+    sales_dev_rep_team,
+    sales_dev_rep_is_active,
+    crm_user_sales_segment,
+    crm_user_geo,
+    crm_user_region,
+    crm_user_area,
+    sales_dev_rep_employee_number,
+    sales_dev_rep_direct_manager_id,
+    sales_dev_manager_full_name,
+    sales_dev_manager_email,
+    sales_dev_manager_employee_number,
+    sales_dev_manager_user_role_name,
+    sales_dev_leader_id,
+    sales_dev_leader_user_role_name,
+    sales_dev_leader_full_name,
+    sales_dev_leader_employee_number,
+    sales_dev_leader_email
+  FROM {{ref('dim_sales_dev_user_hierarchy')}}
+
+), sales_dev_opps AS (
 
   SELECT 
-    mart_crm_opportunity_stamped_hierarchy_hist.dim_crm_account_id,
+    mart_crm_opportunity.dim_crm_account_id,
     mart_crm_account.bdr_prospecting_status,
-    mart_crm_opportunity_stamped_hierarchy_hist.dim_crm_opportunity_id,
-    mart_crm_opportunity_stamped_hierarchy_hist.net_arr,
-    mart_crm_opportunity_stamped_hierarchy_hist.net_arr_stage_1,
-    mart_crm_opportunity_stamped_hierarchy_hist.xdr_net_arr_stage_1,
-    mart_crm_opportunity_stamped_hierarchy_hist.xdr_net_arr_stage_3,
-    mart_crm_opportunity_stamped_hierarchy_hist.sales_accepted_date AS sales_accepted_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.sales_accepted_fiscal_quarter_name,
+    mart_crm_opportunity.dim_crm_opportunity_id,
+    mart_crm_opportunity.net_arr,
+    mart_crm_opportunity.net_arr_stage_1,
+    mart_crm_opportunity.xdr_net_arr_stage_1,
+    mart_crm_opportunity.xdr_net_arr_stage_3,
+    mart_crm_opportunity.sales_accepted_date AS sales_accepted_date,
+    mart_crm_opportunity.sales_accepted_fiscal_quarter_name,
     dim_date.day_of_fiscal_quarter AS sao_day_of_fiscal_quarter,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_0_pending_acceptance_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_0_pending_acceptance_month,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_0_pending_acceptance_fiscal_quarter_name,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_1_discovery_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_1_discovery_month,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_1_discovery_fiscal_quarter_name,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_2_scoping_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_2_scoping_month,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_2_scoping_fiscal_quarter_name,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_3_technical_evaluation_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_3_technical_evaluation_month,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_3_technical_evaluation_fiscal_quarter_name, 
-    mart_crm_opportunity_stamped_hierarchy_hist.days_in_1_discovery,
-    mart_crm_opportunity_stamped_hierarchy_hist.days_in_sao,
-    mart_crm_opportunity_stamped_hierarchy_hist.days_since_last_activity,
-    mart_crm_opportunity_stamped_hierarchy_hist.sales_qualified_source_name,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_segment,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_geo,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_region,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_area,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_role_level_1,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_role_level_2,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_role_level_3,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_role_level_4,
-    mart_crm_opportunity_stamped_hierarchy_hist.report_role_level_5,
-    mart_crm_opportunity_stamped_hierarchy_hist.parent_crm_account_territory,
-    mart_crm_opportunity_stamped_hierarchy_hist.parent_crm_account_sales_segment,
-    mart_crm_opportunity_stamped_hierarchy_hist.parent_crm_account_geo,
-    mart_crm_opportunity_stamped_hierarchy_hist.parent_crm_account_region,
-    mart_crm_opportunity_stamped_hierarchy_hist.parent_crm_account_area,
-    mart_crm_opportunity_stamped_hierarchy_hist.deal_path_name,
-    mart_crm_opportunity_stamped_hierarchy_hist.created_date AS opp_created_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.close_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.pipeline_created_date,
-    mart_crm_opportunity_stamped_hierarchy_hist.order_type,
-    mart_crm_opportunity_stamped_hierarchy_hist.stage_name,
-    mart_crm_opportunity_stamped_hierarchy_hist.product_category,
-    mart_crm_opportunity_stamped_hierarchy_hist.product_details,
-    mart_crm_opportunity_stamped_hierarchy_hist.products_purchased,
-    mart_crm_opportunity_stamped_hierarchy_hist.crm_account_focus_account, 
-    mart_crm_opportunity_stamped_hierarchy_hist.crm_opp_owner_sales_segment_stamped,
-    mart_crm_opportunity_stamped_hierarchy_hist.crm_opp_owner_business_unit_stamped,
-    mart_crm_opportunity_stamped_hierarchy_hist.crm_opp_owner_geo_stamped,
-    mart_crm_opportunity_stamped_hierarchy_hist.crm_opp_owner_region_stamped,
-    mart_crm_opportunity_stamped_hierarchy_hist.crm_opp_owner_area_stamped,
-    mart_crm_opportunity_stamped_hierarchy_hist.is_sao,
-    mart_crm_opportunity_stamped_hierarchy_hist.is_net_arr_closed_deal,
-    mart_crm_opportunity_stamped_hierarchy_hist.is_net_arr_pipeline_created,
-    mart_crm_opportunity_stamped_hierarchy_hist.is_eligible_age_analysis,
-    mart_crm_opportunity_stamped_hierarchy_hist.is_eligible_open_pipeline,
-    mart_crm_opportunity_stamped_hierarchy_hist.opportunity_business_development_representative,
-    mart_crm_opportunity_stamped_hierarchy_hist.opportunity_sales_development_representative,
+    mart_crm_opportunity.stage_0_pending_acceptance_date,
+    mart_crm_opportunity.stage_0_pending_acceptance_month,
+    mart_crm_opportunity.stage_0_pending_acceptance_fiscal_quarter_name,
+    mart_crm_opportunity.stage_1_discovery_date,
+    mart_crm_opportunity.stage_1_discovery_month,
+    mart_crm_opportunity.stage_1_discovery_fiscal_quarter_name,
+    mart_crm_opportunity.stage_2_scoping_date,
+    mart_crm_opportunity.stage_2_scoping_month,
+    mart_crm_opportunity.stage_2_scoping_fiscal_quarter_name,
+    mart_crm_opportunity.stage_3_technical_evaluation_date,
+    mart_crm_opportunity.stage_3_technical_evaluation_month,
+    mart_crm_opportunity.stage_3_technical_evaluation_fiscal_quarter_name, 
+    mart_crm_opportunity.days_in_1_discovery,
+    mart_crm_opportunity.days_in_sao,
+    mart_crm_opportunity.days_since_last_activity,
+    mart_crm_opportunity.sales_qualified_source_name,
+    mart_crm_opportunity.report_segment,
+    mart_crm_opportunity.report_geo,
+    mart_crm_opportunity.report_region,
+    mart_crm_opportunity.report_area,
+    mart_crm_opportunity.report_role_level_1,
+    mart_crm_opportunity.report_role_level_2,
+    mart_crm_opportunity.report_role_level_3,
+    mart_crm_opportunity.report_role_level_4,
+    mart_crm_opportunity.report_role_level_5,
+    mart_crm_opportunity.parent_crm_account_territory,
+    mart_crm_opportunity.parent_crm_account_sales_segment,
+    mart_crm_opportunity.parent_crm_account_geo,
+    mart_crm_opportunity.parent_crm_account_region,
+    mart_crm_opportunity.parent_crm_account_area,
+    mart_crm_opportunity.deal_path_name,
+    mart_crm_opportunity.created_date AS opp_created_date,
+    mart_crm_opportunity.close_date,
+    mart_crm_opportunity.pipeline_created_date,
+    mart_crm_opportunity.order_type,
+    mart_crm_opportunity.stage_name,
+    mart_crm_opportunity.product_category,
+    mart_crm_opportunity.product_details,
+    mart_crm_opportunity.products_purchased,
+    mart_crm_opportunity.crm_account_focus_account, 
+    mart_crm_opportunity.crm_opp_owner_sales_segment_stamped,
+    mart_crm_opportunity.crm_opp_owner_business_unit_stamped,
+    mart_crm_opportunity.crm_opp_owner_geo_stamped,
+    mart_crm_opportunity.crm_opp_owner_region_stamped,
+    mart_crm_opportunity.crm_opp_owner_area_stamped,
+    mart_crm_opportunity.is_sao,
+    mart_crm_opportunity.is_net_arr_closed_deal,
+    mart_crm_opportunity.is_net_arr_pipeline_created,
+    mart_crm_opportunity.is_eligible_age_analysis,
+    mart_crm_opportunity.is_eligible_open_pipeline,
+    mart_crm_opportunity.opportunity_business_development_representative,
+    mart_crm_opportunity.opportunity_sales_development_representative,
     mart_crm_account.bdr_next_steps,
     mart_crm_account.bdr_account_research,
     mart_crm_account.bdr_account_strategy,
@@ -87,19 +188,19 @@
     mart_crm_account.bdr_recycle_date,
     mart_crm_account.actively_working_start_date,
     CASE 
-    WHEN mart_crm_opportunity_stamped_hierarchy_hist.opportunity_business_development_representative IS NOT NULL 
-    THEN 'BDR' 
-    WHEN mart_crm_opportunity_stamped_hierarchy_hist.opportunity_sales_development_representative IS NOT NULL 
-    THEN 'SDR' 
+      WHEN mart_crm_opportunity.opportunity_business_development_representative IS NOT NULL 
+        THEN 'BDR' 
+      WHEN mart_crm_opportunity.opportunity_sales_development_representative IS NOT NULL 
+        THEN 'SDR' 
     END AS sales_dev_bdr_or_sdr,
     COALESCE(opportunity_business_development_representative,opportunity_sales_development_representative) AS sdr_bdr_user_id
-    FROM mart_crm_opportunity_stamped_hierarchy_hist
-    LEFT JOIN dim_date 
-      ON mart_crm_opportunity_stamped_hierarchy_hist.sales_accepted_date = dim_date.date_day
-    LEFT JOIN mart_crm_account 
-      ON mart_crm_opportunity_stamped_hierarchy_hist.dim_crm_account_id = mart_crm_account.dim_crm_account_id
-    WHERE sdr_bdr_user_id IS NOT NULL 
-      AND stage_1_discovery_date >= '2022-02-01' 
+  FROM {{ref('mart_crm_opportunity')}}
+  LEFT JOIN dim_date 
+    ON mart_crm_opportunity.sales_accepted_date = dim_date.date_day
+  LEFT JOIN mart_crm_account
+    ON mart_crm_opportunity.dim_crm_account_id = mart_crm_account.dim_crm_account_id
+  WHERE sdr_bdr_user_id IS NOT NULL 
+    AND stage_1_discovery_date >= '2022-02-01' 
 
 ), merged_person_base AS (
 
@@ -110,8 +211,8 @@
     sales_dev_opps.dim_crm_opportunity_id,
     sales_dev_opps.opp_created_date,
     mart_crm_person.dim_crm_account_id
-  FROM sfdc_lead 
-  LEFT JOIN mart_crm_person 
+  FROM {{ref('sfdc_lead')}} 
+  LEFT JOIN mart_crm_person
     ON mart_crm_person.sfdc_record_id = sfdc_lead.converted_contact_id  
   LEFT JOIN sales_dev_opps 
     ON converted_opportunity_id = dim_crm_opportunity_id 
@@ -128,7 +229,7 @@
     sales_dev_opps.opp_created_date AS opp_created_date,
     sales_dev_opps.sales_accepted_date AS sales_accepted_date,
     sales_dev_opps.sdr_bdr_user_id AS dim_crm_user_id 
-  FROM bdg_crm_opportunity_contact_role
+  FROM {{ref('bdg_crm_opportunity_contact_role')}}
   INNER JOIN sales_dev_opps
     ON sales_dev_opps.dim_crm_opportunity_id = bdg_crm_opportunity_contact_role.dim_crm_opportunity_id
   
@@ -147,10 +248,10 @@
     dim_date.fiscal_quarter_name_fy as activity_fiscal_quarter_name,
     'Event' AS activity_type,
     mart_crm_event.event_type AS activity_subtype
-  FROM mart_crm_event
-  LEFT JOIN dim_crm_user 
+  FROM {{ref('mart_crm_event')}}
+  LEFT JOIN {{ref('dim_crm_user')}} 
     ON booked_by_employee_number = dim_crm_user.employee_number 
-    LEFT JOIN dim_date 
+  LEFT JOIN dim_date
     ON mart_crm_event.event_date = dim_date.date_day
   INNER JOIN sales_dev_opps 
     ON mart_crm_event.dim_crm_user_id = sales_dev_opps.sdr_bdr_user_id
@@ -415,11 +516,11 @@
     ON mart_crm_person.dim_crm_person_id = opp_to_lead.waterfall_person_id
   LEFT JOIN mart_crm_account 
     ON COALESCE(opp_to_lead.dim_crm_account_id,mart_crm_person.dim_crm_account_id) = mart_crm_account.dim_crm_account_id
-  LEFT JOIN prep_sales_dev_user_hierarchy opportunity_snapshot_hierarchy
+  LEFT JOIN dim_sales_dev_user_hierarchy AS opportunity_snapshot_hierarchy
     ON opp_to_lead.sdr_bdr_user_id = opportunity_snapshot_hierarchy.dim_crm_user_id 
     AND opp_to_lead.stage_1_discovery_date = opportunity_snapshot_hierarchy.snapshot_date
 
-  LEFT JOIN prep_sales_dev_user_hierarchy activity_snapshot_hierarchy
+  LEFT JOIN dim_sales_dev_user_hierarchy AS activity_snapshot_hierarchy
     ON activity_final.dim_crm_user_id = activity_snapshot_hierarchy.dim_crm_user_id 
     AND activity_final.activity_date = activity_snapshot_hierarchy.snapshot_date
   WHERE activity_to_sao_days <= 90 OR activity_to_sao_days IS NULL 
@@ -594,7 +695,7 @@
     NULL AS activity_sales_Dev_manager_full_name,
     NULL AS activity_sales_dev_leader_full_name
   FROM opps_missing_link
-  LEFT JOIN prep_sales_dev_user_hierarchy opportunity_snapshot_hierarchy
+  LEFT JOIN dim_sales_dev_user_hierarchy AS opportunity_snapshot_hierarchy
     ON opps_missing_link.sdr_bdr_user_id = opportunity_snapshot_hierarchy.dim_crm_user_id 
     AND opps_missing_link.stage_1_discovery_date = opportunity_snapshot_hierarchy.snapshot_date
   LEFT JOIN mart_crm_account 
