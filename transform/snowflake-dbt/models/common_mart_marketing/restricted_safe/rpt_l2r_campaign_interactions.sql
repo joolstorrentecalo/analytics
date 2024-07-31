@@ -107,6 +107,15 @@ WITH dim_crm_account AS (
       mart_crm_person.accepted_date_pt,
       mart_crm_person.qualifying_date,
       mart_crm_person.qualifying_date_pt,
+      person_base.true_inquiry_date_pt,
+      person_base.mql_date_latest_pt,
+      person_base.legacy_mql_date_first_pt,
+      person_base.mql_sfdc_date_pt,
+      person_base.mql_date_first_pt,
+      person_base.accepted_date,
+      person_base.accepted_date_pt,
+      person_base.qualifying_date,
+      person_base.qualifying_date_pt,
 
   --Touchpoint Data
       'Person Touchpoint' AS touchpoint_type,
@@ -339,15 +348,15 @@ WITH dim_crm_account AS (
       mart_crm_person.is_defaulted_trial,
 
   --Person Dates
-      mart_crm_person.true_inquiry_date_pt,
-      mart_crm_person.mql_date_latest_pt,
-      mart_crm_person.legacy_mql_date_first_pt,
-      mart_crm_person.mql_sfdc_date_pt,
-      mart_crm_person.mql_date_first_pt,
-      mart_crm_person.accepted_date,
-      mart_crm_person.accepted_date_pt,
-      mart_crm_person.qualifying_date,
-      mart_crm_person.qualifying_date_pt,
+      person_base.true_inquiry_date_pt,
+      person_base.mql_date_latest_pt,
+      person_base.legacy_mql_date_first_pt,
+      person_base.mql_sfdc_date_pt,
+      person_base.mql_date_first_pt,
+      person_base.accepted_date,
+      person_base.accepted_date_pt,
+      person_base.qualifying_date,
+      person_base.qualifying_date_pt,
     
     -- Touchpoint Data
       'Attribution Touchpoint' AS touchpoint_type,
@@ -512,7 +521,6 @@ WITH dim_crm_account AS (
       is_defaulted_trial,
 
   --Person Dates
-      true_inquiry_date_pt,
       true_inquiry_date_pt,
       mql_date_latest_pt,
       legacy_mql_date_first_pt,
@@ -746,7 +754,6 @@ WITH dim_crm_account AS (
       is_defaulted_trial,
     
     --Person Dates
-      true_inquiry_date_pt,
       true_inquiry_date_pt,
       mql_date_latest_pt,
       legacy_mql_date_first_pt,
@@ -1146,6 +1153,5 @@ WITH dim_crm_account AS (
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-07-05",
-    updated_date="2024-07-31",
     updated_date="2024-07-31",
   ) }}
