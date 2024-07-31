@@ -2,17 +2,18 @@
     tags=["mnpi_exception"]
 ) }}
 
-{{ simple_cte([
-    ('dim_crm_person','dim_crm_person'),
-    ('dim_bizible_marketing_channel_path','dim_bizible_marketing_channel_path'),
-    ('dim_sales_segment','dim_sales_segment'),
-    ('fct_crm_person','fct_crm_person'),
-    ('dim_date','dim_date'),
-    ('dim_crm_user', 'dim_crm_user'),
-    ('dim_crm_user_hierarchy', 'dim_crm_user_hierarchy')
-]) }}
 
-, final AS (
+WITH dim_date AS (
+
+  SELECT
+    date_id,
+    date_day,
+    first_day_of_month,
+    fiscal_quarter_name_fy
+  FROM {{ref('dim_date')}}
+
+
+), final AS (
 
     SELECT
       fct_crm_person.dim_crm_person_id,
@@ -265,12 +266,12 @@
       dim_crm_person.bizible_most_recent_ad_campaign_name,
       dim_crm_person.bizible_most_recent_marketing_channel,
       dim_crm_person.bizible_most_recent_marketing_channel_path
-    FROM fct_crm_person
-    LEFT JOIN dim_crm_person
+    FROM {{ref('fct_crm_person')}}
+    LEFT JOIN {{ref('dim_crm_person')}}
       ON fct_crm_person.dim_crm_person_id = dim_crm_person.dim_crm_person_id
-    LEFT JOIN dim_sales_segment
+    LEFT JOIN {{ref('dim_sales_segment')}}
       ON fct_crm_person.dim_account_sales_segment_id = dim_sales_segment.dim_sales_segment_id
-    LEFT JOIN dim_bizible_marketing_channel_path
+    LEFT JOIN {{ref('dim_bizible_marketing_channel_path')}}
       ON fct_crm_person.dim_bizible_marketing_channel_path_id = dim_bizible_marketing_channel_path.dim_bizible_marketing_channel_path_id
     LEFT JOIN dim_date AS created_date
       ON fct_crm_person.created_date_id = created_date.date_id
@@ -352,9 +353,9 @@
       ON fct_crm_person.worked_date_id = worked_date.date_id
     LEFT JOIN dim_date AS worked_date_pt
       ON fct_crm_person.worked_date_pt_id = worked_date_pt.date_id
-    LEFT JOIN dim_crm_user 
+    LEFT JOIN {{ref('dim_crm_user')}} 
       ON fct_crm_person.dim_crm_user_id = dim_crm_user.dim_crm_user_id
-    LEFT JOIN dim_crm_user_hierarchy
+    LEFT JOIN {{ref('dim_crm_user_hierarchy')}}
       ON dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk = fct_crm_person.dim_account_demographics_hierarchy_sk
 
 )

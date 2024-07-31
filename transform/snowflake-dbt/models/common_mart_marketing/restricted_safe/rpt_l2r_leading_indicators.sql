@@ -2,12 +2,7 @@
     materialized="table"
 ) }}
 
-{{ simple_cte([
-    ('rpt_lead_to_revenue','rpt_lead_to_revenue'),
-    ('dim_date','dim_date')
-]) }}
-
-, rpt_lead_to_revenue_base AS ( 
+WITH rpt_lead_to_revenue_base AS ( 
 
     SELECT
     --IDs    
@@ -52,13 +47,7 @@
     --Flags
         is_mql,
         is_sao
-    FROM rpt_lead_to_revenue
-    LEFT JOIN dim_date inquiry_date 
-        ON rpt_lead_to_revenue.true_inquiry_date=inquiry_date.date_actual
-    LEFT JOIN dim_date mql_date 
-        ON rpt_lead_to_revenue.mql_date_first_pt=mql_date.date_actual
-    LEFT JOIN dim_date sao_date 
-        ON rpt_lead_to_revenue.sales_accepted_date=sao_date.date_actual
+    FROM {{ref('rpt_lead_to_revenue')}}
     WHERE (account_demographics_geo != 'JIHU'
      OR account_demographics_geo IS NULL) 
      AND (report_geo != 'JIHU'
@@ -72,7 +61,7 @@
         fiscal_quarter_name_fy          AS date_range_quarter,
         first_day_of_month              AS date_range_month,
         first_day_of_week               AS date_range_week
-    FROM dim_date
+    FROM {{ref('dim_date')}}
 
 ), inquiry_prep AS (
 

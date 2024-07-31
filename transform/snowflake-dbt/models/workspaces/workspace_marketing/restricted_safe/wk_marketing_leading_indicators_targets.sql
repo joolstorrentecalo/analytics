@@ -1,12 +1,6 @@
 {{ config(materialized='table') }}
 
-{{ simple_cte([
-    ('mart_sales_funnel_target_daily','mart_sales_funnel_target_daily'),
-    ('dim_date','dim_date'),
-    ('rpt_lead_to_revenue','rpt_lead_to_revenue')
-]) }}
-
-, targets AS (
+WITH targets AS (
   SELECT 
     target_date,
     target_month,
@@ -28,7 +22,7 @@
     mtd_allocated_target,
     qtd_allocated_target,
     ytd_allocated_target
-  FROM mart_sales_funnel_target_daily 
+  FROM {{ref('mart_sales_funnel_target_daily')}} 
   WHERE kpi_name IN ('MQL','Stage 1 Opportunities')
   
 ), rpt_lead_to_revenue_base AS ( 
@@ -79,7 +73,7 @@
     --Flags
         is_mql,
         is_sao
-    FROM rpt_lead_to_revenue
+    FROM {{ref('rpt_lead_to_revenue')}} 
     WHERE (account_demographics_geo != 'JIHU'
      OR account_demographics_geo IS null) 
      AND (report_geo != 'JIHU'
@@ -93,7 +87,7 @@
         fiscal_quarter_name_fy          AS date_range_quarter,
         first_day_of_month              AS date_range_month,
         first_day_of_week               AS date_range_week
-    FROM dim_date
+    FROM {{ref('dim_date')}} 
 
 ), inquiry_prep AS (
 
