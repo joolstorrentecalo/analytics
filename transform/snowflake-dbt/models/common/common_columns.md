@@ -3541,6 +3541,7 @@ The timestamp of when the `is_deleted` flag has been updated
 Pseudonymised combination of instance id and user id coalesced from the `global_user_id` sent in the GitLab Standard Context and the `gitlab_global_user_id` sent in Code Suggestions events.
 
 {% enddocs %}
+
 {% docs website_session_start %}
 
 Timestamp for the start of the website session
