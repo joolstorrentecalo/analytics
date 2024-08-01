@@ -334,16 +334,6 @@ Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Billing/
 
 {% enddocs %}
 
-{% docs fct_invoice_aging_detail %}
-
-Fact table providing invoice aging details at the single transaction grain, e.g. payment, IIA, CBA.
-
-The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
-
-Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Payments/Zuora_Finance/E_Accounting_Periods/F_View_Accounting_Period_Balances/Accounts_Receivable_Aging#Invoice_Aging_Details).
-
-{% enddocs %}
-
 {% docs fct_invoice_item %}
 Fact table providing invoice line item details.
 

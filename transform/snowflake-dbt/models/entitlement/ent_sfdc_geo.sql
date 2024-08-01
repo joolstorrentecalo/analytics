@@ -36,6 +36,7 @@ target_user_roles AS (
     ('Global CSE Director', TRUE),
     ('VP Sales Development', TRUE),
     ('VPSA', TRUE),
+    ('RM_ALL', TRUE),
     ('Executive - Global Minus Pubsec', FALSE),
     ('Implementation Engineers - Global (with/without Pubsec)', FALSE),
     ('Marketing Operations Manager', FALSE),

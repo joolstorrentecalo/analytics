@@ -184,6 +184,8 @@ models:
       - name: CASE_CTA
       - name: CONTEXT_FINAL
       - name: REMOVE_FLAG
+      - name: CURRENT_PRICE
+      - name: RENEWAL_PRICE
 
 
 

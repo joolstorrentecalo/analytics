@@ -91,6 +91,10 @@ campaign_members AS (
     sfdc_campaign_member.is_mql_after_campaign,
     sfdc_campaign_member.campaign_member_status,
     sfdc_campaign_member.campaign_member_created_date,
+    sfdc_campaign_member.utm_campaign,
+    sfdc_campaign_member.utm_medium,
+    sfdc_campaign_member.utm_source,
+    sfdc_campaign_member.last_form_submission_page,
     campaigns.true_event_date,
     campaigns.campaign_name,
 

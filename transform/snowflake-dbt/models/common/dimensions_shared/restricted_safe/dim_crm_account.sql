@@ -112,6 +112,7 @@
       prep_crm_account.demandbase_sessions,
       prep_crm_account.demandbase_trending_offsite_intent,
       prep_crm_account.demandbase_trending_onsite_engagement,
+      prep_crm_account.account_domains,
       prep_crm_account.is_locally_managed_account,
       prep_crm_account.is_strategic_account,
       prep_crm_account.partner_track,
@@ -182,6 +183,20 @@
       prep_crm_account.six_sense_account_intent_score,
       prep_crm_account.six_sense_segments,
 
+       --Qualified Fields
+      prep_crm_account.qualified_days_since_last_activity,
+      prep_crm_account.qualified_signals_active_session_time,
+      prep_crm_account.qualified_signals_bot_conversation_count,
+      prep_crm_account.qualified_condition,
+      prep_crm_account.qualified_score,
+      prep_crm_account.qualified_trend,
+      prep_crm_account.qualified_meetings_booked,
+      prep_crm_account.qualified_signals_rep_conversation_count,
+      prep_crm_account.qualified_signals_research_state,
+      prep_crm_account.qualified_signals_research_score,
+      prep_crm_account.qualified_signals_session_count,
+      prep_crm_account.qualified_visitors_count,
+
       --degenerative dimensions
       prep_crm_account.is_sdr_target_account,
       prep_crm_account.is_key_account,
@@ -249,9 +264,9 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@msendal",
-    updated_by="@jonglee1218",
+    updated_by="@rkohnke",
     created_date="2020-06-01",
-    updated_date="2024-02-16"
+    updated_date="2024-07-29"
 ) }}
 
 

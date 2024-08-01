@@ -107,6 +107,7 @@ sources:
       - name: sales_analytics_tableau_rls_users
       - name: sales_analytics_tableau_rls_roles
       - name: sales_capacity_kpi
+      - name: sales_dev_role_hierarchy
       - name: sales_dev_targets_fy25
       - name: sales_training_completion_dates
       - name: sales_funnel_targets_matrix
@@ -135,3 +136,4 @@ sources:
       - name: ta_team_assignment
       - name: job_profiles_historical
       - name: ci_runner_machine_type_mapping
+      - name: cost_centers_historical

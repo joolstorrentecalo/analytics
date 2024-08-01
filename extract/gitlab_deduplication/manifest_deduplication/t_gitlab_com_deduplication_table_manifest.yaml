@@ -31,7 +31,6 @@ tables_to_de_duped:
     - issue_assignees
     - issue_links
     - jira_connect_installations
-    - keys
     - label_links
     - lfs_file_locks
     - members

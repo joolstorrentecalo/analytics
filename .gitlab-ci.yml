@@ -244,6 +244,7 @@ clone_stop:
 ✅python_pytest:
   <<: *python_testing
   script:
+    - export GCP_SERVICE_CREDS=$(echo "$ENCODED_GCP" | base64 -d)
     - python -m pytest -vv -x --junitxml=report.xml
   artifacts:
     reports:
@@ -395,7 +396,7 @@ snowflake_provisioning_roles_yaml:
 
 .pages_job_template: &pages_job_template
   stage: 📚 dbt Docs
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.3
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
   variables:
     SNOWFLAKE_ROLE: $SNOWFLAKE_TRANSFORM_ROLE
     SNOWFLAKE_WAREHOUSE: $SNOWFLAKE_TRANSFORM_WAREHOUSE

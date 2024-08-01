@@ -18,7 +18,7 @@
 1. [ ] Add or remove email(s) in the [Snowflake Okta Google Group](https://groups.google.com/a/gitlab.com/g/okta-snowflake-users/members?pli=1)
 1. [ ] In the AR, write:
     ```md
-    Provisioning has been completed, changes will take effect at 1:30AM UTC.
+    Snowflake provisioning has been completed, changes will take effect at 1:30AM UTC/5:30PM PST.
 
     Please see this [handbook section](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/#logging-in-and-using-the-correct-role) for logging in.
     ```

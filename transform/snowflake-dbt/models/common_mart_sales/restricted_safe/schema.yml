@@ -170,8 +170,8 @@ models:
             - not_null
           tags: [ "tdf", "mart", "arr" ]
 
-  - name: mart_arr_weekly
-    description: A version of mart_arr aggregated by arr_week. This allows more frequent updates to the arr and quantity fields for 
+  - name: mart_arr_weekly_with_zero_dollar_charges
+    description: A version of mart_arr aggregated by arr_week. This allows more frequent updates to the arr and quantity fields for faster analysis.
     columns:
       - name: primary_key
         data_tests:
@@ -421,6 +421,32 @@ models:
         description: Automatically populates two months out from the actively working start date to indicate when an outbound account should be considered for removal from the outbound pipeline.
       - name: actively_working_start_date
         description: Automatically datestamps the date and time that an account was moved to a BDRs outbound prospecting list.
+      - name: qualified_days_since_last_activity
+        description: Qualified's calculation, in days, of time elapsed since last activity on the account. 
+      - name: qualified_signals_active_session_time
+        description: Qualified's calculation of active session time. 
+      - name: qualified_signals_bot_conversation_count
+        description: Qualified's count of bot conversations. 
+      - name: qualified_condition
+        description: Qualified's Account condition
+      - name: qualified_score
+        description: Qualified's Account score
+      - name: qualified_trend
+        description: Qualified's Account trend
+      - name: qualified_meetings_booked
+        description: Qualified's count of booked meetings on the account
+      - name: qualified_signals_rep_conversation_count
+        description: Qualified's count of rep conversations
+      - name: qualified_signals_research_state
+        description: Qualified's Account research state.
+      - name: qualified_signals_research_score
+        description: Qualified's Account research score
+      - name: qualified_signals_session_count
+        description: Qualified's count of sessions on the account
+      - name: qualified_visitors_count
+        description: Qualified's count of visitors on the account
+      - name: account_domains
+        description: All domain names associated with this account, separated by a comma.
 
   - name: mart_crm_opportunity
     description:  >-

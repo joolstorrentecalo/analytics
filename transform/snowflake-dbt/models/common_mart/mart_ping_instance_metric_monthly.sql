@@ -59,6 +59,7 @@
       dim_subscription.subscription_end_month                                     AS subscription_end_month,
       dim_subscription.dim_subscription_id_original                               AS dim_subscription_id_original,
       dim_billing_account.dim_billing_account_id                                  AS dim_billing_account_id,
+      dim_crm_accounts.dim_crm_account_id                                         AS dim_crm_account_id,
       dim_crm_accounts.crm_account_name                                           AS crm_account_name,
       dim_crm_accounts.dim_parent_crm_account_id                                  AS dim_parent_crm_account_id,
       dim_crm_accounts.parent_crm_account_name                                    AS parent_crm_account_name,
@@ -96,7 +97,7 @@
       ON dim_billing_account.dim_crm_account_id = dim_crm_accounts.dim_crm_account_id
     INNER JOIN dim_date
       ON fct_charge.effective_start_month <= dim_date.date_day AND fct_charge.effective_end_month > dim_date.date_day
-    {{ dbt_utils.group_by(n=22)}}
+    {{ dbt_utils.group_by(n=23)}}
 
 
   ), latest_subscription AS (
@@ -150,6 +151,7 @@
         COALESCE(license_sha256.subscription_start_month, license_md5.subscription_start_month)                                         AS subscription_start_month,
         COALESCE(license_sha256.subscription_end_month, license_md5.subscription_end_month)                                             AS subscription_end_month,
         COALESCE(license_sha256.dim_billing_account_id, license_md5.dim_billing_account_id)                                             AS dim_billing_account_id,
+        COALESCE(license_sha256.dim_crm_account_id, license_md5.dim_crm_account_id)                                                     AS dim_crm_account_id,
         COALESCE(license_sha256.crm_account_name, license_md5.crm_account_name)                                                         AS crm_account_name,
         COALESCE(license_sha256.dim_parent_crm_account_id, license_md5.dim_parent_crm_account_id)                                       AS dim_parent_crm_account_id,
         COALESCE(license_sha256.parent_crm_account_name, license_md5.parent_crm_account_name)                                           AS parent_crm_account_name,
@@ -238,6 +240,7 @@
       dim_installation_id,
       latest_subscription_id,
       dim_billing_account_id,
+      dim_crm_account_id,
       dim_parent_crm_account_id,
       major_minor_version_id,
       dim_host_id,
@@ -308,7 +311,7 @@
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@mdrussell",
+    updated_by="@michellecooper",
     created_date="2022-03-11",
-    updated_date="2024-05-21"
+    updated_date="2024-07-17"
 ) }}

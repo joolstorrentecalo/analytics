@@ -269,6 +269,7 @@
       -- additive fields
       sfdc_opportunity.incremental_acv                                                                                      AS iacv,
       sfdc_opportunity.net_incremental_acv                                                                                  AS net_iacv,
+      sfdc_opportunity.opportunity_based_iacv_to_net_arr_ratio,
       sfdc_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       sfdc_opportunity.calculated_from_ratio_net_arr,
       sfdc_opportunity.net_arr,
@@ -317,6 +318,16 @@
       sfdc_opportunity.override_arr_basis_clari,
       sfdc_opportunity.vsa_start_date_net_arr,
       sfdc_opportunity.cycle_time_in_days,
+      sfdc_opportunity.created_arr,
+      sfdc_opportunity.closed_won_opps,
+      sfdc_opportunity.closed_opps,
+      sfdc_opportunity.created_deals,
+      sfdc_opportunity.positive_booked_deal_count,
+      sfdc_opportunity.positive_booked_net_arr,
+      sfdc_opportunity.positive_open_deal_count,
+      sfdc_opportunity.positive_open_net_arr,
+      sfdc_opportunity.closed_deals,
+      sfdc_opportunity.closed_net_arr,
 
       -- PTC related fields
       sfdc_opportunity.ptc_predicted_arr,

@@ -5,7 +5,9 @@
     ('zuora_order_action_rate_plan','zuora_query_api_order_action_rate_plan_source'),
     ('zuora_order_action', 'zuora_order_action_source'),
     ('revenue_contract_line', 'zuora_revenue_revenue_contract_line_source'),
-    ('zuora_order', 'zuora_order_source')
+    ('zuora_order', 'zuora_order_source'),
+    ('charge_contractual_value', 'zuora_query_api_charge_contractual_value_source'),
+    ('booking_transaction', 'zuora_booking_transaction_source')
 ])}}
 
 , sfdc_account AS (
@@ -195,6 +197,7 @@
       zuora_rate_plan_charge.updated_date::DATE                         AS charge_updated_date,
       DATEDIFF(month, zuora_rate_plan_charge.effective_start_month::DATE, zuora_rate_plan_charge.effective_end_month::DATE)
                                                                         AS charge_term,
+      zuora_rate_plan_charge.billing_period,
 
       --Additive Fields
       zuora_rate_plan_charge.mrr,
@@ -218,6 +221,8 @@
       previous_mrr * 12                                                 AS previous_arr,
       zuora_rate_plan_charge.delta_mrc * 12                             AS delta_arc,
       delta_mrr * 12                                                    AS delta_arr,
+      booking_transaction.list_price,
+      charge_contractual_value.elp                                      AS extended_list_price,
       zuora_rate_plan_charge.quantity,
       LAG(zuora_rate_plan_charge.quantity,1) OVER (PARTITION BY zuora_subscription.subscription_name, zuora_rate_plan_charge.rate_plan_charge_number
                                                    ORDER BY zuora_rate_plan_charge.segment, zuora_subscription.version)
@@ -255,6 +260,10 @@
       ON map_merged_crm_account.dim_crm_account_id = sfdc_account.account_id
     LEFT JOIN charge_to_order
       ON zuora_rate_plan_charge.rate_plan_charge_id = charge_to_order.rate_plan_charge_id
+    LEFT JOIN charge_contractual_value
+      ON charge_contractual_value.rate_plan_charge_id = zuora_rate_plan_charge.rate_plan_charge_id
+    LEFT JOIN booking_transaction
+      ON booking_transaction.rate_plan_charge_id = zuora_rate_plan_charge.rate_plan_charge_id
 
  ), manual_charges_prep AS (
   
@@ -322,6 +331,7 @@
       revenue_contract_line_created_date                                                    AS charge_created_date,
       revenue_contract_line_updated_date                                                    AS charge_updated_date,
       DATEDIFF('month', effective_start_month::DATE, effective_end_month::DATE)             AS charge_term,
+      NULL                                                                                  AS billing_period,
       manual_charges_prep.mrr                                                               AS mrr,
       NULL                                                                                  AS previous_mrr_calc,
       NULL                                                                                  AS previous_mrr,
@@ -332,6 +342,8 @@
       NULL                                                                                  AS previous_arr,
       NULL                                                                                  AS delta_arc,
       NULL                                                                                  AS delta_arr,
+      NULL                                                                                  AS list_price,
+      NULL                                                                                  AS extended_list_price,
       0                                                                                     AS quantity,
       NULL                                                                                  AS previous_quantity_calc,
       NULL                                                                                  AS previous_quantity,
@@ -392,7 +404,7 @@
 {{ dbt_audit(
     cte_ref="arr_analysis_framework",
     created_by="@iweeks",
-    updated_by="@chrissharp",
+    updated_by="@apiaseczna",
     created_date="2021-04-28",
-    updated_date="2023-06-13"
+    updated_date="2024-07-18"
 ) }}

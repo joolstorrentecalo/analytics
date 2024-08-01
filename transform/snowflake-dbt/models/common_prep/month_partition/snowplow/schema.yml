@@ -18,6 +18,7 @@ models:
       description: This is a view that references the duplicated event ids across the entire data set and is used to remove them from downstream models.
       columns:
           - name: event_id
+
     - name: snowplow_gitlab_events_context_flattened
       description: Expands custom `contexts` field in Snowplow events a wide, sparse table with all columns available for each event_id.
       columns:
@@ -112,7 +113,7 @@ models:
         - name: is_streaming
           description: ' {{ doc("code_suggestions_is_streaming") }} '
         - name: gitlab_global_user_id
-          description: ' doc("code_suggestions_gitlab_global_user_id") }}'
+          description: ' doc("gitlab_global_user_id") }}'
         - name: ide_extension_version_context
           description: ' {{ doc("ide_extension_version_context") }} '
         - name: ide_extension_version_context_schema
@@ -203,3 +204,7 @@ models:
           description: ' {{ doc("code_suggestions_has_advanced_context") }} '
         - name: is_direct_connection
           description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+        - name: instance_version
+          description: ' {{ doc("gsc_instance_version") }} '
+        - name: correlation_id
+          description: ' { doc("gsc_correlation_id") } '

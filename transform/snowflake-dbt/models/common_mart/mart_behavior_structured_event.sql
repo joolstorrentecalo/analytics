@@ -54,7 +54,13 @@ structured_behavior AS (
     user_region_name,
     user_city,
     user_country,
-    user_timezone_name
+    user_timezone_name,
+    dim_instance_id,
+    host_name,
+    gsc_instance_version,
+    delivery_type,
+    gitlab_global_user_id,
+    gsc_correlation_id
   FROM {{ ref('fct_behavior_structured_event') }}
   WHERE is_staging_event = FALSE
   {% if is_incremental() %}
@@ -98,6 +104,12 @@ report AS (
     structured_behavior.user_city,
     structured_behavior.user_country,
     structured_behavior.user_timezone_name,
+    structured_behavior.dim_instance_id,
+    structured_behavior.host_name,
+    structured_behavior.gsc_instance_version,
+    structured_behavior.gsc_correlation_id,
+    structured_behavior.delivery_type,
+    structured_behavior.gitlab_global_user_id,
     event.event_category,
     event.event_action,
     event.event_label,
@@ -117,7 +129,7 @@ report AS (
     plan.plan_id_modified,
     plan.plan_name,
     plan.plan_name_modified,
-    structured_behavior.dim_behavior_referrer_page_sk
+    structured_behavior.dim_behavior_referrer_page_sk,
   FROM structured_behavior
   LEFT JOIN event
     ON structured_behavior.dim_behavior_event_sk = event.dim_behavior_event_sk
@@ -130,7 +142,7 @@ report AS (
   LEFT JOIN browser
     ON structured_behavior.dim_behavior_browser_sk = browser.dim_behavior_browser_sk
   LEFT JOIN plan
-    ON structured_behavior.dim_plan_sk = plan.dim_plan_sk
+  ON structured_behavior.dim_plan_sk = plan.dim_plan_sk
   LEFT JOIN dates
     ON{{ get_date_id('structured_behavior.behavior_at') }} = dates.date_id
 )
@@ -138,7 +150,7 @@ report AS (
 {{ dbt_audit(
     cte_ref="report",
     created_by="@pempey",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2023-02-22",
-    updated_date="2024-06-17"
+    updated_date="2024-07-26"
 ) }}

@@ -288,6 +288,24 @@ models:
           description: The bizible touchpoint marketing channel path, of the most recent touchpoint.  
         - name: net_arr_stage_1
           description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
+        - name: has_six_sense_6_qa
+          description: The 6QA status of the person for the product.
+        - name: six_sense_account_6_qa_end_date
+          description: The date the person's account was disqualified from 6QA status 
+        - name: six_sense_account_6_qa_start_date
+          description: The date the person's account qualified for 6QA status 
+        - name: six_sense_account_buying_stage
+          description: The 6QA buying stage of the person's account
+        - name: six_sense_account_profile_fit
+          description: A measure of how similar a person's company is to the ideal customer profile.
+        - name: six_sense_person_grade
+          description: The 6Sense gradation of a person's engagement score. 
+        - name: six_sense_person_profile_fit
+          description: A measure of how similar a person is to the ideal customer profile.
+        - name: six_sense_person_update_date
+          description: The latest update date and time when 6sense Scores were updated.
+        - name: six_sense_segments
+          description: The Person's 6QA segment. 
 
     - name: mart_marketing_contact_no_pii
       description: Non sensitive version of the mart_marketing_contact model.

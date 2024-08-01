@@ -46,7 +46,7 @@ aggregated AS (
   INNER JOIN team_member_history
     ON merged_merge_requests.merge_month = team_member_history.employee_month
       AND merged_merge_requests.group_label = team_member_history.user_group
-  WHERE team_member_history.department = 'Development'
+  WHERE team_member_history.division = 'Engineering'
   GROUP BY 1, 2, 3, 4
 
   UNION ALL
@@ -62,22 +62,7 @@ aggregated AS (
     'group'                                                AS granularity_level
   FROM merged_merge_requests
   LEFT JOIN team_member_history ON merged_merge_requests.merge_month = team_member_history.employee_month AND merged_merge_requests.group_label = team_member_history.user_group
-  WHERE team_member_history.department = 'Development'
-  GROUP BY 1, 2, 3, 4
-
-  UNION ALL
-
-  SELECT
-    merged_merge_requests.merge_month,
-    ''                                                        AS group_name,
-    team_member_history.department,
-    ''                                                        AS technology_group,
-    COUNT(DISTINCT team_member_history.employee_id) AS employees,
-    COUNT(DISTINCT merged_merge_requests.merge_request_id)    AS mrs,
-    ROUND(mrs / (NULLIF(employees, 0) - 3), 2)                AS mr_rate,
-    'department'                                              AS granularity_level
-  FROM merged_merge_requests
-  LEFT JOIN team_member_history ON merged_merge_requests.merge_month = team_member_history.employee_month AND team_member_history.department = 'Development'
+  WHERE team_member_history.division = 'Engineering'
   GROUP BY 1, 2, 3, 4
 
   UNION ALL
@@ -93,7 +78,7 @@ aggregated AS (
     'department'                                    AS granularity_level
   FROM team_author_product_mrs
   LEFT JOIN team_member_history ON team_author_product_mrs.merge_month = team_member_history.employee_month AND team_author_product_mrs.department = team_member_history.department
-  WHERE team_member_history.department != 'Development'
+  WHERE team_member_history.division = 'Engineering'
   GROUP BY 1, 2, 3, 4, 5
 
 )

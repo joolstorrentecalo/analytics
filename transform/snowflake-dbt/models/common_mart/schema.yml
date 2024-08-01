@@ -316,6 +316,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -441,6 +443,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -585,6 +589,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -722,6 +728,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -862,6 +870,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -1004,6 +1014,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -1146,6 +1158,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -1440,6 +1454,18 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+    - name: dim_instance_id
+      description: '{{ doc("dim_instance_id") }}'
+    - name: host_name
+      description: '{{ doc("host_name") }}'
+    - name: instance_version
+      description: '{{ doc("gsc_instance_version") }}'
+    - name: gitlab_global_user_id
+      description: '{{ doc("gitlab_global_user_id") }}'
+    - name: delivery_type
+      description: '{{ doc("product_delivery_type") }}'
+    - name: gsc_correlation_id
+      description: ' { doc("gsc_correlation_id") } '
 
 - name: mart_behavior_structured_event_code_suggestion
   description: '{{ doc("mart_behavior_structured_event_code_suggestion") }}'
@@ -1501,14 +1527,14 @@ models:
       description: '{{ doc("has_code_suggestions_context") }}'
     - name: has_ide_extension_version_context
       description: '{{ doc("has_ide_extension_version_context") }}'
-    - name: instance_id
+    - name: dim_instance_id
       description: '{{ doc("dim_instance_id") }}'
     - name: host_name
       description: '{{ doc("host_name") }}'
     - name: is_streaming
       description: '{{ doc("code_suggestions_is_streaming") }}'
     - name: gitlab_global_user_id
-      description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+      description: '{{ doc("gitlab_global_user_id") }}'
     - name: namespace_ids
       description: '{{ doc("code_suggestions_namespace_ids") }}'
     - name: ultimate_parent_namespace_ids

@@ -38,6 +38,7 @@ e.event_property IS NOT NULL
     WHEN plan_name = 'premium_trial' THEN 'Trial'
     WHEN plan_name = 'starter' THEN 'Starter'
     WHEN plan_name = 'default' THEN 'Free'
+    ELSE 'Unknown Plan'
     END                                  AS plan_name,
     CASE
       WHEN gsc_is_gitlab_team_member IN ('false', 'e08c592bd39b012f7c83bbc0247311b238ee1caa61be28ccfd412497290f896a') 
@@ -91,6 +92,9 @@ FROM
 UNION ALL 
 SELECT
 'All'
+UNION ALL 
+SELECT
+'Unknown Plan'
 ), int_ext_all AS 
 (
 SELECT
@@ -271,8 +275,224 @@ monthly_retention_grouped AS (
   FROM prep
   GROUP BY ALL
 
-),
+), prep_chunk AS (
 
+SELECT
+e.behavior_date,
+'chat' AS event_label,
+    CASE
+    WHEN plan_name = 'opensource' THEN 'Free'
+    WHEN plan_name = 'free' THEN 'Free'
+    WHEN plan_name = 'premium' THEN 'Premium'
+    WHEN plan_name = 'ultimate_trial' THEN 'Trial'
+    WHEN plan_name = 'ultimate' THEN 'Ultimate'
+    WHEN plan_name = 'All' THEN 'All'
+    WHEN plan_name = 'ultimate_trial_paid_customer' THEN 'Trial by Paid Customer'
+    WHEN plan_name = 'premium_trial' THEN 'Trial'
+    WHEN plan_name = 'starter' THEN 'Starter'
+    WHEN plan_name = 'default' THEN 'Free'
+    ELSE 'Unknown Plan'
+    END                                  AS plan_name,
+    CASE
+      WHEN gsc_is_gitlab_team_member IN ('false', 'e08c592bd39b012f7c83bbc0247311b238ee1caa61be28ccfd412497290f896a') 
+        THEN 'External'
+      WHEN gsc_is_gitlab_team_member IN ('true', '5616b37fa230003bc8510af409bf3f5970e6d5027cc282b0ab3080700d92e7ad') 
+        THEN 'Internal'
+      ELSE 'Unknown'
+    END                                                 AS internal_or_external,
+COALESCE(c.client,'Unknown Client') AS client,
+e.event_value,
+e.event_action
+FROM
+{{ ref('mart_behavior_structured_event') }} e 
+LEFT JOIN 
+client_mapper c ON c.event_property = e.event_property
+WHERE 
+e.behavior_date > DATEADD(MONTH,-18,CURRENT_DATE)
+AND
+e.event_action = 'ai_response_time'
+GROUP BY ALL
+
+),daily_p50_chunk AS (
+
+SELECT
+p.behavior_date AS _date,
+f.event_label,
+plans.plan AS plan_name,
+i.internal_or_external,
+clients.client,
+'Daily p50 Response Chunk Time' AS metric,
+APPROX_PERCENTILE(p.event_value,0.5)  AS metric_value
+FROM
+prep_chunk p
+LEFT JOIN 
+ai_features f 
+ON 
+p.event_label = f.event_label OR f.event_label = 'All' 
+LEFT JOIN 
+int_ext_all i 
+ON 
+p.internal_or_external = i.internal_or_external OR i.internal_or_external = 'All' 
+LEFT JOIN 
+plans ON plans.plan = p.plan_name OR plans.plan = 'All'
+LEFT JOIN 
+clients ON clients.client = p.client OR clients.client = 'All'
+WHERE 
+p.behavior_date > DATEADD(MONTH,-18,CURRENT_DATE)
+AND
+p.event_action = 'ai_response_time'
+GROUP BY ALL
+
+), daily_p99_chunk AS (
+
+SELECT
+p.behavior_date AS _date,
+f.event_label,
+plans.plan AS plan_name,
+i.internal_or_external,
+clients.client,
+'Daily p99 Response Chunk Time' AS metric,
+APPROX_PERCENTILE(p.event_value,0.99)  AS metric_value
+FROM
+prep_chunk p
+LEFT JOIN 
+ai_features f 
+ON 
+p.event_label = f.event_label OR f.event_label = 'All' 
+LEFT JOIN 
+int_ext_all i 
+ON 
+p.internal_or_external = i.internal_or_external OR i.internal_or_external = 'All' 
+LEFT JOIN 
+plans ON plans.plan = p.plan_name OR plans.plan = 'All'
+LEFT JOIN 
+clients ON clients.client = p.client OR clients.client = 'All'
+WHERE 
+p.behavior_date > DATEADD(MONTH,-18,CURRENT_DATE)
+AND
+p.event_action = 'ai_response_time'
+GROUP BY ALL
+
+), weekly_p50_chunk AS (
+
+SELECT
+DATE_TRUNC(WEEK,p.behavior_date) AS _date,
+f.event_label,
+plans.plan AS plan_name,
+i.internal_or_external,
+clients.client,
+'Weekly p50 Response Chunk Time' AS metric,
+APPROX_PERCENTILE(p.event_value,0.5)  AS metric_value
+FROM
+prep_chunk p
+LEFT JOIN 
+ai_features f 
+ON 
+p.event_label = f.event_label OR f.event_label = 'All' 
+LEFT JOIN 
+int_ext_all i 
+ON 
+p.internal_or_external = i.internal_or_external OR i.internal_or_external = 'All' 
+LEFT JOIN 
+plans ON plans.plan = p.plan_name OR plans.plan = 'All'
+LEFT JOIN 
+clients ON clients.client = p.client OR clients.client = 'All'
+WHERE 
+p.behavior_date > DATEADD(MONTH,-18,CURRENT_DATE)
+AND
+p.event_action = 'ai_response_time'
+GROUP BY ALL
+
+), weekly_p99_chunk AS (
+
+SELECT
+DATE_TRUNC(WEEK,p.behavior_date) AS _date,
+f.event_label,
+plans.plan AS plan_name,
+i.internal_or_external,
+clients.client,
+'Weekly p99 Response Chunk Time' AS metric,
+APPROX_PERCENTILE(p.event_value,0.99)  AS metric_value
+FROM
+prep_chunk p
+LEFT JOIN 
+ai_features f 
+ON 
+p.event_label = f.event_label OR f.event_label = 'All' 
+LEFT JOIN 
+int_ext_all i 
+ON 
+p.internal_or_external = i.internal_or_external OR i.internal_or_external = 'All' 
+LEFT JOIN 
+plans ON plans.plan = p.plan_name OR plans.plan = 'All'
+LEFT JOIN 
+clients ON clients.client = p.client OR clients.client = 'All'
+WHERE 
+p.behavior_date > DATEADD(MONTH,-18,CURRENT_DATE)
+AND
+p.event_action = 'ai_response_time'
+GROUP BY ALL
+
+), monthly_p50_chunk AS (
+
+SELECT
+DATE_TRUNC(MONTH,p.behavior_date) AS _date,
+f.event_label,
+plans.plan AS plan_name,
+i.internal_or_external,
+clients.client,
+'Monthly p50 Response Chunk Time' AS metric,
+APPROX_PERCENTILE(p.event_value,0.5)  AS metric_value
+FROM
+prep_chunk p
+LEFT JOIN 
+ai_features f 
+ON 
+p.event_label = f.event_label OR f.event_label = 'All' 
+LEFT JOIN 
+int_ext_all i 
+ON 
+p.internal_or_external = i.internal_or_external OR i.internal_or_external = 'All' 
+LEFT JOIN 
+plans ON plans.plan = p.plan_name OR plans.plan = 'All'
+LEFT JOIN 
+clients ON clients.client = p.client OR clients.client = 'All'
+WHERE 
+p.behavior_date > DATEADD(MONTH,-18,CURRENT_DATE)
+AND
+p.event_action = 'ai_response_time'
+GROUP BY ALL
+
+), monthly_p99_chunk AS (
+
+SELECT
+DATE_TRUNC(MONTH,p.behavior_date) AS _date,
+f.event_label,
+plans.plan AS plan_name,
+i.internal_or_external,
+clients.client,
+'Monthly p99 Response Chunk Time' AS metric,
+APPROX_PERCENTILE(p.event_value,0.99)  AS metric_value
+FROM
+prep_chunk p
+LEFT JOIN 
+ai_features f 
+ON 
+p.event_label = f.event_label OR f.event_label = 'All' 
+LEFT JOIN 
+int_ext_all i 
+ON 
+p.internal_or_external = i.internal_or_external OR i.internal_or_external = 'All' 
+LEFT JOIN 
+plans ON plans.plan = p.plan_name OR plans.plan = 'All'
+LEFT JOIN 
+clients ON clients.client = p.client OR clients.client = 'All'
+WHERE 
+p.behavior_date > DATEADD(MONTH,-18,CURRENT_DATE)
+AND
+p.event_action = 'ai_response_time'
+GROUP BY ALL
+),
 metrics AS (
   
   SELECT
@@ -318,6 +538,49 @@ metrics AS (
   SELECT
     *
   FROM monthly_event
+
+  UNION ALL 
+
+  SELECT
+  *
+  FROM 
+  daily_p50_chunk
+
+  UNION ALL 
+
+  SELECT
+  *
+  FROM 
+  daily_p99_chunk
+
+  UNION ALL 
+
+  SELECT
+  *
+  FROM 
+  weekly_p50_chunk
+
+  UNION ALL 
+
+  SELECT
+  *
+  FROM 
+  weekly_p99_chunk
+
+  UNION ALL 
+
+  SELECT
+  *
+  FROM 
+  monthly_p50_chunk
+
+  UNION ALL 
+
+  SELECT
+  *
+  FROM 
+  monthly_p99_chunk
+
 
 ), metric_prep AS (
   

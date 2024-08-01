@@ -70,6 +70,8 @@ SELECT
       THEN 'Digital Marketing'
     WHEN department = 'Data'
       THEN 'Enterprise Data'
+    WHEN department = 'Community Relations'
+      THEN 'Developer Relations'
     ELSE department
   END AS modified_department,
   CASE

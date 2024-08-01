@@ -19,7 +19,7 @@ report AS (
       WHEN 'RQ' THEN 'Requested'
       WHEN 'CN' THEN 'Cancelled'
     END                AS pto_status_name,
-    map.wk_employee_id AS hr_employee_id
+    COALESCE(map.wk_employee_id, source.hr_employee_id) AS hr_employee_id
   FROM source
   LEFT JOIN map
     ON source.hr_employee_id = map.bhr_employee_id

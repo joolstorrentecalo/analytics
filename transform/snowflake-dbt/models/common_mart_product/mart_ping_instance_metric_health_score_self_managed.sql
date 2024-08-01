@@ -10,7 +10,7 @@
 
 {{ simple_cte([
     ('fct_ping_instance', 'fct_ping_instance'),
-    ('gainsight_wave_metrics','health_score_metrics'),
+    ('dim_ping_metric','dim_ping_metric'),
     ('dim_ping_instance','dim_ping_instance'),
     ('fct_ping_instance_metric', 'fct_ping_instance_metric')
 
@@ -61,8 +61,9 @@
     dim_ping_instance.cleaned_version                                                          AS cleaned_version
 
     FROM fct_ping_instance_metric_with_license
-    INNER JOIN gainsight_wave_metrics
-      ON fct_ping_instance_metric_with_license.metrics_path = gainsight_wave_metrics.metric_name
+    INNER JOIN dim_ping_metric
+      ON fct_ping_instance_metric_with_license.metrics_path = dim_ping_metric.metrics_path
+      AND dim_ping_metric.is_health_score_metric = TRUE
     LEFT JOIN fct_ping_instance
       ON fct_ping_instance_metric_with_license.dim_ping_instance_id =  fct_ping_instance.dim_ping_instance_id
     LEFT JOIN dim_ping_instance
@@ -110,7 +111,7 @@
 {{ dbt_audit(
     cte_ref="pivoted",
     created_by="@mdrussell",
-    updated_by="@mdrussell",
+    updated_by="@utkarsh060",
     created_date="2022-10-12",
-    updated_date="2024-06-07"
+    updated_date="2024-07-22"
 ) }}

@@ -23,7 +23,7 @@ renamed AS (
     convertedcontactid AS converted_contact_id,
     convertedopportunityid AS converted_opportunity_id,
     ownerid AS owner_id,
-    recordtypeid AS record_type_id,
+    recordtypeid AS record_type_id, 
     round_robin_id__c AS round_robin_id,
     instance_uuid__c AS instance_uuid,
     lean_data_matched_account__c AS lean_data_matched_account,
@@ -169,6 +169,17 @@ renamed AS (
     account_demographics_upa_city__c AS account_demographics_upa_city,
     account_demographics_upa_street__c AS account_demographics_upa_street,
     account_demographics_upa_postal_code__c AS account_demographics_upa_postal_code,
+
+     --6 Sense Fields
+    x6sense_account_6qa__c::BOOLEAN AS has_account_six_sense_6_qa,
+    x6sense_account_6qa_end_date__c::DATE AS six_sense_account_6_qa_end_date,
+    x6sense_account_6qa_start_date__c::DATE AS six_sense_account_6_qa_start_date,
+    x6sense_account_buying_stage__c AS six_sense_account_buying_stage,
+    x6sense_account_profile_fit__c AS six_sense_account_profile_fit,
+    x6sense_lead_grade__c AS six_sense_lead_grade,
+    x6sense_lead_profile_fit__c AS six_sense_lead_profile_fit,
+    x6sense_lead_update_date__c::DATE AS six_sense_lead_update_date,
+    x6sense_segments__c AS six_sense_segments,   
 
     --Traction Fields
     tracrtc__first_response_time_start__c AS traction_first_response_time,

@@ -197,3 +197,30 @@ models:
       It serves as a singular source for creating pipeline visualizations in Tableau, 
       offering a comprehensive view across different timeframes. This report is a multi
       grain table, since the data is at 3 different levels of granularity.
+
+  - name: rpt_final_bookings
+    description: >
+      The Pipeline data model (mart_crm_opportunity_7th_day_weekly_snapshot) is designed to 
+      snapshot data every 7th day from the start of each quarter, plus the last day of the quarter. 
+      However, many deals are closed on the last day of the quarter but are not settled until a 
+      few days into the new quarter.
+
+      This report captures the final numbers for created and booked ARR from the live data (mart_crm_opportunity), 
+      ensuring a complete perspective on each quarter. It includes all the different 
+      date fields (at the quarter or year level) and data qualifiers used in the mart 
+      table to allow for data union. The values that come from the live data
+      are aliased as day '94' of the quarter.
+
+  - name: rpt_pipeline_coverage
+    description: >
+      This report table simplifies tracking sales performance by showing targets and actuals
+      combined, every seven days within a quarter. 
+
+      It combines daily targets, daily actuals along with the total quarterly targets
+      and actuals. The daily actuals come from the snapshot data, whereas the quarterly actuals
+      come from the live data. This is because there are many deals are closed on the 
+      last day of the quarter but are not settled until a few days into the new quarter.
+
+      This model includes both the numerator and denominator for calculating
+      coverage throughout a quarter
+                          

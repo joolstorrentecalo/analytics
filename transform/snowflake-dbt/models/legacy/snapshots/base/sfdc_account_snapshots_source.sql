@@ -104,6 +104,7 @@ renamed AS (
     bdr_account_research__c AS bdr_account_research,
     bdr_account_strategy__c AS bdr_account_strategy,
     account_bdr_assigned_user_role__c AS account_bdr_assigned_user_role,
+    domains__c AS account_domains,
 
     --6 Sense Fields
     x6sense_6qa__c::BOOLEAN AS has_six_sense_6_qa,
@@ -119,6 +120,20 @@ renamed AS (
     x6sense_account_6qa_start_date__c::DATE AS six_sense_account_6_qa_start_date,
     x6sense_account_intent_score__c AS six_sense_account_intent_score,
     x6sense_segments__c AS six_sense_segments,
+
+    --Qualified Fields
+    days_since_last_activity_qualified__c AS qualified_days_since_last_activity,
+    qualified_signals_active_session_time__c AS qualified_signals_active_session_time,
+    qualified_signals_bot_conversation_count__c AS qualified_signals_bot_conversation_count,
+    q_condition__c AS qualified_condition,
+    q_score__c AS qualified_score,
+    q_trend__c AS qualified_trend,
+    q_meetings_booked__c AS qualified_meetings_booked,
+    qualified_signals_rep_conversation_count__c AS qualified_signals_rep_conversation_count,
+    signals_research_state__c AS qualified_signals_research_state,
+    signals_research_score__c AS qualified_signals_research_score,
+    qualified_signals_session_count__c AS qualified_signals_session_count,
+    q_visitor_count__c AS qualified_visitors_count,
 
     -- account demographics fields
 

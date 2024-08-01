@@ -264,3 +264,27 @@ models:
       actuals combined, every seven days within a quarter.
       It combines daily targets, daily actuals along with the total quarterly targets and actuals. This
       model includes both the numerator and denominator for calculating coverage throughout a quarter
+  - name: wk_sales_daily_case_automation_test
+    description: >
+      This is the test model for the PUMP version so we can test changes to the case creation logic.
+  - name: wk_sales_gds_account_snapshots
+    description: >
+      Account snapshots with business logic specific to the Global Digital SMB Sales team
+  - name: wk_sales_gds_cases
+    description: >
+      SFDC cases with Global Digital SMB business logic including activity summary
+  - name: wk_sales_gds_fo_buckets
+    description: >
+      Derives the source of first orders using namespace and trial information
+  - name: wk_sales_gds_forecast_consolidated
+    description: >
+      Monthly forecast model for the Global Digital SMB team
+  - name: wk_sales_product_price_quantity
+    description: >
+      Current price and quantity information based on ARR that can be joined to opportunities
+  - name: wk_sales_renewal_arr
+    description: >
+      Pre- and post-renewal price and quantity information based on ARR to be joined to opportunities
+  - name: wk_sales_gds_opportunities
+    description : >
+      Opportunity data with SMB-specific business logic

@@ -139,6 +139,13 @@
       sfdc_account_snapshot.crm_account_owner_region,
       sfdc_account_snapshot.crm_account_owner_area,
       sfdc_account_snapshot.crm_account_owner_sales_segment_geo_region_area,
+      account_owner.user_role_name                                                                                  AS crm_account_owner_role,
+      account_owner.user_role_level_1                                                                               AS crm_account_owner_role_level_1,
+      account_owner.user_role_level_2                                                                               AS crm_account_owner_role_level_2,
+      account_owner.user_role_level_3                                                                               AS crm_account_owner_role_level_3,
+      account_owner.user_role_level_4                                                                               AS crm_account_owner_role_level_4,
+      account_owner.user_role_level_5                                                                               AS crm_account_owner_role_level_5,
+      account_owner.title                                                                                           AS crm_account_owner_title,
       fulfillment_partner.crm_account_name AS fulfillment_partner_account_name,
       fulfillment_partner.partner_track AS fulfillment_partner_partner_track,
       partner_account.crm_account_name AS partner_account_account_name,
@@ -157,27 +164,12 @@
           THEN sfdc_account_snapshot.crm_account_owner_sales_segment
         ELSE sfdc_opportunity_snapshots_source.user_segment_stamped
       END                                                                                                         AS opportunity_owner_user_segment,
-      CASE
-        WHEN sfdc_opportunity_snapshots_source.user_geo_stamped IS NULL
-          OR is_open = 1
-        THEN sfdc_account_snapshot.crm_account_owner_geo
-      ELSE sfdc_opportunity_snapshots_source.user_geo_stamped
-      END                                                                                                         AS opportunity_owner_user_geo,
-
-      CASE
-        WHEN sfdc_opportunity_snapshots_source.user_region_stamped IS NULL
-             OR is_open = 1
-          THEN sfdc_account_snapshot.crm_account_owner_region
-          ELSE sfdc_opportunity_snapshots_source.user_region_stamped
-      END                                                                                                         AS opportunity_owner_user_region,
-
-      CASE
-        WHEN sfdc_opportunity_snapshots_source.user_area_stamped IS NULL
-             OR is_open = 1
-          THEN sfdc_account_snapshot.crm_account_owner_area
-        ELSE sfdc_opportunity_snapshots_source.user_area_stamped
-      END                                                                                                         AS opportunity_owner_user_area,
       sfdc_user_snapshot.user_role_name                                                                           AS opportunity_owner_role,
+      sfdc_user_snapshot.user_role_level_1                                                                        AS crm_opp_owner_role_level_1,
+      sfdc_user_snapshot.user_role_level_2                                                                        AS crm_opp_owner_role_level_2,
+      sfdc_user_snapshot.user_role_level_3                                                                        AS crm_opp_owner_role_level_3,
+      sfdc_user_snapshot.user_role_level_4                                                                        AS crm_opp_owner_role_level_4,
+      sfdc_user_snapshot.user_role_level_5                                                                        AS crm_opp_owner_role_level_5,
       sfdc_user_snapshot.title                                                                                    AS opportunity_owner_title,
       sfdc_account_snapshot.crm_account_owner_role                                                                AS opportunity_account_owner_role,
       {{ dbt_utils.star(from=ref('sfdc_opportunity_snapshots_source'), except=["ACCOUNT_ID", "OPPORTUNITY_ID", "OWNER_ID", "PARENT_OPPORTUNITY_ID", "ORDER_TYPE_STAMPED",
@@ -201,6 +193,9 @@
     LEFT JOIN sfdc_user_snapshot
       ON sfdc_opportunity_snapshots_source.owner_id = sfdc_user_snapshot.dim_crm_user_id
         AND snapshot_dates.date_id = sfdc_user_snapshot.snapshot_id
+    LEFT JOIN sfdc_user_snapshot AS account_owner
+      ON sfdc_account_snapshot.dim_crm_user_id = account_owner.dim_crm_user_id
+        AND snapshot_dates.date_id = account_owner.snapshot_id
     WHERE sfdc_opportunity_snapshots_source.account_id IS NOT NULL
       AND sfdc_opportunity_snapshots_source.is_deleted = FALSE
 
@@ -241,6 +236,13 @@
       account_owner.crm_user_region                                                                         AS crm_account_owner_region,
       account_owner.crm_user_area                                                                           AS crm_account_owner_area,
       account_owner.crm_user_sales_segment_geo_region_area                                                  AS crm_account_owner_sales_segment_geo_region_area,
+      account_owner.user_role_name                                                                          AS crm_account_owner_role,
+      account_owner.user_role_level_1                                                                       AS crm_account_owner_role_level_1,
+      account_owner.user_role_level_2                                                                       AS crm_account_owner_role_level_2,
+      account_owner.user_role_level_3                                                                       AS crm_account_owner_role_level_3,
+      account_owner.user_role_level_4                                                                       AS crm_account_owner_role_level_4,
+      account_owner.user_role_level_5                                                                       AS crm_account_owner_role_level_5,
+      account_owner.title                                                                                   AS crm_account_owner_title,
       fulfillment_partner.crm_account_name                                                                  AS fulfillment_partner_account_name,
       fulfillment_partner.partner_track                                                                     AS fulfillment_partner_partner_track,
       partner_account.crm_account_name                                                                      AS partner_account_account_name,
@@ -259,27 +261,12 @@
           THEN account_owner.crm_user_sales_segment
         ELSE sfdc_opportunity_source.user_segment_stamped
       END                                                                                                   AS opportunity_owner_user_segment,
-      CASE
-        WHEN sfdc_opportunity_source.user_geo_stamped IS NULL
-          OR is_open = 1
-        THEN account_owner.crm_user_geo
-      ELSE sfdc_opportunity_source.user_geo_stamped
-      END                                                                                                   AS opportunity_owner_user_geo,
-
-      CASE
-        WHEN sfdc_opportunity_source.user_region_stamped IS NULL
-             OR is_open = 1
-          THEN account_owner.crm_user_region
-          ELSE sfdc_opportunity_source.user_region_stamped
-      END                                                                                                   AS opportunity_owner_user_region,
-
-      CASE
-        WHEN sfdc_opportunity_source.user_area_stamped IS NULL
-             OR is_open = 1
-          THEN account_owner.crm_user_area
-        ELSE sfdc_opportunity_source.user_area_stamped
-      END                                                                                                   AS opportunity_owner_user_area,
       opportunity_owner.user_role_name                                                                      AS opportunity_owner_role,
+      opportunity_owner.user_role_level_1                                                                   AS crm_opp_owner_role_level_1,
+      opportunity_owner.user_role_level_2                                                                   AS crm_opp_owner_role_level_2,
+      opportunity_owner.user_role_level_3                                                                   AS crm_opp_owner_role_level_3,
+      opportunity_owner.user_role_level_4                                                                   AS crm_opp_owner_role_level_4,
+      opportunity_owner.user_role_level_5                                                                   AS crm_opp_owner_role_level_5,
       opportunity_owner.title                                                                               AS opportunity_owner_title,
       sfdc_account.crm_account_owner_role                                                                   AS opportunity_account_owner_role,
       {{ dbt_utils.star(from=ref('sfdc_opportunity_source'), except=["ACCOUNT_ID", "OPPORTUNITY_ID", "OWNER_ID", "PARENT_OPPORTUNITY_ID", "ORDER_TYPE_STAMPED", "IS_WON", 
@@ -345,9 +332,6 @@
   --Opp Data  
 
     sfdc_opportunity.sales_accepted_date,
-    -- account_history_final.abm_tier_1_date,
-    -- account_history_final.abm_tier_2_date,
-    -- account_history_final.abm_tier,
     CASE 
       WHEN sfdc_opportunity.is_edu_oss = 0
           AND sfdc_opportunity.stage_name != '10-Duplicate'
@@ -1131,104 +1115,37 @@ LEFT JOIN cw_base
       IFF(CONTAINS(sfdc_opportunity.competitors, 'CircleCI'),1,0) AS competitors_circleci_flag,
       IFF(CONTAINS(sfdc_opportunity.competitors, 'Bamboo'),1,0) AS competitors_bamboo_flag,
       IFF(CONTAINS(sfdc_opportunity.competitors, 'AWS'),1,0) AS competitors_aws_flag,
-      LOWER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity.crm_account_owner_sales_segment, sfdc_opportunity.opportunity_owner_user_segment)
-      )                                                     AS report_opportunity_user_segment,
-      LOWER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity.crm_account_owner_geo, sfdc_opportunity.opportunity_owner_user_geo)
-      ) AS report_opportunity_user_geo,
-      LOWER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity.crm_account_owner_region, sfdc_opportunity.opportunity_owner_user_region)
-      ) AS report_opportunity_user_region,
-      LOWER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity.crm_account_owner_area, sfdc_opportunity.opportunity_owner_user_area)
-      ) AS report_opportunity_user_area,
-      LOWER(
-        CONCAT(
-          report_opportunity_user_segment,'-',report_opportunity_user_geo,'-',report_opportunity_user_region,'-',report_opportunity_user_area
-        )
-      ) AS report_user_segment_geo_region_area,
-      COALESCE(sfdc_opportunity_live.sales_qualified_source, 'Missing sales_qualified_source_name') AS key_sqs,
-      LOWER(
-        CONCAT(
-          report_user_segment_geo_region_area,'-',key_sqs,'-',COALESCE(sfdc_opportunity_live.order_type, 'Missing order_type_name')
-        )
-      ) AS report_user_segment_geo_region_area_sqs_ot,
-      COALESCE(report_opportunity_user_segment, 'other') AS key_segment,
-      COALESCE(deal_group, 'other') AS key_ot,
-      COALESCE(report_opportunity_user_segment || '_' || key_sqs, 'other') AS key_segment_sqs,
-      COALESCE(report_opportunity_user_segment || '_' || deal_group, 'other') AS key_segment_ot,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo, 'other') AS key_segment_geo,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || key_sqs, 'other') AS key_segment_geo_sqs,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || deal_group, 'other') AS key_segment_geo_ot,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region, 'other') AS key_segment_geo_region,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region || '_' || key_sqs, 'other') AS key_segment_geo_region_sqs,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region || '_' || deal_group, 'other') AS key_segment_geo_region_ot,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region || '_' || report_opportunity_user_area, 'other') AS key_segment_geo_region_area,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region || '_' || report_opportunity_user_area || '_' || key_sqs, 'other') AS key_segment_geo_region_area_sqs,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_region || '_' || report_opportunity_user_area || '_' || deal_group, 'other') AS key_segment_geo_region_area_ot,
-      COALESCE(report_opportunity_user_segment || '_' || report_opportunity_user_geo || '_' || report_opportunity_user_area, 'other') AS key_segment_geo_area,
-      COALESCE(
-        report_opportunity_user_segment, 'other'
-      ) AS sales_team_cro_level,
-      -- This code replicates the reporting structured of FY22, to keep current tools working
-      CASE
-        WHEN report_opportunity_user_segment = 'large'
-          AND report_opportunity_user_geo = 'emea'
-          THEN 'large_emea'
-        WHEN report_opportunity_user_segment = 'mid-market'
-          AND report_opportunity_user_region = 'amer'
-          AND LOWER(report_opportunity_user_area) LIKE '%west%'
-          THEN 'mid-market_west'
-        WHEN report_opportunity_user_segment = 'mid-market'
-          AND report_opportunity_user_region = 'amer'
-          AND LOWER(report_opportunity_user_area) NOT LIKE '%west%'
-          THEN 'mid-market_east'
-        WHEN report_opportunity_user_segment = 'smb'
-          AND report_opportunity_user_region = 'amer'
-          AND LOWER(report_opportunity_user_area) LIKE '%west%'
-          THEN 'smb_west'
-        WHEN report_opportunity_user_segment = 'smb'
-          AND report_opportunity_user_region = 'amer'
-          AND LOWER(report_opportunity_user_area) NOT LIKE '%west%'
-          THEN 'smb_east'
-        WHEN report_opportunity_user_segment = 'smb'
-          AND report_opportunity_user_region = 'latam'
-          THEN 'smb_east'
-        WHEN (report_opportunity_user_segment IS NULL
-          OR report_opportunity_user_region IS NULL)
-          THEN 'other'
-        WHEN
-          CONCAT(report_opportunity_user_segment, '_', report_opportunity_user_region) LIKE '%other%'
-          THEN 'other'
-        ELSE CONCAT(report_opportunity_user_segment, '_', report_opportunity_user_region)
-      END AS sales_team_rd_asm_level,
-      COALESCE(
-        CONCAT(report_opportunity_user_segment, '_', report_opportunity_user_geo), 'other'
-      ) AS sales_team_vp_level,
-      COALESCE(
-        CONCAT(
-          report_opportunity_user_segment,
-          '_',
-          report_opportunity_user_geo,
-          '_',
-          report_opportunity_user_region
-        ),
-        'other'
-      ) AS sales_team_avp_rd_level,
-      COALESCE(
-        CONCAT(
-          report_opportunity_user_segment,
-          '_',
-          report_opportunity_user_geo,
-          '_',
-          report_opportunity_user_region,
-          '_',
-          report_opportunity_user_area
-        ),
-        'other'
-      ) AS sales_team_asm_level,
-      CASE
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_sales_segment, sfdc_opportunity_live.crm_opp_owner_sales_segment_stamped)
+      ) AS report_segment,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_geo, sfdc_opportunity_live.crm_opp_owner_geo_stamped)
+      ) AS report_geo,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_region, sfdc_opportunity_live.crm_opp_owner_region_stamped)
+      ) AS report_region,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_area, sfdc_opportunity_live.crm_opp_owner_area_stamped)
+      ) AS report_area,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role, sfdc_opportunity_live.opportunity_owner_role)
+      ) AS report_role_name,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_1, sfdc_opportunity_live.crm_opp_owner_role_level_1)
+      ) AS report_role_level_1,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_2, sfdc_opportunity_live.crm_opp_owner_role_level_2)
+      ) AS report_role_level_2,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_3, sfdc_opportunity_live.crm_opp_owner_role_level_3)
+      ) AS report_role_level_3,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_4, sfdc_opportunity_live.crm_opp_owner_role_level_4)
+      ) AS report_role_level_4,
+      UPPER(
+        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_5, sfdc_opportunity_live.crm_opp_owner_role_level_5)
+      ) AS report_role_level_5,
+    CASE
         WHEN close_fiscal_year < 2024
           THEN CONCAT(
                     UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
@@ -1298,6 +1215,7 @@ LEFT JOIN cw_base
                     )
         WHEN close_fiscal_year >= 2025
           THEN CONCAT(
+
                       UPPER(COALESCE(sfdc_opportunity.opportunity_owner_role, sfdc_opportunity.opportunity_account_owner_role)),
                       '-',
                       close_fiscal_year
@@ -1567,8 +1485,8 @@ LEFT JOIN cw_base
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@lisvinueza",
+    updated_by="@chrissharp",
     created_date="2022-02-23",
-    updated_date="2024-05-09"
+    updated_date="2024-05-28"
 ) }}
 

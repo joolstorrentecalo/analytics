@@ -7,7 +7,9 @@ WITH source AS (
 
 deduped AS (
 
-  SELECT *
+  SELECT *,
+    IFF(MAX(REGEXP_LIKE(jsontext['team_member']['hris_id']::NUMBER,'[1-3][0-9]{4}')) OVER (PARTITION BY 'All') > 0, TRUE,FALSE)                      AS has_workday_ids,
+    MIN(IFF(REGEXP_LIKE(jsontext['team_member']['hris_id']::NUMBER,'[1-3][0-9]{4}'),uploaded_at,NULL)) OVER(PARTITION BY 'All') AS workday_cutover_date
   FROM source
   QUALIFY ROW_NUMBER() OVER (PARTITION BY jsontext['uuid']::VARCHAR ORDER BY uploaded_at DESC) = 1
 
@@ -38,6 +40,13 @@ each_pto_day AS (
     jsontext['created_at']::TIMESTAMP                   AS pto_created_at
   FROM deduped,
     LATERAL FLATTEN(INPUT => jsontext['ooo_days']::ARRAY) AS ooo_days
+  WHERE CASE
+          WHEN has_workday_ids = TRUE
+            AND year(end_date) >= '2024'
+            AND uploaded_at < workday_cutover_date
+          THEN FALSE
+          ELSE TRUE
+          END = TRUE           
 
 )
 

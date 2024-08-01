@@ -1501,7 +1501,6 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - ultimate_parent_namespace_id
-            - trial_type
   columns:
     - name: ultimate_parent_namespace_id
       description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
@@ -1540,11 +1539,19 @@ models:
     - name: trial_start_date
       description: First trial start date associated with the ultimate parent namespace from customers_db_trial_histories.
     - name: trial_type
-      description: '{{ doc("trial_type") }}'
+      description: Indicates the type of trial offering, such as Premium/Ultimate subscription or GitLab Duo Pro add-on. This is type 1 by default.
     - name: trial_type_name
-      description: '{{ doc("trial_type_name") }}'
+      description: Specifies the name of the trial offering type. The value 1 corresponds to Premium/Ultimate trials.
     - name: days_since_namespace_creation_at_trial
-      description: Date difference in days between ultimate parent namespace creation and trial start.
+      description: Date difference in days between ultimate parent namespace creation and trial type 1 start.
+    - name: trial_2_start_date
+      description: Trial type 2's start date associated with the ultimate parent namespace from customers_db_trial_histories.
+    - name: trial_2_type
+      description: Indicates the type of trial offering, such as Premium/Ultimate subscription or GitLab Duo Pro add-on. This is type 2 by default.
+    - name: trial_2_type_name
+      description: Specifies the name of the trial offering type. The value 2 corresponds to GitLab Duo Pro Trial.
+    - name: days_since_namespace_creation_at_trial_2
+      description: Date difference in days between ultimate parent namespace creation and trial type 2 start.
     - name: first_paid_subscription_start_date
       description: Date of first paid ultimate parent namespace subscription from mart_charge model.
     - name: days_since_namespace_creation_at_first_paid_subscription
@@ -2023,7 +2030,7 @@ models:
     - name: is_direct_connection
       description: ' {{ doc("code_suggestions_is_direct_connection") }} '
     - name: gitlab_global_user_id
-      description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+      description: '{{ doc("gitlab_global_user_id") }}'
     - name: ultimate_parent_namespace_ids
       description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }}'
     - name: dim_installation_ids
@@ -2120,8 +2127,8 @@ models:
     - name: is_direct_connection
       description: ' {{ doc("code_suggestions_is_direct_connection") }} '
     - name: gitlab_global_user_id
-      description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
-    - name: instance_id
+      description: '{{ doc("gitlab_global_user_id") }}'
+    - name: dim_instance_id
       description: '{{ doc("dim_instance_id") }}'
     - name: host_name
       description: '{{ doc("host_name") }}'

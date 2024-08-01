@@ -37,7 +37,7 @@ final AS (
 
   SELECT
     targets_actuals.*,
-
+    
     dim_crm_user_hierarchy.crm_user_sales_segment         AS crm_current_account_set_sales_segment,
     dim_crm_user_hierarchy.crm_user_geo                   AS crm_current_account_set_geo,
     dim_crm_user_hierarchy.crm_user_region                AS crm_current_account_set_region,

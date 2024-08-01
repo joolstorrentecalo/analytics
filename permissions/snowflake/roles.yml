@@ -366,7 +366,6 @@ roles:
         - snowflake_db
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
   - analyst_growth:
@@ -395,7 +394,6 @@ roles:
         - snowplow
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
       privileges:
@@ -469,7 +467,6 @@ roles:
         - marketo
         - snowflake_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
       privileges:
@@ -485,6 +482,7 @@ roles:
           read:
             - prep.sensitive.mart_marketing_contact
             - prod.pumps_sensitive.pump_marketing_contact
+            - prod.pumps_sensitive.pump_smb_daily_case_automation
   - analyst_people_sensitive:
       warehouses:
         - dev_xs
@@ -512,7 +510,6 @@ roles:
         - snowflake_db
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
         - restricted_workspace_people
@@ -586,7 +583,6 @@ roles:
         - snowplow
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
   - decisive_data:
@@ -1756,6 +1752,17 @@ roles:
         tables:
           read:
             - feature_store.feast.*
+  - fivetran_log:
+      privileges:
+        databases:
+          read:
+            - raw
+        schemas:
+          read:
+            - raw.fivetran_log
+        tables:
+          read:
+            - raw.fivetran_log.*
   - gainsight_pump:
       warehouses:
         - gainsight_xs
@@ -1923,6 +1930,7 @@ roles:
             - raw.tap_postgres.gitlab_db_issue_assignees
             - raw.tap_postgres.gitlab_db_issue_links
             - raw.tap_postgres.gitlab_db_issue_metrics
+            - raw.tap_postgres.gitlab_db_keys
             - raw.tap_postgres.gitlab_db_labels
             - raw.tap_postgres.gitlab_db_label_links
             - raw.tap_postgres.gitlab_db_label_priorities
@@ -1950,6 +1958,7 @@ roles:
             - raw.tap_postgres.gitlab_db_project_mirror_data
             - raw.tap_postgres.gitlab_db_project_statistics
             - raw.tap_postgres.gitlab_db_prometheus_alerts
+            - raw.tap_postgres.gitlab_db_protected_branches
             - raw.tap_postgres.gitlab_db_releases
             - raw.tap_postgres.gitlab_db_repository_languages
             - raw.tap_postgres.gitlab_db_requirements
@@ -2206,19 +2215,6 @@ roles:
             - prep.sensitive.netsuite_transaction_lines_pii
             - prep.sensitive.netsuite_vendors_pii
             - raw.netsuite_fivetran.*
-  - oci_reports:
-      warehouses:
-        - dev_xs
-      privileges:
-        databases:
-          read:
-            - raw
-        schemas:
-          read:
-            - raw.oci_reports
-        tables:
-          read:
-            - raw.oci_reports.*
   - postgres_pipeline:
       warehouses:
         - dev_xs
@@ -2630,6 +2626,17 @@ roles:
           read:
             - prep.tableau_cloud.*
             - raw.tableau_cloud.*
+  - tableau_backend:
+      privileges:
+        databases:
+          read:
+            - raw
+        schemas:
+          read:
+            - raw.tableau_fivetran
+        tables:
+          read:
+            - raw.tableau_fivetran.*
   - version_db:
       privileges:
         databases:
@@ -2719,22 +2726,6 @@ roles:
           read:
             - prep.zendesk.*
             - raw.tap_zendesk.*
-  - zendesk_community_relations:
-      warehouses:
-        - dev_xs
-      privileges:
-        databases:
-          read:
-            - prep
-            - raw
-        schemas:
-          read:
-            - prep.zendesk_community_relations
-            - raw.tap_zendesk__community_relations
-        tables:
-          read:
-            - prep.zendesk_community_relations.*
-            - raw.tap_zendesk__community_relations.*
   - zengrc:
       warehouses:
         - dev_xs
@@ -3183,7 +3174,6 @@ roles:
         - analyst_engineering
         - aws_billing
         - elasticsearch_billing
-        - oci_reports
         - prometheus
         - snowflake_analyst_safe
       warehouses:
@@ -4069,7 +4059,6 @@ roles:
         - snowflake_analyst_safe
         - snowplow
         - zendesk
-        - zendesk_community_relations
         - data_science
         - data_science_sensitive
         - feature_store
@@ -4937,10 +4926,12 @@ roles:
         - analyst_people
         - analyst_sales
         - bamboohr
+        - fivetran_log
         - prometheus
         - pto
         - snowflake_analyst_safe
         - snowflake
+        - tableau_backend
         - workday
         - workday_hcm
         - zengrc
@@ -5727,6 +5718,12 @@ roles:
   - whaber:
       member_of: []
       warehouses: []
+  - ekim:
+      member_of:
+        - analyst_finance
+        - snowflake_analyst_safe
+      warehouses:
+        - dev_xs
   - nprabakaran:
       member_of:
         - snowflake_analyst
@@ -6004,6 +6001,7 @@ roles:
       member_of:
         - snowflake_analyst_safe
         - data_team_analyst
+        - tableau_backend
       warehouses:
         - dev_xs
   - jaltherr:
@@ -6059,6 +6057,21 @@ roles:
   - mvanremmerden:
       member_of:
         - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - clohr:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - adwivedi:
+      member_of:
+        - adaptive
+        - analyst_finance
+        - customers_db
+        - analyst_marketing
+        - data_team_analyst
+        - snowflake_analyst_safe
       warehouses:
         - dev_xs
   - bparkhomchuk:
@@ -6894,6 +6907,10 @@ users:
       can_login: true
       member_of:
         - jcoghlan
+  - ekim:
+      can_login: true
+      member_of:
+        - ekim
   - wmeek:
       can_login: true
       member_of:
@@ -6918,6 +6935,10 @@ users:
       can_login: true
       member_of:
         - tmccaslin
+  - adwivedi:
+      can_login: true
+      member_of:
+        - adwivedi
   - bwilkerson:
       can_login: true
       member_of:
@@ -6962,6 +6983,10 @@ users:
       can_login: true
       member_of:
         - nscoville
+  - clohr:
+      can_login: true
+      member_of:
+        - clohr
   - jaltherr:
       can_login: true
       member_of:

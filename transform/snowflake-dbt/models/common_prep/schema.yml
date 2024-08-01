@@ -182,6 +182,26 @@ models:
         description: The bizible touchpoint marketing channel, of the most recent touchpoint. 
       - name: bizible_most_recent_marketing_channel_path
         description: The bizible touchpoint marketing channel path, of the most recent touchpoint.
+      - name: has_six_sense_6_qa
+        description: The 6QA status of the person for the product.
+      - name: six_sense_account_6_qa_end_date
+        description: The date the person's account was disqualified from 6QA status 
+      - name: six_sense_account_6_qa_start_date
+        description: The date the person's account qualified for 6QA status 
+      - name: six_sense_account_buying_stage
+        description: The 6QA buying stage of the person's account
+      - name: six_sense_account_profile_fit
+        description: A measure of how similar a person's company is to the ideal customer profile.
+      - name: six_sense_person_grade
+        description: The 6Sense gradation of a person's engagement score. 
+      - name: six_sense_person_profile_fit
+        description: A measure of how similar a person is to the ideal customer profile.
+      - name: six_sense_person_update_date
+        description: The latest update date and time when 6sense Scores were updated.
+      - name: six_sense_segments
+        description: The Person's 6QA segment. 
+      - name: inactive_contact
+        description: A SFDC Contact field that shows whether or not a given contact is still with the company/account they are related to. 
 
   - name: prep_bizible_touchpoint_information
     description: Touchpoint information from key marketing and sales milestones.
@@ -1134,6 +1154,8 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: ci_pipeline_source 
+        description: Defines failure reasions based on the [pipeline.rb](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/enums/ci/pipeline.rb#L8-21) file
 
   - name: prep_action
     description: '{{ doc("prep_action") }}'
@@ -2168,7 +2190,7 @@ models:
       - name: is_staging_event
         description: '{{ doc("is_staging_event") }}'
       - name: gitlab_global_user_id
-        description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+        description: '{{ doc("gitlab_global_user_id") }}'
       - name: gsc_feature_enabled_by_namespace_ids
         description: '{{ doc("gsc_feature_enabled_by_namespace_ids") }}'
       - name: suggestion_source
@@ -2183,6 +2205,12 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: correlation_id
+        description: ' { doc("gsc_correlation_id") } '
+      - name: dim_instance_id
+        description: ' { doc("dim_instance_id") } '
 
   - name: prep_snowplow_page_views_all
     description: View combining all snowplow_page_view partitions.
@@ -2663,6 +2691,8 @@ models:
         description: '{{ doc("dim_billing_account_id") }}'
       - name: crm_account_name
         description: '{{ doc("crm_account_name") }}'
+      - name: dim_crm_account_id
+        description: '{{ doc("dim_crm_account_id") }}'
       - name: dim_parent_crm_account_id
         description: '{{ doc("dim_parent_crm_account_id") }}'
       - name: parent_crm_account_name
@@ -2998,4 +3028,5 @@ models:
       - name: new_value
       - name: old_value
       - name: is_deleted
+      - name: field_modified_at
       

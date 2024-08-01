@@ -12,6 +12,7 @@ final AS (
   SELECT
     payload:fields.api_fabrication::NUMBER    AS api_fabrication,
     payload:fields.failure_exception::VARCHAR AS failure_exception,
+    payload:fields.failure_issue::VARCHAR     AS failure_issue,
     payload:fields.id::VARCHAR                AS test_stats_id,
     payload:fields.job_id::VARCHAR            AS job_id,
     payload:fields.import_time::VARCHAR       AS import_time,
@@ -22,7 +23,7 @@ final AS (
     payload:fields.total_fabrication::NUMBER  AS total_fabrication,
     payload:fields.ui_fabrication::NUMBER     AS ui_fabrication,
     payload:name::VARCHAR                     AS name,
-    payload:time::VARCHAR                     AS time,
+    payload:time::TIMESTAMP                   AS time,
     payload:tags.blocking::BOOLEAN            AS is_blocking,
     payload:tags.file_path::VARCHAR           AS tags_file_path,
     payload:tags.import_repo::VARCHAR         AS tags_import_repo,

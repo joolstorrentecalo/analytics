@@ -56,4 +56,5 @@ zuora_central_sandbox, Relates to Central Sandbox data
 zuora_revenue, Relates to Zuora Revenue data
 zuora_query_api, Relates to Zuora Query API data
 zuora_order, Relates to Zuora Order data
+zuora_waterfall, For monthly financial reporting
 true_up, Relates to True Ups

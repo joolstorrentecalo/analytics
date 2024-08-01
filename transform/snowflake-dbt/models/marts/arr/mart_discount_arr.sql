@@ -115,10 +115,16 @@ WITH dim_date AS (
         ELSE FALSE
       END                                                               AS is_excluded_from_disc_analysis,
       dim_product_detail.annual_billing_list_price                      AS annual_billing_list_price,
-      dim_crm_opportunity.opportunity_owner_user_segment                AS opportunity_owner_user_segment,
-      dim_crm_opportunity.opportunity_owner_user_geo                    AS opportunity_owner_user_geo,
-      dim_crm_opportunity.opportunity_owner_user_region                 AS opportunity_owner_user_region,
-      dim_crm_opportunity.opportunity_owner_user_area                   AS opportunity_owner_user_area,
+      dim_crm_opportunity.report_segment                                AS report_segment,
+      dim_crm_opportunity.report_geo                                    AS report_geo,
+      dim_crm_opportunity.report_region                                 AS report_region,
+      dim_crm_opportunity.report_area                                   AS report_area,
+      dim_crm_opportunity.report_role_name                              AS report_role_name,
+      dim_crm_opportunity.report_role_level_1                           AS report_role_level_1,
+      dim_crm_opportunity.report_role_level_2                           AS report_role_level_2,
+      dim_crm_opportunity.report_role_level_3                           AS report_role_level_3,
+      dim_crm_opportunity.report_role_level_4                           AS report_role_level_4,
+      dim_crm_opportunity.report_role_level_5                           AS report_role_level_5,
       dim_crm_opportunity.order_type                                    AS order_type,
       ARRAY_AGG(IFF(dim_subscription.created_by_id = '2c92a0fd55822b4d015593ac264767f2', -- All Self-Service / Web direct subscriptions are identified by that created_by_id
                    'Self-Service', 'Sales-Assisted'))                   AS subscription_sales_type,
@@ -140,7 +146,7 @@ WITH dim_date AS (
     LEFT JOIN dim_crm_opportunity 
       ON dim_subscription.dim_crm_opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id
     WHERE dim_crm_account_subscription.is_jihu_account != 'TRUE'
-    {{ dbt_utils.group_by(n=40) }}
+    {{ dbt_utils.group_by(n=46) }}
     ORDER BY 3 DESC
 
 ), final AS (
