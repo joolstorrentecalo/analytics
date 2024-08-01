@@ -20,6 +20,8 @@ from postgres_utils import (
     get_min_or_max_id,
     update_import_query_for_delete_export,
     update_is_deleted_field,
+    check_if_legacy_temp_table_exists,
+    get_clean_target_table_name,
 )
 
 BACKFILL_EXTRACT_CHUNKSIZE = 15_000_000
@@ -210,6 +212,21 @@ class PostgresPipelineTable:
 
         if database_type == "cells":
             target_table = self.get_target_table_name() + "_CELLS_TEMP"
+            # run backfill for cells only when legacy db backfill is completed and loaded to respective temp table successfully.
+
+            # check legacy backfill completion status, if built successfully, run cells backfill
+            clean_target_table_name = get_clean_target_table_name(target_table)
+            if target_engine.has_table(clean_target_table_name):
+                logging.info(
+                    "Found the corresponding legacy db temp table, starting cells backfill"
+                )
+
+            # else don't run cells backfill
+            else:
+                logging.info(
+                    "Legacy db backfill not completed, aborting cells backfill"
+                )
+                return False
         else:
             target_table = self.get_temp_target_table_name()
         return self._do_load_by_id(
