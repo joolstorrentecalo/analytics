@@ -567,7 +567,7 @@ def merge_cells_and_legacy_table(engine, target_cells_table):
         logging.info(
             f"Merging the cells db temp table: {target_cells_table} with the legacy db table: {clean_target_to_legacy_table_name}"
         )
-        merge_query = f"INSERT INTO {TARGET_EXTRACT_SCHEMA}.{union_table_name} SELECT * FROM {TARGET_EXTRACT_SCHEMA}.{target_cells_table} UNION ALL SELECT * FROM {TARGET_EXTRACT_SCHEMA}.{clean_target_to_legacy_table_name};"
+        merge_query = f"CREATE TABLE {TARGET_EXTRACT_SCHEMA}.{union_table_name} AS (SELECT * FROM {TARGET_EXTRACT_SCHEMA}.{target_cells_table} UNION ALL SELECT * FROM {TARGET_EXTRACT_SCHEMA}.{clean_target_to_legacy_table_name});"
         logging.info(f"{merge_query}")
         query_executor(engine, merge_query)
 
