@@ -229,6 +229,11 @@ class PostgresPipelineTable:
                 return False
         else:
             target_table = self.get_temp_target_table_name()
+            # if legacy temp table exists don't run backfill for legacy db
+            if target_engine.has_table(target_table):
+                logging.info(
+                    f"Found the corresponding legacy db temp table {target_table}, aborting backfill"
+                )
         return self._do_load_by_id(
             source_engine,
             target_engine,
