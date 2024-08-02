@@ -983,3 +983,6 @@ models:
               to: ref('fct_crm_opportunity_7th_day_weekly_snapshot_aggregate')
               field: opportunity_weekly_snapshot_aggregate_pk
 
+  - name: mart_arr_discount
+    description: '{{ doc("mart_arr_discount") }}'
+

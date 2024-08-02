@@ -33,6 +33,7 @@ discount_prep_step_1 AS (
         END AS list_price_per_unit,
         fct_invoice_item.arr/NULLIFZERO(fct_invoice_item.quantity) AS arpu,
     fct_invoice_item.invoice_number,
+    fct_invoice_item.invoice_item_id,
     fct_invoice_item.is_last_segment_version,
     fct_invoice_item.dim_crm_account_id_invoice,
     fct_invoice_item.charge_id,
@@ -110,8 +111,8 @@ discount_prep_step_2 AS (
     discount_prep_step_1.invoice_date,
     discount_prep_step_1.rate_plan_charge_description,
     discount_prep_step_1.invoice_number,
+    discount_prep_step_1.invoice_item_id,
     discount_prep_step_1.product_name,
-    discount_prep_step_1.product_rate_plan_charge_name,
     discount_prep_step_1.product_tier_name,
     discount_prep_step_1.is_last_segment_version,
     discount_prep_step_1.delta_quantity,
@@ -120,10 +121,6 @@ discount_prep_step_2 AS (
     discount_prep_step_1.arpu,
     discount_prep_step_1.invoice_item_charge_amount,
     discount_prep_step_1.billing_period,
-    discount_prep_step_1.dim_crm_account_id_invoice,
-    discount_prep_step_1.charge_id,
-    discount_prep_step_1.effective_start_date,
-    discount_prep_step_1.effective_end_date,
     discount_prep_step_1.dim_subscription_id,
     discount_prep_step_1.subscription_name,
     discount_prep_step_1.term_start_date,
@@ -241,6 +238,7 @@ discount_prep_step_4 AS (
     parent_crm_account_name,
     dim_crm_opportunity_id,
     invoice_number,
+    invoice_item_id,
     dim_subscription_id,
     subscription_name,
     resale_partner_name,
@@ -328,7 +326,7 @@ discount_prep_step_4 AS (
     (list_price-arr_with_channel_margin)/NULLIFZERO(list_price) AS discount_end_user,
     (list_price-arr)/NULLIFZERO(list_price) AS discount_overall,
     FROM discount_prep_step_3
-    {{ dbt_utils.group_by(n=23) }}
+    {{ dbt_utils.group_by(n=24) }}
     
     ),
 
@@ -412,6 +410,6 @@ discount_prep_step_4 AS (
 cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
-created_date="2024-08-01",
-updated_date="2024-08-01"
+created_date="2024-08-02",
+updated_date="2024-08-02"
 ) }}

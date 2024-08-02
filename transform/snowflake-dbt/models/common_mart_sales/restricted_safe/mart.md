@@ -86,3 +86,9 @@ This CTE amortizes the ARR by month over the effective term of the rate plan cha
 
 {% enddocs %}
 
+{% docs mart_arr_discount %}
+
+Documentation will be added here
+
+{% enddocs %}
+
