@@ -246,7 +246,7 @@ WITH dim_date AS (
     ON mart_crm_event.event_date = dim_date.date_day
   INNER JOIN sales_dev_opps 
     ON mart_crm_event.dim_crm_user_id = sales_dev_opps.sdr_bdr_user_id
-      OR mart_crm_event.booked_by_user_id = sales_dev_opps.sdr_bdr_user_id 
+      OR booked_by_user_id = sales_dev_opps.sdr_bdr_user_id 
   WHERE activity_date >= '2022-01-01'
   UNION
   SELECT 
