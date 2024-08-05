@@ -444,7 +444,6 @@ WITH dim_date AS (
     opp_to_lead.opportunity_sales_development_representative,
     opp_to_lead.opportunity_business_development_representative,
     opp_to_lead.report_segment,
-    opp_to_lead.parent_crm_account_business_unit,
     opp_to_lead.report_geo,
     opp_to_lead.report_region,
     opp_to_lead.report_area,
@@ -625,7 +624,7 @@ WITH dim_date AS (
     opps_missing_link.opportunity_sales_development_representative,
     opps_missing_link.opportunity_business_development_representative,
     opps_missing_link.report_segment,
-    opps_missing_link.parent_crm_account_business_unit, --RK: 2024-08-04: alternatively, can use the report_level fields
+    --opps_missing_link.parent_crm_account_business_unit, --RK: 2024-08-04: alternatively, can use the report_level fields
     opps_missing_link.report_geo,
     opps_missing_link.report_region,
     opps_missing_link.report_area,
