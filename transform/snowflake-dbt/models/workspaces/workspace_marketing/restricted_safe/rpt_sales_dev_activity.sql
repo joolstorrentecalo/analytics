@@ -82,7 +82,6 @@ WITH dim_date AS (
     abm_tier,
     crm_account_owner_id,
     crm_account_owner,
-    crm_account_focus_account,
     bdr_account_strategy,
     account_bdr_assigned_user_role,
     bdr_recycle_date,
