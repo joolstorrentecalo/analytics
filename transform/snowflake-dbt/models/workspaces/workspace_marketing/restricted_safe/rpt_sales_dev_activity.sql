@@ -87,7 +87,6 @@ WITH dim_date AS (
     account_bdr_assigned_user_role,
     bdr_recycle_date,
     actively_working_start_date,
-    crm_account_owner,
     owner_role,
     crm_account_name,
     crm_account_focus_account,
