@@ -230,6 +230,7 @@ class PostgresPipelineTable:
                 logging.info(
                     f"Found the corresponding legacy db temp table {target_table}, aborting backfill"
                 )
+                return False
         return self._do_load_by_id(
             source_engine,
             target_engine,
