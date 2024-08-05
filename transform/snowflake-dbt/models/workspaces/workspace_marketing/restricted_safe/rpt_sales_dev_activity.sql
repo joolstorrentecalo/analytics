@@ -33,7 +33,8 @@ WITH dim_date AS (
     sales_dev_leader_user_role_name,
     sales_dev_rep_leader_full_name,
     sales_dev_leader_employee_number,
-    sales_dev_leader_email
+    sales_dev_leader_email,
+    snapshot_date
   FROM {{ ref('dim_sales_dev_user_hierarchy') }}
 
 ), mart_crm_person AS (
