@@ -507,12 +507,13 @@ def seed_and_upload_snowflake(
         database_kwargs["source_table"],
         database_kwargs["source_engine"],
     )
-    seed_table(
-        advanced_metadata,
-        schema_types,
-        database_kwargs["target_table"],
-        target_engine,
-    )
+    if database_type != "cells":
+        seed_table(
+            advanced_metadata,
+            schema_types,
+            database_kwargs["target_table"],
+            target_engine,
+        )
 
     upload_initial_load_prefix_to_snowflake(
         target_engine,
@@ -522,36 +523,40 @@ def seed_and_upload_snowflake(
         database_type,
     )
 
+    is_cells_live = True  # when true a cells db is live and the regular legacy upload process is not run, instead a leader <> follower process is run
+
     if load_by_id_export_type == "backfill":
         # We do the swap here because snowflake engine instantiated here
 
-        # swap_temp_table(
-        #         target_engine,
-        #         database_kwargs["real_target_table"],
-        #         database_kwargs["target_table"],
-        #     )
-
-        # if database_type is not cells
-        if database_type != "cells":
-            logging.info("Cells db backfill needs to run first")
-
-        else:
-            union_table_name = merge_cells_and_legacy_table(
-                target_engine,
-                database_kwargs["target_table"],
-            )
-
-            logging.info("Swapping tables")
-            # target_table is temp table (need to enable just this until cells db is live)
+        if not is_cells_live:
             swap_temp_table(
                 target_engine,
                 database_kwargs["real_target_table"],
-                union_table_name,
+                database_kwargs["target_table"],
             )
 
-            logging.info(
-                f"Finished swapping tables to Snowflake table '{database_kwargs['real_target_table']}'"
-            )
+        else:
+            # if database_type is not cells
+            if database_type != "cells":
+                logging.info("Cells db backfill needs to run first")
+
+            else:
+                # union_table_name = merge_cells_and_legacy_table(
+                #     target_engine,
+                #     database_kwargs["target_table"],
+                # )
+
+                logging.info("Swapping tables")
+                # target_table is temp table (need to enable just this until cells db is live)
+                swap_temp_table(
+                    target_engine,
+                    database_kwargs["real_target_table"],
+                    database_kwargs["target_table"],
+                )
+
+                logging.info(
+                    f"Finished swapping tables to Snowflake table '{database_kwargs['real_target_table']}'"
+                )
 
 
 def merge_cells_and_legacy_table(engine, target_cells_table):

@@ -209,14 +209,11 @@ class PostgresPipelineTable:
         if not self.is_incremental() or not is_backfill_needed:
             logging.info("table does not need incremental backfill")
             return False
-
+        target_table = self.get_target_table_name()
         if database_type == "cells":
-            target_table = self.get_target_table_name() + "_CELLS_TEMP"
             # run backfill for cells only when legacy db backfill is completed and loaded to respective temp table successfully.
-
             # check legacy backfill completion status, if built successfully, run cells backfill
-            clean_target_table_name = get_clean_target_table_name(target_table)
-            if target_engine.has_table(clean_target_table_name):
+            if target_engine.has_table(target_table):
                 logging.info(
                     "Found the corresponding legacy db temp table, starting cells backfill"
                 )
