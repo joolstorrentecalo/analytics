@@ -225,7 +225,7 @@ class PostgresPipelineTable:
                 )
                 return False
         else:
-            # if legacy temp table exists don't run backfill for legacy db
+            # if legacy temp table exists, this means the follower cells table backfill needs to complete before uploading, don't run backfill for legacy db
             if target_engine.has_table(target_table):
                 logging.info(
                     f"Found the corresponding legacy db temp table {target_table}, aborting backfill"
