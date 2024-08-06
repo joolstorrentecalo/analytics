@@ -19,15 +19,16 @@ usage_data AS (
     rpt_product_usage_health_score.snapshot_month,
     rpt_product_usage_health_score.dim_crm_account_id,
     rpt_product_usage_health_score.crm_account_name,
-    rpt_product_usage_health_score.scm_score,
-    rpt_product_usage_health_score.ci_score,
-    mart_product_usage_paid_user_metrics_monthly.epics_28_days_user,
-    mart_product_usage_paid_user_metrics_monthly.issues_28_days_user,
-    mart_product_usage_paid_user_metrics_monthly.issues_edit_28_days_user,
-    mart_product_usage_paid_user_metrics_monthly.epics_usage_28_days_user
+    MIN(rpt_product_usage_health_score.scm_score)                              AS scm_score,
+    MIN(rpt_product_usage_health_score.ci_score)                               AS ci_score,
+    MIN(mart_product_usage_paid_user_metrics_monthly.epics_28_days_user)       AS epics_28_days_user,
+    MIN(mart_product_usage_paid_user_metrics_monthly.issues_28_days_user)      AS issues_28_days_user,
+    MIN(mart_product_usage_paid_user_metrics_monthly.issues_edit_28_days_user) AS issues_edit_28_days_user,
+    MIN(mart_product_usage_paid_user_metrics_monthly.epics_usage_28_days_user) AS epics_usage_28_days_user
   FROM rpt_product_usage_health_score
   LEFT JOIN mart_product_usage_paid_user_metrics_monthly ON rpt_product_usage_health_score.primary_key = mart_product_usage_paid_user_metrics_monthly.primary_key
   WHERE rpt_product_usage_health_score.snapshot_month > '2023-01-30'
+  GROUP BY 1, 2, 3
 ),
 
 first_order AS (

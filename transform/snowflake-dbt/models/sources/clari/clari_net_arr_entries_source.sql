@@ -51,6 +51,9 @@ parsed AS (
   FROM
     intermediate
 
+    -- filter out overlapping records that exist in both forecast_ids
+  WHERE NOT (forecast_id = 'net_arr_ps_summary' AND field_id = 'arr_most_likely')
+
   -- remove dups in case of overlapping data from daily/quarter loads
   QUALIFY
     ROW_NUMBER() OVER (

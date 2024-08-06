@@ -1179,10 +1179,10 @@ case_flags AS (
       calculated_tier = 'Tier 1' AND high_value_last_90 = FALSE AND tier1_full_churn_flag = FALSE,
       FALSE
     ) AS check_in_case_needed_flag,
-    COALESCE(
-      calculated_tier IN ('Tier 2', 'Tier 3') AND any_case_last_90 = FALSE AND (future_price * max_billable_user_count) * 12 >= 7000,
-      FALSE
-    ) AS future_tier_1_account_flag,
+    -- COALESCE(
+    --   calculated_tier IN ('Tier 2', 'Tier 3') AND any_case_last_90 = FALSE AND (future_price * max_billable_user_count) * 12 >= 7000,
+    --   FALSE
+    -- ) AS future_tier_1_account_flag,
     COALESCE(
       sales_type = 'Renewal' AND po_required = 'YES',
       FALSE
@@ -1220,14 +1220,15 @@ case_flags AS (
       latest_switch_date IS NOT NULL,
       FALSE
     ) AS auto_renew_recently_turned_off_flag,
-    COALESCE(
-      calculated_tier IN ('Tier 2', 'Tier 3')
-      AND overage_count > 0
-      AND overage_amount > 0
-      AND latest_overage_month = DATE_TRUNC('month', CURRENT_DATE)
-      AND qsr_enabled_flag = FALSE,
-      FALSE
-    ) AS overage_qsr_off_flag,
+    --This is old logic and should have been removed
+    -- COALESCE(
+    --   calculated_tier IN ('Tier 2', 'Tier 3')
+    --   AND overage_count > 0
+    --   AND overage_amount > 0
+    --   AND latest_overage_month = DATE_TRUNC('month', CURRENT_DATE)
+    --   AND qsr_enabled_flag = FALSE,
+    --   FALSE
+    -- ) AS overage_qsr_off_flag,
     COALESCE(
       duo_trial_on_account_flag = TRUE,
       FALSE
@@ -1273,9 +1274,9 @@ cases AS (
         THEN 'High Value Account Check In'
     END AS check_in_trigger_name,
     CASE WHEN duo_renewal_flag = TRUE AND (current_subscription_end_date = current_date_30_days) THEN 'Renewal with Duo'
-      WHEN
-        future_tier_1_account_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND any_case_last_90 = FALSE
-        THEN 'Future Tier 1 Account Check In'
+    -- WHEN
+    --   future_tier_1_account_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND any_case_last_90 = FALSE
+    -- THEN 'Future Tier 1 Account Check In'
     END AS future_tier_1_trigger_name,
     CASE WHEN po_required_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND arr_basis > 3000 THEN 'PO Required'
       WHEN multiyear_renewal_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND arr_basis > 3000 THEN 'Multiyear Renewal'
@@ -1552,5 +1553,5 @@ case_output AS (
     created_by="@sglad",
     updated_by="@mfleisher",
     created_date="2024-07-02",
-    updated_date="2024-07-26"
+    updated_date="2024-07-30"
 ) }}

@@ -541,6 +541,18 @@ models:
         description: Amount on an opportunity that is from Educational Services only
       - name: investment_services_value
         description: Amount on an opportunity that is from Investment Services only
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_rep_user_full_name
+        description: The Sales Dev Rep's Full Name
 
   - name: mart_crm_opportunity_daily_snapshot
     description: Model with single pane of glass sales and marketing metrics, snapshotted daily.

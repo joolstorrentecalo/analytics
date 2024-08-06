@@ -1154,6 +1154,8 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: ci_pipeline_source 
+        description: Defines failure reasions based on the [pipeline.rb](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/enums/ci/pipeline.rb#L8-21) file
 
   - name: prep_action
     description: '{{ doc("prep_action") }}'
@@ -1818,8 +1820,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: is_saas_dedicated
         description: '{{ doc("is_saas_dedicated") }}'
       - name: ping_delivery_type
@@ -1886,8 +1886,6 @@ models:
         description: '{{ doc("ping_delivery_type") }}'
       - name: ping_deployment_type
         description: '{{ doc("ping_deployment_type") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: version
         description: '{{ doc("version_ping_model") }}'
 

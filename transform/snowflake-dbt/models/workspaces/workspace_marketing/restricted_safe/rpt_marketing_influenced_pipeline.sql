@@ -5,7 +5,7 @@
 {{ simple_cte([
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
     ('mart_crm_opportunity_daily_snapshot','mart_crm_opportunity_daily_snapshot'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
+    ('mart_crm_opportunity','mart_crm_opportunity'),
     ('mart_crm_account','mart_crm_account'),
     ('sfdc_bizible_attribution_touchpoint_snapshots_source', 'sfdc_bizible_attribution_touchpoint_snapshots_source'),
     ('dim_date','dim_date')
@@ -88,11 +88,11 @@
         (dbt_valid_FROM <= date_day AND dbt_valid_to > date_day) OR (dbt_valid_from <= date_day AND dbt_valid_to is null)
 
 
-    LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist ON
-    sfdc_bizible_attribution_touchpoint_snapshots_source.opportunity_id = mart_crm_opportunity_stamped_hierarchy_hist.DIM_CRM_OPPORTUNITY_ID
+    LEFT JOIN mart_crm_opportunity ON
+    sfdc_bizible_attribution_touchpoint_snapshots_source.opportunity_id = mart_crm_opportunity.DIM_CRM_OPPORTUNITY_ID
 
     WHERE 
-    snapshot_dates.fiscal_quarter_name_fy = mart_crm_opportunity_stamped_hierarchy_hist.pipeline_created_fiscal_quarter_name 
+    snapshot_dates.fiscal_quarter_name_fy = mart_crm_opportunity.pipeline_created_fiscal_quarter_name 
 
 )
 
@@ -166,11 +166,10 @@ SELECT
   --Metrics
   snapshot.net_arr                          AS opp_net_arr
 
-FROM
-  mart_crm_opportunity_daily_snapshot AS snapshot
+FROM mart_crm_opportunity_daily_snapshot AS snapshot
 INNER JOIN snapshot_dates
   ON snapshot.snapshot_date = snapshot_dates.date_day
-LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist AS live
+LEFT JOIN mart_crm_opportunity AS live
   ON snapshot.dim_crm_opportunity_id = live.dim_crm_opportunity_id
 LEFT JOIN mart_crm_account AS account
   ON snapshot.dim_crm_account_id = account.dim_crm_account_id
@@ -221,6 +220,10 @@ combined_models AS (
     opportunity_snapshot_base.order_type,
     opportunity_snapshot_base.sales_qualified_source_name,
     opportunity_snapshot_base.stage_name,
+    opportunity_snapshot_base.report_segment,
+    opportunity_snapshot_base.report_geo,
+    opportunity_snapshot_base.report_area,
+    opportunity_snapshot_base.report_region,
 
 --Touchpoint Dimensions
     attribution_touchpoint_snapshot_base.bizible_touchpoint_type,
@@ -359,6 +362,10 @@ combined_models AS (
     opportunity_snapshot_base.order_type,
     opportunity_snapshot_base.sales_qualified_source_name,
     opportunity_snapshot_base.stage_name,
+    opportunity_snapshot_base.report_segment,
+    opportunity_snapshot_base.report_geo,
+    opportunity_snapshot_base.report_area,
+    opportunity_snapshot_base.report_region,
 
 
 --Touchpoint Dimensions
@@ -420,26 +427,22 @@ combined_models AS (
     opportunity_snapshot_base.is_eligible_age_analysis_flag
 
     FROM missing_net_arr_difference
-    INNER JOIN
-    opportunity_snapshot_base ON missing_net_arr_difference.dim_crm_opportunity_id = opportunity_snapshot_base.dim_crm_opportunity_id 
-    AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = opportunity_snapshot_base.pipeline_created_fiscal_quarter_name
+    INNER JOIN opportunity_snapshot_base 
+      ON missing_net_arr_difference.dim_crm_opportunity_id = opportunity_snapshot_base.dim_crm_opportunity_id 
+        AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = opportunity_snapshot_base.pipeline_created_fiscal_quarter_name
 
 ), final AS (
-    SELECT 
-    *
-    FROM 
-    combined_models
+    SELECT *
+    FROM combined_models
     UNION ALL
-    SELECT
-    *
-    FROM
-    missing_net_arr_base
+    SELECT *
+    FROM missing_net_arr_base
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@dmicovic",
+    updated_by="@rkohnke",
     created_date="2023-04-11",
-    updated_date="2024-03-04",
+    updated_date="2024-08-01",
   ) }}

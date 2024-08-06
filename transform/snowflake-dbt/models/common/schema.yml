@@ -3099,8 +3099,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: is_saas_dedicated
         description: '{{ doc("is_saas_dedicated") }}'
       - name: ping_delivery_type
@@ -3306,8 +3304,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: dim_app_release_major_minor_sk
         description: '{{ doc("dim_app_release_major_minor_sk") }}'
       - name: dim_latest_available_app_release_major_minor_sk
@@ -4169,8 +4165,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: installation_creation_date
         description: '{{ doc("installation_creation_date") }}'
 
@@ -5594,7 +5588,6 @@ models:
         description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
       - name: valid_deal_count
         description: A Salesforce Opportunity field that gives a -1, 0, or 1 value based on whether or not it should be counted as a true closed won for accounting/reporting purposes
-      
 
   - name: fct_crm_opportunity_daily_snapshot
     description: '{{ doc("fct_crm_opportunity_daily_snapshot") }}'
@@ -6201,22 +6194,12 @@ models:
         description: Boolean value - Whether or not there is a reminder set for this Event. 
       - name: is_answered
         description: Boolean value - Whether or not the prospect/customer answered/responded to the Event invite. 
-      - name: is_bad_number
-        description: Boolean value - Whether or not the number dialed was a bad/faulty number. 
-      - name: is_busy
-        description: Boolean value - Whether or not the recipient of the call was busy. 
       - name: is_correct_contact
-        description: Boolean value - Whether or not the sales rep reached the correct contact.  
-      - name: is_left_message
-        description: Boolean value - Whether or not a VM message was left. 
-      - name: is_not_answered
-        description: Boolean value - Whether or not the recipient did not answer the phone. 
+        description: Boolean value - Whether or not the sales rep reached the correct contact.   
       - name: is_meeting_canceled
         description: Boolean value - Whether or not the meeting was cancelled. 
       - name: is_closed_event
         description: Boolean value - Whether or not the Event is closed. 
-      - name: is_activity
-        description: Boolean value - Whether or not this Event is tracked as an activity. 
       - name: event_recurrence_activity_id
         description: ID of the Event's recurring activity. 
       - name: event_recurrence_day_of_week
@@ -6252,7 +6235,6 @@ models:
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
 
-
   - name: dim_crm_task
     description: '{{ doc("dim_crm_task") }}'
     columns:
@@ -6270,6 +6252,68 @@ models:
            masking_policy: data_science_sensitive
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
+
+  - name: dim_sales_dev_user_hierarchy
+    description: A snapshotted history of sales dev user hierarchy from SFDC.
+    columns:
+      - name: sales_dev_rep_user_hierarchy_pk
+        description: The primary key generated from a combination of dim_crm_user_id and snapshot_date
+      - name: dim_crm_user_id
+        description: The SFDC User ID of the sales dev rep
+      - name: sales_dev_rep_direct_manager_id
+        description: The SFDC User ID of the sales dev rep's manager
+      - name: sales_dev_leader_id
+        description: The SFDC User ID of the sales dev rep's leader
+      - name: sales_dev_rep_role_name
+        description: The Sales Dev Rep's role name
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_user_role_hierarchy_fiscal_year
+        description: The fiscal year of the Sales Dev Rep's role hierarchy data
+      - name: sales_dev_rep_email
+        description: The Sales Dev Rep's email
+      - name: sales_dev_rep_user_full_name
+        description: The Sales Dev Rep's Full Name
+      - name: sales_dev_rep_title
+        description: The Sales Dev Rep's title
+      - name: sales_dev_rep_department
+        description: The Sales Dev Rep's department
+      - name: sales_dev_rep_team
+        description: The Sales Dev Rep's team
+      - name: sales_dev_rep_is_active
+        description: Whether The Sales Dev Rep is active
+      - name: sales_dev_rep_employee_number
+        description: The Sales Dev Rep's employee number
+      - name: crm_user_sales_segment
+        description: The Sales Dev Rep's sales segment
+      - name: crm_user_geo
+        description: The Sales Dev Rep's geo
+      - name: crm_user_region
+        description: The Sales Dev Rep's region
+      - name: crm_user_area
+        description: The Sales Dev Rep's area
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_manager_email
+        description: The Sales Dev Rep's Manager'semail
+      - name: sales_dev_manager_employee_number
+        description: The Sales Dev Rep's Manager'semployee number
+      - name: sales_dev_manager_user_role_name
+        description: The Sales Dev Rep's Manager'srole name
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name
+      - name: sales_dev_leader_employee_number
+        description: The Sales Dev Rep's Leader's employee number
+      - name: sales_dev_leader_email
+        description: The Sales Dev Rep's Leader's email
+      - name: snapshot_date
+        description: The snapshot date of the sales dev hierarchy data depicted
 
   - name: fct_crm_task
     description: '{{ doc("fct_crm_task") }}'
@@ -9780,30 +9824,6 @@ models:
         description: Unique ID of the team member.
         tests:
           - not_null
-      - name: team_id
-        description: Unique ID of the team.
-      - name: job_code
-        description: The code of the team member's job position.
-      - name: job_specialty_single
-        description: The team member's job specialty.
-      - name: job_specialty_multi
-        description: The team member's job specialty (multi-select).
-      - name: position
-        description: The team member's job profile name.
-      - name: job_family
-        description: The team member's job family.
-      - name: management_level
-        description: The team member's management level.
-      - name: job_grade
-        description: The team member's job grade.
-      - name: entity
-        description: The team member's entity.
-        meta:
-          masking_policy: analyst_people_sensitive
-      - name: is_position_active
-        description: Whether the team member's job position is active.
-      - name: is_current_team_member_position
-        description: Whether the team member's job position is the most current as of the date the query is run.
       - name: position_valid_from
       - name: position_valid_to
       - name: absence_start

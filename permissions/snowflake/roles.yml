@@ -6059,6 +6059,11 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - clohr:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - adwivedi:
       member_of:
         - adaptive
@@ -6978,6 +6983,10 @@ users:
       can_login: true
       member_of:
         - nscoville
+  - clohr:
+      can_login: true
+      member_of:
+        - clohr
   - jaltherr:
       can_login: true
       member_of:

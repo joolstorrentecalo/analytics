@@ -48,7 +48,7 @@
        AND dim_subscription_id NOT IN ('8a1298657dd7f81d017dde1bd9c03fa8','8a128b317dd7e89a017ddd38a74d3037','8a128b317dd7e89a017ddd38a6052ff0',
                                        '8a128b317dc30baa017dc41e5b0932e9','8a128b317dc30baa017dc41e59dd32be','8a128b317dc30baa017dc41e58b43295',
                                        '2c92a0fd7cc1ab13017cc843195f62fb','2c92a0fd7cc1ab13017cc843186f62da','2c92a0fd7cc1ab13017cc843178162b6',
-                                       '2c92a0fd7cc1ab13017cc843164d6292')
+                                       '2c92a0fd7cc1ab13017cc843164d6292','8a128f2a90c6782b0190cb57203d39fa') --e.g. subscription versions where the original term has been shortened due to a cancellation for a contract reset
 
 ), dim_subscription_int AS (
 
@@ -974,7 +974,7 @@
 {{ dbt_audit(
     cte_ref="unioned",
     created_by="@michellecooper",
-    updated_by="@chrissharp",
+    updated_by="@apiaseczna",
     created_date="2021-12-06",
-    updated_date="2023-12-19"
+    updated_date="2024-08-01"
 ) }}

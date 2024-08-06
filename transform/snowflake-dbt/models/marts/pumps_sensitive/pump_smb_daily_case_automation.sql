@@ -20,7 +20,10 @@
     ('prep_billing_account_user','prep_billing_account_user'),
     ('sfdc_contact_snapshots_source','sfdc_contact_snapshots_source'),
     ('case_data','gds_case_inputs'),
-    ('zuora_subscription_source', 'zuora_subscription_source')
+    ('zuora_subscription_source', 'zuora_subscription_source'),
+    ('wk_sales_gds_cases','wk_sales_gds_cases'),
+    ('mart_behavior_structured_event','mart_behavior_structured_event'),
+    ('customers_db_customers_source','customers_db_customers_source')
     ]) 
 
 }},
@@ -635,6 +638,10 @@ account_blended AS (
     )
       AS current_date_30_days,
     DATEADD(
+      'day', 60, CURRENT_DATE
+    )
+      AS current_date_60_days,
+    DATEADD(
       'day', 80, CURRENT_DATE
     )
       AS current_date_80_days,
@@ -941,6 +948,28 @@ utilization AS (
     AND mart_arr.quantity > 0
 ),
 
+cancel_events AS (
+  SELECT
+    *,
+    contexts['data'][0]['data']['customer_id'] AS customer_id
+  FROM mart_behavior_structured_event
+  WHERE behavior_date >= '2024-07-20'
+    AND event_category = 'Webstore'
+    AND event_action LIKE 'cancel%'
+    AND event_property != 'Testing Purpose'
+),
+
+portal_cancel_reasons AS (
+  SELECT
+    cancel_events.*,
+    customers_db_customers_source.sfdc_account_id AS dim_crm_account_id
+  FROM
+    cancel_events
+  LEFT JOIN customers_db_customers_source
+    ON
+      cancel_events.customer_id = customers_db_customers_source.customer_id
+),
+
 --Identifies accounts where a user has manually switched off autorenew (canceled subscription)
 auto_renew_switch_one AS (
   SELECT
@@ -957,10 +986,13 @@ auto_renew_switch_one AS (
     LEAD(dim_subscription_snapshot_bottom_up.turn_on_auto_renewal, 1)
       OVER (PARTITION BY dim_subscription_snapshot_bottom_up.subscription_name ORDER BY dim_date.date_actual ASC)
       AS future_auto_renewal,
-    dim_subscription_snapshot_bottom_up.*
+    dim_subscription_snapshot_bottom_up.*,
+    portal_cancel_reasons.event_label                                                                             AS cancel_reason,
+    portal_cancel_reasons.event_property                                                                          AS cancel_comments
   FROM dim_subscription_snapshot_bottom_up
   INNER JOIN dim_date ON dim_subscription_snapshot_bottom_up.snapshot_id = dim_date.date_id
   INNER JOIN prep_billing_account_user ON dim_subscription_snapshot_bottom_up.updated_by_id = prep_billing_account_user.zuora_user_id
+  LEFT JOIN portal_cancel_reasons ON dim_subscription_snapshot_bottom_up.dim_crm_account_id = portal_cancel_reasons.dim_crm_account_id
   WHERE snapshot_date >= '2023-02-01'
     AND snapshot_date < CURRENT_DATE
     AND dim_subscription_snapshot_bottom_up.subscription_status = 'Active'
@@ -975,11 +1007,13 @@ autorenew_switch AS (
     dim_subscription_id,
     active_autorenew_status,
     prior_auto_renewal,
+    cancel_reason,
+    cancel_comments,
     MAX(snapshot_date) AS latest_switch_date
   FROM auto_renew_switch_one
   WHERE
     ((active_autorenew_status = 'No' AND update_user = 'svc_zuora_fulfillment_int@gitlab.com') AND prior_auto_renewal = 'Yes')
-  GROUP BY 1, 2, 3, 4
+  GROUP BY 1, 2, 3, 4, 5, 6
 ),
 
 bronze_starter_accounts AS (
@@ -1134,7 +1168,10 @@ failure_sub AS (
 all_data AS (
   SELECT
     account_blended.*,
-    CASE WHEN utilization.subscription_end_month > '2024-04-01' THEN 29 ELSE 23.78 END AS future_price,
+    CASE WHEN utilization.subscription_end_month > '2024-04-01' AND utilization.product_tier_name LIKE '%Premium%' THEN 29
+      WHEN utilization.product_tier_name LIKE '%Ultimate%' THEN 1188
+      ELSE 0
+    END                                                                AS future_price,
     utilization.overage_count,
     utilization.overage_amount,
     utilization.latest_overage_month,
@@ -1146,17 +1183,19 @@ all_data AS (
     utilization.turn_on_seat_reconciliation,
     --turn_on_auto_renewal,
     autorenew_switch.latest_switch_date,
-    DATEDIFF('day', autorenew_switch.latest_switch_date, CURRENT_DATE)                 AS days_since_autorenewal_switch,
-    COALESCE(prior_sub_25_eoa.dim_crm_account_id IS NOT NULL, FALSE)                   AS prior_year_eoa_under_25_flag,
-    COALESCE(duo_trials.contact_id IS NOT NULL, FALSE)                                 AS duo_trial_on_account_flag,
-    duo_trials.marketo_last_interesting_moment_date                                    AS duo_trial_start_date,
+    DATEDIFF('day', autorenew_switch.latest_switch_date, CURRENT_DATE) AS days_since_autorenewal_switch,
+    COALESCE(prior_sub_25_eoa.dim_crm_account_id IS NOT NULL, FALSE)   AS prior_year_eoa_under_25_flag,
+    COALESCE(duo_trials.contact_id IS NOT NULL, FALSE)                 AS duo_trial_on_account_flag,
+    CAST (duo_trials.marketo_last_interesting_moment_date AS DATE)     AS duo_trial_start_date,
     duo_trials.contact_id,
     duo_trials.order_number,
-    COALESCE(failure_sub.dim_crm_account_id IS NOT NULL, FALSE)                        AS payment_failure_flag,
+    COALESCE(failure_sub.dim_crm_account_id IS NOT NULL, FALSE)        AS payment_failure_flag,
     failure_sub.failed_sub_oppty,
     failure_sub.failed_sub_renewal_opp,
     failure_sub.failed_sub_closed_opp,
-    failure_sub.failure_date
+    failure_sub.failure_date,
+    autorenew_switch.cancel_reason,
+    autorenew_switch.cancel_comments
   FROM account_blended
   LEFT JOIN utilization
     ON utilization.dim_crm_account_id = account_blended.account_id
@@ -1179,13 +1218,13 @@ case_flags AS (
   SELECT
     *,
     COALESCE(
-      calculated_tier = 'Tier 1' AND high_value_last_90 = FALSE AND tier1_full_churn_flag = FALSE,
+      calculated_tier = 'Tier 1' AND high_value_last_90 = FALSE AND tier1_full_churn_flag = FALSE AND ((future_price * license_user_count) - (arr_per_user * license_user_count) < 3000),
       FALSE
     ) AS check_in_case_needed_flag,
-    COALESCE(
-      calculated_tier IN ('Tier 2', 'Tier 3') AND any_case_last_90 = FALSE AND (future_price * max_billable_user_count) * 12 >= 7000,
-      FALSE
-    ) AS future_tier_1_account_flag,
+    -- COALESCE(
+    --   calculated_tier IN ('Tier 2', 'Tier 3') AND any_case_last_90 = FALSE AND (future_price * max_billable_user_count) * 12 >= 7000,
+    --   FALSE
+    -- ) AS future_tier_1_account_flag,
     COALESCE(
       sales_type = 'Renewal' AND po_required = 'YES',
       FALSE
@@ -1207,10 +1246,10 @@ case_flags AS (
       auto_renew_will_fail_mult_products = TRUE,
       FALSE
     ) AS auto_renewal_will_fail_logic_flag,
-    COALESCE(
-      (eoa_flag = TRUE AND prior_year_eoa_under_25_flag = TRUE AND max_billable_user_count >= 25) OR (eoa_flag = TRUE AND turn_on_auto_renewal = 'No'),
-      FALSE
-    ) AS eoa_renewal_flag,
+    -- COALESCE(
+    --   (eoa_flag = TRUE AND prior_year_eoa_under_25_flag = TRUE AND max_billable_user_count >= 25) OR (eoa_flag = TRUE AND turn_on_auto_renewal = 'No'),
+    --   FALSE
+    -- ) AS eoa_renewal_flag,
     COALESCE(
       qsr_flag = TRUE AND qsr_status = 'Failed' AND qsr_notes LIKE '%card%' AND is_closed = FALSE AND close_date >= '2024-02-01',
       FALSE
@@ -1223,14 +1262,15 @@ case_flags AS (
       latest_switch_date IS NOT NULL,
       FALSE
     ) AS auto_renew_recently_turned_off_flag,
-    COALESCE(
-      calculated_tier IN ('Tier 2', 'Tier 3')
-      AND overage_count > 0
-      AND overage_amount > 0
-      AND latest_overage_month = DATE_TRUNC('month', CURRENT_DATE)
-      AND qsr_enabled_flag = FALSE,
-      FALSE
-    ) AS overage_qsr_off_flag,
+    --This is old logic and should have been removed
+    -- COALESCE(
+    --   calculated_tier IN ('Tier 2', 'Tier 3')
+    --   AND overage_count > 0
+    --   AND overage_amount > 0
+    --   AND latest_overage_month = DATE_TRUNC('month', CURRENT_DATE)
+    --   AND qsr_enabled_flag = FALSE,
+    --   FALSE
+    -- ) AS overage_qsr_off_flag,
     COALESCE(
       duo_trial_on_account_flag = TRUE,
       FALSE
@@ -1269,25 +1309,25 @@ cases AS (
       WHEN
         check_in_case_needed_flag = TRUE
         AND (
-          (current_subscription_end_date = current_date_80_days)
+          (current_subscription_end_date = current_date_60_days)
           OR (current_subscription_end_date = current_date_180_days)
           OR (current_subscription_end_date = current_date_270_days)
         )
         THEN 'High Value Account Check In'
     END AS check_in_trigger_name,
-    CASE WHEN duo_renewal_flag = TRUE AND (current_subscription_end_date = current_date_30_days) THEN 'Renewal with Duo'
-      WHEN
-        future_tier_1_account_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND any_case_last_90 = FALSE
-        THEN 'Future Tier 1 Account Check In'
+    CASE WHEN duo_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Renewal with Duo'
+    -- WHEN
+    --   future_tier_1_account_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND any_case_last_90 = FALSE
+    -- THEN 'Future Tier 1 Account Check In'
     END AS future_tier_1_trigger_name,
-    CASE WHEN po_required_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND arr_basis > 3000 THEN 'PO Required'
-      WHEN multiyear_renewal_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND arr_basis > 3000 THEN 'Multiyear Renewal'
-      WHEN eoa_auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date = current_date_90_days) THEN 'Auto-Renewal Will Fail'
-      WHEN auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND arr_basis > 3000 THEN 'Auto-Renewal Will Fail'
-      WHEN auto_renewal_will_fail_logic_flag = TRUE AND (current_subscription_end_date = current_date_90_days) THEN 'Auto-Renewal Will Fail'
-      WHEN eoa_renewal_flag = TRUE AND (current_subscription_end_date = current_date_90_days) THEN 'EOA Renewal'
-      WHEN will_churn_flag = TRUE AND (current_subscription_end_date = current_date_90_days) THEN 'Renewal Risk: Will Churn'
-      WHEN renewal_payment_failure = TRUE AND failure_date = DATEADD('day', -1, CURRENT_DATE) THEN 'Renewal with Payment Failure'
+    CASE WHEN po_required_flag = TRUE AND (current_subscription_end_date = current_date_60_days) AND arr_basis > 3000 THEN 'PO Required'
+      WHEN multiyear_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) AND arr_basis > 3000 THEN 'Multiyear Renewal'
+      WHEN eoa_auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Auto-Renewal Will Fail'
+      WHEN auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date = current_date_60_days) AND arr_basis > 3000 THEN 'Auto-Renewal Will Fail'
+      WHEN auto_renewal_will_fail_logic_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Auto-Renewal Will Fail'
+      --      WHEN eoa_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'EOA Renewal'
+      WHEN will_churn_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Renewal Risk: Will Churn'
+      WHEN renewal_payment_failure = TRUE AND current_subscription_end_date <= CURRENT_DATE AND failure_date = DATEADD('day', -1, CURRENT_DATE) THEN 'Renewal with Payment Failure'
       WHEN
         auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date = DATEADD('day', -1, CURRENT_DATE) AND (eoa_flag = FALSE AND arr_basis > 3000)
         THEN 'Auto-Renew Recently Turned Off'
@@ -1371,6 +1411,10 @@ distinct_cases AS (
             case_data.case_context,
             ' ',
             final.latest_switch_date,
+            ' Cancel Reason:',
+            final.cancel_reason,
+            ' Cancel Comments:',
+            final.cancel_comments,
             ' EOA Account:',
             final.eoa_flag,
             ' Partner Opp:',
@@ -1540,14 +1584,19 @@ distinct_cases AS (
 
 case_output AS (
   SELECT
-    * EXCLUDE (context),
-    CASE WHEN owner_id != '00G8X000006WmU3' THEN CONCAT(context, ' Skip Queue Flag: True')
-      ELSE CONCAT(context, ' Skip Queue Flag: False')
-    END                                                                                AS context_final,
-    COALESCE(owner_id IS NULL AND case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
-    CURRENT_DATE                                                                       AS query_run_date
+    distinct_cases.* EXCLUDE (context),
+    CASE WHEN distinct_cases.owner_id != '00G8X000006WmU3' THEN CONCAT(distinct_cases.context, ' Skip Queue Flag: True')
+      ELSE CONCAT(distinct_cases.context, ' Skip Queue Flag: False')
+    END                                                                                                              AS context_final,
+    COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
+    CURRENT_DATE                                                                                                     AS query_run_date
   FROM distinct_cases
+  LEFT JOIN wk_sales_gds_cases
+    ON distinct_cases.account_id = wk_sales_gds_cases.dim_crm_account_id
+      AND distinct_cases.case_subject = wk_sales_gds_cases.subject
+      AND distinct_cases.case_opportunity_id = wk_sales_gds_cases.dim_crm_opportunity_id
   WHERE remove_flag = FALSE
+    AND wk_sales_gds_cases.dim_crm_account_id IS NULL
 )
 
 {{ dbt_audit(
@@ -1555,5 +1604,5 @@ case_output AS (
     created_by="@sglad",
     updated_by="@mfleisher",
     created_date="2024-07-02",
-    updated_date="2024-07-26"
+    updated_date="2024-07-30"
 ) }}

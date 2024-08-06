@@ -1,6 +1,7 @@
 {{ config(
     tags=["product", "mnpi_exception"],
     materialized = "incremental",
+    on_schema_change='sync_all_columns',
     unique_key = "dim_ping_instance_id"
 ) }}
 
@@ -87,7 +88,6 @@
         ELSE 'Self-Managed'
       END                                                                                                                                         AS ping_deployment_type,
       COALESCE(raw_usage_data.raw_usage_data_payload, usage_data.raw_usage_data_payload_reconstructed)                                            AS raw_usage_data_payload,
-      IFF(dim_installation_id = '8b52effca410f0a380b0fcffaa1260e7', 'SaaS - Manual', 'Self-Managed') AS ping_type --GitLab SaaS pings here are manual, everything else is SM
     FROM usage_data
     LEFT JOIN raw_usage_data
       ON usage_data.raw_usage_data_id = raw_usage_data.raw_usage_data_id
@@ -175,8 +175,7 @@
       FALSE AS is_saas_dedicated,
       'SaaS' AS ping_delivery_type,
       'GitLab.com' AS ping_deployment_type,
-      raw_usage_data_payload,
-      ping_type
+      raw_usage_data_payload
     FROM automated_instance_service_ping
     WHERE created_at >= '2023-02-19' --start using the automated SaaS Service Ping as of 2023-02-19
 
@@ -195,5 +194,5 @@
     created_by="@icooper-acp",
     updated_by="@utkarsh060",
     created_date="2022-03-17",
-    updated_date="2024-05-10"
+    updated_date="2024-08-01"
 ) }}

@@ -587,11 +587,11 @@ models:
         description: The Sales Dev Rep's employee number
       - name: sales_dev_rep_role_name
         description: The Sales Dev Rep's Role Name from SFDC
-      - name: sales_dev_rep_full_name
+      - name: sales_dev_rep_user_full_name
         description: The Sales Dev Rep's Full Name
       - name: sales_dev_manager_employee_number
         description: The Sales Dev Rep's Manager's employee number
-      - name: sales_dev_manager_user_role_name
+      - name: sales_dev_rep_manager_full_name
         description: The Sales Dev Rep's Manager's role name from SFDC.
       - name: sales_dev_manager_full_name
         description: The Sales Dev Rep's Manager's full name. 
@@ -599,7 +599,15 @@ models:
         description: The Sales Dev Rep's Leader's employee number
       - name: sales_dev_leader_user_role_name
         description: The Sales Dev Rep's Leader's role name from SFDC.
-      - name: sales_dev_leader_full_name
+      - name: sales_dev_rep_leader_full_name
         description: The Sales Dev Rep's Leader's full name. 
       - name: snapshot_date
         description: The date the snapshot was last updated for the hierarchy of that record. 
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_user_role_hierarchy_fiscal_year
+        description: The fiscal year of the snapshotted Sales Dev Rep role hierarchy being used. 

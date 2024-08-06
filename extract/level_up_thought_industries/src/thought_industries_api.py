@@ -91,8 +91,8 @@ class ThoughtIndustries(ABC):
 
             # response has events
             if events:
-                events_to_print = [events[0]] + [events[-1]]
-                info(f"\nfirst & last event from latest response: {events_to_print}")
+                events_to_log = [events[0]] + [events[-1]]
+                info(f"\nfirst & last event from latest response: {events_to_log}")
                 final_events = final_events + events
 
                 prev_epoch_end_ms = current_epoch_end_ms
@@ -217,9 +217,57 @@ class CourseActions(ThoughtIndustries):
         return "incoming/v2/events/courseAction"
 
 
+class CoursePurchases(ThoughtIndustries):
+    """Class for CoursePurchases endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "course_purchases"
+
+    def get_endpoint_url(self) -> str:
+        """implement abstract class"""
+        return "incoming/v2/events/coursePurchase"
+
+
+class LearningPathActions(ThoughtIndustries):
+    """Class for LearningPathActions endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "learning_path_actions"
+
+    def get_endpoint_url(self) -> str:
+        """implement abstract class"""
+        return "incoming/v2/events/learningPathAction"
+
+
+class EmailCaptures(ThoughtIndustries):
+    """Class for EmailCaptures endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "email_captures"
+
+    def get_endpoint_url(self) -> str:
+        """implement abstract class"""
+        return "incoming/v2/events/emailCapture"
+
+
+class Awards(ThoughtIndustries):
+    """Class for Awards endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "awards"
+
+    def get_endpoint_url(self) -> str:
+        """implement abstract class"""
+        return "incoming/v2/events/award"
+
+
 if __name__ == "__main__":
-    EPOCH_START_MS = 1675904400000
-    EPOCH_END_MS = 1676246400000
-    cls_to_run = CourseCompletions()
+    EPOCH_START_MS = 1715904400000
+    EPOCH_END_MS = 1716050561000
+    cls_to_run = CoursePurchases()
     result_events = cls_to_run.fetch_and_upload_data(EPOCH_START_MS, EPOCH_END_MS)
     info(f"\nresult_events: {result_events[:10]}")

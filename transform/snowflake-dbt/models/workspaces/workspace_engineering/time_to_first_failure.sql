@@ -51,7 +51,7 @@ failed_mr_pipelines AS (
   AND status = 'failed'
   AND PIPELINE_SCHEDULE_ID IS NULL
   AND ref LIKE 'refs/merge-requests%'
-  AND ci_pipeline_source != 12
+  AND ci_pipeline_source != 'parent_pipeline'
   AND dim_user_id != 1614863
 
 ),
