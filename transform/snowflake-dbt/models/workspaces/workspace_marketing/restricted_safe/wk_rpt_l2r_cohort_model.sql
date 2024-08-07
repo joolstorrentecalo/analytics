@@ -36,10 +36,16 @@
         is_net_arr_closed_deal,
         is_net_arr_pipeline_created,
         is_eligible_age_analysis,
-        crm_opp_owner_sales_segment_stamped,
-        crm_opp_owner_region_stamped,
-        crm_opp_owner_area_stamped,
-        crm_opp_owner_geo_stamped,
+        report_segment,
+        report_geo,
+        report_region,
+        report_area,
+        report_role_name,
+        report_role_level_1,
+        report_role_level_2,
+        report_role_level_3,
+        report_role_level_4,
+        report_role_level_5,
         opp_account_demographics_sales_segment,
         opp_account_demographics_region,
         opp_account_demographics_geo,
@@ -83,10 +89,16 @@
         is_net_arr_closed_deal,
         is_net_arr_pipeline_created,
         is_eligible_age_analysis,
-        crm_opp_owner_sales_segment_stamped,
-        crm_opp_owner_region_stamped,
-        crm_opp_owner_area_stamped,
-        crm_opp_owner_geo_stamped,
+        report_segment,
+        report_geo,
+        report_region,
+        report_area,
+        report_role_name,
+        report_role_level_1,
+        report_role_level_2,
+        report_role_level_3,
+        report_role_level_4,
+        report_role_level_5,
         opp_account_demographics_sales_segment,
         opp_account_demographics_region,
         opp_account_demographics_geo,
@@ -123,7 +135,7 @@
             ELSE NULL
         END AS sao_to_close_days        
     FROM cohort_base
-    {{dbt_utils.group_by(n=40)}}
+    {{dbt_utils.group_by(n=46)}}
 
 ) 
 
@@ -132,5 +144,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2024-06-20",
-    updated_date="2024-06-24",
+    updated_date="2024-07-24",
 ) }}

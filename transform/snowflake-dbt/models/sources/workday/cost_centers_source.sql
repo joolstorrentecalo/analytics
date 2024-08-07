@@ -9,7 +9,10 @@ WITH source AS (
 renamed AS (
 
   SELECT
+    dept_workday_id::VARCHAR           AS department_workday_id,
     dept_reference_id::VARCHAR         AS department_refid,
+    division_workday_id::VARCHAR       AS division_workday_id,
+    cost_center_workday_id::VARCHAR    AS cost_center_workday_id,
     department_name::VARCHAR           AS department_name,
     cost_center::VARCHAR               AS cost_center,
     division_refid::VARCHAR            AS division_refid,

@@ -68,3 +68,6 @@ sources:
 
       - name: cost_centers
         description: '{{ doc("cost_centers") }}'
+
+      - name: job_profiles_historical_source
+      - name: blended_job_profiles_source

@@ -11,7 +11,7 @@
                            , 'Gated Content - Whitepaper', 'Live Event', 'Newsletter', 'Request - Contact', 'Request - Professional Services', 'Request - Public Sector'
                            , 'Security Newsletter', 'Trial - Enterprise', 'Virtual Sponsorship', 'Web Chat', 'Web Direct', 'Web', 'Webcast')
         THEN 'Marketing/Inbound'
-      WHEN {{ lead_source }} in ('Advertisement', 'Conference', 'Field Event', 'Owned Event')
+      WHEN {{ lead_source }} in ('Advertisement', 'Conference', 'Field Event', 'Gong', 'Owned Event','UserGems')
         THEN 'Marketing/Outbound'
       WHEN {{ lead_source }} in ('Clearbit', 'Datanyze','GovWin IQ', 'Leadware', 'LinkedIn', 'Prospecting - LeadIQ', 'Prospecting - General', 'Prospecting', 'SDR Generated')
         THEN 'Prospecting'
@@ -28,7 +28,7 @@
         THEN 'core'
       WHEN {{ lead_source }} in ('Consultancy Request','Contact Request','Content','Demo','Drift','Education','EE Version Check','Email Request','Email Subscription','Enterprise Trial','Gated Content - eBook','Gated Content - General','Gated Content - Report','Gated Content - Video','Gated Content - Whitepaper','GitLab.com','MovingtoGitLab','Newsletter','OSS','Request - Community','Request - Contact','Request - Professional Services','Request - Public Sector','Security Newsletter','Startup Application','Web','Web Chat','White Paper','Trust Center')
         THEN 'inbound'
-      WHEN {{ lead_source }} in ('6sense', 'AE Generated', 'Clearbit','Datanyze','DiscoverOrg','Gemnasium','GitLab Hosted','Gitorious','gmail','GovWin IQ','Leadware','LinkedIn','Live Event','Prospecting','Prospecting - General','Prospecting - LeadIQ','SDR Generated','seamless.ai','Zoominfo')
+      WHEN {{ lead_source }} in ('6sense', 'AE Generated', 'Clearbit','Datanyze','DiscoverOrg','Gemnasium','GitLab Hosted','Gitorious','gmail','Gong','GovWin IQ','Leadware','LinkedIn','Live Event','Prospecting','Prospecting - General','Prospecting - LeadIQ','SDR Generated','seamless.ai','UserGems','Zoominfo')
         THEN 'outbound'
       WHEN {{ lead_source }} in ('Advertisement', 'Conference', 'Content Syndication', 'Executive Roundtable', 'Field Event', 'Owned Event','Promotion','Vendor Arranged Meetings','Virtual Sponsorship')
         THEN 'paid demand gen'

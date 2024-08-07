@@ -1,3 +1,7 @@
+{{ config(
+    tags=["mnpi_exception"]
+) }}
+
 WITH contact_role AS (
 
     SELECT *
@@ -34,7 +38,7 @@ WITH contact_role AS (
 {{ dbt_audit(
     cte_ref="final_opportunity_contacts",
     created_by="@mcooperDD",
-    updated_by="@mcooperDD",
+    updated_by="@rkohnke",
     created_date="2020-11-20",
-    updated_date="2020-11-20"
+    updated_date="2024-07-24"
 ) }}

@@ -30,7 +30,7 @@ WITH gitlab_ai_gateway_request_events AS (
 
     --attribution properties
     gitlab_global_user_id,
-    instance_id,
+    dim_instance_id,
     host_name,
     dim_installation_ids,
     namespace_ids,

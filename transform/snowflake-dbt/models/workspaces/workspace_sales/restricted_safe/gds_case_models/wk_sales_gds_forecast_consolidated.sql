@@ -848,11 +848,11 @@ full_base_data AS (
         THEN
           CASE WHEN opportunity_data.parent_crm_account_geo IN ('AMER', 'APJ', 'APAC')
               OR opportunity_data.parent_crm_account_region IN ('AMER', 'APJ', 'APAC')
-              OR opportunity_data.crm_opp_owner_area_stamped IN ('AMER', 'APJ', 'APAC')
+              OR opportunity_data.report_area IN ('AMER', 'APJ', 'APAC')
               THEN 'AMER/APJ'
             WHEN opportunity_data.parent_crm_account_geo IN ('EMEA')
               OR opportunity_data.parent_crm_account_region IN ('EMEA')
-              OR opportunity_data.crm_opp_owner_area_stamped IN ('EMEA')
+              OR opportunity_data.report_area IN ('EMEA')
               THEN 'EMEA'
 
             ELSE account_base.team
@@ -882,9 +882,9 @@ full_base_data AS (
       -- not(opportunity_data.opportunity_owner like any ('%Taylor Lund%','%Miguel Nunes%','%Kazem Kutob%'))
       -- and
       AND (
-        opportunity_data.crm_opp_owner_sales_segment_stamped = 'SMB'
+        opportunity_data.report_segment = 'SMB'
         OR (
-          opportunity_data.crm_opp_owner_sales_segment_stamped IS NULL
+          opportunity_data.report_segment IS NULL
           AND (
             opportunity_data.sales_type = 'New Business' OR account_base.crm_account_owner LIKE '%SMB Sales%'
             OR account_base.owner_role LIKE 'Advocate%'
@@ -1094,7 +1094,7 @@ renewal_forecast_base_data AS (
     AND ((is_closed AND close_month < DATE_TRUNC('month', CURRENT_DATE)))
     AND sales_type = 'Renewal'
     AND team != 'Other'
-    AND (crm_account_user_sales_segment = 'SMB' OR close_date < '2024-02-01')
+    AND (parent_crm_account_sales_segment = 'SMB' OR close_date < '2024-02-01')
     AND gds_oppty_flag
   GROUP BY 1, 2, 3
 )
@@ -1615,7 +1615,7 @@ actual_data AS (
     END)                                   AS closed_renewal_arr,
     SUM(CASE
       WHEN (is_won OR (is_closed AND sales_type = 'Renewal')) AND trx_type_grouping != 'First Order'
-        AND crm_account_user_sales_segment != 'SMB' THEN net_arr
+        AND report_segment != 'SMB' THEN net_arr
       ELSE 0
     END)                                   AS non_gds_account_arr
   FROM full_base_data

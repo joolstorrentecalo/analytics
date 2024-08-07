@@ -17,6 +17,18 @@ models:
            masking_policy: analyst_sales_sensitive
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_rep_user_full_name
+        description: The Sales Dev Rep's Full Name
 
   - name: mart_crm_event
     description: Record of all Salesforce Events related to leads, contact, accounts, and opportunities. 
@@ -129,22 +141,12 @@ models:
         description: Boolean value - Whether or not there is a reminder set for this Event. 
       - name: is_answered
         description: Boolean value - Whether or not the prospect/customer answered/responded to the Event invite. 
-      - name: is_bad_number
-        description: Boolean value - Whether or not the number dialed was a bad/faulty number. 
-      - name: is_busy
-        description: Boolean value - Whether or not the recipient of the call was busy. 
       - name: is_correct_contact
-        description: Boolean value - Whether or not the ep reached the correct contact.  
-      - name: is_left_message
-        description: Boolean value - Whether or not a VM message was left. 
-      - name: is_not_answered
-        description: Boolean value - Whether or not the recipient did not answer the phone. 
+        description: Boolean value - Whether or not the ep reached the correct contact. 
       - name: is_meeting_canceled
         description: Boolean value - Whether or not the meeting was cancelled. 
       - name: is_closed_event
         description: Boolean value - Whether or not the Event is closed. 
-      - name: is_activity
-        description: Boolean value - Whether or not this Event is tracked as an activity. 
       - name: event_recurrence_activity_id
         description: ID of the Event's recurring activity. 
       - name: event_recurrence_day_of_week
@@ -179,6 +181,18 @@ models:
         description: The time/date stamp from SFDC when this record was created.
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_rep_user_full_name
+        description: The Sales Dev Rep's Full Name
 
   - name: rpt_scaffold_sales_funnel
     description: Scaffold table that provides a foundational structure between fct_sales_funnel_actual and fct_sales_funnel_target_daily to support the visualization layer. Link to handbook documentation on [scaffold tables](https://about.gitlab.com/handbook/business-technology/data-team/platform/edw/#scaffold-tables)
@@ -197,3 +211,30 @@ models:
       It serves as a singular source for creating pipeline visualizations in Tableau, 
       offering a comprehensive view across different timeframes. This report is a multi
       grain table, since the data is at 3 different levels of granularity.
+
+  - name: rpt_final_bookings
+    description: >
+      The Pipeline data model (mart_crm_opportunity_7th_day_weekly_snapshot) is designed to 
+      snapshot data every 7th day from the start of each quarter, plus the last day of the quarter. 
+      However, many deals are closed on the last day of the quarter but are not settled until a 
+      few days into the new quarter.
+
+      This report captures the final numbers for created and booked ARR from the live data (mart_crm_opportunity), 
+      ensuring a complete perspective on each quarter. It includes all the different 
+      date fields (at the quarter or year level) and data qualifiers used in the mart 
+      table to allow for data union. The values that come from the live data
+      are aliased as day '94' of the quarter.
+
+  - name: rpt_pipeline_coverage
+    description: >
+      This report table simplifies tracking sales performance by showing targets and actuals
+      combined, every seven days within a quarter. 
+
+      It combines daily targets, daily actuals along with the total quarterly targets
+      and actuals. The daily actuals come from the snapshot data, whereas the quarterly actuals
+      come from the live data. This is because there are many deals are closed on the 
+      last day of the quarter but are not settled until a few days into the new quarter.
+
+      This model includes both the numerator and denominator for calculating
+      coverage throughout a quarter
+                          

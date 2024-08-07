@@ -239,6 +239,14 @@
       dim_crm_opportunity.sa_tech_evaluation_end_date,
       dim_crm_opportunity.sa_tech_evaluation_start_date,
 
+      --sales dev hierarchy fields
+      dim_sales_dev_user_hierarchy.sales_dev_rep_user_full_name,
+      dim_sales_dev_user_hierarchy.sales_dev_rep_manager_full_name,
+      dim_sales_dev_user_hierarchy.sales_dev_rep_leader_full_name,
+      dim_sales_dev_user_hierarchy.sales_dev_rep_user_role_level_1,
+      dim_sales_dev_user_hierarchy.sales_dev_rep_user_role_level_2,
+      dim_sales_dev_user_hierarchy.sales_dev_rep_user_role_level_3,
+
       --Command Plan fields
       dim_crm_opportunity.cp_partner,
       dim_crm_opportunity.cp_paper_process,
@@ -398,10 +406,11 @@
       fct_crm_opportunity.calculated_age_in_days,
       fct_crm_opportunity.days_since_last_activity,
 
-      -- Additive fields
+    --additive fields
       fct_crm_opportunity.arr_basis,
       fct_crm_opportunity.iacv,
       fct_crm_opportunity.net_iacv,
+      fct_crm_opportunity.opportunity_based_iacv_to_net_arr_ratio,
       fct_crm_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       fct_crm_opportunity.calculated_from_ratio_net_arr,
       fct_crm_opportunity.net_arr,
@@ -441,7 +450,17 @@
       fct_crm_opportunity.arr_basis_for_clari,
       fct_crm_opportunity.forecasted_churn_for_clari,
       fct_crm_opportunity.override_arr_basis_clari,
-      fct_crm_opportunity.cycle_time_in_days
+      fct_crm_opportunity.cycle_time_in_days,
+      fct_crm_opportunity.created_arr,
+      fct_crm_opportunity.closed_won_opps,
+      fct_crm_opportunity.closed_opps,
+      fct_crm_opportunity.created_deals,
+      fct_crm_opportunity.positive_booked_deal_count,
+      fct_crm_opportunity.positive_booked_net_arr,
+      fct_crm_opportunity.positive_open_deal_count,
+      fct_crm_opportunity.positive_open_net_arr,
+      fct_crm_opportunity.closed_deals,
+      fct_crm_opportunity.closed_net_arr
       
 
     FROM fct_crm_opportunity
@@ -513,15 +532,18 @@
       ON fct_crm_opportunity.fulfillment_partner = fulfillment_partner.dim_crm_account_id
     LEFT JOIN dim_crm_user
       ON fct_crm_opportunity.dim_crm_user_id = dim_crm_user.dim_crm_user_id
+    LEFT JOIN {{ref('dim_sales_dev_user_hierarchy')}}
+      ON fct_crm_opportunity.dim_crm_person_id=dim_sales_dev_user_hierarchy.dim_crm_user_id
+        AND fct_crm_opportunity.stage_1_discovery_date=dim_sales_dev_user_hierarchy.snapshot_date
 
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@chrissharp",
+    updated_by="@rkohnke",
     created_date="2020-12-07",
-    updated_date="2024-06-13"
+    updated_date="2024-07-31"
   ) }}
 
 

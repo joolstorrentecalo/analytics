@@ -47,7 +47,7 @@ dag = DAG(
     # FYI: on first run, data is backfilled thru 2022-03-01
     start_date=datetime(2022, 3, 1),
     catchup=True,
-    max_active_runs=1,  # due to API rate limiting
+    max_active_runs=2,  # due to API rate limiting
     concurrency=3,  # num of max_tasks, limit due to API rate limiting
 )
 
@@ -57,6 +57,10 @@ endpoint_classes = (
     "CourseViews",
     "Logins",
     "Visits",
+    "CoursePurchases",
+    "LearningPathActions",
+    "EmailCaptures",
+    # "Awards",
 )
 extract_tasks = []
 

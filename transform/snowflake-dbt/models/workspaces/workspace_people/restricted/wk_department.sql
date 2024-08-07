@@ -32,7 +32,11 @@ SELECT
     WHEN department = 'UX'
       THEN 'Product'
     WHEN department = 'Data'
-      THEN 'Marketing'      
+      THEN 'Marketing' 
+    WHEN department = 'Security'
+      THEN 'Security'
+    WHEN department = 'Product'
+      THEN 'Product' 
     ELSE division
   END AS modified_division,
   cost_center,

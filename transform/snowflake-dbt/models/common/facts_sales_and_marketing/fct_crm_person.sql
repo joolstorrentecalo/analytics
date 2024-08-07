@@ -311,7 +311,7 @@ WITH account_dims_mapping AS (
       crm_person.high_priority_datetime,
      -- flags
       CASE
-          WHEN mqls.first_mql_date IS NOT NULL THEN 1
+          WHEN mqls.last_mql_date IS NOT NULL THEN 1
           ELSE 0
         END                                                                                                               AS is_mql,
       CASE
@@ -470,5 +470,5 @@ WITH account_dims_mapping AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-12-01",
-    updated_date="2024-01-19"
+    updated_date="2024-07-23"
 ) }}

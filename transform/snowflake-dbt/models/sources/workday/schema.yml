@@ -509,6 +509,7 @@ models:
   - name: job_profiles_snapshots_source
     description: '{{ doc("job_profiles") }}'
     columns:
+      - name: report_effective_date
       - name: job_code
         description: The unique identification for each role at GitLab. A job code is different for each role and each seniority level (example - IT Security Analyst and Senior IT Security Analyst would have a different job_code)
         data_tests: 
@@ -536,6 +537,24 @@ models:
       - name: job_level
       - name: is_job_profile_active
       - name: job_workday_id
+
+  
+
+  - name: blended_job_profiles_source
+    description: This model blends the job_profiles_snapshot and job_profiles_historical tables. The unique organization identifier is job_workday_id.
+    columns:
+      - name: job_code
+      - name: job_workday_id
+      - name: job_profile
+      - name: job_family
+      - name: management_level
+      - name: job_level
+      - name: is_job_profile_active
+      - name: job_workday_id
+      - name: valid_from
+      - name: valid_to
+
+
 
   - name: staffing_history_approved_source
     columns:

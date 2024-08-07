@@ -182,6 +182,24 @@ models:
         description: The bizible touchpoint marketing channel, of the most recent touchpoint. 
       - name: bizible_most_recent_marketing_channel_path
         description: The bizible touchpoint marketing channel path, of the most recent touchpoint.
+      - name: has_six_sense_6_qa
+        description: The 6QA status of the person for the product.
+      - name: six_sense_account_6_qa_end_date
+        description: The date the person's account was disqualified from 6QA status 
+      - name: six_sense_account_6_qa_start_date
+        description: The date the person's account qualified for 6QA status 
+      - name: six_sense_account_buying_stage
+        description: The 6QA buying stage of the person's account
+      - name: six_sense_account_profile_fit
+        description: A measure of how similar a person's company is to the ideal customer profile.
+      - name: six_sense_person_grade
+        description: The 6Sense gradation of a person's engagement score. 
+      - name: six_sense_person_profile_fit
+        description: A measure of how similar a person is to the ideal customer profile.
+      - name: six_sense_person_update_date
+        description: The latest update date and time when 6sense Scores were updated.
+      - name: six_sense_segments
+        description: The Person's 6QA segment. 
       - name: inactive_contact
         description: A SFDC Contact field that shows whether or not a given contact is still with the company/account they are related to. 
 
@@ -1136,6 +1154,8 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: ci_pipeline_source 
+        description: Defines failure reasions based on the [pipeline.rb](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/enums/ci/pipeline.rb#L8-21) file
 
   - name: prep_action
     description: '{{ doc("prep_action") }}'
@@ -1201,6 +1221,8 @@ models:
       - name: dim_ci_runner_id
         description: ID of the runner with which the CI build has been run.
       - name: dim_ci_stage_id
+      - name: failure_reason
+        description: The reason for build failure as defined in [commit_status.rb](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/enums/ci/commit_status.rb)
 
   - name: prep_ci_runner
     description: '{{ doc("prep_ci_runner") }}'
@@ -1800,8 +1822,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: is_saas_dedicated
         description: '{{ doc("is_saas_dedicated") }}'
       - name: ping_delivery_type
@@ -1868,8 +1888,6 @@ models:
         description: '{{ doc("ping_delivery_type") }}'
       - name: ping_deployment_type
         description: '{{ doc("ping_deployment_type") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: version
         description: '{{ doc("version_ping_model") }}'
 
@@ -2170,7 +2188,7 @@ models:
       - name: is_staging_event
         description: '{{ doc("is_staging_event") }}'
       - name: gitlab_global_user_id
-        description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+        description: '{{ doc("gitlab_global_user_id") }}'
       - name: gsc_feature_enabled_by_namespace_ids
         description: '{{ doc("gsc_feature_enabled_by_namespace_ids") }}'
       - name: suggestion_source
@@ -2185,6 +2203,12 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: correlation_id
+        description: ' { doc("gsc_correlation_id") } '
+      - name: dim_instance_id
+        description: ' { doc("dim_instance_id") } '
 
   - name: prep_snowplow_page_views_all
     description: View combining all snowplow_page_view partitions.

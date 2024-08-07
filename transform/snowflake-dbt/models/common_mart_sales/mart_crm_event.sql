@@ -1,3 +1,7 @@
+{{ config(
+    tags=["mnpi_exception"]
+) }}
+
 {{ simple_cte([
     ('dim_crm_event', 'dim_crm_event'),
     ('fct_crm_event', 'fct_crm_event')
@@ -43,6 +47,14 @@
     dim_crm_event.first_opportunity_event_created_date,
     dim_crm_event.partner_marketing_task_subject,
 
+    --sales dev hierarchy fields
+    dim_sales_dev_user_hierarchy.sales_dev_rep_user_full_name,
+    dim_sales_dev_user_hierarchy.sales_dev_rep_manager_full_name,
+    dim_sales_dev_user_hierarchy.sales_dev_rep_leader_full_name,
+    dim_sales_dev_user_hierarchy.sales_dev_rep_user_role_level_1,
+    dim_sales_dev_user_hierarchy.sales_dev_rep_user_role_level_2,
+    dim_sales_dev_user_hierarchy.sales_dev_rep_user_role_level_3,
+
     --Dates and Datetimes
     dim_crm_event.event_start_date_time,
     dim_crm_event.event_end_date_time,
@@ -70,6 +82,9 @@
     FROM fct_crm_event 
     LEFT JOIN dim_crm_event 
       ON fct_crm_event.dim_crm_event_sk = dim_crm_event.dim_crm_event_sk
+    LEFT JOIN {{ref('dim_sales_dev_user_hierarchy')}}
+      ON fct_crm_event.dim_crm_user_id=dim_sales_dev_user_hierarchy.dim_crm_user_id
+        AND fct_crm_event.event_date=dim_sales_dev_user_hierarchy.snapshot_date
 
 
 )
@@ -79,5 +94,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-08-22",
-    updated_date="2023-08-23"
+    updated_date="2024-07-31"
 ) }}

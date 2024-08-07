@@ -41,7 +41,7 @@ finished_pipelines as (
     ON ci_stages.dim_ci_pipeline_id = pipelines.dim_ci_pipeline_id
   WHERE pipelines.dim_project_id = 278964
     AND pipelines.finished_at IS NOT NULL
-    AND pipelines.ci_pipeline_source != 12
+    AND pipelines.ci_pipeline_source != 'parent_pipeline'
     AND pipelines.status IN ('success', 'failed')
     AND builds.ci_build_type != 'Ci::Bridge'
   GROUP BY

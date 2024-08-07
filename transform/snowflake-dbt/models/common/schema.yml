@@ -3099,8 +3099,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: is_saas_dedicated
         description: '{{ doc("is_saas_dedicated") }}'
       - name: ping_delivery_type
@@ -3306,8 +3304,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: dim_app_release_major_minor_sk
         description: '{{ doc("dim_app_release_major_minor_sk") }}'
       - name: dim_latest_available_app_release_major_minor_sk
@@ -4169,8 +4165,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: installation_creation_date
         description: '{{ doc("installation_creation_date") }}'
 
@@ -4796,7 +4790,7 @@ models:
       - name: six_sense_account_profile_score
         description: A measure of how similar a company is to the ideal customer profile.
       - name: six_sense_account_buying_stage
-        description: The 6QA buting stage of the account
+        description: The 6QA buying stage of the account
       - name: six_sense_account_numerical_reach_score
         description:  measure of current outreach activities against optimal quality.
       - name: six_sense_account_update_date
@@ -4829,8 +4823,32 @@ models:
         description: Automatically populates two months out from the actively working start date to indicate when an outbound account should be considered for removal from the outbound pipeline.
       - name: actively_working_start_date
         description: Automatically datestamps the date and time that an account was moved to a BDRs outbound prospecting list.
-
-
+      - name: qualified_days_since_last_activity
+        description: Qualified's calculation, in days, of time elapsed since last activity on the account. 
+      - name: qualified_signals_active_session_time
+        description: Qualified's calculation of active session time. 
+      - name: qualified_signals_bot_conversation_count
+        description: Qualified's count of bot conversations. 
+      - name: qualified_condition
+        description: Qualified's Account condition
+      - name: qualified_score
+        description: Qualified's Account score
+      - name: qualified_trend
+        description: Qualified's Account trend
+      - name: qualified_meetings_booked
+        description: Qualified's count of booked meetings on the account
+      - name: qualified_signals_rep_conversation_count
+        description: Qualified's count of rep conversations
+      - name: qualified_signals_research_state
+        description: Qualified's Account research state.
+      - name: qualified_signals_research_score
+        description: Qualified's Account research score
+      - name: qualified_signals_session_count
+        description: Qualified's count of sessions on the account
+      - name: qualified_visitors_count
+        description: Qualified's count of visitors on the account
+      - name: account_domains
+        description: All domain names associated with this account, separated by a comma.
 
   - name: dim_crm_account_daily_snapshot
     description: '{{ doc("dim_crm_account_daily_snapshot") }}'
@@ -5169,62 +5187,30 @@ models:
         description: One of the listed competitors is Unknown.
       - name: competitors_visual_studio_flag
         description: One of the listed competitors is Visual Studio Team Services.
-      - name: key_ot
-        description: Order type
-      - name: key_segment
-        description: Stamped user segment
-      - name: key_segment_geo
-        description: Concatenated stamped user segment and stamped user geo
-      - name: key_segment_geo_area
-        description: Concatenated stamped user segment, stamped user geo, and stamped user area
-      - name: key_segment_geo_ot
-        description: Concatenated stamped user segment, stamped user geo and stamped order type
-      - name: key_segment_geo_region
-        description: Concatenated stamped user segment, stamped user geo, and stamped user region
-      - name: key_segment_geo_region_area
-        description: Concatenated stamped user segment, stamped user geo, stamped user region, and stamped user area
-      - name: key_segment_geo_region_area_ot
-        description: Concatenated stamped user segment, stamped user geo, stamped user region, stamped user area, and stamped order type
-      - name: key_segment_geo_region_area_sqs
-        description: Concatenated stamped user segment, stamped user geo, stamped user region, stamped user area, and sales qualified source
-      - name: key_segment_geo_region_ot
-        description: Concatenated stamped user segment, stamped user geo, stamped user region, and stamped order type
-      - name: key_segment_geo_region_sqs
-        description: Concatenated stamped user segment, stamped user geo, stamped user region, and sales qualified source
-      - name: key_segment_geo_sqs
-        description: Concatenated stamped user segment, stamped user geo, and sales qualified source
-      - name: key_segment_ot
-        description:  Concatenated stamped user segment and stamped order type
-      - name: key_segment_sqs
-        description: Concatenated stamped user segment and sales qualified source
-      - name: key_sqs
-        description: Sales qualified source
       - name: reason_for_loss_calc
         description: Grouping of reason for loss and reason for downgrade to broader categories.
       - name: reason_for_loss_staged
         description: Combination of reason for loss and reason for downgrade.
-      - name: report_opportunity_user_area
-        description: Lower case stamped user area.
-      - name: report_opportunity_user_geo
-        description: Lower case stamped user geo.
-      - name: report_opportunity_user_region
-        description: Lower case stamped user region.
-      - name: report_opportunity_user_segment
-        description: Lower case stamped user segment.
-      - name: report_user_segment_geo_region_area
-        description: Lower case stamped user segment geo region area.
-      - name: report_user_segment_geo_region_area_sqs_ot
-        description: Lower case concatenated user segment geo region area, sales qualified source, and order type.
-      - name: sales_team_asm_level
-        description: Sales team structure at the ASM level (segment-geo-region-area)
-      - name: sales_team_avp_rd_level
-        description: Sales team structure at the AVP RD level (segment-geo-region)
-      - name: sales_team_cro_level
-        description: Sales team structure at the CRO level (segment)
-      - name: sales_team_rd_asm_level
-        description: This code replicates the reporting structured of FY22.
-      - name: sales_team_vp_level
-        description: Sales team structure at the team VP level (segment-geo)
+      - name: report_segment
+        description: Stamped user segment.
+      - name: report_geo
+        description: Stamped user geo.
+      - name: report_region
+        description: Stamped user region.
+      - name: report_area
+        description: Stamped user area.
+      - name: report_role_name
+        description: User role name.
+      - name: report_role_level_1
+        description: User role level 1.
+      - name: report_role_level_2
+        description: User role level 2.
+      - name: report_role_level_3
+        description: User role level 3.
+      - name: report_role_level_4
+        description: User role level 4.
+      - name: report_role_level_5
+        description: User role level 5.
       - name: stage_name_3plus
         description: Grouping of stage names where all stages with numbers <=2 are in Pipeline and all above are +3 Pipeline.
       - name: stage_name_4plus
@@ -5602,7 +5588,6 @@ models:
         description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
       - name: valid_deal_count
         description: A Salesforce Opportunity field that gives a -1, 0, or 1 value based on whether or not it should be counted as a true closed won for accounting/reporting purposes
-      
 
   - name: fct_crm_opportunity_daily_snapshot
     description: '{{ doc("fct_crm_opportunity_daily_snapshot") }}'
@@ -6209,22 +6194,12 @@ models:
         description: Boolean value - Whether or not there is a reminder set for this Event. 
       - name: is_answered
         description: Boolean value - Whether or not the prospect/customer answered/responded to the Event invite. 
-      - name: is_bad_number
-        description: Boolean value - Whether or not the number dialed was a bad/faulty number. 
-      - name: is_busy
-        description: Boolean value - Whether or not the recipient of the call was busy. 
       - name: is_correct_contact
-        description: Boolean value - Whether or not the sales rep reached the correct contact.  
-      - name: is_left_message
-        description: Boolean value - Whether or not a VM message was left. 
-      - name: is_not_answered
-        description: Boolean value - Whether or not the recipient did not answer the phone. 
+        description: Boolean value - Whether or not the sales rep reached the correct contact.   
       - name: is_meeting_canceled
         description: Boolean value - Whether or not the meeting was cancelled. 
       - name: is_closed_event
         description: Boolean value - Whether or not the Event is closed. 
-      - name: is_activity
-        description: Boolean value - Whether or not this Event is tracked as an activity. 
       - name: event_recurrence_activity_id
         description: ID of the Event's recurring activity. 
       - name: event_recurrence_day_of_week
@@ -6260,7 +6235,6 @@ models:
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
 
-
   - name: dim_crm_task
     description: '{{ doc("dim_crm_task") }}'
     columns:
@@ -6278,6 +6252,68 @@ models:
            masking_policy: data_science_sensitive
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
+
+  - name: dim_sales_dev_user_hierarchy
+    description: A snapshotted history of sales dev user hierarchy from SFDC.
+    columns:
+      - name: sales_dev_rep_user_hierarchy_pk
+        description: The primary key generated from a combination of dim_crm_user_id and snapshot_date
+      - name: dim_crm_user_id
+        description: The SFDC User ID of the sales dev rep
+      - name: sales_dev_rep_direct_manager_id
+        description: The SFDC User ID of the sales dev rep's manager
+      - name: sales_dev_leader_id
+        description: The SFDC User ID of the sales dev rep's leader
+      - name: sales_dev_rep_role_name
+        description: The Sales Dev Rep's role name
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_user_role_hierarchy_fiscal_year
+        description: The fiscal year of the Sales Dev Rep's role hierarchy data
+      - name: sales_dev_rep_email
+        description: The Sales Dev Rep's email
+      - name: sales_dev_rep_user_full_name
+        description: The Sales Dev Rep's Full Name
+      - name: sales_dev_rep_title
+        description: The Sales Dev Rep's title
+      - name: sales_dev_rep_department
+        description: The Sales Dev Rep's department
+      - name: sales_dev_rep_team
+        description: The Sales Dev Rep's team
+      - name: sales_dev_rep_is_active
+        description: Whether The Sales Dev Rep is active
+      - name: sales_dev_rep_employee_number
+        description: The Sales Dev Rep's employee number
+      - name: crm_user_sales_segment
+        description: The Sales Dev Rep's sales segment
+      - name: crm_user_geo
+        description: The Sales Dev Rep's geo
+      - name: crm_user_region
+        description: The Sales Dev Rep's region
+      - name: crm_user_area
+        description: The Sales Dev Rep's area
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_manager_email
+        description: The Sales Dev Rep's Manager'semail
+      - name: sales_dev_manager_employee_number
+        description: The Sales Dev Rep's Manager'semployee number
+      - name: sales_dev_manager_user_role_name
+        description: The Sales Dev Rep's Manager'srole name
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name
+      - name: sales_dev_leader_employee_number
+        description: The Sales Dev Rep's Leader's employee number
+      - name: sales_dev_leader_email
+        description: The Sales Dev Rep's Leader's email
+      - name: snapshot_date
+        description: The snapshot date of the sales dev hierarchy data depicted
 
   - name: fct_crm_task
     description: '{{ doc("fct_crm_task") }}'
@@ -6676,14 +6712,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -6774,6 +6810,10 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_30
     description: '{{ doc("fct_behavior_structured_event_30") }}'
@@ -6929,14 +6969,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7027,6 +7067,10 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_90
     description: '{{ doc("fct_behavior_structured_event_90") }}'
@@ -7182,14 +7226,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7280,6 +7324,10 @@ models:
         description: ' {{ doc("code_suggestions_has_advanced_context") }} '
       - name: is_direct_connection
         description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_experiment
     description:  '{{ doc("fct_behavior_structured_event_experiment") }}'
@@ -7556,14 +7604,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7642,6 +7690,10 @@ models:
         description: ' {{ doc("unload_event_end") }} '
       - name: unload_event_start
         description: ' {{ doc("unload_event_start") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_without_assignment_190
     description: '{{ doc("fct_behavior_structured_event_without_assignment_190") }}'
@@ -7797,14 +7849,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -7883,6 +7935,10 @@ models:
         description: ' {{ doc("unload_event_end") }} '
       - name: unload_event_start
         description: ' {{ doc("unload_event_start") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
 
   - name: fct_behavior_structured_event_without_assignment_400
@@ -8039,14 +8095,14 @@ models:
         description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
       - name: namespace_ids
         description: ' {{ doc("code_suggestions_namespace_ids") }} '
-      - name: instance_id
+      - name: dim_instance_id
         description: ' {{ doc("dim_instance_id") }} '
       - name: host_name
         description: ' {{ doc("host_name") }} '
       - name: is_streaming
         description: ' {{ doc("code_suggestions_is_streaming") }} '
       - name: gitlab_global_user_id
-        description: ' {{ doc("code_suggestions_gitlab_global_user_id") }} '
+        description: ' {{ doc("gitlab_global_user_id") }} '
       - name: ide_extension_version_context
         description: ' {{ doc("ide_extension_version_context") }} '
       - name: ide_extension_version_context_schema
@@ -8125,6 +8181,10 @@ models:
         description: ' {{ doc("unload_event_end") }} '
       - name: unload_event_start
         description: ' {{ doc("unload_event_start") }} '
+      - name: gsc_instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: gsc_correlation_id
+        description: ' { doc("gsc_correlation_id") } '
 
   - name: fct_behavior_structured_event_redis_hll_counters
     description: '{{ doc("fct_behavior_structured_event_redis_hll_counters") }}'
@@ -9630,14 +9690,14 @@ models:
       description: ' {{ doc("code_suggestions_saas_namespace_ids") }}'
     - name: namespace_ids
       description: '{{ doc("code_suggestions_namespace_ids") }}'
-    - name: instance_id
+    - name: dim_instance_id
       description: '{{ doc("dim_instance_id") }}'
     - name: host_name
       description: '{{ doc("host_name") }}'
     - name: is_streaming
       description: '{{ doc("code_suggestions_is_streaming") }}'
     - name: gitlab_global_user_id
-      description: ' doc("code_suggestions_gitlab_global_user_id") '
+      description: ' doc("gitlab_global_user_id") '
     - name: ultimate_parent_namespace_ids
       description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }} '
     - name: subscription_names
@@ -9764,30 +9824,6 @@ models:
         description: Unique ID of the team member.
         tests:
           - not_null
-      - name: team_id
-        description: Unique ID of the team.
-      - name: job_code
-        description: The code of the team member's job position.
-      - name: job_specialty_single
-        description: The team member's job specialty.
-      - name: job_specialty_multi
-        description: The team member's job specialty (multi-select).
-      - name: position
-        description: The team member's job profile name.
-      - name: job_family
-        description: The team member's job family.
-      - name: management_level
-        description: The team member's management level.
-      - name: job_grade
-        description: The team member's job grade.
-      - name: entity
-        description: The team member's entity.
-        meta:
-          masking_policy: analyst_people_sensitive
-      - name: is_position_active
-        description: Whether the team member's job position is active.
-      - name: is_current_team_member_position
-        description: Whether the team member's job position is the most current as of the date the query is run.
       - name: position_valid_from
       - name: position_valid_to
       - name: absence_start

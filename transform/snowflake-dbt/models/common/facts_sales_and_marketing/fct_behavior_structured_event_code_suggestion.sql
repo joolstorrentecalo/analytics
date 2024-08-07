@@ -35,7 +35,7 @@ code_suggestion_context AS (
     fct_behavior_structured_event.duo_namespace_ids,
     fct_behavior_structured_event.saas_namespace_ids,
     fct_behavior_structured_event.namespace_ids,
-    fct_behavior_structured_event.instance_id,
+    fct_behavior_structured_event.dim_instance_id,
     fct_behavior_structured_event.host_name,
     fct_behavior_structured_event.is_streaming,
     fct_behavior_structured_event.gitlab_global_user_id,
@@ -156,15 +156,15 @@ context_with_installation_id AS (
 
   SELECT
     code_suggestion_context.behavior_structured_event_pk,
-    code_suggestion_context.instance_id,
+    code_suggestion_context.dim_instance_id,
     dim_installation.dim_installation_id,
     dim_installation.host_name,
     dim_installation.product_delivery_type,
     dim_installation.product_deployment_type
   FROM code_suggestion_context
   LEFT JOIN dim_installation
-    ON code_suggestion_context.instance_id = dim_installation.dim_instance_id
-  WHERE code_suggestion_context.instance_id IS NOT NULL
+    ON code_suggestion_context.dim_instance_id = dim_installation.dim_instance_id
+  WHERE code_suggestion_context.dim_instance_id IS NOT NULL
     AND (
       code_suggestion_context.host_name IS NULL
       OR code_suggestion_context.host_name = ''
@@ -174,16 +174,16 @@ context_with_installation_id AS (
 
   SELECT
     code_suggestion_context.behavior_structured_event_pk,
-    code_suggestion_context.instance_id,
+    code_suggestion_context.dim_instance_id,
     dim_installation.dim_installation_id,
     dim_installation.host_name,
     dim_installation.product_delivery_type,
     dim_installation.product_deployment_type
   FROM code_suggestion_context
   LEFT JOIN dim_installation
-    ON code_suggestion_context.instance_id = dim_installation.dim_instance_id
+    ON code_suggestion_context.dim_instance_id = dim_installation.dim_instance_id
       AND code_suggestion_context.host_name = dim_installation.host_name
-  WHERE code_suggestion_context.instance_id IS NOT NULL
+  WHERE code_suggestion_context.dim_instance_id IS NOT NULL
     AND code_suggestion_context.host_name IS NOT NULL
     AND code_suggestion_context.host_name != ''
 
