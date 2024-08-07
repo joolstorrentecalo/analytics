@@ -1,9 +1,14 @@
 {%- macro opportunity_marts(fct_table, model_type) %}
 
-{{ config(
-    materialized="incremental",
-    unique_key="crm_opportunity_snapshot_id"
-) }}
+
+{%- if model_type == 'daily' %}
+  {{ config(
+      materialized="incremental",
+      unique_key="crm_opportunity_snapshot_id"
+  ) }}
+{% endif %}
+
+
 
 {{ simple_cte([
     ('fct_crm_opportunity', fct_table),
