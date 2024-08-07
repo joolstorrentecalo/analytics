@@ -148,16 +148,7 @@ WITH filtered_source as (
             {'field':'options_count', 'formula':"NULLIF(context_data['options_count']::VARCHAR, 'null')", 'data_type':'number', 'alias':'options_count'},
             {'field':'accepted_option', 'data_type':'int'},
             {'field':'has_advanced_context', 'data_type':'boolean'},
-            {'field':'is_direct_connection', 'data_type':'boolean'},
-            {'field':'gitlab_instance_version'},
-            {'field':'total_context_size_bytes', 'data_type':'int'},
-            {'field':'content_above_cursor_size_bytes', 'data_type':'int'},
-            {'field':'content_below_cursor_size_bytes', 'data_type':'int'},
-            {'field':'context_items', 'data_type':'variant'},
-            {'field':'input_tokens', 'data_type':'int'},
-            {'field':'output_tokens', 'data_type':'int'},
-            {'field':'context_tokens_sent', 'data_type':'int'},
-            {'field':'context_tokens_used', 'data_type':'int'}
+            {'field':'is_direct_connection', 'data_type':'boolean'}
             ]
         )
       }},
@@ -258,8 +249,7 @@ SELECT
   MAX(column_selection.source)                                AS source,
   MAX(column_selection.is_gitlab_team_member)                 AS is_gitlab_team_member,
   MAX(column_selection.feature_enabled_by_namespace_ids)      AS feature_enabled_by_namespace_ids,
-  COALESCE(MAX(column_selection.instance_version), MAX(column_selection.gitlab_instance_version))
-                                                              AS instance_version,
+  MAX(column_selection.instance_version)                      AS instance_version,
   MAX(column_selection.correlation_id)                        AS correlation_id,
 
   MAX(column_selection.web_page_context)                      AS web_page_context,
@@ -303,15 +293,6 @@ SELECT
   MAX(column_selection.accepted_option)                       AS accepted_option,
   MAX(column_selection.has_advanced_context)                  AS has_advanced_context,
   MAX(column_selection.is_direct_connection)                  AS is_direct_connection,
-  MAX(column_selection.total_context_size_bytes)              AS total_context_size_bytes,
-  MAX(column_selection.content_above_cursor_size_bytes)       AS content_above_cursor_size_bytes,
-  MAX(column_selection.content_below_cursor_size_bytes)       AS content_below_cursor_size_bytes,
-  MAX(column_selection.context_items)                         AS context_items,
-  ARRAY_SIZE(MAX(column_selection.context_items))             AS context_items_count,
-  MAX(column_selection.input_tokens)                          AS input_tokens,
-  MAX(column_selection.output_tokens)                         AS output_tokens,
-  MAX(column_selection.context_tokens_sent)                   AS context_tokens_sent,
-  MAX(column_selection.context_tokens_used)                   AS context_tokens_used,
 
   MAX(column_selection.ide_extension_version_context)         AS ide_extension_version_context,
   MAX(column_selection.ide_extension_version_context_schema)  AS ide_extension_version_context_schema,

@@ -44,18 +44,7 @@ code_suggestion_context AS (
     fct_behavior_structured_event.options_count,
     fct_behavior_structured_event.accepted_option,
     fct_behavior_structured_event.has_advanced_context,
-    fct_behavior_structured_event.is_direct_connection,
-    fct_behavior_structured_event.gsc_instance_version,
-    fct_behavior_structured_event.total_context_size_bytes,
-    fct_behavior_structured_event.content_above_cursor_size_bytes,
-    fct_behavior_structured_event.content_below_cursor_size_bytes,
-    fct_behavior_structured_event.context_items,
-    fct_behavior_structured_event.context_items_count,
-    fct_behavior_structured_event.input_tokens,
-    fct_behavior_structured_event.output_tokens,
-    fct_behavior_structured_event.context_tokens_sent,
-    fct_behavior_structured_event.context_tokens_used
-
+    fct_behavior_structured_event.is_direct_connection
   FROM fct_behavior_structured_event
   WHERE fct_behavior_structured_event.behavior_at >= '2023-08-01' -- no events added to context before Aug 2023
     AND fct_behavior_structured_event.has_code_suggestions_context = TRUE
@@ -303,5 +292,5 @@ combined AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-08-06"
+    updated_date="2024-06-11"
 ) }}

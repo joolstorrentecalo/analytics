@@ -2936,60 +2936,6 @@ To derive this attribute, we join the instance information (`instance_id`, `host
 
 {% enddocs %}
 
-{% docs code_suggestions_total_context_size_bytes %}
-
-Total byte size of all context items in request
-
-{% enddocs %}
-
-{% docs code_suggestions_content_above_cursor_size_bytes %}
-
-Total byte size of text above cursor
-
-{% enddocs %}
-
-{% docs code_suggestions_content_below_cursor_size_bytes %}
-
-Total byte size of text below cursor
-
-{% enddocs %}
-
-{% docs code_suggestions_context_items %}
-
-Set of final context items sent to AI Gateway
-
-{% enddocs %}
-
-{% docs code_suggestions_context_items_count %}
-
-The count of context items sent to AI Gateway
-
-{% enddocs %}
-
-{% docs code_suggestions_input_tokens %}
-
-Total tokens used in request to model provider
-
-{% enddocs %}
-
-{% docs code_suggestions_output_tokens %}
-
-Total output tokens received from model provider
-
-{% enddocs %}
-
-{% docs code_suggestions_context_tokens_sent %}
-
-Total tokens sent as context to AI Gateway
-
-{% enddocs %}
-
-{% docs code_suggestions_context_tokens_used %}
-
-Total context tokens used in request to model provider
-
-{% enddocs %}
-
 {% docs ide_extension_version_context %}
 
 IDE extension version fields added to Snowplow as defined by GitLab in the [schema](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/ide_extension_version/jsonschema).
@@ -3518,4 +3464,3 @@ The timestamp of when the `is_deleted` flag has been updated
 Pseudonymised combination of instance id and user id coalesced from the `global_user_id` sent in the GitLab Standard Context and the `gitlab_global_user_id` sent in Code Suggestions events.
 
 {% enddocs %}
-

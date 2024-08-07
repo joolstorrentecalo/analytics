@@ -136,17 +136,7 @@ structured_event_renamed AS (
       unload_event_end,
       unload_event_start,
       gsc_instance_version,
-      gsc_correlation_id,
-      total_context_size_bytes,
-      content_above_cursor_size_bytes,
-      content_below_cursor_size_bytes,
-      context_items,
-      context_items_count,
-      input_tokens,
-      output_tokens,
-      context_tokens_sent,
-      context_tokens_used
-
+      gsc_correlation_id
 
     FROM {{ ref('prep_snowplow_unnested_events_all') }}
     WHERE event = 'struct'
@@ -269,16 +259,6 @@ structured_events_w_dim AS (
       events_with_plan.accepted_option,
       events_with_plan.has_advanced_context,
       events_with_plan.is_direct_connection,
-      events_with_plan.total_context_size_bytes,
-      events_with_plan.content_above_cursor_size_bytes,
-      events_with_plan.content_below_cursor_size_bytes,
-      events_with_plan.context_items,
-      events_with_plan.context_items_count,
-      events_with_plan.input_tokens,
-      events_with_plan.output_tokens,
-      events_with_plan.context_tokens_sent,
-      events_with_plan.context_tokens_used,
-
 
       -- Degenerate Dimensions (Service Ping)
       events_with_plan.gitlab_service_ping_context,
@@ -336,5 +316,5 @@ structured_events_w_dim AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2022-09-01",
-    updated_date="2024-08-06"
+    updated_date="2024-07-26"
 ) }}
