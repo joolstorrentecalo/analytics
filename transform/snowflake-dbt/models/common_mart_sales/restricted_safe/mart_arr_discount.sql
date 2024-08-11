@@ -4,42 +4,46 @@
 ) }}
 
 WITH sheetload_partner_discount AS (
-    
-    SELECT 
+
+  SELECT
     dim_crm_opportunity_id,
     MAX(discount_percent) AS partner_margin
-    FROM {{ ref('sheetload_partner_discount_summary_source') }}
-    GROUP BY 1
-    
-    ),
+  FROM {{ ref('sheetload_partner_discount_summary_source') }}
+  GROUP BY 1
+
+),
 
 discount_prep_step_1 AS (
 
-    SELECT
+  SELECT
     dim_charge.rate_plan_charge_description,
     fct_charge.list_price,
     fct_charge.extended_list_price,
-    CASE 
-        WHEN '2020-02-29' BETWEEN dim_charge.effective_start_date AND dim_charge.effective_end_date
-        THEN DATEDIFF(d, dim_charge.effective_start_date, dim_charge.effective_end_date)-1
-        WHEN '2024-02-29' BETWEEN  dim_charge.effective_start_date AND dim_charge.effective_end_date
-        THEN DATEDIFF(d, dim_charge.effective_start_date, dim_charge.effective_end_date)-1
-        ELSE DATEDIFF(d, dim_charge.effective_start_date, dim_charge.effective_end_date) 
-        END AS effective_days,
-        CASE 
-        WHEN fct_charge.list_price IS NOT NULL 
-        THEN fct_charge.list_price/NULLIFZERO(fct_invoice_item.quantity)
-        ELSE (fct_charge.extended_list_price * 365/NULLIFZERO(effective_days))/NULLIFZERO(fct_invoice_item.quantity) 
-        END AS list_price_per_unit,
-        fct_invoice_item.arr/NULLIFZERO(fct_invoice_item.quantity) AS arpu,
+    CASE
+      WHEN '2020-02-29' BETWEEN dim_charge.effective_start_date AND dim_charge.effective_end_date
+        THEN DATEDIFF(D, dim_charge.effective_start_date, dim_charge.effective_end_date) - 1
+      WHEN '2024-02-29' BETWEEN dim_charge.effective_start_date AND dim_charge.effective_end_date
+        THEN DATEDIFF(D, dim_charge.effective_start_date, dim_charge.effective_end_date) - 1
+      ELSE DATEDIFF(D, dim_charge.effective_start_date, dim_charge.effective_end_date)
+    END                                                                                                 AS effective_days,
+    CASE
+      WHEN fct_charge.list_price IS NOT NULL
+        THEN fct_charge.list_price / NULLIFZERO(fct_invoice_item.quantity)
+      ELSE (fct_charge.extended_list_price * 365 / NULLIFZERO(effective_days)) / NULLIFZERO(fct_invoice_item.quantity)
+    END                                                                                                 AS list_price_per_unit,
+    fct_invoice_item.arr / NULLIFZERO(fct_invoice_item.quantity)                                        AS arpu,
     fct_invoice_item.invoice_number,
     fct_invoice_item.invoice_item_id,
     fct_invoice_item.is_last_segment_version,
     fct_invoice_item.dim_crm_account_id_invoice,
     fct_invoice_item.charge_id,
-        (fct_invoice_item.quantity - ZEROIFNULL(LAG(fct_invoice_item.quantity) 
-    OVER (PARTITION BY fct_invoice_item.invoice_number, dim_charge.rate_plan_charge_number
-    ORDER BY fct_invoice_item.quantity ASC, fct_invoice_item.is_last_segment_version DESC ))) AS delta_quantity, --delta quantity on add-on orders
+    (fct_invoice_item.quantity - ZEROIFNULL(
+      LAG(fct_invoice_item.quantity)
+        OVER (
+          PARTITION BY fct_invoice_item.invoice_number, dim_charge.rate_plan_charge_number
+          ORDER BY fct_invoice_item.quantity ASC, fct_invoice_item.is_last_segment_version DESC
+        )
+    ))                                                                                                  AS delta_quantity, --delta quantity on add-on orders
     fct_invoice_item.invoice_item_unit_price,
     fct_invoice_item.invoice_date,
     fct_invoice_item.dim_subscription_id,
@@ -56,7 +60,7 @@ discount_prep_step_1 AS (
     dim_crm_account.parent_crm_account_geo,
     dim_crm_account.parent_crm_account_region,
     dim_crm_account.parent_crm_account_upa_country,
-    fct_charge.delta_mrc AS delta_mrr,
+    fct_charge.delta_mrc                                                                                AS delta_mrr,
     dim_charge.billing_period,
     dim_charge.effective_start_date,
     dim_charge.effective_end_date,
@@ -73,38 +77,36 @@ discount_prep_step_1 AS (
     mart_crm_opportunity.resale_partner_name,
     mart_crm_opportunity.opportunity_category,
     mart_crm_opportunity.partner_margin_percentage,
-    CASE 
-        WHEN mart_crm_opportunity.order_type = '1. New - First Order' 
-        THEN 'First Order' ELSE 'Growth' 
-        END AS order_type,
-        CASE 
-        WHEN mart_crm_opportunity.deal_path_name IS NULL 
-        THEN 'Other' ELSE mart_crm_opportunity.deal_path_name 
-        END AS deal_path_name,
-        COALESCE(sheetload_partner_discount.partner_margin, mart_crm_opportunity.partner_margin_percentage) AS partner_margin
-FROM {{ ref('fct_invoice_item') }}
-    LEFT JOIN {{ ref('dim_charge') }}
-    ON dim_charge.dim_charge_id = fct_invoice_item.charge_id
-    LEFT JOIN {{ ref('dim_product_detail') }}
+    CASE
+      WHEN mart_crm_opportunity.order_type = '1. New - First Order'
+        THEN 'First Order'
+      ELSE 'Growth'
+    END                                                                                                 AS order_type,
+    COALESCE (mart_crm_opportunity.deal_path_name, 'Other')                                             AS deal_path_name,
+    COALESCE(sheetload_partner_discount.partner_margin, mart_crm_opportunity.partner_margin_percentage) AS partner_margin
+  FROM {{ ref('fct_invoice_item') }}
+  LEFT JOIN {{ ref('dim_charge') }}
+    ON fct_invoice_item.charge_id = dim_charge.dim_charge_id
+  LEFT JOIN {{ ref('dim_product_detail') }}
     ON fct_invoice_item.dim_product_detail_id = dim_product_detail.dim_product_detail_id
-    LEFT JOIN {{ ref('fct_charge') }}
-    ON fct_charge.dim_charge_id = fct_invoice_item.charge_id
-    LEFT JOIN {{ ref('dim_crm_account') }}
+  LEFT JOIN {{ ref('fct_charge') }}
+    ON fct_invoice_item.charge_id = fct_charge.dim_charge_id
+  LEFT JOIN {{ ref('dim_crm_account') }}
     ON fct_invoice_item.dim_crm_account_id_invoice = dim_crm_account.dim_crm_account_id
-    LEFT JOIN {{ ref('dim_subscription') }}
+  LEFT JOIN {{ ref('dim_subscription') }}
     ON fct_invoice_item.dim_subscription_id = dim_subscription.dim_subscription_id
-    LEFT JOIN {{ ref('mart_crm_opportunity') }}
+  LEFT JOIN {{ ref('mart_crm_opportunity') }}
     ON dim_subscription.dim_crm_opportunity_id = mart_crm_opportunity.dim_crm_opportunity_id
-    LEFT JOIN sheetload_partner_discount
-    ON mart_crm_opportunity.dim_crm_opportunity_id =sheetload_partner_discount.dim_crm_opportunity_id
-     
-    ),   
+  LEFT JOIN sheetload_partner_discount
+    ON mart_crm_opportunity.dim_crm_opportunity_id = sheetload_partner_discount.dim_crm_opportunity_id
 
-discount_prep_step_2 AS ( 
-  
+),
+
+discount_prep_step_2 AS (
+
   --Checking eligibility of use cases to be included in the discount mart
-    
-    SELECT
+
+  SELECT
     dim_date.fiscal_year,
     dim_date.fiscal_quarter_name_fy,
     dim_date.first_day_of_month,
@@ -129,11 +131,11 @@ discount_prep_step_2 AS (
     discount_prep_step_1.order_type,
     discount_prep_step_1.deal_path_name,
     discount_prep_step_1.dim_parent_crm_account_id,
-    discount_prep_step_1.parent_crm_account_sales_segment AS parent_crm_account_segment,
+    discount_prep_step_1.parent_crm_account_sales_segment        AS parent_crm_account_segment,
     discount_prep_step_1.parent_crm_account_name,
     discount_prep_step_1.parent_crm_account_geo,
     discount_prep_step_1.parent_crm_account_region,
-    discount_prep_step_1.parent_crm_account_upa_country AS parent_crm_account_country,
+    discount_prep_step_1.parent_crm_account_upa_country          AS parent_crm_account_country,
     discount_prep_step_1.dim_crm_opportunity_id,
     discount_prep_step_1.sales_type,
     discount_prep_step_1.opportunity_category,
@@ -141,99 +143,100 @@ discount_prep_step_2 AS (
     discount_prep_step_1.is_reseller,
     discount_prep_step_1.resale_partner_name,
     CASE
-        WHEN sales_type= 'Add-On Business' 
-        THEN delta_quantity 
-        ELSE quantity 
-        END AS quantity_with_addon_update,
-        ROUND((CASE 
-        WHEN billing_period= 'Month' 
-        THEN list_price_per_unit*12
-        WHEN billing_period= 'Two Years' 
-        THEN list_price_per_unit/2
-        WHEN billing_period= 'Three Years' 
-        THEN list_price_per_unit/3
-        WHEN billing_period= 'Four Years' 
-        THEN list_price_per_unit/4
-        WHEN billing_period= 'Five Years' 
-        THEN list_price_per_unit/5
-        ELSE list_price_per_unit 
-        END),2) AS list_price_per_unit_calc,
-    
-    /*Premium price increase was effective from 2023-04-03, however, our systems were not ready for 18% discount coupon by that time, 
+      WHEN sales_type = 'Add-On Business'
+        THEN delta_quantity
+      ELSE quantity
+    END                                                          AS quantity_with_addon_update,
+    ROUND((CASE
+      WHEN billing_period = 'Month'
+        THEN list_price_per_unit * 12
+      WHEN billing_period = 'Two Years'
+        THEN list_price_per_unit / 2
+      WHEN billing_period = 'Three Years'
+        THEN list_price_per_unit / 3
+      WHEN billing_period = 'Four Years'
+        THEN list_price_per_unit / 4
+      WHEN billing_period = 'Five Years'
+        THEN list_price_per_unit / 5
+      ELSE list_price_per_unit
+    END), 2)                                                     AS list_price_per_unit_calc,
+
+    /*Premium price increase was effective from 2023-04-03, however, our systems were not ready for 18% discount coupon by that time,
     and we incoroprated 18% discount on list price itself until 2023-05-18.*/
-    
-        CASE
-        WHEN lower(product_name) LIKE '%premium%' AND sales_type= 'Add-On Business' AND invoice_date BETWEEN term_start_date AND term_end_date
-        AND term_start_date <'2023-04-03' AND arpu <= 228 
-        THEN 228
-        WHEN lower(product_name) like '%premium%' AND sales_type= 'Add-On business' AND invoice_date BETWEEN term_start_date AND term_end_date
-        AND (term_start_date >='2023-04-03' OR arpu > 228 ) 
-        THEN 348
-        WHEN round(list_price_per_unit_calc) = 285 THEN 348
-        ELSE list_price_per_unit_calc 
-        END AS list_price_per_unit_overwrite,
-        (list_price_per_unit_overwrite * quantity_with_addon_update ) AS list_price_calc,
-    (arpu * quantity_with_addon_update) AS arr_calc,
-    (list_price_calc-arr_calc)/NULLIFZERO(list_price_calc) AS discount_on_deal, 
+
     CASE
-        WHEN delta_mrr = 0 AND sales_type = 'Add-On Business' 
+      WHEN LOWER(product_name) LIKE '%premium%' AND sales_type = 'Add-On Business' AND invoice_date BETWEEN term_start_date AND term_end_date
+        AND term_start_date < '2023-04-03' AND arpu <= 228
+        THEN 228
+      WHEN LOWER(product_name) LIKE '%premium%' AND sales_type = 'Add-On business' AND invoice_date BETWEEN term_start_date AND term_end_date
+        AND (term_start_date >= '2023-04-03' OR arpu > 228)
+        THEN 348
+      WHEN ROUND(list_price_per_unit_calc) = 285 THEN 348
+      ELSE list_price_per_unit_calc
+    END                                                          AS list_price_per_unit_overwrite,
+    (list_price_per_unit_overwrite * quantity_with_addon_update) AS list_price_calc,
+    (arpu * quantity_with_addon_update)                          AS arr_calc,
+    (list_price_calc - arr_calc) / NULLIFZERO(list_price_calc)   AS discount_on_deal,
+    CASE
+      WHEN delta_mrr = 0 AND sales_type = 'Add-On Business'
         THEN 'NE: Add-on_duplicates'
-        WHEN is_arpu = false 
+      WHEN is_arpu = FALSE
         THEN 'NE: EDU_Subscriptions'
-        WHEN invoice_item_charge_amount < 0
+      WHEN invoice_item_charge_amount < 0
         THEN 'NE: Credit/Decommissions'
-        WHEN billing_period ='Month' AND is_last_segment_version= false 
+      WHEN billing_period = 'Month' AND is_last_segment_version = FALSE
         THEN 'NE: Duplicate_arr_on_monthly_billings'
-        WHEN list_price_per_unit IS NULL 
+      WHEN list_price_per_unit IS NULL
         THEN 'NE:List_Price_null'
-        WHEN ZEROIFNULL(arr) = 0 
+      WHEN ZEROIFNULL(arr) = 0
         THEN 'NE: ARR_zero'
-        WHEN quantity_with_addon_update < 0 
+      WHEN quantity_with_addon_update < 0
         THEN 'NE: Contractions'
-        WHEN quantity_with_addon_update = 0 
+      WHEN quantity_with_addon_update = 0
         THEN 'NE: Quantity=0'
-        WHEN parent_crm_account_name = 'CERN' 
+      WHEN parent_crm_account_name = 'CERN'
         THEN 'CERN Deal in FY24-Q2 99.5% discount'
-        WHEN discount_on_deal < 0 
+      WHEN discount_on_deal < 0
         THEN 'Negative_discount_data_issue'
-        ELSE 'Eligible' 
-        END AS discount_eligible_flag,
-    
+      ELSE 'Eligible'
+    END                                                          AS discount_eligible_flag,
+
     --In case where the overall discount is lower than the partner margin, we consider lower of these 2 as partner margin.
-    
-        CASE 
-        WHEN discount_on_deal >= 0 AND discount_on_deal < discount_prep_step_1.partner_margin 
-        THEN discount_on_deal 
-        ELSE discount_prep_step_1.partner_margin 
-        END AS partner_margin
-    FROM discount_prep_step_1
-    LEFT JOIN {{ ref('dim_date') }}
+
+    CASE
+      WHEN discount_on_deal >= 0 AND discount_on_deal < discount_prep_step_1.partner_margin
+        THEN discount_on_deal
+      ELSE discount_prep_step_1.partner_margin
+    END                                                          AS partner_margin
+  FROM discount_prep_step_1
+  LEFT JOIN {{ ref('dim_date') }}
     ON discount_prep_step_1.invoice_date = dim_date.date_actual
-    WHERE 
-    discount_eligible_flag ='Eligible'
+  WHERE
+    discount_eligible_flag = 'Eligible'
     AND fiscal_quarter_name_fy >= 'FY23-Q1'
-    
-    ),
 
-discount_prep_step_3 AS ( 
-  
+),
+
+discount_prep_step_3 AS (
+
   --Calculation for the reseller/partner orders
-    
-    SELECT *,
-    ROUND(arr_calc/(1-ZEROIFNULL(partner_margin)), 2) AS arr_incl_channel_margin,
-    (list_price_calc-arr_incl_channel_margin)/NULLIFZERO(list_price_calc) AS end_user_discount
-    FROM discount_prep_step_2
-    
-    
-    ),
 
-discount_prep_step_4 AS ( 
-  
+  SELECT
+    *,
+    ROUND(arr_calc / (1 - ZEROIFNULL(partner_margin)), 2)                     AS arr_incl_channel_margin,
+    (list_price_calc - arr_incl_channel_margin) / NULLIFZERO(list_price_calc) AS end_user_discount
+  FROM discount_prep_step_2
+
+
+),
+
+discount_prep_step_4 AS (
+
   --Sales Analytics - Discount Analysis Dashboard
-    
-    SELECT 
+
+  SELECT
     fiscal_quarter_name_fy,
-    first_day_of_month AS invoice_month,
+    first_day_of_month                                                    AS invoice_month,
     dim_parent_crm_account_id,
     parent_crm_account_name,
     dim_crm_opportunity_id,
@@ -242,167 +245,161 @@ discount_prep_step_4 AS (
     dim_subscription_id,
     subscription_name,
     resale_partner_name,
-    CASE 
-        WHEN parent_crm_account_segment IS NULL 
-        THEN 'SMB' ELSE parent_crm_account_segment 
-        END AS parent_crm_account_segment,
-        parent_crm_account_geo,
+    COALESCE (parent_crm_account_segment, 'SMB')                          AS parent_crm_account_segment,
+    parent_crm_account_geo,
     parent_crm_account_region,
     parent_crm_account_country,
-    CASE 
-        WHEN product_tier_name ILIKE '%Premium%' 
+    CASE
+      WHEN product_tier_name ILIKE '%Premium%'
         THEN 'Premium'
-        WHEN product_tier_name ILIKE '%Dedicate%' 
+      WHEN product_tier_name ILIKE '%Dedicate%'
         THEN 'Dedicated-Ultimate'
-        WHEN product_tier_name ILIKE '%Ultimate%' 
+      WHEN product_tier_name ILIKE '%Ultimate%'
         THEN 'Ultimate'
-        WHEN product_name ILIKE '%duo%' 
+      WHEN product_name ILIKE '%duo%'
         THEN 'Duo Pro'
-        WHEN product_name ILIKE '%Enterprise%Agile%Planning%' 
+      WHEN product_name ILIKE '%Enterprise%Agile%Planning%'
         THEN 'Enterprise Agile Planning'
-        WHEN product_tier_name ILIKE '%Bronze%' OR product_tier_name ILIKE '%Starter%' 
-        THEN 'Bronze/Starter'  
-        ELSE 'Others' 
-        END AS product_name,
-        product_delivery_type,
+      WHEN product_tier_name ILIKE '%Bronze%' OR product_tier_name ILIKE '%Starter%'
+        THEN 'Bronze/Starter'
+      ELSE 'Others'
+    END                                                                   AS product_name,
+    product_delivery_type,
     product_tier_name,
     rate_plan_charge_description,
-    CASE 
-        WHEN deal_path_name IS NULL OR deal_path_name = 'Other' 
-        THEN 'Direct' 
-        ELSE deal_path_name 
-        END AS deal_path_name,
-        CASE WHEN sales_type IS NULL 
-        THEN 'New Business' 
-        ELSE sales_type 
-        END AS sales_type,
+    CASE
+      WHEN deal_path_name IS NULL OR deal_path_name = 'Other'
+        THEN 'Direct'
+      ELSE deal_path_name
+    END                                                                   AS deal_path_name,
+    COALESCE (sales_type, 'New Business')                                 AS sales_type,
     order_type,
     CASE
-        WHEN quantity_with_addon_update <=100 THEN 'a) 1-100'
-        WHEN quantity_with_addon_update <=250 THEN 'b) 100-250'
-        WHEN quantity_with_addon_update <=500 THEN 'c) 250-500'
-        WHEN quantity_with_addon_update <=750 THEN 'd) 500-750'
-        WHEN quantity_with_addon_update <=1500 THEN 'e) 750-1500'
-        WHEN quantity_with_addon_update <=2000 THEN 'f) 1500-2000'
-        WHEN quantity_with_addon_update <=2500 THEN 'g) 2000-2500'
-        WHEN quantity_with_addon_update <=3000 THEN 'h) 2500-3000'
-        WHEN quantity_with_addon_update <=3500 THEN 'i) 3000-3500'
-        WHEN quantity_with_addon_update <=4000 THEN 'j) 3500-4000'
-        WHEN quantity_with_addon_update <=4500 THEN 'k) 4000-4500'
-        WHEN quantity_with_addon_update <=5000 THEN 'l) 4500-5000'
-        WHEN quantity_with_addon_update <=7500 THEN 'm) 5000-7500'
-        WHEN quantity_with_addon_update <=10000 THEN 'n) 7500-10000'
-        WHEN quantity_with_addon_update >10000 THEN 'o) >10000' 
-        END AS seats_bucket,
+      WHEN quantity_with_addon_update <= 100 THEN 'a) 1-100'
+      WHEN quantity_with_addon_update <= 250 THEN 'b) 100-250'
+      WHEN quantity_with_addon_update <= 500 THEN 'c) 250-500'
+      WHEN quantity_with_addon_update <= 750 THEN 'd) 500-750'
+      WHEN quantity_with_addon_update <= 1500 THEN 'e) 750-1500'
+      WHEN quantity_with_addon_update <= 2000 THEN 'f) 1500-2000'
+      WHEN quantity_with_addon_update <= 2500 THEN 'g) 2000-2500'
+      WHEN quantity_with_addon_update <= 3000 THEN 'h) 2500-3000'
+      WHEN quantity_with_addon_update <= 3500 THEN 'i) 3000-3500'
+      WHEN quantity_with_addon_update <= 4000 THEN 'j) 3500-4000'
+      WHEN quantity_with_addon_update <= 4500 THEN 'k) 4000-4500'
+      WHEN quantity_with_addon_update <= 5000 THEN 'l) 4500-5000'
+      WHEN quantity_with_addon_update <= 7500 THEN 'm) 5000-7500'
+      WHEN quantity_with_addon_update <= 10000 THEN 'n) 7500-10000'
+      WHEN quantity_with_addon_update > 10000 THEN 'o) >10000'
+    END                                                                   AS seats_bucket,
     CASE
-        WHEN list_price_calc <=5000  THEN 'a) <$5K'
-        WHEN list_price_calc <=25000 THEN 'b) $5K-$25K'
-        WHEN list_price_calc <=50000 THEN 'c) $25K-$50K'
-        WHEN list_price_calc <=100000 THEN 'd) $50K-$100K'
-        WHEN list_price_calc <=300000 THEN 'e) $100K-$300K'
-        WHEN list_price_calc <=500000 THEN 'f) $300K-$500K'
-        WHEN list_price_calc <=1000000 THEN 'g) $500K-$1M'
-        WHEN list_price_calc >1000000 THEN 'h) $1M+'
-        END AS list_price_buckets,
-        CASE
-        WHEN end_user_discount =0  THEN 'a) 0%'
-        WHEN end_user_discount <=0.05 THEN 'b) <5%'
-        WHEN end_user_discount <=0.1 THEN 'c) 5-10%'
-        WHEN end_user_discount <=0.2 THEN 'd) 10-20%'
-        WHEN end_user_discount <=0.3 THEN 'e) 20-30%'
-        WHEN end_user_discount <=0.4 THEN 'f) 30-40%'
-        WHEN end_user_discount <=0.5 THEN 'g) 40-50%'
-        WHEN end_user_discount <=0.6 THEN 'h) 50-60%'
-        WHEN end_user_discount <=0.7 THEN 'i) 60-70%'
-        WHEN end_user_discount <=0.8 THEN 'j) 70-80%'
-        WHEN end_user_discount <=0.9 THEN 'k) 80-90%'
-        WHEN end_user_discount >0.9 THEN 'l) >90%'
-        END AS end_user_discount_buckets,
-        SUM(quantity_with_addon_update) AS quantity,
-    SUM(list_price_calc) AS list_price,
-    SUM(arr_calc) AS arr,
-    SUM(arr_incl_channel_margin) AS arr_with_channel_margin,
-    (arr_with_channel_margin -arr)/NULLIFZERO(arr_with_channel_margin) AS programmatic_discount,
-    (list_price-arr_with_channel_margin)/NULLIFZERO(list_price) AS discount_end_user,
-    (list_price-arr)/NULLIFZERO(list_price) AS discount_overall,
-    FROM discount_prep_step_3
-    {{ dbt_utils.group_by(n=24) }}
-    
-    ),
+      WHEN list_price_calc <= 5000 THEN 'a) <$5K'
+      WHEN list_price_calc <= 25000 THEN 'b) $5K-$25K'
+      WHEN list_price_calc <= 50000 THEN 'c) $25K-$50K'
+      WHEN list_price_calc <= 100000 THEN 'd) $50K-$100K'
+      WHEN list_price_calc <= 300000 THEN 'e) $100K-$300K'
+      WHEN list_price_calc <= 500000 THEN 'f) $300K-$500K'
+      WHEN list_price_calc <= 1000000 THEN 'g) $500K-$1M'
+      WHEN list_price_calc > 1000000 THEN 'h) $1M+'
+    END                                                                   AS list_price_buckets,
+    CASE
+      WHEN end_user_discount = 0 THEN 'a) 0%'
+      WHEN end_user_discount <= 0.05 THEN 'b) <5%'
+      WHEN end_user_discount <= 0.1 THEN 'c) 5-10%'
+      WHEN end_user_discount <= 0.2 THEN 'd) 10-20%'
+      WHEN end_user_discount <= 0.3 THEN 'e) 20-30%'
+      WHEN end_user_discount <= 0.4 THEN 'f) 30-40%'
+      WHEN end_user_discount <= 0.5 THEN 'g) 40-50%'
+      WHEN end_user_discount <= 0.6 THEN 'h) 50-60%'
+      WHEN end_user_discount <= 0.7 THEN 'i) 60-70%'
+      WHEN end_user_discount <= 0.8 THEN 'j) 70-80%'
+      WHEN end_user_discount <= 0.9 THEN 'k) 80-90%'
+      WHEN end_user_discount > 0.9 THEN 'l) >90%'
+    END                                                                   AS end_user_discount_buckets,
+    SUM(quantity_with_addon_update)                                       AS quantity,
+    SUM(list_price_calc)                                                  AS list_price,
+    SUM(arr_calc)                                                         AS arr,
+    SUM(arr_incl_channel_margin)                                          AS arr_with_channel_margin,
+    (arr_with_channel_margin - arr) / NULLIFZERO(arr_with_channel_margin) AS programmatic_discount,
+    (list_price - arr_with_channel_margin) / NULLIFZERO(list_price)       AS discount_end_user,
+    (list_price - arr) / NULLIFZERO(list_price)                           AS discount_overall
+  FROM discount_prep_step_3
+  {{ dbt_utils.group_by(n=24) }}
 
-    manager_data AS ( 
-      
-      --Data for Revenue & Analytics - Discounting Historicals
+),
 
-    SELECT
+manager_data AS (
+
+  --Data for Revenue & Analytics - Discounting Historicals
+
+  SELECT
     dim_crm_user_id,
     user_name,
     user_email,
     manager_id
-    FROM {{ ref('dim_crm_user') }}
-    
-    ),
+  FROM {{ ref('dim_crm_user') }}
 
-    manager_data_3rd_line AS ( 
-      
-      --Data for Revenue & Analytics - Discounting Historicals
+),
 
-    SELECT
+manager_data_3rd_line AS (
+
+  --Data for Revenue & Analytics - Discounting Historicals
+
+  SELECT
     dim_crm_user_id,
     user_email,
     manager_id
-     FROM {{ ref('dim_crm_user') }}
-    
-    ),
+  FROM {{ ref('dim_crm_user') }}
 
-    manager_data_4th_line AS ( 
-      
-      --Data for Revenue & Analytics - Discounting Historicals
+),
 
-    SELECT
+manager_data_4th_line AS (
+
+  --Data for Revenue & Analytics - Discounting Historicals
+
+  SELECT
     dim_crm_user_id,
     user_email,
     manager_id
-    FROM {{ ref('dim_crm_user') }}
-    
-    ),
+  FROM {{ ref('dim_crm_user') }}
 
-    final AS ( 
-      
-      --Joining Sales Analytics - Discount Analysis Dashboard and additional data for Revenue & Analytics - Discounting Historicals
+),
 
-    SELECT 
+final AS (
+
+  --Joining Sales Analytics - Discount Analysis Dashboard and additional data for Revenue & Analytics - Discounting Historicals
+
+  SELECT
     discount_prep_step_4.*,
     mart_crm_opportunity.opportunity_name,
-        CASE 
-        WHEN mart_crm_opportunity.report_geo = 'APAC' 
-        THEN 'APJ' 
-        ELSE mart_crm_opportunity.report_geo 
-        END AS report_geo_updated, --need to check this field
+    CASE
+      WHEN mart_crm_opportunity.report_geo = 'APAC'
+        THEN 'APJ'
+      ELSE mart_crm_opportunity.report_geo
+    END                                  AS report_geo_updated, --need to check this field
     mart_crm_opportunity.report_area,
     mart_crm_opportunity.report_region,
     mart_crm_opportunity.report_segment,
     mart_crm_opportunity.dim_crm_user_id AS opportunity_owner_id,
     mart_crm_opportunity.dim_crm_account_id,
-    dim_crm_user.user_name AS opportunity_owner,
-    dim_crm_user.user_email AS opportunity_owner_email,
-    manager_data.user_name AS opportunity_owner_manager_name,
-    manager_data.user_email AS opportunity_owner_manager_email,
-    manager_data_3rd_line.user_email AS opportunity_owner_3rd_line_manager_email,
-    manager_data_4th_line.user_email AS opportunity_owner_4th_line_manager_email
-    FROM discount_prep_step_4
-    LEFT JOIN {{ ref('mart_crm_opportunity') }} 
-    ON mart_crm_opportunity.dim_crm_opportunity_id = discount_prep_step_4.dim_crm_opportunity_id
-    LEFT JOIN {{ ref('dim_crm_account') }} 
-    ON dim_crm_account.dim_crm_account_id = mart_crm_opportunity.dim_crm_account_id
-    LEFT JOIN prod.common.dim_crm_user 
-    ON dim_crm_user.dim_crm_user_id = mart_crm_opportunity.dim_crm_user_id
-    LEFT JOIN manager_data
-    ON manager_data.dim_crm_user_id = dim_crm_user.manager_id
-    LEFT JOIN manager_data_3rd_line
-    ON manager_data_3rd_line.dim_crm_user_id = manager_data.manager_id
-    LEFT JOIN manager_data_4th_line
-    ON manager_data_4th_line.dim_crm_user_id = manager_data_3rd_line.manager_id
+    dim_crm_user.user_name               AS opportunity_owner,
+    dim_crm_user.user_email              AS opportunity_owner_email,
+    manager_data.user_name               AS opportunity_owner_manager_name,
+    manager_data.user_email              AS opportunity_owner_manager_email,
+    manager_data_3rd_line.user_email     AS opportunity_owner_3rd_line_manager_email,
+    manager_data_4th_line.user_email     AS opportunity_owner_4th_line_manager_email
+  FROM discount_prep_step_4
+  LEFT JOIN {{ ref('mart_crm_opportunity') }}
+    ON discount_prep_step_4.dim_crm_opportunity_id = mart_crm_opportunity.dim_crm_opportunity_id
+  LEFT JOIN {{ ref('dim_crm_account') }}
+    ON mart_crm_opportunity.dim_crm_account_id = dim_crm_account.dim_crm_account_id
+  LEFT JOIN prod.common.dim_crm_user
+    ON mart_crm_opportunity.dim_crm_user_id = dim_crm_user.dim_crm_user_id
+  LEFT JOIN manager_data
+    ON dim_crm_user.manager_id = manager_data.dim_crm_user_id
+  LEFT JOIN manager_data_3rd_line
+    ON manager_data.manager_id = manager_data_3rd_line.dim_crm_user_id
+  LEFT JOIN manager_data_4th_line
+    ON manager_data_3rd_line.manager_id = manager_data_4th_line.dim_crm_user_id
 
 )
 
