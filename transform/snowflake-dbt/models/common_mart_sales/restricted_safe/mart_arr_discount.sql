@@ -353,30 +353,6 @@ manager_data AS (
 
 ),
 
-manager_data_3rd_line AS (
-
-  --Data for Revenue & Analytics - Discounting Historicals
-
-  SELECT
-    dim_crm_user_id,
-    user_email,
-    manager_id
-  FROM dim_crm_user
-
-),
-
-manager_data_4th_line AS (
-
-  --Data for Revenue & Analytics - Discounting Historicals
-
-  SELECT
-    dim_crm_user_id,
-    user_email,
-    manager_id
-  FROM dim_crm_user
-
-),
-
 final AS (
 
   --Joining Sales Analytics - Discount Analysis Dashboard and additional data for Revenue & Analytics - Discounting Historicals
@@ -409,10 +385,10 @@ final AS (
     ON mart_crm_opportunity.dim_crm_user_id = dim_crm_user.dim_crm_user_id
   LEFT JOIN manager_data
     ON dim_crm_user.manager_id = manager_data.dim_crm_user_id
-  LEFT JOIN manager_data_3rd_line
-    ON manager_data.manager_id = manager_data_3rd_line.dim_crm_user_id
-  LEFT JOIN manager_data_4th_line
-    ON manager_data_3rd_line.manager_id = manager_data_4th_line.dim_crm_user_id
+  LEFT JOIN manager_data AS manager_data_3rd_line
+    ON manager_data_3rd_line.dim_crm_user_id = manager_data.manager_id
+  LEFT JOIN manager_data AS manager_data_4th_line
+    ON manager_data_4th_line.dim_crm_user_id = manager_data_3rd_line.manager_id
 
 )
 
