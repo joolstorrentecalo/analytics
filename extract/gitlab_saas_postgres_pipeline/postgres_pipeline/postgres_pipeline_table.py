@@ -20,8 +20,6 @@ from postgres_utils import (
     get_min_or_max_id,
     update_import_query_for_delete_export,
     update_is_deleted_field,
-    check_if_legacy_temp_table_exists,
-    get_clean_target_table_name,
 )
 
 BACKFILL_EXTRACT_CHUNKSIZE = 15_000_000

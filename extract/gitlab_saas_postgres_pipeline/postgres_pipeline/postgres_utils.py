@@ -45,6 +45,8 @@ DELETE_METADATA_TABLE = "delete_metadata"
 
 INCREMENTAL_LOAD_TYPE_BY_ID = "load_by_id"
 
+IS_CELLS_LIVE = True  # when true a cells db is live and the regular legacy upload process is not run, instead a leader <> follower process is run
+
 
 def get_gcs_scoped_credentials():
     """Get scoped credential"""
@@ -523,12 +525,10 @@ def seed_and_upload_snowflake(
         database_type,
     )
 
-    is_cells_live = True  # when true a cells db is live and the regular legacy upload process is not run, instead a leader <> follower process is run
-
     if load_by_id_export_type == "backfill":
         # We do the swap here because snowflake engine instantiated here
 
-        if not is_cells_live:
+        if not IS_CELLS_LIVE:
             swap_temp_table(
                 target_engine,
                 database_kwargs["real_target_table"],
@@ -541,55 +541,15 @@ def seed_and_upload_snowflake(
                 logging.info("Cells db backfill needs to run first")
 
             else:
-                # union_table_name = merge_cells_and_legacy_table(
-                #     target_engine,
-                #     database_kwargs["target_table"],
-                # )
-
                 logging.info("Swapping tables")
-                # target_table is temp table (need to enable just this until cells db is live)
                 swap_temp_table(
                     target_engine,
                     database_kwargs["real_target_table"],
                     database_kwargs["target_table"],
                 )
-
                 logging.info(
                     f"Finished swapping tables to Snowflake table '{database_kwargs['real_target_table']}'"
                 )
-
-
-def merge_cells_and_legacy_table(engine, target_cells_table):
-    """
-    Merge cells and legacy tables
-    """
-    clean_target_to_legacy_table_name = get_clean_target_table_name(target_cells_table)
-    logging.info(
-        f"Merging {clean_target_to_legacy_table_name} and {target_cells_table}"
-    )
-    union_table_name = clean_target_to_legacy_table_name + "_UNION"
-    if engine.has_table(clean_target_to_legacy_table_name):
-        logging.info(
-            f"Merging the cells db temp table: {target_cells_table} with the legacy db table: {clean_target_to_legacy_table_name}"
-        )
-        merge_query = f"CREATE TABLE {TARGET_EXTRACT_SCHEMA}.{union_table_name} AS (SELECT * FROM {TARGET_EXTRACT_SCHEMA}.{target_cells_table} UNION ALL SELECT * FROM {TARGET_EXTRACT_SCHEMA}.{clean_target_to_legacy_table_name});"
-        logging.info(f"{merge_query}")
-        query_executor(engine, merge_query)
-
-        # Drop cells and legacy temp tables
-
-        drop_cells_query = (
-            f"DROP TABLE IF EXISTS {TARGET_EXTRACT_SCHEMA}.{target_cells_table};"
-        )
-        drop_legacy_query = f"DROP TABLE IF EXISTS {TARGET_EXTRACT_SCHEMA}.{clean_target_to_legacy_table_name};"
-
-        logging.info(f"Dropping cells temp table: {drop_cells_query}")
-        query_executor(engine, drop_cells_query)
-
-        logging.info(f"Dropping legacy temp table: {drop_legacy_query}")
-        query_executor(engine, drop_legacy_query)
-
-        return union_table_name
 
 
 def upload_to_snowflake_after_extraction(
@@ -1202,19 +1162,3 @@ def update_is_deleted_field(deletes_table: str, target_table: str, primary_key: 
     drop_query_results = query_executor(target_engine, drop_query)
     logging.info(f"Table {drop_query_results[0][0]}")
     target_engine.dispose()
-
-
-def check_if_legacy_temp_table_exists(target_engine, target_table_name):
-    """
-    Check if legacy temp table exists.
-    """
-    logging.info("Checking if legacy temp table exists")
-    target_engine.has_table(target_table_name)
-
-
-def get_clean_target_table_name(target_table_name: str):
-    """
-    Check if the legacy temp db exists or not
-    E.g. GITLAB_DB_NOTES_CELLS_TEMP is edited to be GITLAB_DB_NOTES_TEMP
-    """
-    return target_table_name.replace("_CELLS", "")
