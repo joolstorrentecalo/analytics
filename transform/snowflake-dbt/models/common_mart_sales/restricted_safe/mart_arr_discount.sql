@@ -3,12 +3,25 @@
     tags=["mnpi"]
 ) }}
 
-WITH sheetload_partner_discount AS (
+{{ simple_cte([
+    ('sheetload_partner_discount_summary_source', 'sheetload_partner_discount_summary_source'),
+    ('fct_invoice_item', 'fct_invoice_item'),
+    ('dim_charge', 'dim_charge'),
+    ('dim_product_detail', 'dim_product_detail'),
+    ('fct_charge', 'fct_charge'),
+    ('dim_crm_account', 'dim_crm_account'),
+    ('dim_subscription', 'dim_subscription'),
+    ('mart_crm_opportunity', 'mart_crm_opportunity'),
+    ('dim_crm_user', 'dim_crm_user'),
+    ('dim_date', 'dim_date')
+]) }},
+
+sheetload_partner_discount AS (
 
   SELECT
     dim_crm_opportunity_id,
     MAX(discount_percent) AS partner_margin
-  FROM {{ ref('sheetload_partner_discount_summary_source') }}
+  FROM sheetload_partner_discount_summary_source
   GROUP BY 1
 
 ),
@@ -84,18 +97,18 @@ discount_prep_step_1 AS (
     END                                                                                                 AS order_type,
     COALESCE (mart_crm_opportunity.deal_path_name, 'Other')                                             AS deal_path_name,
     COALESCE(sheetload_partner_discount.partner_margin, mart_crm_opportunity.partner_margin_percentage) AS partner_margin
-  FROM {{ ref('fct_invoice_item') }}
-  LEFT JOIN {{ ref('dim_charge') }}
+  FROM fct_invoice_item
+  LEFT JOIN dim_charge
     ON fct_invoice_item.charge_id = dim_charge.dim_charge_id
-  LEFT JOIN {{ ref('dim_product_detail') }}
+  LEFT JOIN dim_product_detail
     ON fct_invoice_item.dim_product_detail_id = dim_product_detail.dim_product_detail_id
-  LEFT JOIN {{ ref('fct_charge') }}
+  LEFT JOIN fct_charge
     ON fct_invoice_item.charge_id = fct_charge.dim_charge_id
-  LEFT JOIN {{ ref('dim_crm_account') }}
+  LEFT JOIN dim_crm_account
     ON fct_invoice_item.dim_crm_account_id_invoice = dim_crm_account.dim_crm_account_id
-  LEFT JOIN {{ ref('dim_subscription') }}
+  LEFT JOIN dim_subscription
     ON fct_invoice_item.dim_subscription_id = dim_subscription.dim_subscription_id
-  LEFT JOIN {{ ref('mart_crm_opportunity') }}
+  LEFT JOIN mart_crm_opportunity
     ON dim_subscription.dim_crm_opportunity_id = mart_crm_opportunity.dim_crm_opportunity_id
   LEFT JOIN sheetload_partner_discount
     ON mart_crm_opportunity.dim_crm_opportunity_id = sheetload_partner_discount.dim_crm_opportunity_id
@@ -209,7 +222,7 @@ discount_prep_step_2 AS (
       ELSE discount_prep_step_1.partner_margin
     END                                                          AS partner_margin
   FROM discount_prep_step_1
-  LEFT JOIN {{ ref('dim_date') }}
+  LEFT JOIN dim_date
     ON discount_prep_step_1.invoice_date = dim_date.date_actual
   WHERE
     discount_eligible_flag = 'Eligible'
@@ -336,7 +349,7 @@ manager_data AS (
     user_name,
     user_email,
     manager_id
-  FROM {{ ref('dim_crm_user') }}
+  FROM dim_crm_user
 
 ),
 
@@ -348,7 +361,7 @@ manager_data_3rd_line AS (
     dim_crm_user_id,
     user_email,
     manager_id
-  FROM {{ ref('dim_crm_user') }}
+  FROM dim_crm_user
 
 ),
 
@@ -360,7 +373,7 @@ manager_data_4th_line AS (
     dim_crm_user_id,
     user_email,
     manager_id
-  FROM {{ ref('dim_crm_user') }}
+  FROM dim_crm_user
 
 ),
 
@@ -388,9 +401,9 @@ final AS (
     manager_data_3rd_line.user_email     AS opportunity_owner_3rd_line_manager_email,
     manager_data_4th_line.user_email     AS opportunity_owner_4th_line_manager_email
   FROM discount_prep_step_4
-  LEFT JOIN {{ ref('mart_crm_opportunity') }}
+  LEFT JOIN mart_crm_opportunity
     ON discount_prep_step_4.dim_crm_opportunity_id = mart_crm_opportunity.dim_crm_opportunity_id
-  LEFT JOIN {{ ref('dim_crm_account') }}
+  LEFT JOIN dim_crm_account
     ON mart_crm_opportunity.dim_crm_account_id = dim_crm_account.dim_crm_account_id
   LEFT JOIN prod.common.dim_crm_user
     ON mart_crm_opportunity.dim_crm_user_id = dim_crm_user.dim_crm_user_id
