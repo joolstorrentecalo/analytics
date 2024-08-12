@@ -294,7 +294,11 @@ class PostgresPipelineTable:
             self.query, self.source_table_primary_key
         )
         load_by_id_export_type = "deletes"
-        deletes_table = self.get_temp_target_table_name()
+
+        if database_type == "cells":
+            deletes_table = self.get_temp_target_table_name() + "_CELLS"
+        else:
+            deletes_table = self.get_temp_target_table_name()
 
         is_delete_export_needed, initial_load_start_date, start_pk = self.check_deletes(
             metadata_engine, DELETE_METADATA_TABLE
