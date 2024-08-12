@@ -453,11 +453,11 @@ def get_upload_file_name(
 
 
 def upload_initial_load_prefix_to_snowflake(
-    target_engine,
-    database_kwargs,
-    load_by_id_export_type,
-    initial_load_start_date,
-    database_type,
+    target_engine: Engine,
+    database_kwargs: dict,
+    load_by_id_export_type: str,
+    initial_load_start_date: datetime,
+    database_type: str,
     purge: bool = True,
 ):
     """
@@ -518,11 +518,11 @@ def seed_and_upload_snowflake(
         )
 
     upload_initial_load_prefix_to_snowflake(
-        target_engine,
-        database_kwargs,
-        load_by_id_export_type,
-        initial_load_start_date,
-        database_type,
+        target_engine=target_engine,
+        database_kwargs=database_kwargs,
+        load_by_id_export_type=load_by_id_export_type,
+        initial_load_start_date=initial_load_start_date,
+        database_type=database_type,
     )
 
     if load_by_id_export_type == "backfill":
@@ -576,11 +576,11 @@ def upload_to_snowflake_after_extraction(
     if load_by_id_export_type == INCREMENTAL_LOAD_TYPE_BY_ID:
         # upload directly to snowflake if incremental
         upload_initial_load_prefix_to_snowflake(
-            target_engine,
-            database_kwargs,
-            load_by_id_export_type,
-            initial_load_start_date,
-            database_type,
+            target_engine=target_engine,
+            database_kwargs=database_kwargs,
+            load_by_id_export_type=load_by_id_export_type,
+            initial_load_start_date=initial_load_start_date,
+            database_type=database_type,
         )
     else:
         # else need to create 'temp' table first
