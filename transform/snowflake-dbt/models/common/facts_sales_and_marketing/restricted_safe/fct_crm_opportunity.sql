@@ -192,27 +192,6 @@
           THEN dim_crm_account_user_role_level_5_id
         ELSE dim_crm_opp_owner_role_level_5_id
       END                                                                                                                         AS dim_crm_current_account_set_role_level_5_id,
-      CASE
-        WHEN net_arr<50000 THEN 'Run-Rate Net ARR(<$50K)'
-        WHEN net_arr>=50000 AND net_arr<250000 THEN 'Mid Size Net ARR ($50K-$250K)'
-        WHEN net_arr>=250000 AND net_arr<500000 THEN 'Fat-Middle Net ARR ($250K-$500K)'
-        WHEN net_arr>=500000 AND net_arr<1000000 THEN 'Big Deal Net ARR ($500K-$1M)'
-        ELSE 'Jumbo Deal Net ARR (>$1M)'
-      END                                                                                                                         AS deal_size_grouping,
-      CASE
-        WHEN report_role_level_1 = 'APJ' THEN 'APJ'
-        WHEN report_role_level_1 = 'SMB' THEN 'SMB'
-        WHEN report_role_level_1 = 'PUBSEC' THEN 'PUBSEC'
-        WHEN report_role_level_2 = 'AMER_COMM' THEN 'AMER COMM'
-        WHEN report_role_level_1 = 'AMER' THEN 'AMER ENT'
-        WHEN report_role_level_2 = 'EMEA_COMM' THEN 'EMEA COMM'
-        WHEN report_role_level_2 = 'EMEA_NEUR' THEN 'EMEA NEUR'
-        WHEN report_role_level_2 = 'EMEA_DACH' THEN 'EMEA DACH'
-        WHEN report_role_level_2 = 'EMEA_SEUR' THEN 'EMEA SEUR'
-        WHEN report_role_level_2 = 'EMEA_META' THEN 'EMEA META'
-        WHEN report_role_level_2 = 'EMEA_TELCO' THEN 'EMEA TELCO'
-      END                                                                                                                        AS pipe_council_grouping
-
 
       sfdc_opportunity.ssp_id,
       sfdc_opportunity.ga_client_id,
