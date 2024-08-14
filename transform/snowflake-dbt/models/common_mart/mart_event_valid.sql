@@ -33,7 +33,7 @@ fact AS (
 ), 
 
 fact_with_dims AS (
-
+-- explore adding these to the upstream talbe to reduce data processing
   SELECT
     fact.*,
     dim_namespace.namespace_type AS ultimate_parent_namespace_type,
