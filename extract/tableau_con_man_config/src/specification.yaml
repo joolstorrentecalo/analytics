@@ -5168,7 +5168,7 @@ users:
       - General SAFE Access
   - user_name: jbielecki
     user_name_domain: gitlab.com
-    site_role: Viewer
+    site_role: ExplorerCanPublish
     auth_setting: SAML
     groups:
       - ASM Restricted Access
