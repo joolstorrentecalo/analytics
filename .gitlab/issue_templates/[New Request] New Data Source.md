@@ -2,6 +2,11 @@ Please take notice of the new data source request [handbook page](https://about.
  
 ## Business Use Case (Please explain what this data will be used for):
  
+- Who will benefit from this data? Team / Department / Division / Multiple Divisions / Enterprise
+- What is the time criticality? Nice to have, within the next year, within the next 6 months, within next quarter, urgent, ASAP
+- What revenue or efficiency impact will this data have?  < $5k, < $50k, < $500k, < $5M, > $5M
+- Is there a regulatory or legal requirement? None/Nice to Have, Must Have, Fine and/or  Brand Damage <$1M, Fine and/or Brand Damage <$10M , Fine and/or Brand Damage > $10M-
+- Additional context or details to support the request for scheduling and prioritization: `          `
  
 ## Request checklist
 To support the new data source triage process, try to complete the below checklist. If there is anything not sure or unknown, you can skip that point.
@@ -20,8 +25,12 @@ To support the new data source triage process, try to complete the below checkli
   - [ ] Low - S4
 * [ ] Who will be using this data, and where (dashboards, snowflake UI, etc.)?
   - `      `
+* [ ] How much data needs to be loaded in the initial run? (All time, 12 months, 24 months lookback etc.) The data team adheres to [data minimization principle](https://handbook.gitlab.com/handbook/business-technology/data-team/how-we-work/new-data-source/#data-minimisation).
+  - `      `
  
-* [ ] Please list and describe any data from this source that is sensitive (Classified as Red or Orange in our [Data Classification Policy](https://handbook.gitlab.com/handbook/security/data-classification-standard/#data-classification-levels))?
+* [ ] Please list and describe any data from this source that are confidential (Classified as Red or Orange in our [Data Classification Policy](https://handbook.gitlab.com/handbook/security/data-classification-standard/#data-classification-levels))?
+ - _`{data fields, columns, or objects}`_
+* [ ] Please list the exact data elements from this source that would be defined as [Personal Data](https://handbook.gitlab.com/handbook/legal/privacy/#privacy-terms) and please clarify if Personal Data is required to be extracted Y/N?
  - _`{data fields, columns, or objects}`_
 * [ ] Does this data have any agreed [SLO](https://about.gitlab.com/handbook/business-technology/data-team/platform/#slos-service-level-objectives-by-data-source) attached to it? If not:
    * [ ] How often does the data need to be refreshed?
@@ -60,11 +69,16 @@ use contact the Data Engineer assigned below for confirmation.
 **Triage**
 * [ ] Determine the extraction solution via decision [diagram](https://about.gitlab.com/handbook/business-technology/data-team/how-we-work/new-data-source/#extraction-solution):
 * [ ] Estimate the [issue points](https://about.gitlab.com/handbook/business-technology/data-team/how-we-work/#issue-pointing), based on the current information* 
-* [ ] This new data source is lised in the [tech_stack.yml](https://gitlab.com/gitlab-com/www-gitlab-com/-/blob/master/data/tech_stack.yml) and does not have `data_classification: Red`. If the data source does have `data_classification: Red`, the following approvals are required:
+* [ ] This new data source is listed in the [tech_stack.yml](https://gitlab.com/gitlab-com/www-gitlab-com/-/blob/master/data/tech_stack.yml) and does not have `data_classification: Red`. If the data source does have `data_classification: Red`, the following approvals are required:
     - [ ] BT/Data VP-level
     - [ ] Security (Security Risk Management Officer)
     - [ ] Privacy (Lead Legal Counsel - Privacy)
     - [ ] Not applicable - this data source is already extracted and it concerns extending the current pipeline
+* [ ] If it is indicated that the data source contains Personal Data and the data is intended to be extracted, work with our Legal Privacy team to obtain approval:
+    - [ ] Legal Privacy (@emccrann).
+* [ ] Will the Personal Data to be extracted include "sensitive Personal Data," which is data related to race/ethnicity, health or medical details, biometric or genetic data, religion, political affiliation or philosophy, sexual orientation, criminal offenses, citizenship/immigraion, or trade unions. Sensitive Personal Data may be prohibited from being processed under certain privacy legislation. If checked, the following approvals are required:
+    - [ ] Legal Privacy (@emccrann)
+    - [ ] People Operations, if sensitive Personal Data is related to Team Members (@mpatel8).
  
 **Admin**
  * [ ] Create issue for creation of extract process (not needed if using Stitch/FiveTran)

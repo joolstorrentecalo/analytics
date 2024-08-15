@@ -86,7 +86,7 @@
       {{ get_keyed_nulls('sfdc_opportunity.dim_crm_user_id') }}                                                                   AS dim_crm_user_id,
       {{ get_keyed_nulls('prep_crm_account.dim_crm_user_id') }}                                                                   AS dim_crm_account_user_id,
       {{ get_keyed_nulls('order_type.dim_order_type_id') }}                                                                       AS dim_order_type_id,
-      {{ get_keyed_nulls('order_type_live.dim_order_type_id') }}                                                                  AS dim_order_type_live_id,
+      {{ get_keyed_nulls('order_type_current.dim_order_type_id') }}                                                                  AS dim_order_type_current_id,
       {{ get_keyed_nulls('dr_partner_engagement.dim_dr_partner_engagement_id') }}                                                 AS dim_dr_partner_engagement_id,
       {{ get_keyed_nulls('alliance_type.dim_alliance_type_id') }}                                                                 AS dim_alliance_type_id,
       {{ get_keyed_nulls('alliance_type_current.dim_alliance_type_id') }}                                                         AS dim_alliance_type_current_id,
@@ -132,11 +132,7 @@
       {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_3_id') }}                                                     AS dim_crm_account_user_role_level_3_id,
       {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_4_id') }}                                                     AS dim_crm_account_user_role_level_4_id,
       {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_5_id') }}                                                     AS dim_crm_account_user_role_level_5_id,
-      CASE
-        WHEN close_fiscal_year < prep_date.current_fiscal_year
-          THEN dim_crm_user_hierarchy_account_user_sk  -- live account owner hierarchy
-        ELSE {{ get_keyed_nulls('sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk') }} -- stamped opp owner hierarchy
-      END                                                                                                                         AS dim_crm_current_account_set_hierarchy_sk,
+      sfdc_opportunity.dim_crm_current_account_set_hierarchy_sk,
       CASE
         WHEN close_fiscal_year < prep_date.current_fiscal_year
           THEN dim_crm_account_user_sales_segment_id
@@ -192,13 +188,13 @@
           THEN dim_crm_account_user_role_level_5_id
         ELSE dim_crm_opp_owner_role_level_5_id
       END                                                                                                                         AS dim_crm_current_account_set_role_level_5_id,
-
       sfdc_opportunity.ssp_id,
       sfdc_opportunity.ga_client_id,
 
       -- flags
       sfdc_opportunity.is_closed,
       sfdc_opportunity.is_won,
+      sfdc_opportunity.valid_deal_count,
       sfdc_opportunity.is_refund,
       sfdc_opportunity.is_downgrade,
       sfdc_opportunity.is_swing_deal,
@@ -268,6 +264,7 @@
       -- additive fields
       sfdc_opportunity.incremental_acv                                                                                      AS iacv,
       sfdc_opportunity.net_incremental_acv                                                                                  AS net_iacv,
+      sfdc_opportunity.opportunity_based_iacv_to_net_arr_ratio,
       sfdc_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       sfdc_opportunity.calculated_from_ratio_net_arr,
       sfdc_opportunity.net_arr,
@@ -316,6 +313,16 @@
       sfdc_opportunity.override_arr_basis_clari,
       sfdc_opportunity.vsa_start_date_net_arr,
       sfdc_opportunity.cycle_time_in_days,
+      sfdc_opportunity.created_arr,
+      sfdc_opportunity.closed_won_opps,
+      sfdc_opportunity.closed_opps,
+      sfdc_opportunity.created_deals,
+      sfdc_opportunity.positive_booked_deal_count,
+      sfdc_opportunity.positive_booked_net_arr,
+      sfdc_opportunity.positive_open_deal_count,
+      sfdc_opportunity.positive_open_net_arr,
+      sfdc_opportunity.closed_deals,
+      sfdc_opportunity.closed_net_arr,
 
       -- PTC related fields
       sfdc_opportunity.ptc_predicted_arr,
@@ -330,8 +337,8 @@
       ON sfdc_opportunity.sales_qualified_source = sales_qualified_source.sales_qualified_source_name
     LEFT JOIN order_type
       ON sfdc_opportunity.order_type = order_type.order_type_name
-    LEFT JOIN order_type AS order_type_live
-      ON sfdc_opportunity.order_type_live = order_type_live.order_type_name
+    LEFT JOIN order_type AS order_type_current
+      ON sfdc_opportunity.order_type_current = order_type_current.order_type_name
     LEFT JOIN deal_path
       ON sfdc_opportunity.deal_path = deal_path.deal_path_name
     LEFT JOIN sales_segment
@@ -362,5 +369,5 @@
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-11-30",
-    updated_date="2024-05-08"
+    updated_date="2024-05-23"
 ) }}

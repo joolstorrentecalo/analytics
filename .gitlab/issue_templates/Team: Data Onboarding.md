@@ -21,7 +21,7 @@ Welcome to the GitLab Data Program -- we're excited to have you! The goal of thi
    - [ ] [Data Team](https://about.gitlab.com/handbook/business-technology/data-team/)
    - [ ] [Data Direction page](https://about.gitlab.com/handbook/business-technology/data-team/direction/) to get a sense of what our short and longer-term roadmap.
    - [ ] [Data Catalog](https://about.gitlab.com/handbook/business-technology/data-team/data-catalog/)
-- [ ] Watch @rbacovic [talk at the Crunch Conference](https://www.youtube.com/watch?v=2_O3jGpicOg&list=PLQyyxph2CGupNGhGLZ1ofCxqJe_RzM7ME&index=19&t=3s&ab_channel=CraftHubEvents) that gives a phenomenal overview of how the team works.
+- [ ] Watch @rbacovic [talk at the DevOps Days Europe](https://www.youtube.com/watch?v=9b4KCKbXLP4) Conference, that gives a phenomenal overview of how the team works.
    - Optional: Watch former GitLab Team Member Thomas La Piana [talk at DataEngConf](https://www.youtube.com/watch?v=eu623QBwakc) that gives a phenomenal overview of how the team worked back in 2018.
 - [ ] Watch [this great talk](https://www.youtube.com/watch?v=prcz0ubTAAg) on what Analytics is.
 - [ ] Browse a few of the [Data Team videos in GitLab Unfiltered](https://www.youtube.com/playlist?list=PL05JrBw4t0KrRVTZY33WEHv8SjlA_-keI)
@@ -51,7 +51,7 @@ You will need access to several groups, applications, tools, and data sources fo
 | Access To | Distributed Data Analyst | Data Analyst | Analytics Engineer | Data Scientist | Data Engineer | Method |
 | ------- | :----------------------: | :----------: | :----------------: | :------------: | :-----------: | ------ |
 |  Lucidchart | Yes | Yes | Yes | Yes  | Yes  | Access Request |
-|  Sisense |  Editor | Editor  | Editor  | Editor  | Editor | Access Request, [Example](https://gitlab.com/gitlab-com/team-member-epics/access-requests/-/issues/10858) |
+|  Tableau |  Creator | Creator  | Creator  | Explorer  | Optional | Access Request, [Example](https://gitlab.com/gitlab-com/team-member-epics/access-requests/-/issues/10858) |
 |  Stitch |  No | No  | No | No | Yes | ? |
 |  Fivetran | No  | No  | No | No | Yes | [Instructions](https://about.gitlab.com/handbook/business-ops/okta/#managing-okta-access-using-google-groups) |
 |  Airflow |  No | Analyst | Admin| Analyst | Admin | |
@@ -97,8 +97,7 @@ Getting to know the team will require purposeful steps on your part in our all-r
 <summary>Team Member Steps</summary>
 
 - [ ] Review the [org chart](https://www.myworkday.com/gitlab/d/inst/247$55/rel-task/2998$10935.htmld) to find your immediate team and the greater Data Team. Using your browser search to find your self on the page can be a quick way to find your team.
-- [ ] Schedule coffee chats with members of the Data Team starting with those in your immediate team. These should be in addition to the ones you do with other GitLab team members. Consider making these recurring meetings for every 3-4 weeks with everyone you will work closely with. In addition, you should also consider scheduling chats with Business Technology (IT, Enterprise Apps, Procurement) people as well.
-- [ ] Schedule a cofee chat with the Sr. Director of Data and Analytics
+- [ ] Schedule coffee chats with members of the Data Team starting with those in your immediate team. These should be in addition to the ones you do with other GitLab team members. Once you have fully onboarded, consider creating recurring meetings for every 3-4 weeks with everyone you will work closely with. 
 
 </details>
 
@@ -116,12 +115,10 @@ There are many slack channels for communication of data team needs and informati
 | ------- | :----------------------: | :----------: | :----------------: | :------------: | :-----------: | 
 | `data` | Yes | Yes | Yes | Yes | Yes | 
 | `data-lounge` | Yes | Yes | Yes | Yes | Yes |
-| `data-onboarding` | Yes | Yes | Yes | Yes | Yes |
 | `data-daily` | No | Yes | Yes | Yes | Yes |
+| `data-weekly` | No | Yes | Yes | Yes | Yes |
 | `data-triage` | No | Yes | Yes | Yes | Yes |
 | `data-engineering` | No | Yes | Yes | Yes | Yes |
-| `business-technology` | No | Yes | Yes | Yes | Yes |
-| `bt-team-lounge` | No | Yes | Yes | Yes | Yes |
 | `analytics-pipelines` | No | No | Yes | No | No |
 | `data-prom-alerts` | No | No | No | No | Yes |
 | `bt-data-science` | No | No | No | Yes | No |
@@ -227,10 +224,12 @@ And the `config_docker` file will be used by the docker containers when you are 
 - [ ] Install [Rancher Desktop](https://rancherdesktop.io/) using the UI install specified for your system
   - [ ] Make sure to download Rancher Desktop version `1.4.1` - you can find the correct version for your system here https://github.com/rancher-sandbox/rancher-desktop/releases/tag/v1.4.1
   - [ ] If you have trouble installing v1.4.1 on a new Mac M1 machine, try v1.2.1, which has been tested and it is known it works
-  - [ ] Airflow does not require a huge amount of resources, 4GB of RAM and 2 CPUs should be sufficient.  
-  - [ ] Ensure that you select the `dockerd` container runtime in `Kubernetes Settings`. 
+  - [ ] If that also does not work, try v1.13.1 (You can get it here: https://github.com/rancher-sandbox/rancher-desktop/releases/tag/v1.13.1)
+  - [ ] Airflow does not require a huge amount of resources, 4GB of RAM and 2 CPUs should be sufficient.
+  - [ ] Ensure that you select the `dockerd` container runtime in `Kubernetes Settings`.
+      - [ ] If you installed v1.13.1 you can find `dockerd` under Preferences and then Container Engine. It can happen that the Preferences screen does not load. A restart of your machine should help.
   - [ ] Ensure that you select to create symbologic links to the docker command line path (`/usr/local/bin/docker`) in the `Supporting Utilities` section. 
-  - [ ] Install the docker-compose cli by running through the below: 
+  - [ ] Install the docker-compose cli by running through the below:
     - `brew install docker docker-compose`
     - Confirm install
     - `docker-compose --version`
@@ -293,7 +292,7 @@ On [the Data team handbook page](https://about.gitlab.com/handbook/business-ops/
 ### The Data Warehouse - Connecting to Snowflake
 
 - [ ] Login to Snowflake using [Okta](https://gitlab.okta.com/app/UserHome) 
-- [ ] Familiarize yourself with the [Snowflake Web UI](https://docs.snowflake.com/en/user-guide/snowflake-manager.html#worksheet-page)for querying the data warehouse. 
+- [ ] Familiarize yourself with the [Snowflake Web UI](https://docs.snowflake.com/en/user-guide/snowflake-manager.html#worksheet-page) for querying the data warehouse. 
 - [ ] Update your role, warehouse, and database to the same info you're instructed to put in your dbt profile (Ask your manager if this is confusing or check out [roles.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/permissions/snowflake/roles.yml) to see which roles, warehouses, and databases you've been assigned). The schema does not matter because your query will reference the schema.
   - [ ] Run `alter user "your_user" set default_role = "your_role";` to set the UI default Role to your appropriate role instead of `PUBLIC`. (E.g. `alter user "KDIETZ" set default_role = "KDIETZ";`)
 - [ ] Test your Snowflake connection in the UI by first running selecting which warehouse to use (e.g. `use warehouse ANALYST_XS;`), clicking the "play" button, and then querying a database you have access to (e.g. `select * from "PROD"."COMMON"."DIM_CRM_PERSON" limit 10;`) 
@@ -350,16 +349,11 @@ _Ensure you've set up your SSH configuration in the previous step as this is req
    - [dbt Labs Blog](https://blog.getdbt.com/)
    - [dbt Discourse](http://discourse.getdbt.com)
 
-### Sisense 
+### Tableau 
 
-Sisense is our enterprise standard data visualization application and is the only application approved for connecting to our Enterprise Data Warehouse.
+Tableau is our enterprise standard data visualization application.
 
-- [ ] Review the following training materials from the [Data Team Sisense](https://about.gitlab.com/handbook/business-technology/data-team/platform/periscope/#training-resources) page.
-  - [ ] Watch Accessing Sisense
-  - [ ] Review the Getting Started article
-  - [ ] Watch the Gitlab's Sisence Editor Training
-- [ ] Watch the Sisence Admin Training [Part 1](https://www.youtube.com/watch?v=YspSfOuEQV4&list=PL05JrBw4t0KrRVTZY33WEHv8SjlA_-keI&index=16)
-- [ ] Watch the Sisence Admin Training [Part 2](https://www.youtube.com/watch?v=LQT9fXw1EaE&list=PL05JrBw4t0KrRVTZY33WEHv8SjlA_-keI&index=14)
+- [ ] Review the [Data Team handbook page on Tableau](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/tableau/).
 
 </details>
 

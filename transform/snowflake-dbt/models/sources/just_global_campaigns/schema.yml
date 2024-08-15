@@ -3,7 +3,7 @@ version: 2
 models:
   - name: media_buys_source
     description: Data on each media buy and corresponding performance
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - media_buy_date
@@ -14,31 +14,31 @@ models:
             - creative_name
     columns:
       - name: media_buy_date
-        tests:
+        data_tests:
           - not_null
       - name: region
-        tests:
+        data_tests:
           - not_null
       - name: country
-        tests:
+        data_tests:
           - not_null
       - name: calculated_site_name
       - name: platform
       - name: campaign_name
-        tests:
+        data_tests:
           - not_null
       - name: media_buy_name
-        tests:
+        data_tests:
           - not_null
       - name: creative_tag_line
       - name: audience_calc
       - name: audience_harm
       - name: creative_name_value
       - name: creative_name
-        tests:
+        data_tests:
           - not_null
       - name: media_cost
-        tests:
+        data_tests:
           - not_null
       - name: impressions
       - name: clicks
@@ -50,5 +50,5 @@ models:
       - name: total_engagement_total_conversion
       - name: social_total_engagement
       - name: uploaded_at
-        tests:
+        data_tests:
           - not_null

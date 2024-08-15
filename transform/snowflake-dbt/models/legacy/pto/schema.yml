@@ -19,7 +19,7 @@ models:
           description: '{{ doc("gitlab_pto_employee_division") }}'
         - name: hr_employee_id
           description: The employee id of Workday
-          tests:
+          data_tests:
             - not_null
         - name: employee_uuid
           description: '{{ doc("gitlab_pto_employee_uuid") }}'
@@ -49,3 +49,5 @@ models:
         - name: pto_type_uuid
           meta:
             masking_policy: analyst_people_sensitive
+        - name: pto_created_at
+          description: '{{ doc("gitlab_pto_pto_created_at") }}'

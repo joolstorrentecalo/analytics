@@ -6,7 +6,7 @@ models:
   columns:
     - name: event_pk
       description: '{{ doc("event_pk") }}'
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -35,27 +35,27 @@ models:
       description: '{{ doc("event_date") }}'
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: parent_id
       description: '{{ doc("parent_id") }}'
@@ -113,7 +113,7 @@ models:
   columns:
     - name: event_namespace_daily_pk
       description: the unique ID combination of the event_date, event_name, and dim_ultimate_parent_namespace_id in mart_event_namespace_daily.
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: dim_event_date_id
@@ -132,27 +132,27 @@ models:
       description: '{{ doc("event_date") }}'
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: event_name
       description: '{{ doc("event_name") }}'
@@ -200,7 +200,7 @@ models:
   columns:
     - name: event_user_daily_pk
       description: the unique composite ID for the mart_event_user_daily model consisting of event_date, dim_user_id, dim_ultimate_parent_namespace_id, and event_name.
-      tests:
+      data_tests:
         - not_null
         - unique:
             config: 
@@ -223,27 +223,27 @@ models:
       description: '{{ doc("event_date") }}'
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: event_name
       description: '{{ doc("event_name") }}'
@@ -292,7 +292,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         #- unique
       description: The unique composite ID for the mart_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
@@ -316,6 +316,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -423,7 +425,7 @@ models:
   description: ' {{ doc("mart_ping_instance") }} '
   columns:
     - name: ping_instance_id
-      tests:
+      data_tests:
         - not_null
         #- unique
       description: The unique composite ID for the mart_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
@@ -441,6 +443,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -554,13 +558,15 @@ models:
 - name: mart_ping_instance_metric_monthly
   description: ' {{ doc("mart_ping_instance_metric_monthly") }} '
   columns:
-    - name: ping_instance_metric_id
-      tests:
-        - not_null
+    - name: ping_instance_metric_monthly_pk
+      description: '{{ doc("ping_instance_metric_monthly_pk") }}'
+      data_tests:
         - unique:
             config:
               where: "ping_created_at >= DATEADD('day',-3,CURRENT_DATE())"
-      description: The unique composite ID for the mart_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
+        - not_null
+    - name: ping_instance_metric_id
+      description: Outdated, misstated primary key. Leaving in the model to not break dependencies, but can be ignored in the future.
     - name: dim_ping_date_id
       description: '{{ doc("dim_ping_date_id") }}'
     - name: metrics_path
@@ -583,6 +589,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -691,14 +699,15 @@ models:
 
 - name: mart_ping_instance_metric_weekly
   description: ' {{ doc("mart_ping_instance_metric_weekly") }} '
+  data_tests:
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - dim_installation_id
+          - metrics_path
+          - ping_created_date_week
   columns:
     - name: ping_instance_metric_id
-      tests:
-        - not_null
-        - unique:
-            config:
-              where: "ping_created_at >= DATEADD('day',-3,CURRENT_DATE())"
-      description: The unique composite ID for the mart_ping_instance_metric model consisting of dim_ping_instance_id and metrics_path
+      description: Outdated, misstated primary key. Leaving in the model to not break dependencies, but can be ignored in the future.
     - name: dim_ping_date_id
       description: '{{ doc("dim_ping_date_id") }}'
     - name: metrics_path
@@ -719,6 +728,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -833,7 +844,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric_7_day") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -859,6 +870,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -975,7 +988,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric_28_day") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -1001,6 +1014,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -1117,7 +1132,7 @@ models:
   description: ' {{ doc("mart_ping_instance_metric_all_time") }} '
   columns:
     - name: ping_instance_metric_id
-      tests:
+      data_tests:
         - not_null
         - unique:
             config:
@@ -1143,6 +1158,8 @@ models:
       description:  '{{ doc("latest_subscription_id") }}'
     - name: dim_billing_account_id
       description: '{{ doc("dim_billing_account_id") }}'
+    - name: dim_crm_account_id
+      description: '{{ doc("dim_crm_account_id") }}'
     - name: dim_parent_crm_account_id
       description: '{{ doc("dim_parent_crm_account_id") }}'
     - name: dim_host_id
@@ -1260,7 +1277,7 @@ models:
   columns:
     - name: event_namespace_monthly_pk
       description: The unique composite ID of the mart_event_namespace_monthly model consisting of event_calendar_month, event_name, and dim_ultimate_parent_namespace_id
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: dim_ultimate_parent_namespace_id
@@ -1299,27 +1316,27 @@ models:
       description: '{{ doc("event_name") }}'
     - name: section_name
       description: '{{ doc("section_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: stage_name
       description: '{{ doc("stage_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: group_name
       description: '{{ doc("group_name") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_smau
       description: '{{ doc("is_smau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_gmau
       description: '{{ doc("is_gmau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: is_umau
       description: '{{ doc("is_umau") }}'
-      tests:
+      data_tests:
         - not_null
     - name: data_source
       description: '{{ doc("data_source") }}'
@@ -1342,7 +1359,7 @@ models:
   description: '{{ doc("mart_behavior_structured_event") }}'
   columns:
     - name: behavior_structured_event_pk
-      tests:
+      data_tests:
         - unique:
             config:
               where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
@@ -1415,6 +1432,16 @@ models:
       description: '{{ doc("has_gitlab_experiment_context") }}'
     - name: has_customer_standard_context
       description: '{{ doc("has_customer_standard_context") }}'
+    - name: user_city
+      description: '{{ doc("user_city") }}'
+    - name: user_country
+      description: '{{ doc("user_country") }}'
+    - name: user_region
+      description: '{{ doc("user_region") }}'
+    - name: user_region_name
+      description: '{{ doc("user_region_name") }}'
+    - name: user_timezone_name
+      description: '{{ doc("user_timezone_name") }}'
     - name: browser_name
       description: '{{ doc("browser_name") }}'
     - name: dim_behavior_browser_sk
@@ -1427,13 +1454,25 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+    - name: dim_instance_id
+      description: '{{ doc("dim_instance_id") }}'
+    - name: host_name
+      description: '{{ doc("host_name") }}'
+    - name: instance_version
+      description: '{{ doc("gsc_instance_version") }}'
+    - name: gitlab_global_user_id
+      description: '{{ doc("gitlab_global_user_id") }}'
+    - name: delivery_type
+      description: '{{ doc("product_delivery_type") }}'
+    - name: gsc_correlation_id
+      description: ' { doc("gsc_correlation_id") } '
 
 - name: mart_behavior_structured_event_code_suggestion
   description: '{{ doc("mart_behavior_structured_event_code_suggestion") }}'
   columns:
     - name: behavior_structured_event_pk
       description: '{{ doc("behavior_structured_event_pk") }}'
-      tests:
+      data_tests:
         - unique
         - not_null
     - name: behavior_date
@@ -1453,7 +1492,7 @@ models:
     - name: language
       description: '{{ doc("code_suggestions_language") }}'
     - name: delivery_type
-      description: '{{ doc("product_delivery_type") }}'
+      description: '{{ doc("code_suggestions_delivery_type") }}'
       accepted_values:
         values: ['Self-Managed', 'SaaS']
     - name: model_engine
@@ -1488,14 +1527,14 @@ models:
       description: '{{ doc("has_code_suggestions_context") }}'
     - name: has_ide_extension_version_context
       description: '{{ doc("has_ide_extension_version_context") }}'
-    - name: instance_id
+    - name: dim_instance_id
       description: '{{ doc("dim_instance_id") }}'
     - name: host_name
       description: '{{ doc("host_name") }}'
     - name: is_streaming
       description: '{{ doc("code_suggestions_is_streaming") }}'
     - name: gitlab_global_user_id
-      description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+      description: '{{ doc("gitlab_global_user_id") }}'
     - name: namespace_ids
       description: '{{ doc("code_suggestions_namespace_ids") }}'
     - name: ultimate_parent_namespace_ids
@@ -1532,3 +1571,37 @@ models:
       description: '{{ doc("code_suggestions_installation_host_name") }}'
     - name: namespace_is_internal
       description: '{{ doc("code_suggestions_namespace_is_internal") }}'
+    - name: suggestion_source
+      description: ' {{ doc("code_suggestions_suggestion_source") }} '
+    - name: is_invoked
+      description: ' {{ doc("code_suggestions_is_invoked") }} '
+    - name: options_count
+      description: ' {{ doc("code_suggestions_options_count") }} '
+    - name: accepted_option
+      description: ' {{ doc("code_suggestions_accepted_option") }} '
+    - name: has_advanced_context
+      description: ' {{ doc("code_suggestions_has_advanced_context") }} '
+    - name: is_direct_connection
+      description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+    - name: product_deployment_type
+      description: ' {{ doc("product_deployment_type") }} '
+    - name: gsc_instance_version
+      description: ' {{ doc("gsc_instance_version") }}'
+    - name: total_context_size_bytes
+      description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+    - name: content_above_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+    - name: content_below_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+    - name: context_items
+      description: ' {{ doc("code_suggestions_context_items") }}'
+    - name: context_items_count
+      description: ' {{ doc("code_suggestions_context_items_count") }}'
+    - name: input_tokens
+      description: ' {{ doc("code_suggestions_input_tokens") }}'
+    - name: output_tokens
+      description: ' {{ doc("code_suggestions_output_tokens") }}'
+    - name: context_tokens_sent
+      description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+    - name: context_tokens_used
+      description: ' {{ doc("code_suggestions_context_tokens_used") }}'

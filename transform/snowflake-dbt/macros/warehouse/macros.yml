@@ -29,3 +29,5 @@ macros:
       - name: run_queries
         type: boolean
         description: Flag used to run queries or just print them. Default is False which will only print queries to stdout.
+  - name: gdpr_bulk_delete
+    description: '{{ doc("gdpr_bulk_delete") }}'

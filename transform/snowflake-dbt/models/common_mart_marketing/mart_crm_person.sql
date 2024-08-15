@@ -32,7 +32,7 @@
       mql_date_first.first_day_of_month        AS mql_month_first,
       mql_date_first_pt.first_day_of_month     AS mql_month_first_pt,
       mql_date_latest.date_day                 AS mql_date_latest,
-       initial_mql_date_first_pt.date_day      AS initial_mql_date_first_pt,
+      initial_mql_date_first_pt.date_day       AS initial_mql_date_first_pt,
       initial_mql_date_first.first_day_of_month
                                                AS initial_mql_month_first,
       initial_mql_date_first_pt.first_day_of_month
@@ -120,10 +120,12 @@
       dim_crm_person.email_domain,
       dim_crm_person.email_domain_type,
       is_valuable_signup,
+      dim_crm_person.person_role,
       dim_crm_person.email_hash,
       dim_crm_person.status,
       dim_crm_person.sfdc_record_type,
       dim_crm_person.lead_source,
+      dim_crm_person.inactive_contact,
       dim_crm_person.title,
       dim_crm_person.was_converted_lead,
       dim_crm_person.source_buckets,
@@ -146,6 +148,15 @@
       dim_crm_person.propensity_to_purchase_past_score_group,
       fct_crm_person.propensity_to_purchase_score_date,
       fct_crm_person.propensity_to_purchase_days_since_trial_start,
+      dim_crm_person.has_account_six_sense_6_qa,
+      dim_crm_person.six_sense_account_6_qa_end_date,
+      dim_crm_person.six_sense_account_6_qa_start_date,
+      dim_crm_person.six_sense_account_buying_stage,
+      dim_crm_person.six_sense_account_profile_fit,
+      dim_crm_person.six_sense_person_grade,
+      dim_crm_person.six_sense_person_profile,
+      dim_crm_person.six_sense_person_update_date,
+      dim_crm_person.six_sense_segments,  
       dim_crm_person.is_defaulted_trial,
       dim_crm_person.lead_score_classification,
       fct_crm_person.ga_client_id,
@@ -217,7 +228,23 @@
         WHEN LOWER(dim_crm_person.lead_source) LIKE '%trial - enterprise%' THEN TRUE
         ELSE FALSE
       END                                                        AS is_lead_source_trial,
-      dim_crm_person.person_first_country
+      dim_crm_person.person_first_country,
+      
+      --MQL and Most Recent Touchpoint info
+      dim_crm_person.bizible_mql_touchpoint_id,
+      dim_crm_person.bizible_mql_touchpoint_date,
+      dim_crm_person.bizible_mql_form_url,
+      dim_crm_person.bizible_mql_sfdc_campaign_id,
+      dim_crm_person.bizible_mql_ad_campaign_name,
+      dim_crm_person.bizible_mql_marketing_channel,
+      dim_crm_person.bizible_mql_marketing_channel_path,
+      dim_crm_person.bizible_most_recent_touchpoint_id,
+      dim_crm_person.bizible_most_recent_touchpoint_date,
+      dim_crm_person.bizible_most_recent_form_url,
+      dim_crm_person.bizible_most_recent_sfdc_campaign_id,
+      dim_crm_person.bizible_most_recent_ad_campaign_name,
+      dim_crm_person.bizible_most_recent_marketing_channel,
+      dim_crm_person.bizible_most_recent_marketing_channel_path
     FROM fct_crm_person
     LEFT JOIN dim_crm_person
       ON fct_crm_person.dim_crm_person_id = dim_crm_person.dim_crm_person_id
@@ -303,7 +330,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@degan",
+    updated_by="@rkohnke",
     created_date="2020-12-07",
-    updated_date="2024-03-11",
+    updated_date="2024-07-22",
   ) }}  

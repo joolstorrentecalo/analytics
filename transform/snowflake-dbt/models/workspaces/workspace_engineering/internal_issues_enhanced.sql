@@ -101,13 +101,13 @@ milestones AS (
   SELECT
     *,
     CASE
-      WHEN group_id = 9970
+      WHEN group_id in (9970,6543)
         AND start_date <= DATEADD('month', 1, CURRENT_DATE)
         AND REGEXP_LIKE(milestone_title, '\\d+\.\\d+') THEN
         DENSE_RANK() OVER (
           PARTITION BY
             IFF(
-              group_id = 9970
+              group_id in (9970,6543)
               AND start_date <= DATEADD('month', 1, CURRENT_DATE)
               AND REGEXP_LIKE(milestone_title, '\\d+\.\\d+'),
               1,

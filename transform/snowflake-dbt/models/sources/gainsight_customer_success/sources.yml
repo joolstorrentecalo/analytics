@@ -39,6 +39,7 @@ sources:
       - name: ctas_healthscores
       - name: customer_health_scorecard_fact_1
       - name: email_logs
+      - name: email_log_v_2
       - name: nps_survey_response
       - name: opt_out_emails
       - name: success_plan

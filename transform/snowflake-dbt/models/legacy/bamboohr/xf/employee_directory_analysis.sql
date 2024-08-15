@@ -49,6 +49,7 @@ cleaned AS (
       WHEN division = 'Customer Service' THEN 'Sales'
       ELSE NULLIF(division, '')
     END AS division,
+    division_mapped_current,
     CASE
       WHEN date_actual < '2020-06-09'
         THEN FALSE

@@ -1,6 +1,6 @@
 """
 ## Info about DAG
-This DAG perform  full refresh of all the model and will be running only on Sunday.Currently only model excluded from full refresh is +gitlab_dotcom_usage_data_events+.
+This DAG performs full refresh of all the models and will be running only on Sunday.
 """
 
 import os

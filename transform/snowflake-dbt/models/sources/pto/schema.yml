@@ -6,37 +6,37 @@ models:
       columns:
         - name: end_date
           description: '{{ doc("gitlab_pto_end_date") }}'
-          tests:
+          data_tests:
             - not_null
         - name: start_date
           description: '{{ doc("gitlab_pto_start_date") }}'
-          tests:
+          data_tests:
             - not_null
         - name: pto_status
           description: '{{ doc("gitlab_pto_pto_status") }}'
-          tests:
+          data_tests:
             - not_null
         - name: employee_day_length
           description: '{{ doc("gitlab_pto_employee_day_length") }}'
-          tests:
+          data_tests:
             - not_null
         - name: employee_department
           description: '{{ doc("gitlab_pto_employee_department") }}'
         - name: employee_division
           description: '{{ doc("gitlab_pto_employee_division") }}'
-          tests:
+          data_tests:
             - not_null
         - name: hr_employee_id
           description: '{{ doc("gitlab_pto_hr_employee_id") }}'
-          tests:
+          data_tests:
             - not_null
         - name: employee_uuid
           description: '{{ doc("gitlab_pto_employee_uuid") }}'
-          tests:
+          data_tests:
             - not_null
         - name: pto_uuid
           description: '{{ doc("gitlab_pto_pto_uuid") }}'
-          tests:
+          data_tests:
             - not_null
         - name: pto_date
           description: '{{ doc("gitlab_pto_pto_date") }}'
@@ -44,17 +44,17 @@ models:
           description: '{{ doc("gitlab_pto_pto_ends_at") }}'
         - name: is_holiday
           description: '{{ doc("gitlab_pto_is_holiday") }}'
-          tests:
+          data_tests:
             - not_null
         - name: recorded_hours
           description: '{{ doc("gitlab_pto_recorded_hours") }}'
-          tests:
+          data_tests:
             - not_null
         - name: pto_starts_at
           description: '{{ doc("gitlab_pto_pto_starts_at") }}'
         - name: total_hours
           description: '{{ doc("gitlab_pto_total_hours") }}'
-          tests:
+          data_tests:
             - not_null
         - name: pto_group_type
           description: '{{ doc("gitlab_pto_pto_group_type") }}'
@@ -64,4 +64,6 @@ models:
           description: '{{ doc("gitlab_pto_pto_type_name") }}'
         - name: pto_type_uuid
           description: '{{ doc("gitlab_pto_pto_type_uuid") }}'
+        - name: pto_created_at
+          description: '{{ doc("gitlab_pto_pto_created_at") }}'
         

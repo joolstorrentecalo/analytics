@@ -4,6 +4,6 @@ models:
     - name: rspec_overall_time_source
       columns:
         - name: commit
-          tests:
+          data_tests:
             - not_null
             - unique

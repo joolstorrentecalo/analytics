@@ -13,6 +13,7 @@
     - if [ $BRANCH_NAME = "master" ]; then export SNOWFLAKE_PROD_DATABASE="PROD"; else export SNOWFLAKE_PROD_DATABASE="${CI_COMMIT_REF_NAME^^}_PROD"; fi
     - echo $SNOWFLAKE_PREP_DATABASE
     - echo $SNOWFLAKE_PROD_DATABASE
+    - export GCP_SERVICE_CREDS=$(echo "$ENCODED_GCP" | base64 -d)
   tags:
     - analytics
 
@@ -56,8 +57,9 @@ qualtrics_sheetload:
   <<: *extract_definition
   script:
     - echo $MANIFEST_NAME
+    - echo $DATABASE_TYPE
     - cd orchestration
-    - python ci_helpers.py use_proxy --instance_name ops-db-restore --command "python ../extract/gitlab_saas_postgres_pipeline/postgres_pipeline/main.py tap ../extract/gitlab_saas_postgres_pipeline/manifests/${MANIFEST_NAME}_db_manifest.yaml --load_type test"
+    - python ci_helpers.py use_proxy --instance_name ops-db-restore --command "python ../extract/gitlab_saas_postgres_pipeline/postgres_pipeline/main.py tap ../extract/gitlab_saas_postgres_pipeline/manifests/${MANIFEST_NAME}_db_manifest.yaml --load_type test ../manifests/el_saas_connection_info.yaml $DATABASE_TYPE"
   only:
     - merge_requests
     - $MANIFEST_NAME
@@ -67,8 +69,9 @@ qualtrics_sheetload:
   <<: *extract_definition
   script:
     - echo $MANIFEST_NAME
+    - echo $DATABASE_TYPE
     - cd extract/gitlab_saas_postgres_pipeline/postgres_pipeline/
-    - python main.py tap ../manifests/${MANIFEST_NAME}_db_manifest.yaml --load_type test
+    - python main.py tap ../manifests/${MANIFEST_NAME}_db_manifest.yaml --load_type test ../manifests/el_saas_connection_info.yaml $DATABASE_TYPE
   only:
     - merge_requests
     - $MANIFEST_NAME

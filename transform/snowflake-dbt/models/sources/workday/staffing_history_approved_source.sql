@@ -20,6 +20,8 @@ renamed AS (
     d.value['COUNTRY_PROPOSED']::VARCHAR              AS country_current,
     d.value['REGION_CURRENT']::VARCHAR                AS region_past,
     d.value['REGION_PROPOSED']::VARCHAR               AS region_current,
+    d.value['DEPARTMENT_ID_CURRENT']::VARCHAR         AS department_workday_id_past,
+    d.value['DEPARTMENT_ID_PROPOSED']::VARCHAR        AS department_workday_id_current,    
     d.value['DEPARTMENT_CURRENT']::VARCHAR            AS department_past,
     d.value['DEPARTMENT_PROPOSED']::VARCHAR           AS department_current,
     d.value['EMPL_TYPE_CURRENT']::VARCHAR             AS employee_type_past,
@@ -40,7 +42,9 @@ renamed AS (
     d.value['SUPORG_PROPOSED']::VARCHAR               AS suporg_current,
     d.value['TEAM_ID_CURRENT']::VARCHAR               AS team_id_past,
     d.value['TEAM_ID_PROPOSED']::VARCHAR              AS team_id_current,
-    d.value['JOB_WORKDAY_ID_CURRENT']::VARCHAR       AS job_workday_id_past,    
+    d.value['TEAM_WORKDAY_ID_CURRENT']::VARCHAR       AS team_workday_id_past,
+    d.value['TEAM_WORKDAY_ID_PROPOSED']::VARCHAR      AS team_workday_id_current,
+    d.value['JOB_WORKDAY_ID_CURRENT']::VARCHAR        AS job_workday_id_past, 
     d.value['JOB_WORKDAY_ID_PROPOSED']::VARCHAR       AS job_workday_id_current,
     d.value['JOB_TITLE_CURRENT']::VARCHAR             AS job_title_past,
     d.value['JOB_TITLE_PROPOSED']::VARCHAR            AS job_title_current,
@@ -56,3 +60,7 @@ renamed AS (
 SELECT *
 FROM renamed
 WHERE effective_date <= CURRENT_DATE()
+	AND NOT business_process_type IN (
+		'Change Organization Assignments for Worker',
+    'Move Worker (By Organization)'
+		)

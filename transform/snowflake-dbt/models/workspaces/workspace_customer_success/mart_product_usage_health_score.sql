@@ -93,6 +93,11 @@
 -- ci metrics --
         paid_user_metrics.ci_pipelines_28_days_user,
         div0(paid_user_metrics.ci_pipelines_28_days_user, paid_user_metrics.billable_user_count) AS ci_pipeline_utilization,
+        paid_user_metrics.ci_builds_28_days_user,
+        paid_user_metrics.ci_builds_all_time_user,
+        paid_user_metrics.ci_builds_all_time_event,
+        paid_user_metrics.ci_runners_all_time_event,
+        paid_user_metrics.ci_builds_28_days_event,
         CASE WHEN ci_pipeline_utilization IS NULL THEN NULL
             WHEN ci_pipeline_utilization < .25 THEN 25
             WHEN ci_pipeline_utilization >= .25 and ci_pipeline_utilization < .50 THEN 63
@@ -106,6 +111,7 @@
             WHEN ci_score = 25 THEN 'Red'
             WHEN ci_score = 63 THEN 'Yellow'
             WHEN ci_score = 88 THEN 'Green' end AS ci_color,
+
 
 -- cd metrics --
         paid_user_metrics.deployments_28_days_user,

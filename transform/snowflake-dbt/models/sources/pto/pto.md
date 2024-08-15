@@ -102,3 +102,8 @@ The name of the OOO Type.
 {% docs gitlab_pto_pto_type_uuid %}
 The UUID of this OOO Type.
 {% enddocs %}
+### pto_created_at
+{% docs gitlab_pto_pto_created_at %}
+The timestamp (UTC datetime, ISO-formatted) when this OOO Event was created.
+{% enddocs %}
+

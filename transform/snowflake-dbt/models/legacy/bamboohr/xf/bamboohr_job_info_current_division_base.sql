@@ -26,6 +26,7 @@ WITH job_info AS (
       TRIM(new_department_name) AS new_department_name,
       change_effective_date
     FROM {{ref ('department_name_changes')}}
+    WHERE change_effective_date < CURRENT_DATE
 
 ), current_division_department_mapping AS (
 

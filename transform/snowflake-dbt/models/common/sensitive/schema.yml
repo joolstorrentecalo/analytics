@@ -6,12 +6,12 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: email_address
         description: Email address for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: first_name
@@ -76,7 +76,8 @@ models:
         description: Flags if the email address is valid. Work in progress - full list of invalid emails is not loaded
       - name: wip_invalid_email_address_reason
         description: Reason why the email address is invalid. Work in progress - full list of invalid emails is not loaded
-
+      - name: contact_role
+        description: The listed roles for persons contact record in SFDC.
 
   - name: bdg_marketing_contact_role
     description: '{{ doc("bdg_marketing_contact_role") }}'
@@ -153,7 +154,7 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: is_group_namespace_owner
@@ -386,6 +387,10 @@ models:
         description: Date time indicating when the marketing contact user_limit_namespace_id entered the user limit notification state. More information about this field can be seen [HERE](https://gitlab.com/gitlab-org/gitlab/-/issues/375748)
       - name: user_limit_enforcement_at
         description: Date time indicating when the marketing contact user_limit_namespace_id entered the user limit enforcement state. More information about this field can be seen [HERE](https://gitlab.com/gitlab-org/gitlab/-/issues/375748)
+      - name: contact_role
+        description: The listed roles for persons contact record in SFDC.
+      - name: is_gitlab_admin_in_sfdc
+        description: True if the person contact record in SFDC lists GitLab Admin.
 
   - name: pump_marketing_contact_namespace_detail
     description: >-
@@ -397,7 +402,7 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: A primary key for the marketing contact
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: max_trial_start_date
@@ -409,12 +414,12 @@ models:
     columns:
       - name: email
         description: The email of the Rally user
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: opted_out
         description: If the Rally user opted out from emails
       - name: updated_at
         description: When the the user was last updated. A value of `1970-01-01` reflects the user hasn't been updated since iniital export in May, 2024
-        tests:
+        data_tests:
           - not_null

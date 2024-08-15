@@ -87,7 +87,8 @@ init-airflow:
 	@"$(DOCKER_RUN)" airflow_scheduler airflow users create --role Admin -u admin -p admin -e datateam@gitlab.com -f admin -l admin
 	@"$(DOCKER_RUN)" airflow_scheduler airflow pools set gitlab-ops-pool 2 "Airflow pool for ops database extract"
 	@"$(DOCKER_RUN)" airflow_scheduler airflow pools set customers-pool 2 "Airflow pool for customer database full extract"
-	@"$(DOCKER_RUN)" airflow_scheduler airflow pools set gitlab-com-pool 8 "Airflow pool for gitlab  database incremental extract"
+	@"$(DOCKER_RUN)" airflow_scheduler airflow pools set gitlab-com-pool 8 "Airflow pool for gitlab database incremental extract"
+	@"$(DOCKER_RUN)" airflow_scheduler airflow pools set gitlab-com-scd-pool 16 "Airflow pool for gitlab database full extract"
 	@"$(DOCKER_DOWN)"
 
 ########################################################################################################################
@@ -114,11 +115,11 @@ update-containers:
 ########################################################################################################################
 prepare-dbt:
 	curl -k -sSL https://install.python-poetry.org/ | python3 - --version 1.5.1
-	python3 -m pip install poetry==1.5.1
+	python3 -m pip install poetry==1.5.1 --break-system-packages
 	cd transform/snowflake-dbt/ && poetry install
 
 prepare-dbt-fix:
-	python3 -m pip install poetry==1.5.1
+	python3 -m pip install poetry==1.5.1 --break-system-packages
 	cd transform/snowflake-dbt/ && poetry install
 	"$(DBT_DEPS)"
 
@@ -149,13 +150,13 @@ run-dbt-docs:
 	cd transform/snowflake-dbt/ && poetry run dbt docs generate --target docs && poetry run dbt docs serve --port 8081;
 
 clean-dbt:
-	cd transform/snowflake-dbt/ && poetry run dbt clean && poetry env remove python
+	cd transform/snowflake-dbt/ && poetry run dbt clean && poetry env remove python3
 
 ########################################################################################################################
 # Python
 ########################################################################################################################
 prepare-python:
-	which poetry || python3 -m pip install poetry
+	which poetry || python3 -m pip install poetry --break-system-packages
 	poetry install
 
 update-dbt-poetry:

@@ -368,21 +368,21 @@ SELECT
 
     SELECT DISTINCT
       fiscal_year,
-      UPPER(user_segment)           AS user_segment,
-      UPPER(user_geo)               AS user_geo,
-      UPPER(user_region)            AS user_region,
-      UPPER(user_area)              AS user_area,
-      UPPER(user_business_unit)     AS user_business_unit,
+      MIN(UPPER(user_segment))          AS user_segment,
+      MIN(UPPER(user_geo))              AS user_geo,
+      MIN(UPPER(user_region))           AS user_region,
+      MIN(UPPER(user_area))             AS user_area,
+      MIN(UPPER(user_business_unit))    AS user_business_unit,
       dim_crm_user_hierarchy_sk,
-      UPPER(user_role_name)         AS user_role_name,
-      UPPER(user_role_level_1)      AS user_role_level_1,
-      UPPER(user_role_level_2)      AS user_role_level_2,
-      MIN(UPPER(user_role_level_3)) AS user_role_level_3, -- workaround linked to https://gitlab.com/gitlab-com/sales-team/field-operations/systems/-/issues/5181
-      MIN(UPPER(user_role_level_4)) AS user_role_level_4, -- hopefully the MIN function can be removed before merging to production.
-      MIN(UPPER(user_role_level_5)) AS user_role_level_5
+      MIN(UPPER(user_role_name))        AS user_role_name,
+      MIN(UPPER(user_role_level_1))     AS user_role_level_1,
+      MIN(UPPER(user_role_level_2))     AS user_role_level_2,
+      MIN(UPPER(user_role_level_3))     AS user_role_level_3, -- workaround linked to https://gitlab.com/gitlab-com/sales-team/field-operations/systems/-/issues/5181
+      MIN(UPPER(user_role_level_4))     AS user_role_level_4, -- hopefully the MIN function can be removed before merging to production.
+      MIN(UPPER(user_role_level_5))     AS user_role_level_5
     FROM unioned 
     WHERE fiscal_year >= 2025
-    {{ dbt_utils.group_by(n=10)}}
+    GROUP BY fiscal_year, dim_crm_user_hierarchy_sk
 
 ), final_unioned AS (
 

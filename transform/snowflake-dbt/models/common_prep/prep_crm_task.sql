@@ -18,7 +18,6 @@ WITH source AS (
       source.account_or_opportunity_id,
       source.record_type_id                                         AS sfdc_record_type_id,
       source.related_to_account_name,
-      source.pf_order_id,
       source.related_lead_id,
       source.related_contact_id,
       source.related_opportunity_id                                 AS dim_crm_opportunity_id,
@@ -30,6 +29,7 @@ WITH source AS (
       source.comments,
       source.full_comments,
       source.task_subject,
+      source.partner_marketing_task_subject,
       source.task_date,
       source.task_created_date,
       FIRST_VALUE(source.task_created_date) OVER (PARTITION BY source.related_opportunity_id ORDER BY source.task_created_date ASC) AS first_opportunity_task_created_date,
@@ -53,7 +53,6 @@ WITH source AS (
       -- Activity infromation
       source.activity_disposition,
       source.activity_source,
-      source.activity,
       source.csm_activity_type,
       source.sa_activity_type,
       source.gs_activity_type,
@@ -69,11 +68,7 @@ WITH source AS (
       source.call_duration_in_seconds,
       source.call_recording,
       source.is_answered,
-      source.is_bad_number,
-      source.is_busy,
       source.is_correct_contact,
-      source.is_not_answered,
-      source.is_left_message,
 
       -- Reminder information
       source.is_reminder_set,

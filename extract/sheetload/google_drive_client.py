@@ -117,7 +117,7 @@ class GoogleDriveClient:
         """
         archive_folder_id = self.get_item_id("Archive", in_folder_id, True)
 
-        if archive_folder_id is None:
+        if not archive_folder_id:
             archive_folder_id = self.create_folder("Archive", in_folder_id)
 
         return archive_folder_id

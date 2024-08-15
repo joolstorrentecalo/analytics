@@ -181,7 +181,7 @@
   },
   {
     "counter_name": "counts.issues",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id  GROUP BY 1,2",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id  WHERE issues.work_item_type_id <> 91413915 GROUP BY 1,2",
     "time_window_query": false,
     "level": "namespace"
   },
@@ -199,13 +199,13 @@
   },
   {
     "counter_name": "counts.issues_with_embedded_grafana_charts_approx",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues JOIN prep.gitlab_dotcom.gitlab_dotcom_grafana_integrations_dedupe_source AS grafana_integrations USING (project_id)  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE (issues.description LIKE '%%' || grafana_integrations.grafana_url || '%%') AND grafana_integrations.enabled = TRUE GROUP BY 1",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues JOIN prep.gitlab_dotcom.gitlab_dotcom_grafana_integrations_dedupe_source AS grafana_integrations USING (project_id)  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE (issues.description LIKE '%%' || grafana_integrations.grafana_url || '%%') AND grafana_integrations.enabled = TRUE AND issues.work_item_type_id = 1 GROUP BY 1",
     "time_window_query": false,
     "level": "namespace"
   },
   {
     "counter_name": "counts.issues_created_from_alerts",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues INNER JOIN prep.gitlab_dotcom.gitlab_dotcom_alert_management_alerts_dedupe_source AS alert_management_alerts ON alert_management_alerts.issue_id = issues.idSELECT COUNT(issues.id) FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues INNER JOIN prep.gitlab_dotcom.gitlab_dotcom_issues_self_managed_prometheus_alert_events_dedupe_source AS issues_self_managed_prometheus_alert_events ON issues_self_managed_prometheus_alert_events.issue_id = issues.idSELECT COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues INNER JOIN prep.gitlab_dotcom.gitlab_dotcom_issues_prometheus_alert_events_dedupe_source AS issues_prometheus_alert_events ON issues_prometheus_alert_events.issue_id = issues.id LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id  GROUP BY 1,2",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id, COUNT(issues.id) FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues INNER JOIN prep.gitlab_dotcom.gitlab_dotcom_alert_management_alerts_dedupe_source AS alert_management_alerts ON alert_management_alerts.issue_id = issues.id LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.work_item_type_id = 1  GROUP BY 1,2",
     "time_window_query": false,
     "level": "namespace"
   },
@@ -229,7 +229,7 @@
   },
   {
     "counter_name": "counts.alert_bot_incident_issues",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.author_id = 81 GROUP BY 1",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.author_id = 40026692500 AND issues.work_item_type_id = 1 GROUP BY 1",
     "time_window_query": false,
     "level": "namespace"
   },
@@ -1975,7 +1975,7 @@
   },
   {
     "counter_name": "counts.issues_with_health_status",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.health_status IS NOT NULL GROUP BY 1",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.health_status IS NOT NULL AND issues.work_item_type_id = 1 GROUP BY 1",
     "time_window_query": false,
     "level": "namespace"
   },
@@ -2497,7 +2497,7 @@
   },
   {
     "counter_name": "usage_activity_by_stage.plan.issues",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(DISTINCT issues.author_id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id  GROUP BY 1,2",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(DISTINCT issues.author_id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.work_item_type_id <> 91413915 GROUP BY 1,2",
     "time_window_query": false,
     "level": "namespace"
   },
@@ -2527,7 +2527,7 @@
   },
   {
     "counter_name": "usage_activity_by_stage.plan.service_desk_issues",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.author_id = 82 GROUP BY 1",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.author_id  = 1257257 AND issues.work_item_type_id <> 91413915 GROUP BY 1",
     "time_window_query": false,
     "level": "namespace"
   },
@@ -3055,7 +3055,7 @@
   },
   {
     "counter_name": "usage_activity_by_stage_monthly.plan.issues",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(DISTINCT issues.author_id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.created_at BETWEEN between_start_date AND between_end_date GROUP BY 1",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(DISTINCT issues.author_id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.created_at BETWEEN between_start_date AND between_end_date AND issues.work_item_type_id <> 91413915 GROUP BY 1",
     "time_window_query": true,
     "level": "namespace"
   },
@@ -3085,7 +3085,7 @@
   },
   {
     "counter_name": "usage_activity_by_stage_monthly.plan.service_desk_issues",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.author_id = 82 AND issues.created_at BETWEEN between_start_date AND between_end_date GROUP BY 1",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(issues.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = issues.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE issues.author_id = 1257257 AND issues.created_at BETWEEN between_start_date AND between_end_date AND issues.work_item_type_id = 1 GROUP BY 1",
     "time_window_query": true,
     "level": "namespace"
   },
@@ -3427,13 +3427,13 @@
   },
   {
     "counter_name": "counts_monthly.ci_internal_pipelines",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(ci_pipelines.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_ci_pipelines_dedupe_source AS ci_pipelines  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = ci_pipelines.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE (ci_pipelines.source IN (1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13) OR ci_pipelines.source IS NULL) AND ci_pipelines.created_at BETWEEN between_start_date AND between_end_date GROUP BY 1;",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(ci_pipelines.id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_ci_pipelines_dedupe_source AS ci_pipelines  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = ci_pipelines.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE (ci_pipelines.source IN (1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13) OR ci_pipelines.source IS NULL) AND ci_pipelines.created_at BETWEEN between_start_date AND between_end_date GROUP BY 1",
     "time_window_query": true,
     "level": "namespace"
   },
   {
     "counter_name": "usage_activity_by_stage_monthly.create.merge_requests_with_required_codeowners",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id, COUNT(approval_rules.merge_request_id) AS counter_value FROM prep.gitlab_dotcom.gitlab_dotcom_approval_merge_request_rules_dedupe_source AS approval_rules INNER JOIN prep.gitlab_dotcom.gitlab_dotcom_merge_requests_dedupe_source AS merge_requests ON merge_requests.id = approval_rules.merge_request_id LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = merge_requests.source_project_id LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON namespaces.id = projects.namespace_id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE approval_rules.rule_type = 2 AND approvals_required > 0 AND approval_rules.created_at BETWEEN between_start_date AND between_end_date GROUP BY 1;",
+    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id, COUNT(approval_rules.merge_request_id) AS counter_value FROM prep.gitlab_dotcom.gitlab_dotcom_approval_merge_request_rules_dedupe_source AS approval_rules INNER JOIN prep.gitlab_dotcom.gitlab_dotcom_merge_requests_dedupe_source AS merge_requests ON merge_requests.id = approval_rules.merge_request_id LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = merge_requests.source_project_id LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON namespaces.id = projects.namespace_id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE approval_rules.rule_type = 2 AND approvals_required > 0 AND approval_rules.created_at BETWEEN between_start_date AND between_end_date GROUP BY 1",
     "time_window_query": true,
     "level": "namespace"
   },

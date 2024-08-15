@@ -36,7 +36,7 @@ models:
     description: Report table to support Net Dollar Retention analysis at the ultimate_parent_account level using the following year's parent account. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -44,7 +44,7 @@ models:
     description: Report table to support retention analysis at the ultimate_parent_account. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -52,7 +52,7 @@ models:
     description: Report table to support retention analysis at the ultimate_parent_account || product level. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -60,13 +60,64 @@ models:
     description: Report table to support retention analysis at the ultimate_parent_account || delivery_type. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
 
   - name: rpt_retention_parent_account_combined
     columns:
       - name: primary_key
+        data_tests:
+          - not_null
+          - unique
+
+  - name: rpt_subscription_renewal_linking
+    description: ' {{ doc("rpt_subscription_renewal_linking") }} '
+    columns:
+      - name: renewal_subscription_name
+        tests:
+          - not_null
+      - name: previous_term_subscription_name
+        tests:
+          - not_null
+
+  - name: rpt_accounting_period_balance_monthly 
+    description: ' {{ doc("rpt_accounting_period_balance_monthly") }} '
+    columns:
+      - name: period
+        description: Calendar month and year when the transactions took place
         tests:
           - not_null
           - unique
+      - name: starting_accounts_receivable
+        description: all columns described in ' {{ doc("rpt_accounting_period_balance_monthly") }} '
+
+  - name: rpt_booking_billing_collections_monthly 
+    description: ' {{ doc("rpt_booking_billing_collections_monthly") }} '
+    columns:
+      - name: period
+        description: Calendar month and year for which the metric is calculated
+        tests:
+          - not_null
+          - unique
+      - name: booking_amount
+        description: all columns described in ' {{ doc("rpt_booking_billing_collections_monthly") }} '
+      - name: invoice_amount_without_tax
+        description:  total, without tax, tax only - all columns described in ' {{ doc("rpt_booking_billing_collections_monthly") }} '
+      - name: total_current_collected
+        description:  is total amount collected in the period - all columns described in ' {{ doc("rpt_booking_billing_collections_monthly") }} '
+      - name: variance_booking_billing 
+        description: Subtraction  
+
+  - name: rpt_dso_cei_monthly 
+    description:  ' {{ doc("rpt_dso_cei_monthly") }} '
+    columns:
+      - name: period
+        description: Calendar month and year for which the metric is calculated
+        tests:
+          - not_null
+          - unique
+      - name: dso and cei
+        description: all columns described in ' {{ doc("rpt_dso_cei_monthly") }} '
+        
+

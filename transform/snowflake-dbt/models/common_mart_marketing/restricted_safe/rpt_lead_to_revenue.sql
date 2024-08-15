@@ -5,7 +5,7 @@
 {{ simple_cte([
     ('person_base','mart_crm_person'),
     ('dim_crm_person','dim_crm_person'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist', 'mart_crm_opportunity_stamped_hierarchy_hist'), 
+    ('mart_crm_opportunity', 'mart_crm_opportunity'), 
     ('map_alternative_lead_demographics','map_alternative_lead_demographics'),
     ('mart_crm_touchpoint', 'mart_crm_touchpoint'),
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
@@ -27,6 +27,8 @@
   
   --Person Data
       person_base.email_hash,
+      person_base.sfdc_record_type,
+      person_base.person_first_country,
       person_base.email_domain_type,
       person_base.source_buckets,
       person_base.true_inquiry_date,
@@ -34,6 +36,7 @@
       person_base.mql_date_latest_pt,
       person_base.accepted_date,
       person_base.status,
+      person_base.person_role,
       person_base.lead_source,
       person_base.is_inquiry,
       person_base.is_mql,
@@ -55,9 +58,26 @@
       END AS person_order_type,
       person_base.lead_score_classification,
       person_base.is_defaulted_trial,
+      
+    --MQL and Most Recent Touchpoint info
+      person_base.bizible_mql_touchpoint_id,
+      person_base.bizible_mql_touchpoint_date,
+      person_base.bizible_mql_form_url,
+      person_base.bizible_mql_sfdc_campaign_id,
+      person_base.bizible_mql_ad_campaign_name,
+      person_base.bizible_mql_marketing_channel,
+      person_base.bizible_mql_marketing_channel_path,
+      person_base.bizible_most_recent_touchpoint_id,
+      person_base.bizible_most_recent_touchpoint_date,
+      person_base.bizible_most_recent_form_url,
+      person_base.bizible_most_recent_sfdc_campaign_id,
+      person_base.bizible_most_recent_ad_campaign_name,
+      person_base.bizible_most_recent_marketing_channel,
+      person_base.bizible_most_recent_marketing_channel_path,
 
   --Account Data
       mart_crm_account.crm_account_name,
+      mart_crm_account.crm_account_type,
       mart_crm_account.parent_crm_account_name,
       mart_crm_account.parent_crm_account_lam,
       mart_crm_account.parent_crm_account_lam_dev_count,
@@ -95,6 +115,17 @@
       mart_crm_touchpoint.bizible_landing_page_utm_budget,
       mart_crm_touchpoint.bizible_landing_page_utm_allptnr,
       mart_crm_touchpoint.bizible_landing_page_utm_partnerid,
+      mart_crm_touchpoint.utm_campaign_date,
+      mart_crm_touchpoint.utm_campaign_region,
+      mart_crm_touchpoint.utm_campaign_budget,
+      mart_crm_touchpoint.utm_campaign_type,
+      mart_crm_touchpoint.utm_campaign_gtm,
+      mart_crm_touchpoint.utm_campaign_language,
+      mart_crm_touchpoint.utm_campaign_name,
+      mart_crm_touchpoint.utm_campaign_agency,
+      mart_crm_touchpoint.utm_content_offer,
+      mart_crm_touchpoint.utm_content_asset_type,
+      mart_crm_touchpoint.utm_content_industry,
       mart_crm_touchpoint.campaign_rep_role_name,
       mart_crm_touchpoint.touchpoint_segment,
       mart_crm_touchpoint.gtm_motion,
@@ -134,6 +165,7 @@
       mart_crm_account.dim_parent_crm_account_id,
       mart_crm_attribution_touchpoint.dim_crm_touchpoint_id,
       mart_crm_attribution_touchpoint.dim_campaign_id,
+      opp.contract_reset_opportunity_id,
       opp.dim_crm_user_id AS opp_dim_crm_user_id,
     
     --Opp Data
@@ -147,6 +179,7 @@
       opp.created_date AS opp_created_date,
       opp.close_date,
       opp.is_won,
+      opp.valid_deal_count,
       opp.is_sao,
       opp.new_logo_count,
       opp.net_arr,
@@ -160,14 +193,28 @@
       opp.parent_crm_account_geo,
       opp.parent_crm_account_area,
       opp.parent_crm_account_territory,
-      opp.crm_opp_owner_sales_segment_stamped,
-      opp.crm_opp_owner_region_stamped,
-      opp.crm_opp_owner_area_stamped,
-      opp.crm_opp_owner_geo_stamped,
+      opp.report_segment,
+      opp.report_region,
+      opp.report_area,
+      opp.report_geo,
+      opp.report_role_name,
+      opp.report_role_level_1,
+      opp.report_role_level_2,
+      opp.report_role_level_3,
+      opp.report_role_level_4,
+      opp.report_role_level_5,
       opp.product_category,
       opp.is_eligible_age_analysis,
       opp.lead_source,
       opp.source_buckets,
+      opp.is_renewal,
+      opp.is_eligible_open_pipeline,
+      opp.pipeline_created_date,
+      opp.opportunity_category,
+      opp.stage_name,
+      opp.is_jihu_account,
+      opp.is_edu_oss,
+      opp.stage_1_discovery_date,
 
       --Account Data
       mart_crm_account.crm_account_name,
@@ -175,6 +222,7 @@
       mart_crm_account.parent_crm_account_lam,
       mart_crm_account.parent_crm_account_lam_dev_count,
       opp.parent_crm_account_upa_country,
+      mart_crm_account.crm_account_type,
     
     -- Touchpoint Data
       'Attribution Touchpoint' AS touchpoint_type,
@@ -202,6 +250,17 @@
       mart_crm_attribution_touchpoint.bizible_landing_page_utm_budget,
       mart_crm_attribution_touchpoint.bizible_landing_page_utm_allptnr,
       mart_crm_attribution_touchpoint.bizible_landing_page_utm_partnerid,
+      mart_crm_attribution_touchpoint.utm_campaign_date,
+      mart_crm_attribution_touchpoint.utm_campaign_region,
+      mart_crm_attribution_touchpoint.utm_campaign_budget,
+      mart_crm_attribution_touchpoint.utm_campaign_type,
+      mart_crm_attribution_touchpoint.utm_campaign_gtm,
+      mart_crm_attribution_touchpoint.utm_campaign_language,
+      mart_crm_attribution_touchpoint.utm_campaign_name,
+      mart_crm_attribution_touchpoint.utm_campaign_agency,
+      mart_crm_attribution_touchpoint.utm_content_offer,
+      mart_crm_attribution_touchpoint.utm_content_asset_type,
+      mart_crm_attribution_touchpoint.utm_content_industry,
       mart_crm_attribution_touchpoint.bizible_integrated_campaign_grouping,
       mart_crm_attribution_touchpoint.touchpoint_segment,
       mart_crm_attribution_touchpoint.campaign_rep_role_name,
@@ -361,21 +420,22 @@
           THEN SUM(mart_crm_attribution_touchpoint.linear_net_arr) 
         ELSE 0 
       END AS won_linear_net_arr
-    FROM mart_crm_opportunity_stamped_hierarchy_hist opp
+    FROM mart_crm_opportunity opp
     LEFT JOIN mart_crm_attribution_touchpoint
       ON opp.dim_crm_opportunity_id=mart_crm_attribution_touchpoint.dim_crm_opportunity_id
     FULL JOIN mart_crm_account
       ON opp.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE opp.created_date >= '2021-02-01'
       OR opp.created_date IS NULL
-    {{dbt_utils.group_by(n=89)}}
+    {{dbt_utils.group_by(n=118)}}
     
 ), cohort_base_combined AS (
   
     SELECT
    --IDs
       dim_crm_person_id,
-      person_base_with_tp.dim_crm_account_id,
+      COALESCE (person_base_with_tp.dim_crm_account_id,opp_base_with_batp.dim_crm_account_id) AS dim_crm_account_id,
+      COALESCE (person_base_with_tp.dim_parent_crm_account_id,opp_base_with_batp.dim_parent_crm_account_id) AS dim_parent_crm_account_id,
       sfdc_record_id,
       COALESCE (person_base_with_tp.dim_crm_touchpoint_id,opp_base_with_batp.dim_crm_touchpoint_id) AS dim_crm_touchpoint_id, 
       person_base_with_tp.dim_crm_touchpoint_id AS dim_crm_btp_touchpoint_id,
@@ -384,10 +444,14 @@
       COALESCE (person_base_with_tp.dim_campaign_id,opp_base_with_batp.dim_campaign_id) AS dim_campaign_id, 
       dim_crm_user_id,
       opp_dim_crm_user_id,
+      contract_reset_opportunity_id,
   
   --Person Data
       email_hash,
       email_domain_type,
+      sfdc_record_type,
+      person_role,
+      person_first_country,
       person_base_with_tp.source_buckets,
       true_inquiry_date,
       mql_date_first_pt,
@@ -416,6 +480,22 @@
       traction_response_time_in_business_hours,
       lead_score_classification,
       is_defaulted_trial,
+
+  --MQL and Most Recent Touchpoint info
+      person_base_with_tp.bizible_mql_touchpoint_id,
+      person_base_with_tp.bizible_mql_touchpoint_date,
+      person_base_with_tp.bizible_mql_form_url,
+      person_base_with_tp.bizible_mql_sfdc_campaign_id,
+      person_base_with_tp.bizible_mql_ad_campaign_name,
+      person_base_with_tp.bizible_mql_marketing_channel,
+      person_base_with_tp.bizible_mql_marketing_channel_path,
+      person_base_with_tp.bizible_most_recent_touchpoint_id,
+      person_base_with_tp.bizible_most_recent_touchpoint_date,
+      person_base_with_tp.bizible_most_recent_form_url,
+      person_base_with_tp.bizible_most_recent_sfdc_campaign_id,
+      person_base_with_tp.bizible_most_recent_ad_campaign_name,
+      person_base_with_tp.bizible_most_recent_marketing_channel,
+      person_base_with_tp.bizible_most_recent_marketing_channel_path,
   
   --Opp Data
       opportunity_name,
@@ -430,6 +510,7 @@
       opp_base_with_batp.lead_source AS opp_lead_source,
       opp_base_with_batp.source_buckets AS opp_source_buckets,
       is_won,
+      valid_deal_count,
       is_sao,
       new_logo_count,
       net_arr,
@@ -444,14 +525,29 @@
       opp_base_with_batp.parent_crm_account_geo AS opp_account_demographics_geo,
       opp_base_with_batp.parent_crm_account_territory AS opp_account_demographics_territory,
       opp_base_with_batp.parent_crm_account_area AS opp_account_demographics_area,
-      crm_opp_owner_sales_segment_stamped,
-      crm_opp_owner_region_stamped,
-      crm_opp_owner_area_stamped,
-      crm_opp_owner_geo_stamped,
+      opp_base_with_batp.report_segment,
+      opp_base_with_batp.report_region,
+      opp_base_with_batp.report_area,
+      opp_base_with_batp.report_geo,
+      opp_base_with_batp.report_role_name,
+      opp_base_with_batp.report_role_level_1,
+      opp_base_with_batp.report_role_level_2,
+      opp_base_with_batp.report_role_level_3,
+      opp_base_with_batp.report_role_level_4,
+      opp_base_with_batp.report_role_level_5,
       product_category,
+      is_renewal,
+      is_eligible_open_pipeline,
+      pipeline_created_date,
+      opportunity_category,
+      stage_name,
+      is_jihu_account,
+      is_edu_oss,
+      stage_1_discovery_date,
 
   --Account Data
       COALESCE(person_base_with_tp.crm_account_name,opp_base_with_batp.crm_account_name) AS crm_account_name,
+      COALESCE(person_base_with_tp.crm_account_type,opp_base_with_batp.crm_account_type) AS crm_account_type,
       COALESCE(person_base_with_tp.parent_crm_account_name,opp_base_with_batp.parent_crm_account_name) AS parent_crm_account_name,
       COALESCE(person_base_with_tp.parent_crm_account_lam,opp_base_with_batp.parent_crm_account_lam) AS parent_crm_account_lam,
       COALESCE(person_base_with_tp.parent_crm_account_lam_dev_count,opp_base_with_batp.parent_crm_account_lam_dev_count) AS parent_crm_account_lam_dev_count,
@@ -502,6 +598,17 @@
       COALESCE(person_base_with_tp.bizible_landing_page_utm_budget,opp_base_with_batp.bizible_landing_page_utm_budget) AS bizible_landing_page_utm_budget, 
       COALESCE(person_base_with_tp.bizible_landing_page_utm_allptnr,opp_base_with_batp.bizible_landing_page_utm_allptnr) AS bizible_landing_page_utm_allptnr, 
       COALESCE(person_base_with_tp.bizible_landing_page_utm_partnerid,opp_base_with_batp.bizible_landing_page_utm_partnerid) AS bizible_landing_page_utm_partnerid, 
+      COALESCE(person_base_with_tp.utm_campaign_date,opp_base_with_batp.utm_campaign_date) AS bizible_utm_campaign_date,
+      COALESCE(person_base_with_tp.utm_campaign_region,opp_base_with_batp.utm_campaign_region) AS bizible_utm_campaign_region,
+      COALESCE(person_base_with_tp.utm_campaign_budget,opp_base_with_batp.utm_campaign_budget) AS bizible_utm_campaign_budget,
+      COALESCE(person_base_with_tp.utm_campaign_type,opp_base_with_batp.utm_campaign_type) AS bizible_utm_campaign_type,
+      COALESCE(person_base_with_tp.utm_campaign_gtm,opp_base_with_batp.utm_campaign_gtm) AS bizible_utm_campaign_gtm,
+      COALESCE(person_base_with_tp.utm_campaign_language,opp_base_with_batp.utm_campaign_language) AS bizible_utm_campaign_language,
+      COALESCE(person_base_with_tp.utm_campaign_name,opp_base_with_batp.utm_campaign_name) AS bizible_utm_campaign_name,
+      COALESCE(person_base_with_tp.utm_campaign_agency,opp_base_with_batp.utm_campaign_agency) AS bizible_utm_campaign_agency,
+      COALESCE(person_base_with_tp.utm_content_offer,opp_base_with_batp.utm_content_offer) AS bizible_utm_content_offer,
+      COALESCE(person_base_with_tp.utm_content_asset_type,opp_base_with_batp.utm_content_asset_type) AS bizible_utm_content_asset_type,
+      COALESCE(person_base_with_tp.utm_content_industry,opp_base_with_batp.utm_content_industry) AS bizible_utm_content_industry,
       new_lead_created_sum,
       count_true_inquiry,
       inquiry_sum, 
@@ -560,6 +667,8 @@
 ), intermediate AS (
 
   SELECT DISTINCT
+    {{ dbt_utils.generate_surrogate_key(['cohort_base_combined.dim_crm_person_id','cohort_base_combined.dim_crm_btp_touchpoint_id','cohort_base_combined.dim_crm_batp_touchpoint_id','cohort_base_combined.dim_crm_opportunity_id']) }}
+                                                 AS lead_to_revenue_id,
     cohort_base_combined.*,
     --inquiry_date fields
     inquiry_date.fiscal_year                     AS inquiry_date_range_year,
@@ -615,6 +724,8 @@
     ON cohort_base_combined.close_date = closed_date.date_day
   LEFT JOIN dim_date AS touchpoint_date
     ON cohort_base_combined.bizible_touchpoint_date = touchpoint_date.date_day
+  WHERE cohort_base_combined.dim_crm_person_id IS NOT NULL
+    OR cohort_base_combined.dim_crm_opportunity_id IS NOT NULL
 
 ), final AS (
 
@@ -628,5 +739,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-05-07",
+    updated_date="2024-07-24",
   ) }}

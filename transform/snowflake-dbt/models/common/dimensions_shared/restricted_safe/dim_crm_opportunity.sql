@@ -22,12 +22,14 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.opportunity_name,
       prep_crm_opportunity.dim_crm_user_id,
       prep_crm_opportunity.dim_parent_crm_opportunity_id,
+      prep_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
 
       -- logistical information
       prep_crm_opportunity.generated_source,
       prep_crm_opportunity.lead_source,
       prep_crm_opportunity.merged_opportunity_id,
       prep_crm_opportunity.duplicate_opportunity_id,
+      prep_crm_opportunity.contract_reset_opportunity_id,
       prep_crm_opportunity.net_new_source_categories,
       prep_crm_opportunity.primary_campaign_source_id,
       prep_crm_opportunity.sales_path,
@@ -59,6 +61,8 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.is_ps_opp,
       prep_crm_opportunity.probability,
       prep_crm_opportunity.professional_services_value,
+      prep_crm_opportunity.edu_services_value,
+      prep_crm_opportunity.investment_services_value,
       prep_crm_opportunity.reason_for_loss,
       prep_crm_opportunity.reason_for_loss_details,
       prep_crm_opportunity.reason_for_loss_staged,
@@ -70,7 +74,7 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.partner_initiated_opportunity,
       prep_crm_opportunity.user_segment,
       prep_crm_opportunity.order_type,
-      prep_crm_opportunity.order_type_live,
+      prep_crm_opportunity.order_type_current,
       prep_crm_opportunity.opportunity_category,
       prep_crm_opportunity.opportunity_health,
       prep_crm_opportunity.risk_type,
@@ -184,35 +188,6 @@ WITH prep_crm_opportunity AS (
 
       -- Pipeline Velocity Account and Opp Owner Fields and Key Reporting Fields
       prep_crm_opportunity.opportunity_owner_user_segment,
-      prep_crm_opportunity.opportunity_owner_user_geo,
-      prep_crm_opportunity.opportunity_owner_user_region,
-      prep_crm_opportunity.opportunity_owner_user_area,
-      prep_crm_opportunity.report_opportunity_user_segment,
-      prep_crm_opportunity.report_opportunity_user_geo,
-      prep_crm_opportunity.report_opportunity_user_region,
-      prep_crm_opportunity.report_opportunity_user_area,
-      prep_crm_opportunity.report_user_segment_geo_region_area,
-      prep_crm_opportunity.report_user_segment_geo_region_area_sqs_ot,
-      prep_crm_opportunity.key_segment,
-      prep_crm_opportunity.key_sqs,
-      prep_crm_opportunity.key_ot,
-      prep_crm_opportunity.key_segment_sqs,
-      prep_crm_opportunity.key_segment_ot,
-      prep_crm_opportunity.key_segment_geo,
-      prep_crm_opportunity.key_segment_geo_sqs,
-      prep_crm_opportunity.key_segment_geo_ot,
-      prep_crm_opportunity.key_segment_geo_region,
-      prep_crm_opportunity.key_segment_geo_region_sqs,
-      prep_crm_opportunity.key_segment_geo_region_ot,
-      prep_crm_opportunity.key_segment_geo_region_area,
-      prep_crm_opportunity.key_segment_geo_region_area_sqs,
-      prep_crm_opportunity.key_segment_geo_region_area_ot,
-      prep_crm_opportunity.key_segment_geo_area,
-      prep_crm_opportunity.sales_team_cro_level,
-      prep_crm_opportunity.sales_team_rd_asm_level,
-      prep_crm_opportunity.sales_team_vp_level,
-      prep_crm_opportunity.sales_team_avp_rd_level,
-      prep_crm_opportunity.sales_team_asm_level,
 
       -- channel reporting
       prep_crm_opportunity.dr_partner_deal_type,
@@ -248,7 +223,7 @@ WITH prep_crm_opportunity AS (
 {{ dbt_audit(
     cte_ref="layered",
     created_by="@iweeks",
-    updated_by="@snalamaru",
+    updated_by="@rakhireddy",
     created_date="2020-11-20",
-    updated_date="2024-04-18"
+    updated_date="2024-06-12"
 ) }}

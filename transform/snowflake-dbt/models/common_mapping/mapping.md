@@ -116,7 +116,12 @@ This View contains the list of epics that are under ultimate parent namespace ID
 
 {% enddocs %}
 
-
 {% docs snowflake_user_name %}
 The user name of the snowflake user.  This is different than the user email and is used connect to query activity.
+{% enddocs %}
+
+{% docs map_namespace_subscription %}
+
+This model maps namespaces to their most recent paid GitLab.com (SaaS) subscriptions, excluding one-time charges and specific product offerings. It provides a daily snapshot of active subscriptions for each namespace.
+
 {% enddocs %}

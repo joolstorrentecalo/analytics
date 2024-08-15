@@ -3,11 +3,13 @@ import logging
 import sys
 from os import environ as env
 from typing import Dict, List
+import urllib
 
 from fire import Fire
 from snowflake.sqlalchemy import URL
 from sqlalchemy import create_engine
 from sqlalchemy.exc import ProgrammingError
+from yaml import load, safe_load, YAMLError
 
 from gitlabdata.orchestration_utils import query_executor
 
@@ -153,9 +155,43 @@ class SnowflakeManager:
             if include_stages:
                 self.clone_stages(create_db, database, schema)
 
+    @staticmethod
+    def get_roles() -> list:
+        """
+        Retrieve Snowflake roles from roles.yml
+        """
+
+        roles_yaml_url = "https://gitlab.com/gitlab-data/analytics/-/raw/master/permissions/snowflake/roles.yml"
+        with urllib.request.urlopen(roles_yaml_url) as data:
+            try:
+                roles_yaml = safe_load(data)
+            except YAMLError as exc:
+                logging.info(f"yaml error: {exc}")
+        roles = roles_yaml["roles"]
+
+        return roles
+
+    def get_role_inheritances(self, role_name: str, roles_list: list) -> list:
+        """
+        Traverse list of dictionaries with snowflake roles to compile role inheritances
+        """
+        role_inheritances = next(
+            (
+                role[role_name].get("member_of", [])
+                for role in roles_list
+                if role.get(role_name)
+            ),
+            [],
+        )
+        return role_inheritances + [
+            inherited
+            for direct in role_inheritances
+            for inherited in self.get_role_inheritances(direct, roles_list)
+        ]
+
     def grant_clones(self, role, database):
         """
-        Grant privileges on a clone.
+        Grant privileges on a clone based on existing grants in production databases.
         """
 
         if database == "prep":
@@ -163,34 +199,16 @@ class SnowflakeManager:
         elif database == "prod":
             clone = self.prod_database
 
+        roles = self.get_roles()
+
+        logging.info(f"running for role {role}")
+
+        role = role.lower()
+        inherited_roles = self.get_role_inheritances(role, roles)
+        logging.info(f"found inherited roles: {inherited_roles}")
+        inherited_roles_in = "', '".join(inherited_roles)
+
         get_grants_query = f"""
-            WITH recursive roles_rec AS (
-
-            SELECT
-              grantee_name,
-              name
-            FROM snowflake.account_usage.grants_to_roles
-            WHERE granted_on = 'ROLE' and granted_to = 'ROLE'
-                AND privilege = 'USAGE' and deleted_on IS NULL
-                AND grantee_name = UPPER('{role}')
-
-            UNION ALL
-
-            SELECT
-              g.grantee_name,
-              g.name
-            FROM snowflake.account_usage.grants_to_roles g
-            JOIN roles_rec r ON g.grantee_name = r.name
-            WHERE g.granted_on = 'ROLE' AND g.granted_to = 'ROLE'
-                AND g.privilege = 'USAGE' AND g.deleted_on IS NULL
-
-            ),  inherited_roles AS (
-
-            SELECT distinct name
-            FROM roles_rec
-
-            )
-
             SELECT
               'GRANT SELECT ON ' ||
               '"{clone}"' ||
@@ -208,13 +226,8 @@ class SnowflakeManager:
                 FROM "{clone}".information_schema.tables
               )
             AND (grantee_name = UPPER('{role}')
-            OR grantee_name in (
-                SELECT
-                  name
-                FROM inherited_roles
-            ))
-
-            ;
+            OR LOWER(grantee_name) in ('{inherited_roles_in}')
+            );
         """
 
         grant_usage_on_db = f"""

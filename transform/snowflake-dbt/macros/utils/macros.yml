@@ -104,4 +104,5 @@ macros:
     description: '{{ doc("orphaned_db_table_check") }}'
   - name: missing_member_column
     description: ' {{ doc("missing_member_column") }} '
-
+  - name: union_tables
+    description: '{{ doc("union_tables")}}'

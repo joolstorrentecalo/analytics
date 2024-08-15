@@ -1,3 +1,7 @@
+{{ config(
+    tags=["mnpi_exception"]
+) }}
+
 WITH zuora_product AS (
 
     SELECT *
@@ -12,6 +16,16 @@ WITH zuora_product AS (
 
     SELECT *
     FROM {{ ref('zuora_product_rate_plan_charge_source') }}
+
+), sfdc_zuora_product AS (
+
+    SELECT *
+    FROM {{ ref('sfdc_zqu_zproduct_source') }}
+
+), sfdc_zuora_product_rate_plan AS (
+
+    SELECT *
+    FROM {{ ref('sfdc_zqu_product_rate_plan_source') }}
 
 ), zuora_product_rate_plan_charge_tier AS (
 
@@ -50,6 +64,7 @@ WITH zuora_product AS (
       common_product_tier_mapping.product_delivery_type                                 AS product_delivery_type,
       common_product_tier_mapping.product_deployment_type                               AS product_deployment_type,
       common_product_tier_mapping.product_category                                      AS product_category,
+      sfdc_zuora_product_rate_plan.product_category                                     AS product_rate_plan_category,
       CASE
         WHEN LOWER(zuora_product_rate_plan.product_rate_plan_name) LIKE '%support%'
           THEN 'Support Only'
@@ -81,8 +96,13 @@ WITH zuora_product AS (
       END                                                                               AS is_arpu,
       MIN(zuora_product_rate_plan_charge_tier.price)                                    AS billing_list_price
     FROM zuora_product
+    INNER JOIN sfdc_zuora_product 
+      ON sfdc_zuora_product.zqu_sku = zuora_product.sku
+    LEFT JOIN sfdc_zuora_product_rate_plan 
+      ON sfdc_zuora_product.zqu_zproduct_id = sfdc_zuora_product_rate_plan.zqu_zproduct_id 
     INNER JOIN zuora_product_rate_plan
       ON zuora_product.product_id = zuora_product_rate_plan.product_id
+      AND zuora_product_rate_plan.product_rate_plan_id = sfdc_zuora_product_rate_plan.zqu_zuora_id
     INNER JOIN zuora_product_rate_plan_charge
       ON zuora_product_rate_plan.product_rate_plan_id = zuora_product_rate_plan_charge.product_rate_plan_id
     INNER JOIN zuora_product_rate_plan_charge_tier
@@ -94,7 +114,7 @@ WITH zuora_product AS (
     WHERE zuora_product.is_deleted = FALSE
       AND zuora_product_rate_plan_charge_tier.currency = 'USD'
       AND zuora_product_rate_plan_charge_tier.active = TRUE
-    {{ dbt_utils.group_by(n=21) }}
+    {{ dbt_utils.group_by(n=22) }}
     ORDER BY 1, 3
 
 ), final AS (--add annualized billing list price
@@ -133,5 +153,5 @@ WITH zuora_product AS (
     created_by="@ischweickartDD",
     updated_by="@snalamaru",
     created_date="2020-12-16",
-    updated_date="2024-04-11"
+    updated_date="2024-06-03"
 ) }}

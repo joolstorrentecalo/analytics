@@ -51,6 +51,7 @@
       dim_crm_account.parent_crm_account_role_type,
       dim_crm_account.parent_crm_account_max_family_employee,
       dim_crm_account.parent_crm_account_upa_country,
+      dim_crm_account.parent_crm_account_upa_country_name,
       dim_crm_account.parent_crm_account_upa_state,
       dim_crm_account.parent_crm_account_upa_city,
       dim_crm_account.parent_crm_account_upa_street,
@@ -88,6 +89,7 @@
       dim_crm_account.demandbase_sessions,
       dim_crm_account.demandbase_trending_offsite_intent,
       dim_crm_account.demandbase_trending_onsite_engagement,
+      dim_crm_account.account_domains,
       dim_crm_account.is_locally_managed_account,
       dim_crm_account.is_strategic_account,
       dim_crm_account.partner_track,
@@ -132,9 +134,12 @@
       dim_crm_account.last_at_risk_update_comments,
       dim_crm_account.bdr_prospecting_status,
       dim_crm_account.is_focus_partner,
+      dim_crm_account.bdr_next_steps,
+      dim_crm_account.bdr_account_research,
+      dim_crm_account.bdr_account_strategy,
+      dim_crm_account.account_bdr_assigned_user_role,
 
       --6 sense fields
-
       dim_crm_account.has_six_sense_6_qa,
       dim_crm_account.risk_rate_guid,
       dim_crm_account.six_sense_account_profile_fit,
@@ -148,6 +153,20 @@
       dim_crm_account.six_sense_account_6_qa_start_date,
       dim_crm_account.six_sense_account_intent_score,
       dim_crm_account.six_sense_segments,
+
+       --Qualified Fields
+      dim_crm_account.qualified_days_since_last_activity,
+      dim_crm_account.qualified_signals_active_session_time,
+      dim_crm_account.qualified_signals_bot_conversation_count,
+      dim_crm_account.qualified_condition,
+      dim_crm_account.qualified_score,
+      dim_crm_account.qualified_trend,
+      dim_crm_account.qualified_meetings_booked,
+      dim_crm_account.qualified_signals_rep_conversation_count,
+      dim_crm_account.qualified_signals_research_state,
+      dim_crm_account.qualified_signals_research_score,
+      dim_crm_account.qualified_signals_session_count,
+      dim_crm_account.qualified_visitors_count,
 
       --ptc & pte fields
       dim_crm_account.pte_score,
@@ -194,6 +213,8 @@
       dim_crm_account.customer_since_date,
       dim_crm_account.gs_first_value_date,
       dim_crm_account.gs_last_csm_activity_date,
+      dim_crm_account.bdr_recycle_date,
+      dim_crm_account.actively_working_start_date,
 
       --measures
       fct_crm_account.count_active_subscription_charges,
@@ -243,7 +264,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@jonglee1218",
+    updated_by="@rkohnke",
     created_date="2022-08-10",
-    updated_date="2024-02-16"
+    updated_date="2024-07-29"
 ) }}

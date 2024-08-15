@@ -18,11 +18,13 @@
 
       --primary key
       fct_crm_opportunity.dim_crm_opportunity_id,
+      fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
       
       --surrogate keys
       dim_crm_account.dim_parent_crm_account_id,
       fct_crm_opportunity.dim_crm_user_id,
       dim_crm_opportunity.duplicate_opportunity_id,
+      dim_crm_opportunity.contract_reset_opportunity_id,
       fct_crm_opportunity.merged_crm_opportunity_id,
       fct_crm_opportunity.record_type_id,
       fct_crm_opportunity.ssp_id,
@@ -97,7 +99,7 @@
       dim_deal_path.deal_path_name,
       dim_order_type.order_type_name                                       AS order_type,
       dim_order_type.order_type_grouped,
-      dim_order_type_live.order_type_name                                  AS order_type_live,
+      dim_order_type_current.order_type_name                                  AS order_type_current,
       dim_dr_partner_engagement.dr_partner_engagement_name,
       dim_alliance_type_current.alliance_type_name,
       dim_alliance_type_current.alliance_type_short_name,
@@ -140,6 +142,7 @@
 
       -- Flags
       fct_crm_opportunity.is_won,
+      fct_crm_opportunity.valid_deal_count,
       fct_crm_opportunity.is_closed,
       dim_crm_opportunity.is_edu_oss,
       dim_crm_opportunity.is_ps_opp,
@@ -174,6 +177,19 @@
       dim_crm_opportunity.critical_deal_flag,
       fct_crm_opportunity.is_abm_tier_sao,
       fct_crm_opportunity.is_abm_tier_closed_won,
+
+      -- Hierarchy reporting fields
+      report_hierarchy.crm_user_sales_segment                                                         AS report_segment,
+      report_hierarchy.crm_user_geo                                                                   AS report_geo,
+      report_hierarchy.crm_user_region                                                                AS report_region,
+      report_hierarchy.crm_user_area                                                                  AS report_area,
+      report_hierarchy.crm_user_business_unit                                                         AS report_business_unit,
+      report_hierarchy.crm_user_role_name                                                             AS report_role_name,
+      report_hierarchy.crm_user_role_level_1                                                          AS report_role_level_1,
+      report_hierarchy.crm_user_role_level_2                                                          AS report_role_level_2,
+      report_hierarchy.crm_user_role_level_3                                                          AS report_role_level_3,
+      report_hierarchy.crm_user_role_level_4                                                          AS report_role_level_4,
+      report_hierarchy.crm_user_role_level_5                                                          AS report_role_level_5,
 
       -- crm owner/sales rep live fields
       dim_crm_user_hierarchy_live.crm_user_sales_segment,
@@ -314,35 +330,6 @@
 
       -- Pipeline Velocity Account and Opp Owner Fields and Key Reporting Fields
       dim_crm_opportunity.opportunity_owner_user_segment,
-      dim_crm_opportunity.opportunity_owner_user_geo,
-      dim_crm_opportunity.opportunity_owner_user_region,
-      dim_crm_opportunity.opportunity_owner_user_area,
-      dim_crm_opportunity.report_opportunity_user_segment,
-      dim_crm_opportunity.report_opportunity_user_geo,
-      dim_crm_opportunity.report_opportunity_user_region,
-      dim_crm_opportunity.report_opportunity_user_area,
-      dim_crm_opportunity.report_user_segment_geo_region_area,
-      dim_crm_opportunity.report_user_segment_geo_region_area_sqs_ot,
-      dim_crm_opportunity.key_segment,
-      dim_crm_opportunity.key_sqs,
-      dim_crm_opportunity.key_ot,
-      dim_crm_opportunity.key_segment_sqs,
-      dim_crm_opportunity.key_segment_ot,
-      dim_crm_opportunity.key_segment_geo,
-      dim_crm_opportunity.key_segment_geo_sqs,
-      dim_crm_opportunity.key_segment_geo_ot,
-      dim_crm_opportunity.key_segment_geo_region,
-      dim_crm_opportunity.key_segment_geo_region_sqs,
-      dim_crm_opportunity.key_segment_geo_region_ot,
-      dim_crm_opportunity.key_segment_geo_region_area,
-      dim_crm_opportunity.key_segment_geo_region_area_sqs,
-      dim_crm_opportunity.key_segment_geo_region_area_ot,
-      dim_crm_opportunity.key_segment_geo_area,
-      dim_crm_opportunity.sales_team_cro_level,
-      dim_crm_opportunity.sales_team_rd_asm_level,
-      dim_crm_opportunity.sales_team_vp_level,
-      dim_crm_opportunity.sales_team_avp_rd_level,
-      dim_crm_opportunity.sales_team_asm_level,
       LOWER(
         dim_crm_opportunity.crm_account_owner_sales_segment
       ) AS account_owner_user_segment,
@@ -547,16 +534,19 @@
       fct_crm_opportunity.calculated_age_in_days,
       fct_crm_opportunity.days_since_last_activity,
 
-      -- Additive fields
+      --additive fields
       fct_crm_opportunity.arr_basis,
       fct_crm_opportunity.iacv,
       fct_crm_opportunity.net_iacv,
+      fct_crm_opportunity.opportunity_based_iacv_to_net_arr_ratio,
       fct_crm_opportunity.segment_order_type_iacv_to_net_arr_ratio,
       fct_crm_opportunity.calculated_from_ratio_net_arr,
       fct_crm_opportunity.net_arr,
       fct_crm_opportunity.net_arr_stage_1,
       fct_crm_opportunity.xdr_net_arr_stage_1,
       fct_crm_opportunity.xdr_net_arr_stage_3,
+      fct_crm_opportunity.enterprise_agile_planning_net_arr,
+      fct_crm_opportunity.duo_net_arr,
       fct_crm_opportunity.raw_net_arr,
       fct_crm_opportunity.created_and_won_same_quarter_net_arr,
       fct_crm_opportunity.new_logo_count,
@@ -587,7 +577,18 @@
       fct_crm_opportunity.won_arr_basis_for_clari,
       fct_crm_opportunity.arr_basis_for_clari,
       fct_crm_opportunity.forecasted_churn_for_clari,
-      fct_crm_opportunity.override_arr_basis_clari
+      fct_crm_opportunity.override_arr_basis_clari,
+      fct_crm_opportunity.cycle_time_in_days,
+      fct_crm_opportunity.created_arr,
+      fct_crm_opportunity.closed_won_opps,
+      fct_crm_opportunity.closed_opps,
+      fct_crm_opportunity.created_deals,
+      fct_crm_opportunity.positive_booked_deal_count,
+      fct_crm_opportunity.positive_booked_net_arr,
+      fct_crm_opportunity.positive_open_deal_count,
+      fct_crm_opportunity.positive_open_net_arr,
+      fct_crm_opportunity.closed_deals,
+      fct_crm_opportunity.closed_net_arr
 
     FROM fct_crm_opportunity
     LEFT JOIN dim_crm_opportunity
@@ -600,8 +601,8 @@
       ON fct_crm_opportunity.dim_deal_path_id = dim_deal_path.dim_deal_path_id
     LEFT JOIN dim_order_type
       ON fct_crm_opportunity.dim_order_type_id = dim_order_type.dim_order_type_id
-    LEFT JOIN dim_order_type AS dim_order_type_live 
-      ON fct_crm_opportunity.dim_order_type_live_id = dim_order_type_live.dim_order_type_id
+    LEFT JOIN dim_order_type AS dim_order_type_current 
+      ON fct_crm_opportunity.dim_order_type_current_id = dim_order_type_current.dim_order_type_id
     LEFT JOIN dim_dr_partner_engagement
       ON fct_crm_opportunity.dim_dr_partner_engagement_id = dim_dr_partner_engagement.dim_dr_partner_engagement_id
     LEFT JOIN dim_alliance_type AS dim_alliance_type_current
@@ -610,6 +611,8 @@
       ON fct_crm_opportunity.dim_channel_type_id = dim_channel_type.dim_channel_type_id
     LEFT JOIN dim_date                                       AS dim_date_close_date
       ON fct_crm_opportunity.close_date = dim_date_close_date.date_day
+    LEFT JOIN dim_crm_user_hierarchy AS report_hierarchy
+      ON fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk = report_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_crm_user_hierarchy
       ON fct_crm_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_crm_user_hierarchy AS dim_crm_user_hierarchy_live
@@ -668,5 +671,5 @@
     created_by="@jeanpeguero",
     updated_by="@rkohnke",
     created_date="2022-02-28",
-    updated_date="2024-05-07"
+    updated_date="2024-06-06"
   ) }}

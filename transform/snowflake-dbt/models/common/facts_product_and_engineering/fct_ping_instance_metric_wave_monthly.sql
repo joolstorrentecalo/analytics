@@ -251,7 +251,6 @@
       ping_instance_wave_sm.ci_internal_pipelines_28_days_event,
       -- Wave 9
       ping_instance_wave_sm.ci_builds_28_days_event,
-      ping_instance_wave_sm.audit_features_28_days_user,
       ping_instance_wave_sm.groups_all_time_event,
       ping_instance_wave_sm.commit_ci_config_file_7_days_user,
       ping_instance_wave_sm.ci_pipeline_config_repository_all_time_user,
@@ -307,7 +306,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@snalamaru",
-    updated_by="@annapiaseczna",
+    updated_by="@utkarsh060",
     created_date="2022-07-21",
-    updated_date="2023-12-08"
+    updated_date="2024-06-10"
 ) }}

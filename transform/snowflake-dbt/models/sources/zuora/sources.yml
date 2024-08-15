@@ -23,7 +23,7 @@ sources:
         columns:
           - name: id
             description: Primary Key for Accounts
-            tests:
+            data_tests:
               - dbt_utils.expression_is_true:
                   expression: "REGEXP '[0-9a-z]{32}'"
       - name: accounting_period
@@ -39,9 +39,6 @@ sources:
         identifier: discountappliedmetrics
         description: '{{ doc("zuora_discount_applied_metrics_source") }}'
         freshness: null
-      - name: invoice_aging_detail
-        identifier: invoiceagingdetail
-        description: '{{ doc("zuora_invoice_aging_detail_source") }}'
       - name: invoice_item
         identifier: invoiceitem
         description: '{{ doc("zuora_invoice_item_source") }}'
@@ -90,10 +87,13 @@ sources:
         columns:
           - name: accountid
             description: Primary Key for Accounts
-            tests:
+            data_tests:
               - dbt_utils.expression_is_true:
                   expression: "REGEXP '[0-9a-z]{32}'"
               - relationships:
                   to: source('zuora', 'account')
                   field: id
                   severity: warn
+      - name: booking_transaction
+        identifier: bookingtransaction
+        description: '{{ doc("zuora_booking_transaction_source") }}'

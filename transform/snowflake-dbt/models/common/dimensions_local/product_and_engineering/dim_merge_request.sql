@@ -69,7 +69,9 @@ WITH prep_merge_request AS (
       modified_paths_size,
       diff_size,
       commits_count,
-      hours_to_merged_status
+      hours_to_merged_status,
+      is_deleted,
+      is_deleted_updated_at
 
     FROM {{ ref('prep_merge_request') }}
 
@@ -78,7 +80,7 @@ WITH prep_merge_request AS (
 {{ dbt_audit(
     cte_ref="prep_merge_request",
     created_by="@mpeychet_",
-    updated_by="@annapiaseczna",
+    updated_by="@utkarsh060",
     created_date="2021-06-17",
-    updated_date="2023-12-11"
+    updated_date="2024-07-09"
 ) }}

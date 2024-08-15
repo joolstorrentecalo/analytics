@@ -1,3 +1,7 @@
+{{ config(
+    snowflake_warehouse = generate_warehouse_name('L')
+) }}
+
 WITH source AS (
   SELECT
     *    

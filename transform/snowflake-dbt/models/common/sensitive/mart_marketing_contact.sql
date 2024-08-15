@@ -781,6 +781,7 @@
       marketing_contact.sfdc_record_id,
       marketing_contact.dim_crm_account_id,
       marketing_contact.job_title,
+      marketing_contact.contact_role,
       marketing_contact.it_job_title_hierarchy,
       marketing_contact.country,
       marketing_contact.mobile_phone,
@@ -835,6 +836,9 @@
       marketing_contact.zuora_active_state,
       marketing_contact.wip_is_valid_email_address,
       marketing_contact.wip_invalid_email_address_reason,
+      
+      IFF(contains(LOWER(marketing_contact.contact_role), 'gitlab admin') = TRUE, TRUE, FALSE)
+                                                  AS is_gitlab_admin_in_sfdc,
 
       -- Propensity to purchase fields
       IFF(ptp_scores_by_user.model_grain_id IS NOT NULL, TRUE, FALSE)
@@ -1022,14 +1026,15 @@
       'ptp_past_score_group',
       'ptp_days_since_trial_start',
       'ptp_source',
-      'is_group_maintainer_of_saas_paid_tier'
+      'is_group_maintainer_of_saas_paid_tier',
+      'is_gitlab_admin_in_sfdc'
       ]
 ) }}
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@trevor31",
-    updated_by="@jpeguero",
+    updated_by="@degan",
     created_date="2021-02-09",
-    updated_date="2023-12-04"
+    updated_date="2024-06-01"
 ) }}

@@ -23,6 +23,7 @@ WITH pipeline_activity AS (
       ELSE 'Self-Managed Runners'
     END AS runner_type,
     ci_runner_machine_type,
+    cost_factor,
     COUNT(DISTINCT fct_ci_runner_activity.dim_ci_runner_id) as count_of_runners,
     COUNT(DISTINCT dim_ci_pipeline_id) as count_of_pipelines,
     SUM(ci_build_duration_in_s) / 60 AS ci_build_minutes
@@ -68,6 +69,9 @@ SELECT
   count_of_runners,
   count_of_pipelines,
   ci_build_minutes,
+  CASE WHEN cost_factor = 0 THEN ci_build_minutes
+       ELSE ci_build_minutes * cost_factor
+       END AS compute_minutes_with_cost_factor,
   CASE 
     WHEN plan_title = 'Free' THEN 400
     WHEN plan_title = 'Premium' THEN 10000
@@ -87,6 +91,6 @@ SELECT
     created_by="@nhervas",
     updated_by="@nhervas",
     created_date="2024-01-02",
-    updated_date="2024-01-02"
+    updated_date="2024-05-22"
 ) }}
 

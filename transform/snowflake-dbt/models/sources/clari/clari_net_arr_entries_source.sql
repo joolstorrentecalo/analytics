@@ -13,6 +13,8 @@ source AS (
 
 intermediate AS (
   SELECT
+    -- in older payloads, `api_forecast_id` was missing, default to `net_arr`
+    COALESCE(jsontext['api_forecast_id'], 'net_arr') AS forecast_id,
     d.value,
     source.uploaded_at
   FROM
@@ -26,6 +28,7 @@ intermediate AS (
 parsed AS (
   SELECT
 
+    forecast_id,
     -- foreign keys
     REPLACE(value['timePeriodId'], '_', '-')::VARCHAR          AS fiscal_quarter,
     -- add fiscal_quarter to unique key: can be dup timeFrameId across quarters
@@ -47,6 +50,9 @@ parsed AS (
     uploaded_at
   FROM
     intermediate
+
+    -- filter out overlapping records that exist in both forecast_ids
+  WHERE NOT (forecast_id = 'net_arr_ps_summary' AND field_id = 'arr_most_likely')
 
   -- remove dups in case of overlapping data from daily/quarter loads
   QUALIFY

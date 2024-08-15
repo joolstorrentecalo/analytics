@@ -1,20 +1,8 @@
-connection_info:
-  postgres_source_connection:
-    database: GITLAB_OPS_DB_NAME
-    host: GITLAB_OPS_DB_HOST
-    pass: GITLAB_OPS_DB_PASS
-    port: PG_PORT
-    user: GITLAB_OPS_DB_USER
-  postgres_metadata_connection:
-    database: GITLAB_METADATA_DB_NAME
-    host: GITLAB_METADATA_DB_HOST
-    pass: GITLAB_METADATA_DB_PASS
-    port: GITLAB_METADATA_PG_PORT
-    user: GITLAB_METADATA_DB_USER
 tables:
   ci_pipelines:
     dbt_source_model: true
     deletes_exempt: True
+    database_type: ops
     export_schema: 'gitlab_ops_net'
     export_table: 'ci_pipelines'
     export_table_primary_key: id
@@ -48,6 +36,7 @@ tables:
   ci_stages:
     dbt_source_model: true
     deletes_exempt: True
+    database_type: ops
     export_schema: 'gitlab_ops_net'
     export_table: ci_stages
     export_table_primary_key: id
@@ -68,6 +57,7 @@ tables:
   labels:
     dbt_source_model: true
     deletes_exempt: True
+    database_type: ops
     export_schema: 'gitlab_ops_net'
     export_table: 'labels'
     export_table_primary_key: id
@@ -88,6 +78,7 @@ tables:
   merge_request_metrics:
     dbt_source_model: true
     deletes_exempt: True
+    database_type: ops
     export_schema: 'gitlab_ops_net'
     export_table: 'merge_request_metrics'
     export_table_primary_key: id
@@ -107,6 +98,7 @@ tables:
   merge_requests:
     dbt_source_model: true
     deletes_exempt: True
+    database_type: ops
     export_schema: 'gitlab_ops_net'
     export_table: 'merge_requests'
     export_table_primary_key: id
@@ -147,6 +139,7 @@ tables:
   projects:
     dbt_source_model: true
     deletes_exempt: True
+    database_type: ops
     export_schema: 'gitlab_ops_net'
     export_table: 'projects'
     export_table_primary_key: id
@@ -214,6 +207,7 @@ tables:
   users:
     dbt_source_model: true
     deletes_exempt: True
+    database_type: ops
     export_schema: 'gitlab_ops_net'
     export_table: 'users'
     export_table_primary_key: id

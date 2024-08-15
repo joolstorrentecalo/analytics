@@ -5,7 +5,7 @@ models:
       description: A table that can be used for reporting on query activity.
       columns:
         - name: query_id
-          tests:
+          data_tests:
             - unique
             - not_null
         - name: dbt_metadata
@@ -60,7 +60,7 @@ models:
       columns: 
         - name: attribution_id
           description: '{{ doc("attribution_id") }}'
-          tests:
+          data_tests:
             - unique
         - name: query_id
           description: '{{ doc("query_id") }}'
@@ -103,7 +103,7 @@ models:
       description: This model aggregates the total credits attributed to a query and creates a table suitable for joining to a query.
       columns:
         - name: query_id
-          tests:
+          data_tests:
             - unique
             - not_null
         - name: query_start_at

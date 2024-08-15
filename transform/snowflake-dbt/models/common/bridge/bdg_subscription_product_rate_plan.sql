@@ -1,3 +1,8 @@
+{{ config(
+    tags=["mnpi_exception"]
+) }}
+
+
 {{ simple_cte([
     ('rate_plans','zuora_rate_plan_source'),
     ('product_details','dim_product_detail')

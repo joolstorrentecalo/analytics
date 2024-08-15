@@ -5,7 +5,7 @@
 {{ simple_cte([
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
     ('mart_crm_opportunity_daily_snapshot','mart_crm_opportunity_daily_snapshot'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
+    ('mart_crm_opportunity','mart_crm_opportunity'),
     ('mart_crm_account','mart_crm_account'),
     ('sfdc_bizible_attribution_touchpoint_snapshots_source', 'sfdc_bizible_attribution_touchpoint_snapshots_source'),
     ('dim_date','dim_date')
@@ -52,6 +52,7 @@
     sfdc_bizible_attribution_touchpoint_snapshots_source.bizible_marketing_channel AS snapshot_marketing_channel,
     sfdc_bizible_attribution_touchpoint_snapshots_source.bizible_marketing_channel_path AS snapshot_marketing_channel_path,
     mart_crm_attribution_touchpoint.bizible_ad_campaign_name,
+    mart_crm_attribution_touchpoint.bizible_form_url,
     mart_crm_attribution_touchpoint.budget_holder,
     mart_crm_attribution_touchpoint.campaign_rep_role_name,
     mart_crm_attribution_touchpoint.campaign_region,
@@ -61,12 +62,13 @@
     mart_crm_attribution_touchpoint.utm_campaign,
     mart_crm_attribution_touchpoint.utm_medium,
     mart_crm_attribution_touchpoint.utm_source,
-      
     mart_crm_attribution_touchpoint.utm_budget,
     mart_crm_attribution_touchpoint.utm_content,
     mart_crm_attribution_touchpoint.utm_allptnr,
     mart_crm_attribution_touchpoint.utm_partnerid,
-
+    mart_crm_attribution_touchpoint.devrel_campaign_type,
+    mart_crm_attribution_touchpoint.devrel_campaign_description,
+    mart_crm_attribution_touchpoint.devrel_campaign_influence_type,
     mart_crm_attribution_touchpoint.integrated_budget_holder,
     mart_crm_attribution_touchpoint.type AS sfdc_campaign_type,
     mart_crm_attribution_touchpoint.gtm_motion,
@@ -86,11 +88,11 @@
         (dbt_valid_FROM <= date_day AND dbt_valid_to > date_day) OR (dbt_valid_from <= date_day AND dbt_valid_to is null)
 
 
-    LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist ON
-    sfdc_bizible_attribution_touchpoint_snapshots_source.opportunity_id = mart_crm_opportunity_stamped_hierarchy_hist.DIM_CRM_OPPORTUNITY_ID
+    LEFT JOIN mart_crm_opportunity ON
+    sfdc_bizible_attribution_touchpoint_snapshots_source.opportunity_id = mart_crm_opportunity.DIM_CRM_OPPORTUNITY_ID
 
     WHERE 
-    snapshot_dates.fiscal_quarter_name_fy = mart_crm_opportunity_stamped_hierarchy_hist.pipeline_created_fiscal_quarter_name 
+    snapshot_dates.fiscal_quarter_name_fy = mart_crm_opportunity.pipeline_created_fiscal_quarter_name 
 
 )
 
@@ -131,14 +133,14 @@ SELECT
   dim_date.day_of_fiscal_year_normalised    AS pipeline_created_day_of_fiscal_year_normalised,
 
   --User Hierarchy
-  snapshot.report_opportunity_user_segment  AS snapshot_report_opportunity_user_segment,
-  live.report_opportunity_user_segment,
-  snapshot.report_opportunity_user_geo      AS snapshot_report_opportunity_user_segment,
-  live.report_opportunity_user_geo,
-  snapshot.report_opportunity_user_region   AS snapshot_report_opportunity_user_region,
-  live.report_opportunity_user_region,
-  snapshot.report_opportunity_user_area     AS snapshot_report_opportunity_user_area,
-  live.report_opportunity_user_area,
+  snapshot.report_segment                   AS snapshot_report_segment,
+  live.report_segment,
+  snapshot.report_geo                       AS snapshot_report_geo,
+  live.report_geo,
+  snapshot.report_region                    AS snapshot_report_region,
+  live.report_region,
+  snapshot.report_area                      AS snapshot_report_area,
+  live.report_area,
   --    report_opportunity_user_business_unit,
   --    report_opportunity_user_sub_business_unit,
   --    report_opportunity_user_division,
@@ -164,11 +166,10 @@ SELECT
   --Metrics
   snapshot.net_arr                          AS opp_net_arr
 
-FROM
-  mart_crm_opportunity_daily_snapshot AS snapshot
+FROM mart_crm_opportunity_daily_snapshot AS snapshot
 INNER JOIN snapshot_dates
   ON snapshot.snapshot_date = snapshot_dates.date_day
-LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist AS live
+LEFT JOIN mart_crm_opportunity AS live
   ON snapshot.dim_crm_opportunity_id = live.dim_crm_opportunity_id
 LEFT JOIN mart_crm_account AS account
   ON snapshot.dim_crm_account_id = account.dim_crm_account_id
@@ -213,23 +214,16 @@ combined_models AS (
     opportunity_snapshot_base.account_name,
     opportunity_snapshot_base.parent_crm_account_name,
 
---User Hierarchy
-    opportunity_snapshot_base.report_opportunity_user_segment,
-    opportunity_snapshot_base.report_opportunity_user_geo,
-    opportunity_snapshot_base.report_opportunity_user_region,
-    opportunity_snapshot_base.report_opportunity_user_area,
--- DM: Removed as a part of FY25 hierarchy changes   
---    opportunity_snapshot_base.report_opportunity_user_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_sub_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_division,
---   opportunity_snapshot_base.report_opportunity_user_asm,
-
 --Opportunity Dimensions
     opportunity_snapshot_base.opportunity_category,
     opportunity_snapshot_base.sales_type,
     opportunity_snapshot_base.order_type,
     opportunity_snapshot_base.sales_qualified_source_name,
     opportunity_snapshot_base.stage_name,
+    opportunity_snapshot_base.report_segment,
+    opportunity_snapshot_base.report_geo,
+    opportunity_snapshot_base.report_area,
+    opportunity_snapshot_base.report_region,
 
 --Touchpoint Dimensions
     attribution_touchpoint_snapshot_base.bizible_touchpoint_type,
@@ -256,6 +250,7 @@ combined_models AS (
     attribution_touchpoint_snapshot_base.snapshot_marketing_channel,
     attribution_touchpoint_snapshot_base.snapshot_marketing_channel_path,
     attribution_touchpoint_snapshot_base.bizible_ad_campaign_name,
+    attribution_touchpoint_snapshot_base.bizible_form_url,
     attribution_touchpoint_snapshot_base.budget_holder,
     attribution_touchpoint_snapshot_base.campaign_rep_role_name,
     attribution_touchpoint_snapshot_base.campaign_region,
@@ -269,6 +264,9 @@ combined_models AS (
     attribution_touchpoint_snapshot_base.utm_budget,
     attribution_touchpoint_snapshot_base.utm_allptnr,
     attribution_touchpoint_snapshot_base.utm_partnerid,
+    attribution_touchpoint_snapshot_base.devrel_campaign_type,
+    attribution_touchpoint_snapshot_base.devrel_campaign_description,
+    attribution_touchpoint_snapshot_base.devrel_campaign_influence_type,
     attribution_touchpoint_snapshot_base.integrated_budget_holder,
     attribution_touchpoint_snapshot_base.sfdc_campaign_type,
     attribution_touchpoint_snapshot_base.gtm_motion,
@@ -358,24 +356,16 @@ combined_models AS (
     opportunity_snapshot_base.account_name,
     opportunity_snapshot_base.parent_crm_account_name,
 
---User Hierarchy
-    opportunity_snapshot_base.report_opportunity_user_segment,
-    opportunity_snapshot_base.report_opportunity_user_geo,
-    opportunity_snapshot_base.report_opportunity_user_region,
-    opportunity_snapshot_base.report_opportunity_user_area,
-
--- DM: Removed as a part of FY25 hierarchy changes   
---    opportunity_snapshot_base.report_opportunity_user_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_sub_business_unit,
---    opportunity_snapshot_base.report_opportunity_user_division,
---   opportunity_snapshot_base.report_opportunity_user_asm,
-
 --Opportunity Dimensions
     opportunity_snapshot_base.opportunity_category,
     opportunity_snapshot_base.sales_type,
     opportunity_snapshot_base.order_type,
     opportunity_snapshot_base.sales_qualified_source_name,
     opportunity_snapshot_base.stage_name,
+    opportunity_snapshot_base.report_segment,
+    opportunity_snapshot_base.report_geo,
+    opportunity_snapshot_base.report_area,
+    opportunity_snapshot_base.report_region,
 
 
 --Touchpoint Dimensions
@@ -387,6 +377,7 @@ combined_models AS (
     'Other' AS snapshot_marketing_channel,
     'Other.Removed Touchpoint' AS snapshot_marketing_channel_path,
     NULL AS bizible_ad_campaign_name,
+    NULL AS bizible_form_url,
     NULL AS budget_holder,
     NULL AS campaign_rep_role_name,
     NULL AS campaign_region,
@@ -400,6 +391,9 @@ combined_models AS (
     NULL AS utm_budget,
     NULL AS utm_allptnr,
     NULL AS utm_partnerid,
+    NULL AS devrel_campaign_type,
+    NULL AS devrel_campaign_description,
+    NULL AS devrel_campaign_influence_type,
     NULL AS integrated_budget_holder,
     NULL AS sfdc_campaign_type,
     NULL AS gtm_motion,
@@ -433,26 +427,22 @@ combined_models AS (
     opportunity_snapshot_base.is_eligible_age_analysis_flag
 
     FROM missing_net_arr_difference
-    INNER JOIN
-    opportunity_snapshot_base ON missing_net_arr_difference.dim_crm_opportunity_id = opportunity_snapshot_base.dim_crm_opportunity_id 
-    AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = opportunity_snapshot_base.pipeline_created_fiscal_quarter_name
+    INNER JOIN opportunity_snapshot_base 
+      ON missing_net_arr_difference.dim_crm_opportunity_id = opportunity_snapshot_base.dim_crm_opportunity_id 
+        AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = opportunity_snapshot_base.pipeline_created_fiscal_quarter_name
 
 ), final AS (
-    SELECT 
-    *
-    FROM 
-    combined_models
+    SELECT *
+    FROM combined_models
     UNION ALL
-    SELECT
-    *
-    FROM
-    missing_net_arr_base
+    SELECT *
+    FROM missing_net_arr_base
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@dmicovic",
+    updated_by="@rkohnke",
     created_date="2023-04-11",
-    updated_date="2024-03-04",
+    updated_date="2024-08-01",
   ) }}

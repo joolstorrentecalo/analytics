@@ -135,6 +135,7 @@ WITH dim_billing_account AS (
       dim_product_detail.product_delivery_type                                        AS product_delivery_type,
       dim_product_detail.product_deployment_type                                      AS product_deployment_type,
       dim_product_detail.product_category                                             AS product_category,
+      dim_product_detail.product_rate_plan_category                                   AS product_rate_plan_category,
       dim_product_detail.product_ranking                                              AS product_ranking,          
       dim_product_detail.service_type                                                 AS service_type,
       dim_product_detail.product_rate_plan_name                                       AS product_rate_plan_name,
@@ -210,7 +211,7 @@ WITH dim_billing_account AS (
 {{ dbt_audit(
     cte_ref="final_table",
     created_by="@msendal",
-    updated_by="@snalamaru",
+    updated_by="@rakhireddy",
     created_date="2020-09-04",
-    updated_date="2024-04-10"
+    updated_date="2024-06-01"
 ) }}

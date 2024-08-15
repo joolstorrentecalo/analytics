@@ -1,3 +1,7 @@
+{{ config(
+    tags=["zuora_waterfall"]
+) }}
+
 WITH source AS (
 
   SELECT * 

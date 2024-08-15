@@ -50,7 +50,10 @@ overall_target AS (
     source INNER JOIN
     LATERAL FLATTEN(input => source.jsontext['overall_target']) jsonpath_root INNER JOIN
     LATERAL FLATTEN(input => source.jsontext['overall_target']['body']['data']['result'], outer => TRUE) jsonpath_result
-  WHERE result_type IS NOT NULL AND status_type IS NOT NULL
+  WHERE result_type IS NOT NULL 
+    AND status_type IS NOT NULL
+    AND metric_created_at IS NOT NULL
+
 ),
 
 unioned AS (

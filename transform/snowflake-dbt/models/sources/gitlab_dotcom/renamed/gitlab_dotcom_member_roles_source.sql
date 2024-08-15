@@ -7,7 +7,6 @@ WITH final AS (
       created_at::TIMESTAMP AS created_at,
       updated_at::TIMESTAMP AS updated_at,
       base_access_level::INT,
-      read_code::BOOLEAN,
       _uploaded_at::FLOAT
     FROM {{ ref('gitlab_dotcom_member_roles_dedupe_source') }} 
 

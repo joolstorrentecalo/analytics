@@ -75,4 +75,12 @@ DELETE FROM db.schema.table WHERE SHA2(TRIM(LOWER("COLUMNAME"))) =  'your_sha_he
 | -------------------- |
 |                    0 |
 {% enddocs %}
+{% docs gdpr_bulk_delete %}
+This macro performs bulk GDPR deletions. 
 
+The input for this macro is a Driveload file containing the e-mail address and deletion type, 
+The macro then runs either the gdpr_delete_gitlab_dotcom or gdpr_delete macro depending on the deletion type. 
+
+After running processing an e-mail from the driveload file the input e-mail is then removed from the driveload file to ensure continued GDPR compliance.
+
+{% enddocs %}

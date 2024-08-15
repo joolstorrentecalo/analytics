@@ -1,8 +1,17 @@
-{{ simple_cte([('prep_host', 'prep_host'),
-('prep_ping_instance', 'prep_ping_instance'),
-('prep_ping_instance_flattened', 'prep_ping_instance_flattened')])}},
+{{ config({
+    "post-hook": "{{ missing_member_column(primary_key = 'dim_installation_id', not_null_test_cols = []) }}"
+}) }}
+
+{{ simple_cte([
+
+  ('prep_host', 'prep_host'),
+  ('prep_ping_instance', 'prep_ping_instance'),
+  ('prep_ping_instance_flattened', 'prep_ping_instance_flattened')]
+
+)}},
 
 installation_agg AS (
+
   SELECT
     dim_installation_id,
     MIN(TRY_TO_TIMESTAMP(TRIM(metric_value::VARCHAR,'UTC'))) AS installation_creation_date
@@ -35,25 +44,22 @@ joined AS (
 
     -- Dimensional contexts  
     prep_host.host_name,
-    installation_agg.installation_creation_date
+    installation_agg.installation_creation_date,
+    prep_ping_instance.ping_delivery_type   AS product_delivery_type,
+    prep_ping_instance.ping_deployment_type AS product_deployment_type 
+
   FROM prep_ping_instance
-  INNER JOIN prep_host ON prep_ping_instance.dim_host_id = prep_host.dim_host_id
-  LEFT JOIN installation_agg ON installation_agg.dim_installation_id = prep_ping_instance.dim_installation_id
+  INNER JOIN prep_host 
+    ON prep_ping_instance.dim_host_id = prep_host.dim_host_id
+  LEFT JOIN installation_agg 
+    ON prep_ping_instance.dim_installation_id = installation_agg.dim_installation_id
 
-  UNION ALL
-
-  SELECT
-    MD5('-1')                 AS dim_installation_id,
-    'Missing dim_instance_id' AS dim_instance_id,
-    NULL                      AS dim_host_id,
-    'Missing host_name'       AS host_name,
-    NULL                      AS installation_creation_date
 )
 
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@mpeychet_",
-    updated_by="@mdrussell",
+    updated_by="@michellecooper",
     created_date="2021-05-20",
-    updated_date="2023-07-10"
+    updated_date="2024-06-07"
 ) }}

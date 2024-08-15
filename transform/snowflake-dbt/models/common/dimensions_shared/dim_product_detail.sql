@@ -1,5 +1,6 @@
 {{ config({
-        "alias": "dim_product_detail"
+        "alias": "dim_product_detail",
+        "tags": "mnpi_exception"
     })
 }}
 
@@ -27,6 +28,7 @@ WITH base AS (
       product_delivery_type            AS product_delivery_type,
       product_deployment_type          AS product_deployment_type,
       product_category                 AS product_category,
+      product_rate_plan_category       AS product_rate_plan_category,
       service_type                     AS service_type,
       is_reporter_license              AS is_reporter_license,
       effective_start_date             AS effective_start_date,
@@ -43,7 +45,7 @@ WITH base AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@ischweickartDD",
-    updated_by="@snalamaru",
+    updated_by="@rakhireddy",
     created_date="2020-12-16",
-    updated_date="2024-04-11"
+    updated_date="2024-06-01"
 ) }}

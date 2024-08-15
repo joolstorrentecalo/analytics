@@ -17,6 +17,7 @@ services:
           GIT_BRANCH: ${GIT_BRANCH}
           AIRFLOW__WEBSERVER__SECRET_KEY: 83a1e32380af3a62d159ca9461aa3e30436b4978c8dd66f907a02528b662
           AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql://postgres:postgres@airflow_db
+          AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT: 120
         command: bash -c "airflow webserver"
         volumes:
           - type: bind
@@ -50,6 +51,7 @@ services:
           GIT_BRANCH: ${GIT_BRANCH}
           AIRFLOW__WEBSERVER__SECRET_KEY: 83a1e32380af3a62d159ca9461aa3e30436b4978c8dd66f907a02528b662
           AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql://postgres:postgres@airflow_db
+          AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT: 120
         command: bash -c "airflow scheduler"
         volumes:
           - type: bind

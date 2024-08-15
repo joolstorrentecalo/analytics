@@ -6,26 +6,22 @@ import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-
 from airflow_utils import (
     DATA_IMAGE_3_10,
     clone_and_setup_extraction_cmd,
     gitlab_defaults,
-    slack_failed_task,
     gitlab_pod_env_vars,
+    slack_failed_task,
 )
-
 from kube_secrets import (
+    LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY,
     SNOWFLAKE_ACCOUNT,
     SNOWFLAKE_LOAD_PASSWORD,
     SNOWFLAKE_LOAD_ROLE,
     SNOWFLAKE_LOAD_USER,
     SNOWFLAKE_LOAD_WAREHOUSE,
-    LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY,
 )
-
 from kubernetes_helpers import get_affinity, get_toleration
 
 env = os.environ.copy()
@@ -51,7 +47,7 @@ dag = DAG(
     # FYI: on first run, data is backfilled thru 2022-03-01
     start_date=datetime(2022, 3, 1),
     catchup=True,
-    max_active_runs=1,  # due to API rate limiting
+    max_active_runs=2,  # due to API rate limiting
     concurrency=3,  # num of max_tasks, limit due to API rate limiting
 )
 
@@ -61,6 +57,10 @@ endpoint_classes = (
     "CourseViews",
     "Logins",
     "Visits",
+    "CoursePurchases",
+    "LearningPathActions",
+    "EmailCaptures",
+    # "Awards",
 )
 extract_tasks = []
 

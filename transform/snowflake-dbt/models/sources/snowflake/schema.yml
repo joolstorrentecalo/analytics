@@ -16,7 +16,7 @@ models:
     columns:
       - name: user_name
         description: The snowflake user name.  Used to relate to query activity
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: user_type
@@ -27,7 +27,7 @@ models:
         description: The cost center department
   - name: snowflake_warehouse_metering_history_source
     description: A table derived from the account [warehouse_metering_history_source view](https://docs.snowflake.com/en/sql-reference/functions/warehouse_metering_history) in Snowflake.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - warehouse_metering_start_at
@@ -35,13 +35,13 @@ models:
     columns:
       - name: warehouse_metering_start_at
         description: '{{ doc("warehouse_metering_start_at") }}'
-        tests:
+        data_tests:
           - not_null
       - name: warehouse_metering_end_at
         description: '{{ doc("warehouse_metering_end_at") }}'
       - name: warehouse_id
         description: '{{ doc("warehouse_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: warehouse_name
         description: '{{ doc("warehouse_name") }}'
@@ -59,3 +59,7 @@ models:
         description: The date the rate became effective
       - name: contract_rate
         description: The dollar rate for snowflake credits.
+  - name: snowflake_tables_source
+    description: A view to `snowflake.account_usage.accounts` to be introduced into our transformation layer
+  - name: snowflake_databases_source
+    description: A view to `snowflake.account_usage.databases` to be introduced into our transformation layer

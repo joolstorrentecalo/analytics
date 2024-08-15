@@ -74,6 +74,7 @@
       prep_crm_account.parent_crm_account_role_type,
       prep_crm_account.parent_crm_account_max_family_employee,
       prep_crm_account.parent_crm_account_upa_country,
+      prep_crm_account.parent_crm_account_upa_country_name,
       prep_crm_account.parent_crm_account_upa_state,
       prep_crm_account.parent_crm_account_upa_city,
       prep_crm_account.parent_crm_account_upa_street,
@@ -111,6 +112,7 @@
       prep_crm_account.demandbase_sessions,
       prep_crm_account.demandbase_trending_offsite_intent,
       prep_crm_account.demandbase_trending_onsite_engagement,
+      prep_crm_account.account_domains,
       prep_crm_account.is_locally_managed_account,
       prep_crm_account.is_strategic_account,
       prep_crm_account.partner_track,
@@ -155,6 +157,10 @@
       prep_crm_account.bdr_prospecting_status,
       prep_crm_account.is_focus_partner,
       prep_crm_account.gs_health_csm_sentiment,
+      prep_crm_account.bdr_next_steps,
+      prep_crm_account.bdr_account_research,
+      prep_crm_account.bdr_account_strategy,
+      prep_crm_account.account_bdr_assigned_user_role,
 
       --measures (maintain for now to not break reporting)
       prep_crm_account.parent_crm_account_lam,
@@ -176,6 +182,20 @@
       prep_crm_account.six_sense_account_6_qa_start_date,
       prep_crm_account.six_sense_account_intent_score,
       prep_crm_account.six_sense_segments,
+
+       --Qualified Fields
+      prep_crm_account.qualified_days_since_last_activity,
+      prep_crm_account.qualified_signals_active_session_time,
+      prep_crm_account.qualified_signals_bot_conversation_count,
+      prep_crm_account.qualified_condition,
+      prep_crm_account.qualified_score,
+      prep_crm_account.qualified_trend,
+      prep_crm_account.qualified_meetings_booked,
+      prep_crm_account.qualified_signals_rep_conversation_count,
+      prep_crm_account.qualified_signals_research_state,
+      prep_crm_account.qualified_signals_research_score,
+      prep_crm_account.qualified_signals_session_count,
+      prep_crm_account.qualified_visitors_count,
 
       --degenerative dimensions
       prep_crm_account.is_sdr_target_account,
@@ -214,6 +234,8 @@
       prep_crm_account.next_renewal_date,
       prep_crm_account.gs_first_value_date,
       prep_crm_account.gs_last_csm_activity_date,
+      prep_crm_account.bdr_recycle_date,
+      prep_crm_account.actively_working_start_date,
       cohort_date.crm_account_arr_cohort_month,
       cohort_date.crm_account_arr_cohort_quarter,
       parent_cohort_date.parent_account_arr_cohort_month,
@@ -242,9 +264,9 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@msendal",
-    updated_by="@jonglee1218",
+    updated_by="@rkohnke",
     created_date="2020-06-01",
-    updated_date="2024-02-16"
+    updated_date="2024-07-29"
 ) }}
 
 

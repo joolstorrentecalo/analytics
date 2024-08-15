@@ -19,13 +19,13 @@ models:
     description: This is the intermediate model to creating out the headcount report. This report provides headcounts, hires, separations by diversity fields, department, and division. Note - division is mapped to the last month in the report to account for 12 month calculations. 
     columns:
       - name: unique_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: month_date
       - name: breakout_type
         description: Explains the breakout of the data in the columns associated to this field.
-        # tests:
+        # data_tests:
         # - accepted_values:
         #   values: ['all_attributes_breakout','department_breakout', 'division_breakout', 'eeoc_breakout']
       - name: department
@@ -34,7 +34,7 @@ models:
         description: This is using current division, and maps out historical department/divisions to the current mapping.
       - name: eeoc_field_name
         description: Identifies what eeoc field the data is associated to.
-        # tests:
+        # data_tests:
         # - accepted_values:
         #   values: ['no_eeoc','ethnicity','gender','region_modified','age_cohort','gender_region','ethnicity','urg_group']
       - name: eeoc_value
@@ -123,7 +123,7 @@ models:
           masking_policy: analyst_people_sensitive
       - name: greenhouse_candidate_id
         description: Captures the id associated to the employee in Greenhouse (our recruiting platform). This will only be applicable in Greenhouse starting 2019-12-13, and will help identify which candidates were hired.
-        tests: 
+        data_tests: 
             - unique   
       - name: urg_group
         description: Identifies if the Team Member identifies their identity as one of an underrepresented group or not. Any ethnicity given that is not White, Asian or Did Not Identify is TRUE for urg_group.
@@ -142,11 +142,11 @@ models:
     description: Provides most recent record for all GitLab employees (active and separated).
     columns:
       - name: employee_id
-        tests: 
+        data_tests: 
           - unique
           - not_null
       - name: employee_number
-        tests: 
+        data_tests: 
           - unique
           - not_null
       - name: first_name
@@ -172,7 +172,7 @@ models:
 
   - name: employee_locality
     description: This idenitifes the location factor for an employee on a given day starting 2020.03.24 by joining the locality value from bamboohr to the location_factor yaml or geo_zones yaml file to capture the location factor.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_number
@@ -189,7 +189,7 @@ models:
     description: Provides the termination reason to allow the People Analytics team to accurately report on termination data
     columns:
       - name: employee_id
-        tests: 
+        data_tests: 
           - not_null
       - name: uploaded_at
       - name: effective_date

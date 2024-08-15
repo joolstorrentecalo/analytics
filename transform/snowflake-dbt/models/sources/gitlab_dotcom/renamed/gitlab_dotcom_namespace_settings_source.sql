@@ -19,6 +19,8 @@ WITH source AS (
       new_user_signups_cap::NUMBER                        AS new_signups_cap,
       setup_for_company::BOOLEAN                          AS is_setup_for_company,
       jobs_to_be_done::NUMBER                             AS jobs_to_be_done,
+      early_access_program_participant::BOOLEAN           AS early_access_program_participant,
+      early_access_program_joined_by_id::NUMBER           AS early_access_program_joined_by_id,
       experiment_features_enabled::BOOLEAN                AS experiment_features_enabled,
       code_suggestions::BOOLEAN                           AS code_suggestions
     FROM source

@@ -334,16 +334,6 @@ Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Billing/
 
 {% enddocs %}
 
-{% docs fct_invoice_aging_detail %}
-
-Fact table providing invoice aging details at the single transaction grain, e.g. payment, IIA, CBA.
-
-The invoicing to customers business process can be found in the [handbook](https://about.gitlab.com/handbook/finance/sox-internal-controls/quote-to-cash/#6-invoicing-to-customers).
-
-Data comes from [Zuora Documentation](https://knowledgecenter.zuora.com/Zuora_Payments/Zuora_Finance/E_Accounting_Periods/F_View_Accounting_Period_Balances/Accounts_Receivable_Aging#Invoice_Aging_Details).
-
-{% enddocs %}
-
 {% docs fct_invoice_item %}
 Fact table providing invoice line item details.
 
@@ -1085,7 +1075,6 @@ The grain of the table is the `dim_locality_id` and the `valid_from` date filed.
 **Business Logic in this Model:**
 - `is_last_ping_of_month` = last ping created per calendar month per installation (`dim_installation_id`)
 - `is_last_ping_of_week` = last ping created per calendar week per installation (`dim_installation_id`)
-- `ping_delivery_type` = `IFF(uuid/dim_instance_id = 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f', 'SaaS', 'Self-Managed')`
 - `is_internal` = TRUE WHERE:
   - uuid/dim_instance_id = 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f'
   - (OR) installation_type = 'gitlab-development-kit'
@@ -1399,11 +1388,13 @@ Example: `pi_monthly_estimated_targets`: `{"2022-02-28":1000,"2022-03-31":2000,"
 {% docs fct_ping_instance_metric_monthly %}
 
 **Description:** Atomic level instance Service Ping data for the last ping of the month per installation by ping and metric for 28-day and all-time metrics. This includes basic identifiers for easy joins out to dimension tables. This is a filtered version of `fct_ping_instance_metric`
-- The data includes a single row per ping and metric
+- The data includes a single row per ping and metric. Moreover, we filter down to the last ping of the month.
+  - Alternatively stated, there is a single row per installation, month, and metric.
 - Includes installation, instance, date, product, billing, and subscription identifiers
 
 **Data Grain:**
-- dim_ping_instance_id
+- dim_installation_id
+- ping_created_date_month
 - metrics_path
 
 **Filters Applied to Model:**
@@ -1431,11 +1422,13 @@ Example: `pi_monthly_estimated_targets`: `{"2022-02-28":1000,"2022-03-31":2000,"
 {% docs fct_ping_instance_metric_weekly %}
 
 **Description:** Atomic level instance Service Ping data for the last ping of the week per installation by ping and metric for 7-day metrics. This includes basic identifiers for easy joins out to dimension tables. This is a filtered version of `fct_ping_instance_metric`
-- The data includes a single row per ping and metric
+- The data includes a single row per ping and metric. Moreover, we filter down to the last ping of the week.
+  - Alternatively stated, there is a single row per installation, week, and metric.
 - Includes installation, instance, date, product, billing, and subscription identifiers
 
 **Data Grain:**
-- dim_ping_instance_id
+- dim_installation_id
+- ping_created_date_week
 - metrics_path
 
 **Filters Applied to Model:**
@@ -1625,6 +1618,28 @@ This ID is generated using `event_id` from [prep_snowplow_unnested_events_all](h
 {% docs fct_behavior_structured_event_30 %}
 
 **Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events for the **last 30 days**.
+
+**Data Grain:** behavior_structured_event_pk
+
+This ID is generated using event_id from [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all). 
+
+**Filters Applied to Model:**
+
+- This model only includes structured events for the last 30 days
+
+**Tips for use:**
+
+- Join this model to `dim_behavior_event` using `dim_behavior_event_sk` in order to filter the fact on event_action, event_category, etc.
+- Join this model to `dim_behavior_website_page` using `dim_behavior_website_page_sk` in order to pull in information about the page URL
+- Join this model to `dim_behavior_website_page` using `dim_behavior_referrer_page_sk` in order to pull in information about the referring URL
+- Join this model to `dim_behavior_operating_system` using `dim_behavior_operating_system_sk` in order to pull in information about the user OS 
+- Join this model to `dim_behavior_browser` using `dim_behavior_browser_sk` in  order to pull in information about the user browser 
+
+{% enddocs %}
+
+{% docs fct_behavior_structured_event_90 %}
+
+**Description:** Derived fact table containing quantitative data for both staging and non-staging snowplow structured events for the **last 90 days**.
 
 **Data Grain:** behavior_structured_event_pk
 
@@ -2066,5 +2081,35 @@ Fact derived from `fct_behavior_structured_event`, limited to only Snowplow even
 {% docs fct_behavior_structured_event_service_ping %}
 
 Fact derived from `fct_behavior_structured_event`, limited to only Snowplow events with the [Service Ping context](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/gitlab_service_ping/jsonschema) and columns, which indicates they are Service Ping events.
+
+{% enddocs %}
+
+
+{% docs fct_crm_opportunity_7th_day_weekly_snapshot %}
+
+Derived fact table from `fct_crm_opportunity_daily_snapshot`. This new table will not include every daily snapshot.  Instead, it will feature a snapshot once every week — specifically, one snapshot every 7 days throughout each quarter. This approach is designed to observe and analyze the key trends and activities occurring each week within the quarter.
+
+{% enddocs %}
+
+{% docs fct_crm_opportunity_7th_day_weekly_snapshot_aggregate %}
+   
+Derived fact table from `fct_crm_opportunity_daily_snapshot`. This new table will not include every daily snapshot.  Instead, it will feature a snapshot once every week — specifically, one snapshot every 7 days throughout each quarter.
+
+This query aggregates key sales metrics and attributes from the actuals table to the weekly grain and across multiple dimensions like sales source, order type, hierarchy, stage, deal path. This table also computes quarterly totals and adds them as non additive measures to each row, to facilitate pipeline velocity and coverage calculation in Tableau. 
+
+{% enddocs %}
+
+{% docs fct_targets_actuals_7th_day_weekly_snapshot %}
+   
+Derived fact table from `fct_crm_opportunity_daily_snapshot` and `fct_sales_funnel_target_daily`. This fct table simplifies tracking sales performance by showing targets and actuals combined, every seven days within a quarter. 
+
+It combines daily targets, daily actuals along with the total quarterly targets and actuals. This model includes both the numerator and denominator for calculating coverage throughout a quarter
+
+{% enddocs %}
+
+{% docs fct_team_member_absence %}
+
+This table is a derived fact from fct_team_status and gitlab_pto. Sensitive columns are masked and only visible by team members with the `analyst_people` role assigned in Snowflake.
+The grain of this table is one row per pto_uuid per absence_date per dim_team_member_sk combination. 
 
 {% enddocs %}

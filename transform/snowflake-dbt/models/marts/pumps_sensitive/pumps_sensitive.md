@@ -36,3 +36,9 @@ This table contains Churn Forecasting predicted scores that will be automaticall
 This table contains Opportunity Forecasting predicted scores that will be automatically uploaded to Salesforce via Openprise.
 
 {% enddocs %}
+
+{% docs pump_smb_daily_case_automation %}
+
+This table contains SMB event-based trigger data that will be automatically uploaded to Salesforce to create cases 
+
+{% enddocs %}

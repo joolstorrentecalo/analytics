@@ -6,7 +6,7 @@ version: 2
 models:
   - name: workday_bonus_source
     description: '{{ doc("workday_custom_bonus") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_id
@@ -14,17 +14,17 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
 
       - name: bonus_date
         description: '{{ doc("workday_bonus_date") }}'
-        tests:
+        data_tests:
           - not_null
 
       - name: bonus_type
         description: '{{ doc("workday_bonus_type") }}'
-        tests:
+        data_tests:
           - not_null
 
       - name: uploaded_at
@@ -33,12 +33,12 @@ models:
         description: '{{ doc("workday_initiated_at") }}'
       - name: workday_id
         description: '{{ doc("workday_workday_id") }}'
-        tests:
+        data_tests:
           - unique
 
   - name: workday_compensation_source
     description: '{{ doc("workday_compensation") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_id
@@ -48,19 +48,19 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: effective_date
         description: '{{ doc("workday_effective_date") }}'
-        tests:
+        data_tests:
           - not_null
       - name: compensation_type
         description: '{{ doc("workday_compensation_type") }}'
-        tests:
+        data_tests:
           - not_null
       - name: compensation_change_reason
         description: '{{ doc("workday_compensation_change_reason") }}'
-        tests:
+        data_tests:
           - not_null
       - name: pay_rate
         description: '{{ doc("workday_pay_rate") }}'
@@ -76,7 +76,7 @@ models:
         description: '{{ doc("workday_compensation_currency_usd") }}'
       - name: compensation_value_usd
         description: '{{ doc("workday_compensation_value_usd") }}'
-        tests:
+        data_tests:
           - not_null
         meta:
           masking_policy: analyst_people_sensitive
@@ -93,7 +93,7 @@ models:
 
   - name: workday_directory_source
     description: '{{ doc("workday_directory") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_id
@@ -101,7 +101,7 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: work_email
         description: '{{ doc("workday_work_email") }}'
@@ -122,7 +122,7 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: full_name
@@ -148,7 +148,7 @@ models:
 
   - name: workday_employee_mapping_source
     description: '{{ doc("workday_employee_mapping") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_id
@@ -156,7 +156,7 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: employment_history_status
         description: '{{ doc("workday_employment_history_status") }}'
@@ -229,7 +229,7 @@ models:
 
   - name: workday_employment_status_source
     description: '{{ doc("workday_employment_status") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_id
@@ -237,7 +237,7 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: effective_date
         description: '{{ doc("workday_effective_date") }}'
@@ -254,7 +254,7 @@ models:
 
   - name: workday_job_info_source
     description: '{{ doc("workday_job_info") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - employee_id
@@ -263,7 +263,7 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: business_process_event
         description: '{{ doc("workday_business_process_event") }}'
@@ -273,7 +273,7 @@ models:
         description: '{{ doc("workday_division") }}'
       - name: effective_date
         description: '{{ doc("workday_effective_date") }}'
-        tests:
+        data_tests:
           - not_null
       - name: entity
         description: '{{ doc("workday_entity") }}'
@@ -285,7 +285,7 @@ models:
         description: '{{ doc("workday_uploaded_at") }}'
       - name: initiated_at
         description: '{{ doc("workday_initiated_at") }}'
-        tests:
+        data_tests:
           - not_null
 
   - name: workday_on_target_earnings_source
@@ -293,7 +293,7 @@ models:
     columns:
       - name: employee_id
         description: '{{ doc("workday_employee_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: annual_amount_local
         description: '{{ doc("workday_annual_amount_local") }}'
@@ -307,7 +307,7 @@ models:
           masking_policy: analyst_people_sensitive
       - name: effective_date
         description: '{{ doc("workday_effective_date") }}'
-        tests:
+        data_tests:
           - not_null
       - name: ote_local
         description: '{{ doc("workday_ote_local") }}'
@@ -325,23 +325,23 @@ models:
         description: '{{ doc("workday_uploaded_at") }}'
       - name: initiated_at
         description: '{{ doc("workday_initiated_at") }}'
-        tests:
+        data_tests:
           - not_null
       - name: workday_id
         description: '{{ doc("workday_workday_id")}}'
-        tests:
+        data_tests:
           - unique
 
   - name: blended_bonus_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
 
   - name: blended_emergency_contacts_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
       - name: full_name
         description: '{{ doc("workday_full_name") }}'
@@ -363,7 +363,7 @@ models:
   - name: blended_employee_mapping_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
       - name: employee_number
       - name: employee_id
@@ -414,7 +414,7 @@ models:
   - name: blended_employment_status_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
       - name: termination_type
         meta:
@@ -424,13 +424,13 @@ models:
   - name: blended_job_info_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
 
   - name: blended_on_target_earnings_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
       - name: variable_pay
         meta:
@@ -460,7 +460,7 @@ models:
   - name: blended_compensation_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
       - name: compensation_type 
         meta:
@@ -475,14 +475,14 @@ models:
   - name: blended_currency_conversion_source
     columns:
       - name: unique_filter_key
-        tests:
+        data_tests:
           - unique
   
   - name: workday_supervisory_organizations_source
     columns:
       - name: team_id
         description: The unique organization identifier
-        tests:
+        data_tests:
           - not_null
       - name: team_hierarchy_level
         description: Team level within the hierarchy. Organizations can be organized into hierarchies and enable reporting at different levels in the hierarchy
@@ -509,13 +509,14 @@ models:
   - name: job_profiles_snapshots_source
     description: '{{ doc("job_profiles") }}'
     columns:
+      - name: report_effective_date
       - name: job_code
         description: The unique identification for each role at GitLab. A job code is different for each role and each seniority level (example - IT Security Analyst and Senior IT Security Analyst would have a different job_code)
-        tests: 
+        data_tests: 
           - not_null
       - name: job_profile 
         description: The role or position associated with the job code 
-        tests: 
+        data_tests: 
           - not_null 
       - name: job_family  
         description: Job family the code belongs to
@@ -537,11 +538,29 @@ models:
       - name: is_job_profile_active
       - name: job_workday_id
 
+  
+
+  - name: blended_job_profiles_source
+    description: This model blends the job_profiles_snapshot and job_profiles_historical tables. The unique organization identifier is job_workday_id.
+    columns:
+      - name: job_code
+      - name: job_workday_id
+      - name: job_profile
+      - name: job_family
+      - name: management_level
+      - name: job_level
+      - name: is_job_profile_active
+      - name: job_workday_id
+      - name: valid_from
+      - name: valid_to
+
+
+
   - name: staffing_history_approved_source
     columns:
       - name: employee_id
         description: The unique organization identifier
-        tests:
+        data_tests:
           - not_null
       - name: workday_id
       - name: business_process_type
@@ -581,3 +600,19 @@ models:
       - name: business_title_current
       - name: date_time_initiated
       - name: effective_date
+  - name: workday_cost_centers_snapshots_source
+    columns:
+      - name: report_effective_date
+      - name: dept_workday_id
+        description: The unique identifier
+        data_tests:
+          - not_null
+      - name: department_name
+      - name: division
+      - name: cost_center_workday_id
+      - name: cost_center
+      - name: dept_inactive
+      - name: is_dept_active
+      - name: valid_from
+      - name: valid_to
+

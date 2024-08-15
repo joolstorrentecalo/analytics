@@ -12,6 +12,7 @@
 
 api_forecast AS (
   SELECT
+    entries.forecast_id,
     users.user_full_name,
     users.user_email,
     users.crm_user_id,
@@ -30,7 +31,9 @@ api_forecast AS (
   INNER JOIN users ON entries.user_id = users.user_id
   INNER JOIN fields ON entries.field_id = fields.field_id
   INNER JOIN time_frames ON entries.time_frame_id = time_frames.time_frame_id
-  QUALIFY -- multiple user_id's per crm_user_id, keep latest entry only
+  -- multiple user_id's per crm_user_id, keep latest entry only
+  -- could add `forecast_id` to QUALIFY, but better to alert if there are dups to fix underlying problem
+  QUALIFY
     ROW_NUMBER() OVER (
       PARTITION BY
         entries.fiscal_quarter,
@@ -49,6 +52,7 @@ wk_sales_clari_net_arr_forecast AS (
   UNION
   -- Since the API isn't idempotent, using data from Driveload process
   SELECT
+    forecast_id,
     user_full_name,
     user_email,
     crm_user_id,

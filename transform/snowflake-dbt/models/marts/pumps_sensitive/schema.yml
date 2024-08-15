@@ -153,3 +153,41 @@ models:
     description: '{{ doc("pump_churn_forecasting_scores") }}'
   - name: pump_opportunity_forecasting_scores
     description: '{{ doc("pump_opportunity_forecasting_scores") }}'
+
+  - name: pump_smb_daily_case_automation
+    description: '{{ doc("pump_smb_daily_case_automation") }}'
+    columns:
+      - name: CASE_TRIGGER
+        tests:
+          - not_null
+      - name: ACCOUNT_ID
+        tests:
+          - not_null
+      - name: ACCOUNT_TIER
+      - name: CASE_TRIGGER_ID
+        tests:
+          - not_null
+      - name: STATUS
+      - name: CASE_ORIGIN
+      - name: TYPE
+      - name: CASE_SUBJECT
+        tests:
+          - not_null
+      - name: OWNER_ID
+      - name: CASE_REASON
+      - name: RECORD_TYPE_ID
+        tests:
+          - not_null
+      - name: PRIORITY
+      - name: CASE_OPPORTUNITY_ID
+      - name: CASE_CONTACT_ID
+      - name: CASE_CTA
+      - name: CONTEXT_FINAL
+      - name: REMOVE_FLAG
+      - name: CURRENT_PRICE
+      - name: RENEWAL_PRICE
+
+
+
+      
+  

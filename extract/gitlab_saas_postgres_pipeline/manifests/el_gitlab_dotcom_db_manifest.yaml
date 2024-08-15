@@ -1,0 +1,3248 @@
+tables:
+  ci_builds:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_builds
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , status
+      , finished_at
+      , created_at
+      , updated_at
+      , started_at
+      , runner_id
+      , coverage
+      , commit_id
+      , CASE
+            WHEN name ilike '%%container_scanning%%' THEN 'container_scanning'
+            WHEN name ilike '%%dast%%' THEN 'dast'
+            WHEN name ilike '%%dependency_scanning%%' THEN 'dependency_scanning'
+            WHEN name ilike '%%license_management%%' THEN 'license_management'
+            WHEN name ilike '%%license_scanning%%' THEN 'license_scanning'
+            WHEN name ilike '%%sast%%' THEN 'sast'
+            WHEN name ilike '%%secret_detection%%' THEN 'secret_detection'
+            WHEN name ilike '%%coverage_fuzzing%%' THEN 'coverage_fuzzing'
+            WHEN name ilike '%%apifuzzer_fuzz%%' THEN 'apifuzzer_fuzz'
+            WHEN name ilike '%%apifuzzer_fuzz_dnd%%' THEN 'apifuzzer_fuzz_dnd'
+            ELSE NULL
+        END as name -- https://gitlab.com/gitlab-data/analytics/-/issues/18231#note_1529996846
+      , NULL AS options
+      , allow_failure
+      , NULL AS stage
+      , trigger_request_id
+      , stage_idx
+      , tag
+      , NULL AS ref
+      , user_id
+      , type
+      , NULL AS description
+      , project_id
+      , erased_by_id
+      , erased_at
+      , CASE WHEN artifacts_expire_at > '2262-01-01' THEN '2262-01-01' ELSE artifacts_expire_at END AS artifacts_expire_at
+      , NULL AS environment
+      , queued_at
+      , lock_version
+      , coverage_regex
+      , auto_canceled_by_id
+      , retried
+      , stage_id
+      , protected
+      , failure_reason
+      , scheduled_at
+      , upstream_pipeline_id
+      FROM p_ci_builds
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_builds_internal_only:
+    additional_filtering: AND project_id in {INTERNAL_PROJECT_IDS}
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_builds_internal_only
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , updated_at
+      , name
+      , stage
+      , ref
+      , description
+      , project_id
+      FROM p_ci_builds
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_secure_files:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_secure_files
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , file_store
+      FROM ci_secure_files
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_group_variables:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_group_variables
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , group_id
+      , created_at
+      , updated_at
+      , masked
+      , variable_type
+      FROM ci_group_variables
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_job_artifacts:
+    additional_filtering: AND created_at NOT IN ( '0001-01-01 00:00:00+00', '1000-01-01 00:00:00+00', '10000-01-01 00:00:00+00')
+    dbt_source_model: true
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_job_artifacts
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , job_id
+      , file_type
+      , size
+      , created_at
+      , updated_at
+      , CASE WHEN expire_at > '2262-01-01' THEN '2262-01-01' ELSE expire_at END AS expire_at
+      , NULL AS file
+      , file_store
+      , file_format
+      , file_location
+      , locked
+      FROM p_ci_job_artifacts
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_pipeline_artifacts:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_pipeline_artifacts
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , pipeline_id
+      , project_id
+      , size
+      , file_store
+      , file_type
+      , file_format
+      , file
+      , expire_at
+      , locked
+      FROM ci_pipeline_artifacts
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_pipeline_schedule_variables:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_pipeline_schedule_variables
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , pipeline_schedule_id
+      , created_at
+      , updated_at
+      , variable_type
+      FROM ci_pipeline_schedule_variables
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_pipeline_schedules:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_pipeline_schedules
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS ref
+      , next_run_at
+      , project_id
+      , owner_id
+      , active
+      , created_at
+      , updated_at
+      FROM ci_pipeline_schedules
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_pipelines:
+    dbt_source_model: true
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: 'ci_pipelines'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , NULL AS ref
+      , tag
+      , NULL AS yaml_errors
+      , committed_at
+      , project_id
+      , status
+      , started_at
+      , finished_at
+      , duration
+      , user_id
+      , lock_version
+      , auto_canceled_by_id
+      , pipeline_schedule_id
+      , source
+      , config_source
+      , protected
+      , failure_reason
+      , iid
+      , merge_request_id
+      FROM ci_pipelines
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_pipelines_internal_only:
+    additional_filtering: AND project_id in {INTERNAL_PROJECT_IDS}
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: 'ci_pipelines_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , updated_at
+      , ref
+      , project_id
+      FROM ci_pipelines
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_runner_projects:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_runner_projects
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , runner_id
+      , created_at
+      , updated_at
+      , project_id
+      FROM ci_runner_projects
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_runners:
+    # We only extract ci_runners descriptions for runner_type=1 because they're hosted and managed by GitLab, and the other runner_types desciptions are classified as RED data, hence description is are not extracted. More here https://gitlab.com/gitlab-data/analytics/-/issues/18358#note_1563889597
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_runners
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , CASE
+            WHEN runner_type = 1 THEN description
+            ELSE NULL
+        END AS description
+      , contacted_at
+      , active
+      , NULL AS version
+      , NULL AS revision
+      , NULL AS platform
+      , run_untagged
+      , locked
+      , access_level
+      , maximum_timeout
+      , runner_type
+      , public_projects_minutes_cost_factor
+      , private_projects_minutes_cost_factor
+      FROM ci_runners
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_stages:
+    dbt_source_model: true
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_stages
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , pipeline_id
+      , created_at
+      , updated_at
+      , NULL AS name
+      , status
+      , lock_version
+      , position
+      FROM p_ci_stages
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ci_triggers:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: ci
+    export_schema: 'gitlab_com'
+    export_table: ci_triggers
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      , owner_id
+      FROM ci_triggers
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+
+  alert_management_alerts:
+    dbt_source_model: true
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'alert_management_alerts'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , started_at
+      , ended_at
+      , events
+      , iid
+      , status
+      , issue_id
+      , project_id
+      FROM alert_management_alerts
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  alert_management_http_integrations:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: alert_management_http_integrations
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      , active
+      FROM alert_management_http_integrations
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  analytics_cycle_analytics_group_stages:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: analytics_cycle_analytics_group_stages
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , relative_position
+      , start_event_identifier
+      , end_event_identifier
+      , group_id
+      , start_event_label_id
+      , end_event_label_id
+      , hidden
+      , custom
+      , group_value_stream_id
+      FROM analytics_cycle_analytics_group_stages
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  application_settings:
+    advanced_metadata: true
+    dbt_snapshots: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'application_settings'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , default_projects_limit
+      , signup_enabled
+      , created_at
+      , updated_at
+      , shared_runners_enabled
+      , usage_ping_enabled
+      , shared_runners_minutes
+      , repository_size_limit
+      FROM application_settings
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  approval_merge_request_rules:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'approval_merge_request_rules'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , merge_request_id
+      , approvals_required
+      , rule_type
+      , report_type
+      , section
+      , modified_from_project_rule
+      FROM approval_merge_request_rules
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  approval_project_rules:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: approval_project_rules
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      , approvals_required
+      , rule_type
+      , report_type
+      FROM approval_project_rules
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  approvals:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'approvals'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , merge_request_id
+      , user_id
+      , created_at
+      , updated_at
+      FROM approvals
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  audit_events:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'audit_events'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , author_id
+      , entity_id
+      , entity_type
+      , CASE
+          WHEN details ILIKE '%%custom_message: Added group%%' THEN 'custom_message: Added group'
+          WHEN details ILIKE '%%add: group%%' THEN 'add: group'
+          WHEN details ILIKE '%%remove: group%%' THEN 'remove: group'
+          WHEN details ILIKE '%%banned%%' THEN 'banned'
+          WHEN details ILIKE '%%blocked%%' THEN 'blocked'
+          ELSE NULL
+        END as details
+      , created_at
+      FROM audit_events
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  audit_events_external_audit_event_destinations:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'audit_events_external_audit_event_destinations'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , namespace_id
+      , created_at
+      , updated_at
+      FROM audit_events_external_audit_event_destinations
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  authentication_events:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: authentication_events
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , user_id
+      , result
+      , provider
+      FROM authentication_events
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  batched_background_migrations:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'batched_background_migrations'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , status
+      , finished_at
+      , created_at
+      , updated_at
+      FROM batched_background_migrations
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  banned_users:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'banned_users'
+    export_table_primary_key: user_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT user_id
+      , created_at
+      , updated_at
+      FROM banned_users
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  boards:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'boards'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , milestone_id
+      , group_id
+      , weight
+      FROM boards
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  bulk_imports:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: bulk_imports
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , source_type
+      , status
+      , created_at
+      , updated_at
+      FROM bulk_imports
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  cluster_agent_tokens:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: cluster_agent_tokens
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , agent_id
+      , status
+      , last_used_at
+      FROM cluster_agent_tokens
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  cluster_agents:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: cluster_agents
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      , created_by_user_id
+      FROM cluster_agents
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  cluster_projects:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'cluster_projects'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , cluster_id
+      , project_id
+      , created_at
+      , updated_at
+      FROM cluster_projects
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  clusters:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'clusters'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , provider_type
+      , platform_type
+      , created_at
+      , updated_at
+      , enabled
+      , environment_scope
+      , cluster_type
+      , NULL AS domain
+      , managed
+      , management_project_id
+      , cleanup_status
+      , helm_major_version
+      FROM clusters
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  container_expiration_policies:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: container_expiration_policies
+    export_table_primary_key: project_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT created_at
+      , updated_at
+      , next_run_at
+      , project_id
+      , name_regex
+      , cadence
+      , older_than
+      , keep_n
+      , enabled
+      , name_regex_keep
+      FROM container_expiration_policies
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  container_repositories:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: container_repositories
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , status
+      , expiration_policy_started_at
+      , expiration_policy_cleanup_status
+      , expiration_policy_completed_at
+      , last_cleanup_deleted_tags_count
+      FROM container_repositories
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  compliance_management_frameworks:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'compliance_management_frameworks'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , name
+      , description
+      , color
+      , namespace_id
+      , pipeline_configuration_full_path
+      , created_at
+      , updated_at
+      FROM compliance_management_frameworks
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  csv_issue_imports:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: csv_issue_imports
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , user_id
+      , created_at
+      , updated_at
+      FROM csv_issue_imports
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  dast_profiles:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: dast_profiles
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , dast_site_profile_id
+      , dast_scanner_profile_id
+      , created_at
+      , updated_at
+      FROM dast_profiles
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  dependency_proxy_packages_settings:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'dependency_proxy_packages_settings'
+    export_table_primary_key: project_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT project_id
+      , enabled
+      , created_at
+      , updated_at
+      , maven_external_registry_url
+      FROM dependency_proxy_packages_settings
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  deployment_approvals:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'deployment_approvals'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , deployment_id
+      , user_id
+      , created_at
+      , updated_at
+      , status
+      , approval_rule_id
+      FROM deployment_approvals
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  deployments:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'deployments'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , project_id
+      , environment_id
+      , NULL AS ref
+      , tag
+      , user_id
+      , deployable_id
+      , deployable_type
+      , created_at
+      , updated_at
+      , on_stop
+      , status
+      , finished_at
+      , NULL AS cluster_id
+      FROM deployments
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  emails:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'emails'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , created_at
+      , updated_at
+      , confirmed_at
+      , confirmation_sent_at
+      FROM emails
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  environments:
+    advanced_metadata: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'environments'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , NULL AS name
+      , created_at
+      , updated_at
+      , NULL AS environment_type
+      , state
+      , tier
+      FROM environments
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  epics:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'epics'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , group_id
+      , author_id
+      , assignee_id
+      , updated_by_id
+      , last_edited_by_id
+      , lock_version
+      , start_date
+      , end_date
+      , last_edited_at
+      , created_at
+      , updated_at
+      , NULL AS title
+      , NULL AS description
+      , state_id
+      , closed_at
+      , parent_id
+      , relative_position
+      , start_date_sourcing_epic_id
+      , confidential
+      FROM epics
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  epics_internal_only:
+    additional_filtering: AND group_id in {INTERNAL_NAMESPACE_IDS}
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'epics_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , group_id
+      , updated_at
+      , title
+      , description
+      FROM epics
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  events:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'events'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , author_id
+      , target_id
+      , created_at
+      , updated_at
+      , action
+      , target_type
+      FROM events
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  external_status_checks:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'external_status_checks'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      FROM external_status_checks
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  geo_nodes:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: geo_nodes
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      FROM geo_nodes
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  grafana_integrations:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: grafana_integrations
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , NULL AS grafana_url
+      , enabled
+      FROM grafana_integrations
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  gpg_signatures:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: gpg_signatures
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      , gpg_key_id
+      , verification_status
+      FROM gpg_signatures
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  identities:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'identities'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , provider
+      , user_id
+      , created_at
+      , updated_at
+      , saml_provider_id
+      FROM identities
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  integrations:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'integrations'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL as type
+      , project_id
+      , created_at
+      , updated_at
+      , active
+      , NULL AS template
+      , push_events
+      , issues_events
+      , merge_requests_events
+      , tag_push_events
+      , note_events
+      , category
+      , wiki_page_events
+      , pipeline_events
+      , confidential_issues_events
+      , commit_events
+      , job_events
+      , confidential_note_events
+      , deployment_events
+      , comment_on_event_enabled
+      , group_id
+      , inherit_from_id
+      , instance
+      , type_new
+      FROM integrations
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  issue_metrics:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'issue_metrics'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , issue_id
+      , first_mentioned_in_commit_at
+      , first_associated_with_milestone_at
+      , first_added_to_board_at
+      , created_at
+      , updated_at
+      FROM issue_metrics
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  issues:
+    additional_filtering: AND created_at NOT IN ( '0001-01-01 00:00:00+00', '1000-01-01 00:00:00+00', '10000-01-01 00:00:00+00','4714-11-24 00:00:00+00 BC') AND author_id NOT IN (8311087)
+    dbt_snapshots: true
+    dbt_source_model: true
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'issues'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , NULL AS title
+      , author_id
+      , project_id
+      , created_at
+      , updated_at
+      , confidential
+      , NULL AS description
+      , milestone_id
+      , updated_by_id
+      , weight
+      , CASE WHEN due_date < '1970-01-01' THEN NULL ELSE due_date END AS due_date
+      , moved_to_id
+      , lock_version
+      , time_estimate
+      , last_edited_at
+      , last_edited_by_id
+      , discussion_locked
+      , closed_at
+      , closed_by_id
+      , relative_position
+      , NULL AS service_desk_reply_to
+      , state_id
+      , duplicated_to_id
+      , promoted_to_epic_id
+      , sprint_id
+      , health_status
+      , work_item_type_id
+      FROM issues
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  issues_internal_only:
+    additional_filtering: |-
+      AND created_at NOT IN (
+        '0001-01-01 00:00:00+00'
+        , '1000-01-01 00:00:00+00'
+        , '10000-01-01 00:00:00+00'
+        , '4714-11-24 00:00:00+00 BC'
+        )
+      AND author_id NOT IN (8311087)
+      AND project_id in {INTERNAL_PROJECT_IDS}
+    dbt_snapshots: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'issues_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , CASE WHEN project_id IN
+          (13154706
+          , 14859125
+          , 15532587
+          , 16492321
+          , 26555111
+          , 26567411
+          , 26599489
+          , 26906211
+          , 28821822
+          , 30296511
+          , 30297111
+          , 30297823
+          , 34169285
+          , 35858823
+          , 40363072
+          , 40694272
+          , 41458091
+          , 42961472
+          , 44356021 ) THEN '**MASKED**' ELSE title END AS title --NULL values for internal sensitive projects - https://gitlab.com/gitlab-data/analytics/-/issues/18239
+      , CASE WHEN project_id IN
+          (13154706
+          , 14859125
+          , 15532587
+          , 16492321
+          , 26555111
+          , 26567411
+          , 26599489
+          , 26906211
+          , 28821822
+          , 30296511
+          , 30297111
+          , 30297823
+          , 34169285
+          , 35858823
+          , 40363072
+          , 40694272
+          , 41458091
+          , 42961472
+          , 44356021 ) THEN '**MASKED**' ELSE description END AS description --NULL values for internal sensitive projects - https://gitlab.com/gitlab-data/analytics/-/issues/18239
+      , project_id
+      , service_desk_reply_to
+      , updated_at
+      FROM issues
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  jira_connect_subscriptions:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: jira_connect_subscriptions
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , jira_connect_installation_id
+      , namespace_id
+      , created_at
+      , updated_at
+      FROM jira_connect_subscriptions
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  jira_imports:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: jira_imports
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , user_id
+      , label_id
+      , created_at
+      , updated_at
+      , finished_at
+      , jira_project_xid
+      , total_issue_count
+      , imported_issues_count
+      , failed_to_import_count
+      , status
+      , jid
+      , scheduled_at
+      , error_message
+      FROM jira_imports
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  jira_tracker_data:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: jira_tracker_data
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , integration_id
+      , created_at
+      , updated_at
+      , jira_issue_transition_id
+      , NULL AS project_key
+      , issues_enabled
+      , deployment_type
+      , vulnerabilities_issuetype
+      , vulnerabilities_enabled
+      FROM jira_tracker_data
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  keys:
+    dbt_source_model: true
+    is_incremental: False
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'keys'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , created_at
+      , updated_at
+      , type
+      , public
+      , last_used_at
+      FROM keys
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  label_priorities:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'label_priorities'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , label_id
+      , created_at
+      , updated_at
+      FROM label_priorities
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  labels:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'labels'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS title
+      , color
+      , project_id
+      , created_at
+      , updated_at
+      , template
+      , NULL AS description
+      , type
+      , group_id
+      FROM labels
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  labels_internal_only:
+    additional_filtering: AND (project_id in {INTERNAL_PROJECT_IDS} OR group_id in {INTERNAL_NAMESPACE_IDS})
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'labels_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , title
+      , project_id
+      , group_id
+      , updated_at
+      FROM labels
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ldap_group_links:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: ldap_group_links
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , group_access
+      , group_id
+      , created_at
+      , updated_at
+      FROM ldap_group_links
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  lfs_objects:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: lfs_objects
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS oid
+      , size
+      , created_at
+      , updated_at
+      , NULL AS file
+      , file_store
+      FROM lfs_objects
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  lists:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'lists'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , board_id
+      , label_id
+      , list_type
+      , position
+      , created_at
+      , updated_at
+      , user_id
+      , milestone_id
+      , max_issue_count
+      , max_issue_weight
+      , limit_metric
+      FROM lists
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  member_roles:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'member_roles'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , namespace_id
+      , created_at
+      , updated_at
+      , base_access_level
+      , occupies_seat
+      , permissions
+      FROM member_roles
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  merge_request_diff_commits:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'merge_request_diff_commits'
+    export_table_primary_key: merge_request_diff_id # real PK is composite key fyi
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT authored_date
+      , committed_date
+      , merge_request_diff_id
+      , relative_order
+      , sha
+      , commit_author_id
+      , committer_id
+      FROM merge_request_diff_commits
+    incremental_type: 'load_by_id'
+  merge_request_diffs:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'merge_request_diffs'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , state
+      , merge_request_id
+      , created_at
+      , updated_at
+      , base_commit_sha
+      , real_size
+      , head_commit_sha
+      , start_commit_sha
+      , commits_count
+      , external_diff
+      , external_diff_store
+      , stored_externally
+      , files_count
+      , sorted
+      , diff_type
+      FROM merge_request_diffs
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  merge_request_metrics:
+    additional_filtering: AND COALESCE(first_comment_at,'3000-01-01 00:00:00.000'::TIMESTAMP) >= '2000-01-01 00:00:00.000'::TIMESTAMP
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'merge_request_metrics'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , merge_request_id
+      , latest_build_started_at
+      , latest_build_finished_at
+      , first_deployed_to_production_at
+      , merged_at
+      , created_at
+      , updated_at
+      , pipeline_id
+      , merged_by_id
+      , latest_closed_by_id
+      , latest_closed_at
+      , first_comment_at
+      , first_commit_at
+      , last_commit_at
+      , diff_size
+      , modified_paths_size
+      , commits_count
+      , first_approved_at
+      , first_reassigned_at
+      , added_lines
+      , removed_lines
+      FROM merge_request_metrics
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  merge_request_predictions:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'merge_request_predictions'
+    export_table_primary_key: merge_request_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT merge_request_id
+      , created_at
+      , updated_at
+      , NULL AS suggested_reviewers
+      FROM merge_request_predictions
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  merge_requests:
+    dbt_source_model: true
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'merge_requests'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , NULL AS target_branch
+      , NULL AS source_branch
+      , source_project_id
+      , author_id
+      , assignee_id
+      , NULL AS title
+      , created_at
+      , updated_at
+      , milestone_id
+      , state_id
+      , merge_status
+      , target_project_id
+      , updated_by_id
+      , NULL AS merge_error
+      , NULL AS merge_params
+      , merge_when_pipeline_succeeds
+      , merge_user_id
+      , approvals_before_merge
+      , lock_version
+      , time_estimate
+      , squash
+      , last_edited_at
+      , last_edited_by_id
+      , head_pipeline_id
+      , discussion_locked
+      , latest_merge_request_diff_id
+      , allow_maintainer_to_push
+      , NULL AS description
+      FROM merge_requests
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  merge_requests_internal_only:
+    additional_filtering: AND target_project_id IN {INTERNAL_PROJECT_IDS}
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'merge_requests_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , updated_at
+      , target_branch
+      , target_project_id
+      , title
+      , description
+      FROM merge_requests
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  milestones:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'milestones'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , NULL AS title
+      , NULL AS description
+      , project_id
+      , due_date
+      , created_at
+      , updated_at
+      , state
+      , start_date
+      , group_id
+      FROM milestones
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  milestones_internal_only:
+    additional_filtering: AND (project_id in {INTERNAL_PROJECT_IDS} OR group_id in {INTERNAL_NAMESPACE_IDS})
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'milestones_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , iid
+      , title
+      , project_id
+      , group_id
+      , updated_at
+      FROM milestones
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ml_candidates:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'ml_candidates'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , experiment_id
+      , user_id
+      , start_time
+      , end_time
+      , status
+      , NULL AS name
+      , package_id
+      , eid
+      , project_id
+      , internal_id
+      , ci_build_id
+      FROM ml_candidates
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ml_experiments:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'ml_experiments'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , iid
+      , project_id
+      , user_id
+      , NULL AS name
+      , deleted_on
+      FROM ml_experiments
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  namespace_details:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'namespace_details'
+    export_table_primary_key: namespace_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT namespace_id
+      , created_at
+      , updated_at
+      , NULL AS free_user_cap_over_limit_notified_at
+      , NULL AS dashboard_notification_at
+      , NULL AS dashboard_enforcement_at
+      FROM namespace_details
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  namespace_root_storage_statistics:
+    dbt_snapshots: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'namespace_root_storage_statistics'
+    export_table_primary_key: namespace_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT namespace_id
+      , repository_size
+      , lfs_objects_size
+      , wiki_size
+      , build_artifacts_size
+      , storage_size
+      , packages_size
+      , container_registry_size
+      , updated_at
+      FROM namespace_root_storage_statistics
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  namespaces:
+    dbt_snapshots: true
+    dbt_source_model: true
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'namespaces'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , CASE WHEN traversal_ids[1] = id THEN name ELSE NULL END AS name --Logic to only extract the Top level namespace name
+      , NULL AS path
+      , owner_id
+      , created_at
+      , updated_at
+      , type
+      , NULL AS avatar
+      , membership_lock
+      , share_with_group_lock
+      , visibility_level
+      , request_access_enabled
+      , ldap_sync_status
+      , NULL AS ldap_sync_error
+      , ldap_sync_last_update_at
+      , ldap_sync_last_successful_update_at
+      , ldap_sync_last_sync_at
+      , lfs_enabled
+      , parent_id
+      , shared_runners_minutes_limit
+      , extra_shared_runners_minutes_limit
+      , repository_size_limit
+      , require_two_factor_authentication
+      , two_factor_grace_period
+      , project_creation_level
+      , auto_devops_enabled
+      , push_rule_id
+      , shared_runners_enabled
+      , custom_project_templates_group_id
+      , traversal_ids
+      , traversal_ids
+      FROM namespaces
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  namespaces_internal_only:
+    additional_filtering: |-
+      AND (
+        id IN {INTERNAL_NAMESPACE_IDS}
+        OR parent_id IN {INTERNAL_NAMESPACE_IDS}
+        OR id IN (
+          SELECT namespace_id
+          FROM projects
+          WHERE id IN {INTERNAL_PROJECT_IDS}
+          )
+        )
+    dbt_snapshots: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'namespaces_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , parent_id
+      , name
+      , path
+      , updated_at
+      FROM namespaces
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  namespace_settings:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'namespace_settings'
+    export_table_primary_key: namespace_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT created_at
+      , updated_at
+      , namespace_id
+      , prevent_forking_outside_group
+      , allow_mfa_for_subgroups
+      , NULL AS default_branch_name
+      , repository_read_only
+      , resource_access_token_creation_allowed
+      , prevent_sharing_groups_outside_hierarchy
+      , new_user_signups_cap
+      , setup_for_company
+      , jobs_to_be_done
+      , experiment_features_enabled
+      , code_suggestions
+      , early_access_program_participant
+      , early_access_program_joined_by_id
+      FROM namespace_settings
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  notes:
+    additional_filtering: AND created_at NOT IN ( '2746-07-23 18:16:42.925+00 BC')
+    dbt_source_model: true
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'notes'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS note
+      , noteable_type
+      , author_id
+      , created_at
+      , updated_at
+      , project_id
+      , NULL AS attachment
+      , NULL AS line_code
+      , commit_id
+      , noteable_id
+      , system
+      , NULL AS st_diff
+      , updated_by_id
+      , type
+      , position
+      , original_position
+      , resolved_at
+      , resolved_by_id
+      , discussion_id
+      , NULL AS note_html
+      , cached_markdown_version
+      , change_position
+      , resolved_by_push
+      FROM notes
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  notes_internal_only:
+    additional_filtering: |-
+      AND created_at NOT IN ( '2746-07-23 18:16:42.925+00 BC')
+      AND (namespace_id in {INTERNAL_NAMESPACE_IDS} OR project_id in {INTERNAL_PROJECT_IDS})
+      AND (namespace_id in {INTERNAL_NAMESPACE_IDS} OR project_id in {INTERNAL_PROJECT_IDS})
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'notes_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , updated_at
+      , project_id
+      , line_code
+      , CASE WHEN project_id IN
+          (13154706
+          , 14859125
+          , 15532587
+          , 16492321
+          , 26555111
+          , 26567411
+          , 26599489
+          , 26906211
+          , 28821822
+          , 30296511
+          , 30297111
+          , 30297823
+          , 34169285
+          , 35858823
+          , 40363072
+          , 40694272
+          , 41458091
+          , 42961472
+          , 44356021 ) THEN '**MASKED**' ELSE note END AS note --NULL values for internal sensitive projects - https://gitlab.com/gitlab-data/analytics/-/issues/18239
+      , note_html
+      FROM notes
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  notification_settings:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'notification_settings'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , source_id
+      , source_type
+      , level
+      , new_note
+      , new_issue
+      , reopen_issue
+      , close_issue
+      , reassign_issue
+      , new_merge_request
+      , reopen_merge_request
+      , close_merge_request
+      , reassign_merge_request
+      , merge_merge_request
+      , failed_pipeline
+      , success_pipeline
+      , push_to_merge_request
+      , issue_due
+      , new_epic
+      , fixed_pipeline
+      , new_release
+      , moved_project
+      , change_reviewer_merge_request
+      , merge_when_pipeline_succeeds
+      , created_at
+      , updated_at
+      FROM notification_settings
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  operations_feature_flags:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: operations_feature_flags
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , active
+      , created_at
+      , updated_at
+      , NULL AS name
+      , description
+      , iid
+      , version
+      FROM operations_feature_flags
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  packages_packages:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'packages_packages'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , NULL AS name
+      , NULL AS version
+      , package_type
+      , creator_id
+      FROM packages_packages
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  project_auto_devops:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'project_auto_devops'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , enabled
+      FROM project_auto_devops
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  project_features:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'project_features'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , merge_requests_access_level
+      , issues_access_level
+      , wiki_access_level
+      , snippets_access_level
+      , builds_access_level
+      , created_at
+      , updated_at
+      , repository_access_level
+      , pages_access_level
+      , forking_access_level
+      , metrics_dashboard_access_level
+      , requirements_access_level
+      , operations_access_level
+      , analytics_access_level
+      , security_and_compliance_access_level
+      , container_registry_access_level
+      , package_registry_access_level
+      , monitor_access_level
+      , infrastructure_access_level
+      , feature_flags_access_level
+      , environments_access_level
+      , releases_access_level
+      FROM project_features
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  project_security_settings:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: project_security_settings
+    export_table_primary_key: project_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT project_id
+      , created_at
+      , updated_at
+      , pre_receive_secret_detection_enabled
+      FROM project_security_settings
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  project_settings:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: project_settings
+    export_table_primary_key: project_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT project_id
+      , created_at
+      , updated_at
+      , push_rule_id
+      , show_default_award_emojis
+      , allow_merge_on_skipped_pipeline
+      , squash_option
+      , has_confluence
+      , has_vulnerabilities
+      , prevent_merge_without_jira_issue
+      , cve_id_request_enabled
+      , mr_default_target_self
+      , NULL AS previous_default_branch
+      , warn_about_potentially_unwanted_characters
+      , NULL AS merge_commit_template
+      , has_shimo
+      , NULL AS squash_commit_template
+      , legacy_open_source_license_available
+      , NULL AS target_platforms
+      , enforce_auth_checks_on_uploads
+      FROM project_settings
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  projects:
+    dbt_snapshots: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'projects'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS name
+      , NULL AS path
+      , NULL AS description
+      , created_at
+      , updated_at
+      , creator_id
+      , namespace_id
+      , last_activity_at
+      , NULL AS import_url
+      , visibility_level
+      , archived
+      , NULL AS avatar
+      , NULL AS merge_requests_template
+      , star_count
+      , merge_requests_rebase_enabled
+      , import_type
+      , NULL AS import_source
+      , approvals_before_merge
+      , reset_approvals_on_push
+      , merge_requests_ff_only_enabled
+      , NULL AS issues_template
+      , mirror
+      , mirror_user_id
+      , shared_runners_enabled
+      , build_allow_git_fetch
+      , build_timeout
+      , mirror_trigger_builds
+      , pending_delete
+      , public_builds
+      , last_repository_check_failed
+      , last_repository_check_at
+      , only_allow_merge_if_pipeline_succeeds
+      , has_external_issue_tracker
+      , repository_storage
+      , repository_read_only
+      , request_access_enabled
+      , has_external_wiki
+      , NULL AS ci_config_path
+      , lfs_enabled
+      , only_allow_merge_if_all_discussions_are_resolved
+      , repository_size_limit
+      , printing_merge_request_link_enabled
+      , auto_cancel_pending_pipelines
+      , service_desk_enabled
+      , delete_error
+      , last_repository_updated_at
+      , disable_overriding_approvers_per_merge_request
+      , storage_version
+      , resolve_outdated_diff_discussions
+      , remote_mirror_available_overridden
+      , only_mirror_protected_branches
+      , pull_mirror_available_overridden
+      , mirror_overwrites_diverged_branches
+      , NULL AS external_authorization_classification_label
+      , project_namespace_id
+      , NULL AS container_registry_enabled
+      FROM projects
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  projects_internal_only:
+    additional_filtering: AND (namespace_id in {INTERNAL_NAMESPACE_IDS} OR id in {INTERNAL_PROJECT_IDS})
+    dbt_snapshots: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'projects_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , name
+      , path
+      , description
+      , created_at
+      , updated_at
+      , namespace_id
+      , import_url
+      FROM projects
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  prometheus_alerts:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'prometheus_alerts'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , environment_id
+      , project_id
+      FROM prometheus_alerts
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  protected_branch_merge_access_levels:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'protected_branch_merge_access_levels'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , protected_branch_id
+      , access_level
+      , created_at
+      , updated_at
+      , user_id
+      , group_id
+      FROM protected_branch_merge_access_levels
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  protected_branch_push_access_levels:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'protected_branch_push_access_levels'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , protected_branch_id
+      , access_level
+      , created_at
+      , updated_at
+      , user_id
+      , group_id
+      , deploy_key_id
+      FROM protected_branch_push_access_levels
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  protected_branches:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'protected_branches'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , CASE
+            WHEN name = 'main' THEN 'main'
+            WHEN name = 'master' THEN 'master'
+            ELSE NULL
+        END as name
+      , created_at
+      , updated_at
+      , code_owner_approval_required
+      FROM protected_branches
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  protected_environment_approval_rules:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'protected_environment_approval_rules'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , protected_environment_id
+      , user_id
+      , group_id
+      , created_at
+      , updated_at
+      , access_level
+      , required_approvals
+      , group_inheritance_type
+      FROM protected_environment_approval_rules
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  protected_environments:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'protected_environments'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , NULL AS name
+      , group_id
+      , required_approval_count
+      FROM protected_environments
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  related_epic_links:
+    advanced_metadata: true
+    dbt_source_model: true
+    is_incremental: False
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'related_epic_links'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      FROM related_epic_links
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  releases:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'releases'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS tag
+      , NULL AS description
+      , project_id
+      , created_at
+      , updated_at
+      , author_id
+      , NULL AS sha
+      FROM releases
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  remote_development_agent_configs:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: remote_development_agent_configs
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , cluster_agent_id
+      , created_at
+      , updated_at
+      FROM remote_development_agent_configs
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  remote_mirrors:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: remote_mirrors
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , NULL AS url
+      , enabled
+      , update_status
+      , last_update_at
+      , last_successful_update_at
+      , NULL AS last_error
+      , created_at
+      , updated_at
+      , last_update_started_at
+      , only_protected_branches
+      , NULL AS remote_name
+      , error_notification_sent
+      , keep_divergent_refs
+      FROM remote_mirrors
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  resource_iteration_events:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'resource_iteration_events'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , issue_id
+      , merge_request_id
+      , iteration_id
+      , created_at
+      , action
+      FROM resource_iteration_events
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  resource_label_events:
+    advanced_metadata: true
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'resource_label_events'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , action
+      , issue_id
+      , merge_request_id
+      , epic_id
+      , label_id
+      , user_id
+      , created_at
+      , cached_markdown_version
+      , reference
+      , NULL AS reference_html
+      FROM resource_label_events
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  resource_milestone_events:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'resource_milestone_events'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , issue_id
+      , merge_request_id
+      , milestone_id
+      , action
+      , state
+      , created_at
+      FROM resource_milestone_events
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  resource_weight_events:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'resource_weight_events'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , issue_id
+      , weight
+      , created_at
+      FROM resource_weight_events
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  routes:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'routes'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , source_id
+      , source_type
+      , NULL AS path
+      , created_at
+      , updated_at
+      FROM routes
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  routes_internal_only:
+    additional_filtering: AND path in {INTERNAL_PATHS}
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'routes_internal_only'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , source_id
+      , source_type
+      , path
+      , created_at
+      , updated_at
+      FROM routes
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  saml_group_links:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'saml_group_links'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , access_level
+      , group_id
+      , created_at
+      , updated_at
+      , NULL AS saml_group_name
+      FROM saml_group_links
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  security_orchestration_policy_configurations:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table:   security_orchestration_policy_configurations
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , security_policy_management_project_id
+      , created_at
+      , updated_at
+      , configured_at
+      , namespace_id
+      FROM security_orchestration_policy_configurations
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  security_scans:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: security_scans
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , build_id
+      , scan_type
+      , project_id
+      , pipeline_id
+      , latest
+      , status
+      FROM security_scans
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  services:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'services'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS type
+      , project_id
+      , created_at
+      , updated_at
+      , active
+      , NULL AS properties
+      , NULL AS template
+      , push_events
+      , issues_events
+      , merge_requests_events
+      , tag_push_events
+      , note_events
+      , category
+      , wiki_page_events
+      , pipeline_events
+      , confidential_issues_events
+      , commit_events
+      , job_events
+      , confidential_note_events
+      , deployment_events
+      , comment_on_event_enabled
+      , group_id
+      , inherit_from_id
+      , instance
+      FROM integrations
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  slack_integrations:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'slack_integrations'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , integration_id
+      , team_id
+      , NULL AS team_name
+      , NULL AS alias
+      , user_id
+      , created_at
+      , updated_at
+      , bot_user_id
+      FROM slack_integrations
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  snippets:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'snippets'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , NULL AS title
+      , NULL AS content
+      , author_id
+      , project_id
+      , created_at
+      , updated_at
+      , NULL AS file_name
+      , type
+      , visibility_level
+      FROM snippets
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  ssh_signatures:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: ssh_signatures
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      , verification_status
+      , user_id
+      FROM ssh_signatures
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  status_page_published_incidents:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: status_page_published_incidents
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , issue_id
+      FROM status_page_published_incidents
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  subscriptions:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'subscriptions'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , subscribable_id
+      , subscribable_type
+      , subscribed
+      , created_at
+      , updated_at
+      , project_id
+      FROM subscriptions
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  subscription_add_ons:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'subscription_add_ons'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , name
+      , description
+      FROM subscription_add_ons
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  subscription_add_on_purchases:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'subscription_add_on_purchases'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , subscription_add_on_id
+      , namespace_id
+      , quantity
+      , expires_on
+      , purchase_xid
+      FROM subscription_add_on_purchases
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  subscription_user_add_on_assignments:
+    dbt_source_model: true
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'subscription_user_add_on_assignments'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , add_on_purchase_id
+      , user_id
+      FROM subscription_user_add_on_assignments
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  system_note_metadata:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'system_note_metadata'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , note_id
+      , commit_count
+      , action
+      , created_at
+      , updated_at
+      , description_version_id
+      FROM system_note_metadata
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  terraform_states:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'terraform_states'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , file_store
+      FROM terraform_states
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  todos:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'todos'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , user_id
+      , project_id
+      , target_id
+      , target_type
+      , author_id
+      , action
+      , state
+      , created_at
+      , updated_at
+      , note_id
+      , commit_id
+      , group_id
+      , resolved_by_action
+      FROM todos
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  uploads:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: uploads
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , size
+      , NULL AS path
+      , NULL AS checksum
+      , model_id
+      , model_type
+      , uploader
+      , created_at
+      , store
+      , NULL AS mount_point
+      , NULL AS secret
+      FROM uploads
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  user_custom_attributes:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'user_custom_attributes'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , user_id
+      , key
+      , value
+      FROM user_custom_attributes
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  user_preferences:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'user_preferences'
+    export_table_primary_key: user_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT user_id
+      , issue_notes_filter
+      , merge_request_notes_filter
+      , created_at
+      , updated_at
+      , epics_sort
+      , roadmap_epics_state
+      , epic_notes_filter
+      , issues_sort
+      , merge_requests_sort
+      , roadmaps_sort
+      , first_day_of_week
+      , NULL AS timezone
+      , time_display_relative
+      , NULL AS time_format_in_24h
+      , projects_sort
+      , show_whitespace_in_diffs
+      , sourcegraph_enabled
+      , setup_for_company
+      , render_whitespace_in_code
+      , tab_width
+      , NULL AS experience_level
+      , view_diffs_file_by_file
+      , id
+      , gitpod_enabled
+      , use_new_navigation
+      FROM user_preferences
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  users:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'users'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , email
+      , commit_email
+      , remember_created_at
+      , sign_in_count
+      , current_sign_in_at
+      , last_sign_in_at
+      , NULL AS current_sign_in_ip
+      , NULL AS last_sign_in_ip
+      , created_at
+      , updated_at
+      , name
+      , admin
+      , projects_limit
+      , failed_attempts
+      , locked_at
+      , can_create_group
+      , can_create_team
+      , state
+      , color_scheme_id
+      , password_expires_at
+      , created_by_id
+      , last_credential_check_at
+      , NULL AS avatar
+      , confirmed_at
+      , confirmation_sent_at
+      , unconfirmed_email
+      , hide_no_ssh_key
+      , admin_email_unsubscribed_at
+      , notification_email
+      , hide_no_password
+      , password_automatically_set
+      , public_email
+      , dashboard
+      , project_view
+      , consumed_timestep
+      , layout
+      , hide_project_limit
+      , NULL AS note
+      , otp_grace_period_started_at
+      , external
+      , auditor
+      , require_two_factor_authentication_from_group
+      , two_factor_grace_period
+      , last_activity_on
+      , notified_of_own_activity
+      , preferred_language
+      , NULL AS email_opted_in
+      , NULL AS email_opted_in_source_id
+      , NULL AS email_opted_in_at
+      , theme_id
+      , accepted_term_id
+      , private_profile
+      , roadmap_layout
+      , include_private_contributions
+      , group_view
+      , managing_group_id
+      , "role"
+      , username
+      , NULL AS first_name
+      , NULL AS last_name
+      , user_type
+      , otp_required_for_login
+      FROM users
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  users_ops_dashboard_projects:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: users_ops_dashboard_projects
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , user_id
+      , project_id
+      FROM users_ops_dashboard_projects
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  vulnerabilities:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'vulnerabilities'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , confidence
+      , confidence_overridden
+      , confirmed_at
+      , created_at
+      , dismissed_at
+      , resolved_at
+      , severity_overridden
+      , state
+      , updated_at
+      FROM vulnerabilities
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  vulnerability_occurrences:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'vulnerability_occurrences'
+    export_table_primary_key: 'id'
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , severity
+      , confidence
+      , report_type
+      , project_id
+      , scanner_id
+      , primary_identifier_id
+      , NULL AS uuid
+      , NULL AS name
+      , metadata_version
+      , NULL AS raw_metadata
+      , vulnerability_id
+      FROM vulnerability_occurrences
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  vulnerability_state_transitions:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'vulnerability_state_transitions'
+    export_table_primary_key: 'id'
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , author_id
+      , vulnerability_id
+      , dismissal_reason
+      , to_state
+      FROM vulnerability_state_transitions
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  web_hooks:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: web_hooks
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , created_at
+      , updated_at
+      , type
+      , integration_id
+      FROM web_hooks
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  work_item_types:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: work_item_types
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , name
+      , base_type
+      , created_at
+      , updated_at
+      FROM work_item_types
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  work_item_parent_links:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: work_item_parent_links
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , work_item_parent_id
+      , created_at
+      , updated_at
+      FROM work_item_parent_links
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  work_item_progresses:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: work_item_progresses
+    export_table_primary_key: issue_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT created_at
+      , updated_at
+      , issue_id
+      , NULL AS progress
+      , reminder_frequency
+      FROM work_item_progresses
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  workspaces:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: workspaces
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      FROM workspaces
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  zoekt_enabled_namespaces:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: zoekt_enabled_namespaces
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , root_namespace_id
+      , search
+      , created_at
+      , updated_at
+      FROM zoekt_enabled_namespaces
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  zoekt_indices:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: zoekt_indices
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , zoekt_enabled_namespace_id
+      , zoekt_node_id
+      , namespace_id
+      , created_at
+      , updated_at
+      , state
+      FROM zoekt_indices
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  zoom_meetings:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: zoom_meetings
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , project_id
+      , issue_id
+      , created_at
+      , updated_at
+      , issue_status
+      , NULL AS url
+      FROM zoom_meetings
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp

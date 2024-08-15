@@ -58,6 +58,17 @@
       dim_crm_touchpoint.utm_budget,
       dim_crm_touchpoint.utm_allptnr,
       dim_crm_touchpoint.utm_partnerid,
+      dim_crm_touchpoint.utm_campaign_date,
+      dim_crm_touchpoint.utm_campaign_region,
+      dim_crm_touchpoint.utm_campaign_budget,
+      dim_crm_touchpoint.utm_campaign_type,
+      dim_crm_touchpoint.utm_campaign_gtm,
+      dim_crm_touchpoint.utm_campaign_language,
+      dim_crm_touchpoint.utm_campaign_name,
+      dim_crm_touchpoint.utm_campaign_agency,
+      dim_crm_touchpoint.utm_content_offer,
+      dim_crm_touchpoint.utm_content_asset_type,
+      dim_crm_touchpoint.utm_content_industry,
       dim_crm_touchpoint.bizible_salesforce_campaign,
       dim_crm_touchpoint.bizible_integrated_campaign_grouping,
       dim_crm_touchpoint.touchpoint_segment,
@@ -353,6 +364,7 @@
     FROM joined
     LEFT JOIN linear_base 
       ON joined.dim_crm_opportunity_id = linear_base.dim_crm_opportunity_id
+    WHERE joined.dim_crm_touchpoint_id IS NOT NULL
 
 )
 
@@ -362,5 +374,5 @@
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-02-18",
-    updated_date="2024-01-31"
+    updated_date="2024-05-30"
 ) }}

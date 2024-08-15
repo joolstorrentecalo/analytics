@@ -43,6 +43,7 @@ WITH source AS (
         -- logistical information
         isclosed                                                                            AS is_closed,
         iswon                                                                               AS is_won,
+        valid_deal_count__c                                                                 AS valid_deal_count,
         closedate                                                                           AS close_date,
         createddate                                                                         AS created_date,
         days_in_stage                                                                       AS days_in_stage,
@@ -51,6 +52,7 @@ WITH source AS (
         leadsource                                                                          AS lead_source,
         merged_opportunity__c                                                               AS merged_opportunity_id,
         duplicate_opportunity__c                                                            AS duplicate_opportunity_id,
+        contract_reset_opportunity__c                                                       AS contract_reset_opportunity_id,
         account_owner__c                                                                    AS account_owner,
         opportunity_owner__c                                                                AS opportunity_owner,
         manager_current__c                                                                  AS opportunity_owner_manager,
@@ -68,13 +70,12 @@ WITH source AS (
         type                                                                                AS sales_type,
         {{  sfdc_source_buckets('leadsource') }}
         stagename                                                                           AS stage_name,
-        revenue_type__c                                                                     AS order_type,
         {{ deal_path_cleaning('deal_path__c') }}                                            AS deal_path,
 
         -- opportunity information
         acv_2__c                                                                            AS acv,
         amount                                                                              AS amount,
-        IFF(acv_2__c >= 0, 1, 0)                                                            AS closed_deals, -- so that you can exclude closed deals that had negative impact
+        IFF(acv_2__c >= 0, 1, 0)                                                            AS is_closed_deals, -- so that you can exclude closed deals that had negative impact
         competitors__c                                                                      AS competitors,
         critical_deal_flag__c                                                               AS critical_deal_flag,
         {{sfdc_deal_size('arr_net__c', 'deal_size')}},
@@ -92,6 +93,8 @@ WITH source AS (
         campaignid                                                                          AS primary_campaign_source_id,
         probability                                                                         AS probability,
         professional_services_value__c                                                      AS professional_services_value,
+        edu_services_value__c                                                               AS edu_services_value,
+        investment_services_value__c                                                        AS investment_services_value,
         push_counter__c                                                                     AS pushed_count,
         reason_for_lost__c                                                                  AS reason_for_loss,
         reason_for_lost_details__c                                                          AS reason_for_loss_details,
@@ -119,7 +122,7 @@ WITH source AS (
         start_date__c::DATE                                                                 AS subscription_start_date,
         end_date__c::DATE                                                                   AS subscription_end_date,
         true_up_value__c                                                                    AS true_up_value,
-        order_type_live__c                                                                  AS order_type_live,
+        order_type_live__c                                                                  AS order_type_current,
         order_type_test__c                                                                  AS order_type_stamped,
         CASE
           WHEN order_type_stamped = '1. New - First Order'

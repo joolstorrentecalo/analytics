@@ -54,7 +54,8 @@ dag = DAG(
     "handbook_mrs",
     default_args=default_args,
     schedule_interval="0 2 * * *",
-    catchup=False,
+    catchup=True,
+    max_active_runs=4,
 )
 
 # Task 1

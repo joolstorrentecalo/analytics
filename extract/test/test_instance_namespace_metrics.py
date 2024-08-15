@@ -178,6 +178,7 @@ def test_prepare_insert_query(namespace_file, namespace_ping):
         assert "Success" in expected
         assert "namespace" in expected
         assert "FROM" in expected
+        assert expected.count("INSERT") == 1
 
 
 @pytest.mark.parametrize(
@@ -263,3 +264,45 @@ def test_generate_error_insert(namespace_ping):
     assert "namespace" in expected
     assert "NULL, NULL, NULL" in expected
     assert "\\" not in expected
+
+
+def test_multiple_select_statement(namespace_file, namespace_ping):
+    """
+    Test option when we have 2 SELECT statement (subquery),
+    as it was failing before.
+    Example:
+    Metrics: counts.service_desk_issues
+    SQL (have 2 SELECT statement):
+        SELECT
+          namespaces_xf.namespace_ultimate_parent_id  AS id,
+          namespaces_xf.namespace_ultimate_parent_id,
+          COUNT(issues.id)                            AS counter_value
+        FROM prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS issues
+        LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects
+          ON projects.id = issues.project_id
+        LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces
+          ON namespaces.id = projects.namespace_id
+        LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf
+          ON namespaces.id = namespaces_xf.namespace_id
+        WHERE issues.project_id IN
+          (
+            SELECT projects.id
+            FROM prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects
+            WHERE projects.service_desk_enabled = TRUE
+          )
+            AND issues.author_id = 1257257
+            AND issues.confidential = TRUE
+        GROUP BY 1
+
+    """
+    for metrics in namespace_file:
+        actual = namespace_ping.prepare_insert_query(
+            query_dict=metrics.get("counter_query"),
+            ping_name=metrics.get("counter_name"),
+            ping_date=namespace_ping.end_date,
+        )
+
+        assert actual.count("INSERT INTO") == 1
+        assert actual.count("DATE_PART(epoch_second, CURRENT_TIMESTAMP())") == 1
+        assert actual.count("Success") == 1
+        assert actual.count(metrics.get("counter_name")) == 1

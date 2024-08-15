@@ -134,7 +134,9 @@ joined AS (
     COALESCE(projects.project_count, 0)                                     AS namespace_project_count,
     namespace_settings.code_suggestions                                     AS has_code_suggestions_enabled,
     -- keep as legacy field until code can be refactored
-    TRUE                                                                    AS is_currently_valid 
+    TRUE                                                                    AS is_currently_valid,
+    namespaces.is_deleted                                                   AS is_deleted,
+    namespaces.is_deleted_updated_at                                        AS is_deleted_updated_at
   FROM namespaces
   LEFT JOIN namespace_lineage
     ON namespaces.namespace_id = namespace_lineage.namespace_id
@@ -162,7 +164,7 @@ joined AS (
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@ischweickartDD",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2021-01-14",
-    updated_date="2024-01-22"
+    updated_date="2024-07-09"
 ) }}

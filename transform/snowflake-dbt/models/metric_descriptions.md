@@ -397,11 +397,6 @@ The main motivation for introducing this column is for a few reasons:
   Total monthly (28D) CI builds in Gitlab repositories for all project and project types [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20230531170613_ci_builds.yml)
 {% enddocs %}
 
-{% docs audit_features_28_days_user_desc %}
-  Unique users that have used audit event screen, audit event API, compliance
-  dashboard, or credential inventory [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_28d/20210216183201_compliance_features_track_unique_visits_union.yml)
-{% enddocs %}
-
 {% docs groups_all_time_event_desc %}
   Total count of groups as of usage ping snapshot [link](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216180750_groups.yml)
 {% enddocs %}

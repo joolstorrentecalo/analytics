@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -67,6 +66,8 @@ engineering_extract = KubernetesPodOperator(
     dag=dag,
 )
 
+# commenting out until error is filenotfound error fixed
+'''
 advisory_database_extract_cmd = f"""
     {clone_and_setup_extraction_cmd} &&
     curl --header "PRIVATE-TOKEN: $GEMNASIUM_DB_DATA_TOKEN" -L "https://gitlab.com/api/v4/projects/30445635/jobs/artifacts/main/raw/data/data.tar.gz?job=pages" | gunzip -c | tar xvf -
@@ -94,3 +95,6 @@ advisory_database_extract = KubernetesPodOperator(
     arguments=[advisory_database_extract_cmd],
     dag=dag,
 )
+'''
+
+engineering_extract

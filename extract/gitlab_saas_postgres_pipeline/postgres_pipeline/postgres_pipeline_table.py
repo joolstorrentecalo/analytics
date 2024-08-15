@@ -60,7 +60,11 @@ class PostgresPipelineTable:
         return not self.is_incremental()
 
     def do_scd(
-        self, source_engine: Engine, target_engine: Engine, is_schema_addition: bool
+        self,
+        source_engine: Engine,
+        target_engine: Engine,
+        is_schema_addition: bool,
+        database_type: str,
     ) -> bool:
         if not self.is_scd():
             logging.info("Not SCD load, aborting...")
@@ -76,6 +80,7 @@ class PostgresPipelineTable:
             self.source_table_name,
             self.table_dict,
             target_table,
+            database_type,
         )
 
         return loaded
@@ -91,6 +96,7 @@ class PostgresPipelineTable:
         target_engine: Engine,
         metadata_engine: Engine,
         is_schema_addition: bool,
+        database_type: str,
     ) -> bool:
         if (is_schema_addition) or (not self.is_incremental()):
             logging.info("Aborting... because schema_change OR non_incremental_load")
@@ -98,7 +104,7 @@ class PostgresPipelineTable:
         # load by incrementally by id rather than by date
         if self.incremental_type == INCREMENTAL_LOAD_TYPE_BY_ID:
             return self.do_incremental_load_by_id(
-                source_engine, target_engine, metadata_engine
+                source_engine, target_engine, metadata_engine, database_type
             )
 
         # default, load incrementally by date
@@ -109,10 +115,15 @@ class PostgresPipelineTable:
             self.source_table_name,
             self.table_dict,
             target_table,
+            database_type,
         )
 
     def do_trusted_data_pgp(
-        self, source_engine: Engine, target_engine: Engine, is_schema_addition: bool
+        self,
+        source_engine: Engine,
+        target_engine: Engine,
+        is_schema_addition: bool,
+        database_type: str,
     ) -> bool:
         """
         The function is used for trusted data extract and load.
@@ -125,6 +136,7 @@ class PostgresPipelineTable:
             self.source_table_name,
             self.table_dict,
             target_table,
+            database_type,
         )
 
     def _do_load_by_id(
@@ -139,6 +151,7 @@ class PostgresPipelineTable:
         start_pk: int,
         extract_chunksize: int,
         csv_chunksize: int,
+        database_type: str,
     ) -> bool:
         """Extract by id rather than by date
         Used always for backfills
@@ -166,12 +179,17 @@ class PostgresPipelineTable:
             load_by_id_export_type,
             extract_chunksize,
             csv_chunksize,
+            database_type,
         )
         return loaded
 
     def do_incremental_backfill(
-        self, source_engine: Engine, target_engine: Engine, metadata_engine: Engine
-    ) -> bool:
+        self,
+        source_engine: Engine,
+        target_engine: Engine,
+        metadata_engine: Engine,
+        database_type: str,
+    ) -> bool:  ## edit this for cells iteration 2
         load_by_id_export_type = "backfill"
         (
             is_backfill_needed,
@@ -183,6 +201,7 @@ class PostgresPipelineTable:
             metadata_engine,
             BACKFILL_METADATA_TABLE,
             load_by_id_export_type,
+            database_type,
         )
 
         if not self.is_incremental() or not is_backfill_needed:
@@ -201,10 +220,15 @@ class PostgresPipelineTable:
             start_pk,
             BACKFILL_EXTRACT_CHUNKSIZE,
             BACKFILL_CSV_CHUNKSIZE,
+            database_type,
         )
 
     def do_incremental_load_by_id(
-        self, source_engine: Engine, target_engine: Engine, metadata_engine: Engine
+        self,
+        source_engine: Engine,
+        target_engine: Engine,
+        metadata_engine: Engine,
+        database_type: str,
     ) -> bool:
         """
         Load incrementally by PK id, rather than by date
@@ -227,6 +251,7 @@ class PostgresPipelineTable:
             start_pk,
             BACKFILL_EXTRACT_CHUNKSIZE,
             BACKFILL_CSV_CHUNKSIZE,
+            database_type,
         )
 
     def do_deletes(
@@ -235,6 +260,7 @@ class PostgresPipelineTable:
         target_engine: Engine,
         metadata_engine: Engine,
         is_schema_addition: bool,
+        database_type: str,
     ) -> bool:
         """Incrementally load delete data which is the PK of the table"""
 
@@ -245,7 +271,6 @@ class PostgresPipelineTable:
         self.table_dict["import_query"] = update_import_query_for_delete_export(
             self.query, self.source_table_primary_key
         )
-
         load_by_id_export_type = "deletes"
         deletes_table = self.get_temp_target_table_name()
 
@@ -266,6 +291,7 @@ class PostgresPipelineTable:
                 start_pk,
                 DELETES_EXTRACT_CHUNKSIZE,
                 DELETES_CSV_CHUNKSIZE,
+                database_type,
             )
 
             update_is_deleted_field(
@@ -279,7 +305,11 @@ class PostgresPipelineTable:
         return loaded
 
     def do_test(
-        self, source_engine: Engine, target_engine: Engine, is_schema_addition: bool
+        self,
+        source_engine: Engine,
+        target_engine: Engine,
+        is_schema_addition: bool,
+        database_type: str,
     ) -> bool:
         if not is_schema_addition:
             logging.info(
@@ -293,6 +323,7 @@ class PostgresPipelineTable:
             self.source_table_name,
             self.table_dict,
             target_table,
+            database_type,
         )
         return loaded
 
@@ -302,6 +333,7 @@ class PostgresPipelineTable:
         source_engine: Engine,
         target_engine: Engine,
         metadata_engine: Engine,
+        database_type: str,
     ) -> bool:
         """
         Handles the following:
@@ -313,7 +345,7 @@ class PostgresPipelineTable:
 
         if load_type == "backfill":
             return self.do_incremental_backfill(
-                source_engine, target_engine, metadata_engine
+                source_engine, target_engine, metadata_engine, database_type
             )
 
         # Non-backfill section
@@ -329,7 +361,11 @@ class PostgresPipelineTable:
                 "deletes": self.do_deletes,
             }
             loaded = load_types[load_type](
-                source_engine, target_engine, metadata_engine, is_schema_addition
+                source_engine,
+                target_engine,
+                metadata_engine,
+                is_schema_addition,
+                database_type,
             )
 
         else:
@@ -339,7 +375,7 @@ class PostgresPipelineTable:
                 "trusted_data": self.do_trusted_data_pgp,
             }
             loaded = remaining_load_types[load_type](
-                source_engine, target_engine, is_schema_addition
+                source_engine, target_engine, is_schema_addition, database_type
             )
 
         # If temp table, swap it, for SCD schema change
@@ -392,6 +428,7 @@ class PostgresPipelineTable:
         metadata_engine: Engine,
         metadata_table: str,
         load_by_id_export_type: str,
+        database_type: str,
     ) -> Tuple[bool, datetime, int]:
         """
         There are 2 main criteria that determine if a backfill is necessary:
@@ -427,7 +464,9 @@ class PostgresPipelineTable:
 
         # remove unprocessed files if backfill needed but not in middle of backfill
         if is_backfill_needed and initial_load_start_date is None:
-            remove_files_from_gcs(load_by_id_export_type, self.get_target_table_name())
+            remove_files_from_gcs(
+                load_by_id_export_type, self.get_target_table_name(), database_type
+            )
 
         return is_backfill_needed, initial_load_start_date, start_pk
 

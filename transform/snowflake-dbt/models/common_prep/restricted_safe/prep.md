@@ -56,3 +56,9 @@ Prep model for the live crm opportunity dimension and fact models. This model is
 This model is used to store hand raise and trial leads sourced from leads table(tap postgres) from customers.gitlab.com.
 
 {% enddocs %}
+
+{% docs prep_sales_dev_user_hierarchy %}
+
+Prep model that captures a snapshotted history of the Sales Dev Org's user hierarchy with appropriate dimensions. 
+
+{% enddocs %}

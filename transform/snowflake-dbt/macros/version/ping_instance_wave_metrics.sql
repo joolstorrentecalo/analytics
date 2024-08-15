@@ -171,9 +171,8 @@ MAX(CASE WHEN metrics_path = 'usage_activity_by_stage_monthly.verify.ci_pipeline
 -- 8 metrics
 MAX(CASE WHEN metrics_path = 'counts_monthly.ci_internal_pipelines' THEN {{ null_negative_numbers("metric_value") }} ELSE 0 END ) AS ci_internal_pipelines_28_days_event,
 
--- 9 metrics
+-- 7 metrics
 MAX(CASE WHEN metrics_path = 'counts_monthly.ci_builds' THEN {{ null_negative_numbers("metric_value") }} ELSE 0 END ) AS ci_builds_28_days_event,
-MAX(CASE WHEN metrics_path = 'counts_monthly.aggregated_metrics.compliance_features_track_unique_visits_union' THEN {{ null_negative_numbers("metric_value") }} ELSE 0 END ) AS audit_features_28_days_user,
 MAX(CASE WHEN metrics_path = 'counts.groups' THEN {{ null_negative_numbers("metric_value") }} ELSE 0 END ) AS groups_all_time_event,
 MAX(CASE WHEN metrics_path = 'redis_hll_counters.pipeline_authoring.o_pipeline_authoring_unique_users_committing_ciconfigfile_weekly' THEN {{ null_negative_numbers("metric_value") }} ELSE 0 END ) AS commit_ci_config_file_7_days_user,
 MAX(CASE WHEN metrics_path = 'usage_activity_by_stage.verify.ci_pipeline_config_repository' THEN {{ null_negative_numbers("metric_value") }} ELSE 0 END ) AS ci_pipeline_config_repository_all_time_user,

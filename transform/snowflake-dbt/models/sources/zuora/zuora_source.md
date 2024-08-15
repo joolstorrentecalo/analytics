@@ -10,6 +10,12 @@ This is the source table for the accounting period table. [Link to Documentation
 
 {% enddocs %}
 
+{% docs zuora_booking_transaction_source %}
+
+This is the source table for the booking transactions. [Link to Documentation](https://knowledgecenter.zuora.com/Zuora_Billing/Enable_Order_to_Revenue/Booking_Transactions/AA_Overview_of_Booking_Transaction)
+
+{% enddocs %}
+
 {% docs zuora_contact_source %}
 
 The contact source table contains info about an account’s point-of-contact. [Link to Documentation](https://www.stitchdata.com/docs/integrations/saas/zuora#contact)
@@ -43,12 +49,6 @@ The invoice source table contains info about invoices, which are bills to custom
 {% docs zuora_invoice_item_adjustment_source %}
 
 The invoice item adjustment source table contains info about the invoice item adjustments made on the invoice. [Link to Documentation](https://knowledgecenter.zuora.com/Zuora_Central_Platform/API/G_SOAP_API/E1_SOAP_API_Object_Reference/InvoiceItemAdjustment)
-
-{% enddocs %}
-
-{% docs zuora_invoice_aging_detail_source %}
-
-This source table contains info about the invoice aging detail. [Link to Documentation](https://knowledgecenter.zuora.com/Zuora_Payments/Zuora_Finance/E_Accounting_Periods/F_View_Accounting_Period_Balances/Accounts_Receivable_Aging#:~:text=nine%20decimal%20places.-,Invoice%20Aging%20Details,click%20%5BDownload%20Aging%20Detail%5D)
 
 {% enddocs %}
 

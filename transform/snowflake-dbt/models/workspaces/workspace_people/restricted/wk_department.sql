@@ -29,6 +29,14 @@ SELECT
       THEN 'Marketing (SDR)'
     WHEN department = 'Meltano'
       THEN 'Engineering'
+    WHEN department = 'UX'
+      THEN 'Product'
+    WHEN department = 'Data'
+      THEN 'Marketing' 
+    WHEN department = 'Security'
+      THEN 'Security'
+    WHEN department = 'Product'
+      THEN 'Product' 
     ELSE division
   END AS modified_division,
   cost_center,
@@ -60,6 +68,14 @@ SELECT
       THEN 'UX Research'
     WHEN department = 'Security'
       THEN 'Office of CISO'
+    WHEN department in ('Field Marketing', 'Partner Marketing')
+      THEN 'Regional Marketing'
+    WHEN department in ('Account Based Marketing', 'Campaigns', 'Search Marketing')
+      THEN 'Digital Marketing'
+    WHEN department = 'Data'
+      THEN 'Enterprise Data'
+    WHEN department = 'Community Relations'
+      THEN 'Developer Relations'
     ELSE department
   END AS modified_department,
   CASE

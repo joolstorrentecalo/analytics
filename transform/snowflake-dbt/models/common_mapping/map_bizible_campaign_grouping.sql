@@ -387,6 +387,17 @@ WITH bizible_touchpoints AS (
       OR bizible_referrer_page_RAW LIKE '%utm_campaign=cdusecase%'))
       OR (campaign.dim_parent_campaign_id = '7014M000001vm9KQAQ' AND bizible_ad_campaign_name LIKE '%CD_%') --- Added by AO demAND gen issue 2262
     THEN 'Automated Software Delivery' 
+
+  WHEN (bizible_touchpoint_type = 'Web Form'
+      AND (contains(bizible_ad_campaign_name, 'aisdlc')
+      OR lower(campaign.gtm_motion) = 'trading off speed for security'))
+    THEN 'Trading off Speed for Security'
+  
+  WHEN (bizible_touchpoint_type = 'Web Form'
+      AND (contains(bizible_ad_campaign_name, 'speedsecurity')
+      OR lower(campaign.gtm_motion) = 'ai throughout the sdlc'))
+    THEN 'AI throughout the SDLC' 
+
   ELSE 'None' END AS bizible_integrated_campaign_grouping,
   CASE
     -- if content syndication, use SFDC value dirrectly

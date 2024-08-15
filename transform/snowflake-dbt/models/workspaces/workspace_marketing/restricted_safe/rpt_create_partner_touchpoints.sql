@@ -18,7 +18,7 @@ activities as (
     mart_crm_event.dim_crm_account_id,
     mart_crm_event.sfdc_record_id,
     mart_crm_event.dim_crm_person_id,
-    mart_crm_event.event_subject    as subject,
+    mart_crm_event.partner_marketing_task_subject,
     mart_crm_event.event_date       AS activity_date,
     dim_date.day_of_fiscal_quarter  as activity_day_of_fiscal_quarter,
     dim_date.fiscal_quarter_name_fy as activity_fiscal_quarter_name,
@@ -35,9 +35,7 @@ activities as (
     mart_crm_task.dim_crm_account_id,
     mart_crm_task.sfdc_record_id,
     mart_crm_task.dim_crm_person_id,
-    //this feild is masked so it does not work in this part of the union
-    //getting the model built for the time being
-    mart_crm_task.task_subject        AS subject,
+    mart_crm_task.partner_marketing_task_subject,
     mart_crm_task.task_completed_date AS activity_date,
     dim_date.day_of_fiscal_quarter    as activity_day_of_fiscal_quarter,
     dim_date.fiscal_quarter_name_fy   as activity_fiscal_quarter_name,
@@ -57,12 +55,7 @@ activities as (
     activities
         left join mart_crm_account
           on activities.dim_crm_account_id = mart_crm_account.dim_crm_account_id
-    where 
-        (contains(subject, 'Microsite Program')
-        or contains(subject, 'Free Trial Program')
-        or trim(subject) = 'GitLab Dedicated Landing Pages'
-        or trim(subject) = 'Partner Concierge Program'
-        )
+    where partner_marketing_task_subject IS NOT NULL
     group by all
 
 ), get_members_of_partner_camapgin as (
@@ -122,8 +115,8 @@ activities as (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@degan",
-    updated_by="@degan",
+    updated_by="@michellecooper",
     created_date="2024-04-23",
-    updated_date="2024-04-23",
+    updated_date="2024-05-17",
 ) }}
 

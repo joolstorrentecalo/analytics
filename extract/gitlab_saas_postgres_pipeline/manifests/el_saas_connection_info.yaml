@@ -1,0 +1,37 @@
+connection_info:
+  postgres_source_connection_ci:
+    database: GITLAB_COM_CI_DB_NAME
+    host: GITLAB_COM_CI_DB_HOST
+    pass: GITLAB_COM_CI_DB_PASS
+    port: GITLAB_COM_CI_DB_PORT
+    user: GITLAB_COM_CI_DB_USER
+  postgres_source_connection_main:
+    database: GITLAB_COM_DB_NAME
+    host: GITLAB_COM_DB_HOST
+    pass: GITLAB_COM_DB_PASS
+    port: GITLAB_COM_PG_PORT
+    user: GITLAB_COM_DB_USER
+  postgres_source_connection_cells: # connection information to be changed to cells db when available 
+    database: GITLAB_COM_DB_NAME
+    host: GITLAB_COM_DB_HOST
+    pass: GITLAB_COM_DB_PASS
+    port: GITLAB_COM_PG_PORT
+    user: GITLAB_COM_DB_USER
+  postgres_source_connection_customers:
+    database: CUSTOMERS_DB_NAME
+    host: CUSTOMERS_DB_HOST
+    pass: CUSTOMERS_DB_PASS
+    port: PG_PORT
+    user: CUSTOMERS_DB_USER
+  postgres_source_connection_ops:
+    database: GITLAB_OPS_DB_NAME
+    host: GITLAB_OPS_DB_HOST
+    pass: GITLAB_OPS_DB_PASS
+    port: PG_PORT
+    user: GITLAB_OPS_DB_USER
+  postgres_metadata_connection:
+    database: GITLAB_METADATA_DB_NAME
+    host: GITLAB_METADATA_DB_HOST
+    pass: GITLAB_METADATA_DB_PASS
+    port: GITLAB_METADATA_PG_PORT
+    user: GITLAB_METADATA_DB_USER

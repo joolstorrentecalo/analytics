@@ -42,6 +42,8 @@ from postgres_utils import (
     manifest_reader,
 )
 
+database_types = ["main", "cells", "ci"]
+
 
 def insert_into_metadata_db(metadata_engine, full_table_path, metadata):
     insert_query = f"""
@@ -89,9 +91,10 @@ class TestCheckBackfill:
         - Create test metdata table
         - Create a mock PostgresPipelineTable object
         """
-        manifest_file_path = "extract/gitlab_saas_postgres_pipeline/manifests/el_saas_gitlab_com_db_manifest.yaml"
-
-        manifest_dict = manifest_reader(manifest_file_path)
+        manifest_connection_info_file_path = "extract/gitlab_saas_postgres_pipeline/manifests/el_saas_connection_info.yaml"
+        manifest_dict_connection_info = manifest_reader(
+            manifest_connection_info_file_path
+        )
         env = os.environ.copy()
 
         # Create a mock source/self.target_engine
@@ -99,7 +102,10 @@ class TestCheckBackfill:
         self.target_engine = MagicMock(spec=Engine)
 
         self.metadata_engine = postgres_engine_factory(
-            manifest_dict["connection_info"]["postgres_metadata_connection"], env
+            manifest_dict_connection_info["connection_info"][
+                "postgres_metadata_connection"
+            ],
+            env,
         )
 
         # set-up BACKFILL_METADATA_TABLE
@@ -226,25 +232,29 @@ class TestCheckBackfill:
         mock_is_resume_export.return_value = False, None, 1
         mock_check_is_new_table_or_schema_addition.return_value = True
         # Call the function being tested
-        (
-            is_backfill_needed,
-            initial_load_start_date,
-            start_pk,
-        ) = self.pipeline_table.check_backfill_metadata(
-            self.source_engine,
-            self.target_engine,
-            metadata_engine,
-            self.test_metadata_backfill_table,
-            load_by_id_export_type,
-        )
+        for database_type in database_types:
+            (
+                is_backfill_needed,
+                initial_load_start_date,
+                start_pk,
+            ) = self.pipeline_table.check_backfill_metadata(
+                self.source_engine,
+                self.target_engine,
+                metadata_engine,
+                self.test_metadata_backfill_table,
+                load_by_id_export_type,
+                database_type,
+            )
 
-        # Assert that remove_files_from_gcs was called with the correct arguments
-        mock_remove_files_from_gcs.assert_called_once_with(
-            load_by_id_export_type, self.pipeline_table.get_target_table_name()
-        )
-        assert initial_load_start_date is None
-        assert start_pk == 1
-        assert is_backfill_needed is True
+            # Assert that remove_files_from_gcs was called with the correct arguments
+            mock_remove_files_from_gcs.assert_called_with(
+                load_by_id_export_type,
+                self.pipeline_table.get_target_table_name(),
+                database_type,
+            )
+            assert initial_load_start_date is None
+            assert start_pk == 1
+            assert is_backfill_needed is True
 
     @patch("postgres_pipeline_table.check_is_new_table_or_schema_addition")
     @patch("postgres_pipeline_table.remove_files_from_gcs")
@@ -260,7 +270,6 @@ class TestCheckBackfill:
 
         # Create a mock self.source_engine and metadata_engine objects
         load_by_id_export_type = "backfill"
-
         mock_check_is_new_table_or_schema_addition.return_value = False
 
         metadata = {
@@ -280,23 +289,25 @@ class TestCheckBackfill:
         )
 
         # Call the function being tested
-        (
-            is_backfill_needed,
-            initial_load_start_date,
-            start_pk,
-        ) = self.pipeline_table.check_backfill_metadata(
-            self.source_engine,
-            self.target_engine,
-            self.metadata_engine,
-            self.test_metadata_backfill_table,
-            load_by_id_export_type,
-        )
+        for database_type in database_types:
+            (
+                is_backfill_needed,
+                initial_load_start_date,
+                start_pk,
+            ) = self.pipeline_table.check_backfill_metadata(
+                self.source_engine,
+                self.target_engine,
+                self.metadata_engine,
+                self.test_metadata_backfill_table,
+                load_by_id_export_type,
+                database_type,
+            )
 
-        # Verify results
-        assert is_backfill_needed is False
-        assert start_pk == 1
-        assert initial_load_start_date is None
-        mock_remove_files_from_gcs.assert_not_called()
+            # Verify results
+            assert is_backfill_needed is False
+            assert start_pk == 1
+            assert initial_load_start_date is None
+            mock_remove_files_from_gcs.assert_not_called()
 
     @patch("postgres_pipeline_table.check_is_new_table_or_schema_addition")
     @patch("postgres_pipeline_table.remove_files_from_gcs")
@@ -313,6 +324,7 @@ class TestCheckBackfill:
         """
 
         load_by_id_export_type = "backfill"
+
         metadata = {
             "real_target_table": self.pipeline_table.get_target_table_name(),
             "database_name": "some_db",
@@ -333,25 +345,29 @@ class TestCheckBackfill:
         mock_check_is_new_table_or_schema_addition.return_value = False
 
         # Call the function being tested
-        (
-            is_backfill_needed,
-            initial_load_start_date,
-            start_pk,
-        ) = self.pipeline_table.check_backfill_metadata(
-            self.source_engine,
-            self.target_engine,
-            self.metadata_engine,
-            self.test_metadata_backfill_table,
-            load_by_id_export_type,
-        )
+        for database_type in database_types:
+            (
+                is_backfill_needed,
+                initial_load_start_date,
+                start_pk,
+            ) = self.pipeline_table.check_backfill_metadata(
+                self.source_engine,
+                self.target_engine,
+                self.metadata_engine,
+                self.test_metadata_backfill_table,
+                load_by_id_export_type,
+                database_type,
+            )
 
-        # Verify results
-        assert is_backfill_needed is True
-        assert initial_load_start_date is None
-        assert start_pk == 1
-        mock_remove_files_from_gcs.assert_called_once_with(
-            load_by_id_export_type, self.pipeline_table.get_target_table_name()
-        )
+            # Verify results
+            assert is_backfill_needed is True
+            assert initial_load_start_date is None
+            assert start_pk == 1
+            mock_remove_files_from_gcs.assert_called_with(
+                load_by_id_export_type,
+                self.pipeline_table.get_target_table_name(),
+                database_type,
+            )
 
     @patch("postgres_pipeline_table.check_is_new_table_or_schema_addition")
     @patch("postgres_pipeline_table.remove_files_from_gcs")
@@ -371,6 +387,7 @@ class TestCheckBackfill:
         load_by_id_export_type = "backfill"
         last_extracted_id = 10
         initial_load_start_date = datetime(2023, 2, 1)
+
         # Arrange metadata table
         metadata = {
             "real_target_table": self.pipeline_table.get_target_table_name(),
@@ -391,23 +408,25 @@ class TestCheckBackfill:
         mock_check_is_new_table_or_schema_addition.return_value = False
 
         # Call the function being tested
-        (
-            is_backfill_needed,
-            returned_initial_load_start_date,
-            start_pk,
-        ) = self.pipeline_table.check_backfill_metadata(
-            self.source_engine,
-            self.target_engine,
-            self.metadata_engine,
-            self.test_metadata_backfill_table,
-            load_by_id_export_type,
-        )
+        for database_type in database_types:
+            (
+                is_backfill_needed,
+                returned_initial_load_start_date,
+                start_pk,
+            ) = self.pipeline_table.check_backfill_metadata(
+                self.source_engine,
+                self.target_engine,
+                self.metadata_engine,
+                self.test_metadata_backfill_table,
+                load_by_id_export_type,
+                database_type,
+            )
 
-        # Verify results
-        assert is_backfill_needed is True
-        assert start_pk == last_extracted_id + 1
-        assert returned_initial_load_start_date == initial_load_start_date
-        mock_remove_files_from_gcs.assert_not_called()
+            # Verify results
+            assert is_backfill_needed is True
+            assert start_pk == last_extracted_id + 1
+            assert returned_initial_load_start_date == initial_load_start_date
+            mock_remove_files_from_gcs.assert_not_called()
 
     @patch("postgres_pipeline_table.check_is_new_table_or_schema_addition")
     @patch("postgres_pipeline_table.remove_files_from_gcs")
@@ -423,6 +442,7 @@ class TestCheckBackfill:
         - resume_export is False (since is_export_completed=True)
         """
         load_by_id_export_type = "backfill"
+
         # Update metdata table
         upload_date_less_than_24hr = datetime.utcnow() - timedelta(hours=23, minutes=40)
 
@@ -445,17 +465,19 @@ class TestCheckBackfill:
         mock_check_is_new_table_or_schema_addition.return_value = False
 
         # Check if backfill needed - main code
-        is_backfill_needed, _, _ = self.pipeline_table.check_backfill_metadata(
-            self.source_engine,
-            self.target_engine,
-            self.metadata_engine,
-            self.test_metadata_backfill_table,
-            load_by_id_export_type,
-        )
+        for database_type in database_types:
+            is_backfill_needed, _, _ = self.pipeline_table.check_backfill_metadata(
+                self.source_engine,
+                self.target_engine,
+                self.metadata_engine,
+                self.test_metadata_backfill_table,
+                load_by_id_export_type,
+                database_type,
+            )
 
-        # Verify results
-        mock_remove_files_from_gcs.assert_not_called()
-        assert is_backfill_needed is False
+            # Verify results
+            mock_remove_files_from_gcs.assert_not_called()
+            assert is_backfill_needed is False
 
     @patch("postgres_pipeline_table.get_min_or_max_id")
     def test_check_incremental_load_by_id_metadata1(self, mock_get_min_or_max_id):

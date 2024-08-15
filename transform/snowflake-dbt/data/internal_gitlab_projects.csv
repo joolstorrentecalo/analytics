@@ -46,6 +46,7 @@ gitlab-org/gitlab-development-kit,74823
 gitlab-org/container-registry,13831684
 gitlab-org/gitlab-omnibus-builder,145205
 gitlab-org/omnibus-gitlab,20699
+gitlab-org/build/omnibus-gitlab-mirror,14588374
 gitlab-org/gitlab-mattermost,387896
 gitlab-org/gitlab-workhorse,554859
 gitlab-org/gitlab-selenium-server,4262096
@@ -53,6 +54,7 @@ gitlab-org/analytics-section/analytics-instrumentation/internal,12051824
 gitlab-org/project-templates/jsonnet,19985677
 gitlab-org/project-templates/cluster-management,17136273
 gitlab-org/build/CNG,4359271
+gitlab-org/build/CNG-mirror,7682093
 gitlab-org/ci-cd/docker-machine,1254421
 gitlab-org/ci-cd/gitlab-runner-ubi-images,17019611
 gitlab-org/ci-cd/codequality,17035255
@@ -221,3 +223,5 @@ gitlab-org/security-products/analyzers/semgrep,24075172
 gitlab-com/gl-security/security-assurance/security-risk-team/storm-risk-register,52900819
 gitlab-com/gl-security/security-assurance/fedramp/conmon-scans,44355113
 gitlab-com/gl-security/security-assurance/team-commercial-compliance/user-access-review,32941490
+gitlab-org/quality/pipeline-triage,15291320
+gitlab-com/gl-security/product-security/product-security-engineering/product-security-engineering-team,49199627

@@ -1,7 +1,8 @@
 {{ config(
     tags=["product", "mnpi_exception"],
     materialized = "table",
-    unique_key = "ping_instance_id"
+    unique_key = "ping_instance_id",
+    cluster_by=['ping_created_at::DATE']
 ) }}
 
 {{ simple_cte([
@@ -73,6 +74,7 @@ license_subscriptions AS (
     dim_subscription.subscription_start_month                                                     AS subscription_start_month,
     dim_subscription.subscription_end_month                                                       AS subscription_end_month,
     dim_billing_account.dim_billing_account_id                                                    AS dim_billing_account_id,
+    dim_crm_accounts.dim_crm_account_id                                                           AS dim_crm_account_id,
     dim_crm_accounts.crm_account_name                                                             AS crm_account_name,
     dim_crm_accounts.dim_parent_crm_account_id                                                    AS dim_parent_crm_account_id,
     dim_crm_accounts.parent_crm_account_name                                                      AS parent_crm_account_name,
@@ -108,7 +110,7 @@ license_subscriptions AS (
     ON dim_billing_account.dim_crm_account_id = dim_crm_accounts.dim_crm_account_id
   INNER JOIN dim_date
     ON fct_charge.effective_start_month <= dim_date.date_day AND fct_charge.effective_end_month > dim_date.date_day
-  {{ dbt_utils.group_by(n=22)}}
+  {{ dbt_utils.group_by(n=23)}}
 
 
 ),
@@ -138,6 +140,7 @@ joined AS (
     COALESCE(sha256.subscription_start_month, md5.subscription_start_month)                     AS subscription_start_month,
     COALESCE(sha256.subscription_end_month, md5.subscription_end_month)                         AS subscription_end_month,
     COALESCE(sha256.dim_billing_account_id, md5.dim_billing_account_id)                         AS dim_billing_account_id,
+    COALESCE(sha256.dim_crm_account_id, md5.dim_crm_account_id)                                 AS dim_crm_account_id,
     COALESCE(sha256.crm_account_name, md5.crm_account_name)                                     AS crm_account_name,
     COALESCE(sha256.dim_parent_crm_account_id, md5.dim_parent_crm_account_id)                   AS dim_parent_crm_account_id,
     COALESCE(sha256.parent_crm_account_name, md5.parent_crm_account_name)                       AS parent_crm_account_name,
@@ -223,6 +226,7 @@ sorted AS (
     dim_license_id,
     dim_installation_id,
     latest_subscription_id,
+    dim_crm_account_id,
     dim_billing_account_id,
     dim_parent_crm_account_id,
     dim_app_release_major_minor_sk,
@@ -290,7 +294,7 @@ sorted AS (
 {{ dbt_audit(
     cte_ref="sorted",
     created_by="@icooper-acp",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2022-03-11",
-    updated_date="2024-04-18"
+    updated_date="2024-07-17"
 ) }}

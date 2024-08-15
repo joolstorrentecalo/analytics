@@ -192,6 +192,13 @@ staff_hist_promo AS (
   
 ),
 
+job_profiles AS (
+
+  SELECT *
+  FROM {{ ref('blended_job_profiles_source') }}
+
+),
+
 eda AS (
   
   SELECT    
@@ -224,8 +231,10 @@ eda AS (
     cost_center,
     job_title,
     jobtitle_speciality,
-    job_role,
-    job_grade,
+    staff_hist.job_workday_id_current                                                                               AS job_id,
+    job_profiles.job_family                                                                                         AS job_family,
+    COALESCE(job_profiles.management_level, eda_stage.job_role)                                                     AS job_role,
+    COALESCE(job_profiles.job_level::VARCHAR, eda_stage.job_grade)                                                  AS job_grade,
     CASE
       WHEN department IN ('TAM (inactive)',
       'TAM') THEN 'CSM'
@@ -267,10 +276,14 @@ eda AS (
   LEFT JOIN staff_hist
     ON eda_stage.employee_id = staff_hist.employee_id
       AND eda_stage.date_actual >= staff_hist.effective_date
-        AND eda_stage.date_actual < staff_hist.next_effective_date
+      AND eda_stage.date_actual < staff_hist.next_effective_date
   LEFT JOIN bonus
     ON eda_stage.employee_id = bonus.employee_id
       AND eda_stage.date_actual = bonus.bonus_date
+  LEFT JOIN job_profiles 
+    ON staff_hist.job_workday_id_current = job_profiles.job_workday_id
+      AND eda_stage.date_actual >= job_profiles.valid_from
+      AND eda_stage.date_actual < job_profiles.valid_to    
   WHERE date_actual <= CURRENT_DATE()
 
   UNION
@@ -305,8 +318,10 @@ eda AS (
     cost_center,
     job_title,
     jobtitle_speciality,
-    job_role,
-    job_grade,
+    staff_hist.job_workday_id_current                                                                               AS job_id,
+    job_profiles.job_family                                                                                         AS job_family,
+    COALESCE(job_profiles.management_level, eda_stage.job_role)                                                     AS job_role,
+    COALESCE(job_profiles.job_level::VARCHAR, eda_stage.job_grade)                                                  AS job_grade,
     CASE
       WHEN department IN ('TAM (inactive)',
       'TAM') THEN 'CSM'
@@ -335,37 +350,41 @@ eda AS (
     bonus.total_discretionary_bonuses
   FROM eda_stage
   LEFT JOIN start_to_end
-  ON employee_id = hire_id
+    ON employee_id = hire_id
   AND date_actual BETWEEN start_to_end.hire_date AND start_to_end.last_date
   LEFT JOIN term_type
-  ON employee_id = type_id
-  AND date_actual = type_date
-  AND 1 = type_rank
+    ON employee_id = type_id
+      AND date_actual = type_date
+      AND 1 = type_rank
   LEFT JOIN term_reason
-  ON eda_stage.employee_id = term_reason.employee_id
-  AND date_actual = effective_date
-  AND 1 = term_reason_rank
+    ON eda_stage.employee_id = term_reason.employee_id
+      AND date_actual = effective_date
+      AND 1 = term_reason_rank
   LEFT JOIN sup
-  ON eda_stage.employee_id = dr_id
-  AND sup_date = date_actual
+    ON eda_stage.employee_id = dr_id
+      AND sup_date = date_actual
   LEFT JOIN dr_bhr
-  ON eda_stage.employee_id = dr_bhr.reports_to_id_bhr
-  AND date_actual = dr_bhr.sup_date_bhr
+    ON eda_stage.employee_id = dr_bhr.reports_to_id_bhr
+      AND date_actual = dr_bhr.sup_date_bhr
   LEFT JOIN staff_hist_promo
-  ON eda_stage.employee_id = staff_hist_promo.employee_id
-  AND eda_stage.date_actual = staff_hist_promo.effective_date
+    ON eda_stage.employee_id = staff_hist_promo.employee_id
+      AND eda_stage.date_actual = staff_hist_promo.effective_date
   LEFT JOIN transfer
-  ON eda_stage.employee_id = transfer.employee_id
-  AND eda_stage.date_actual = transfer.effective_date
+    ON eda_stage.employee_id = transfer.employee_id
+      AND eda_stage.date_actual = transfer.effective_date
   LEFT JOIN staff_hist
-  ON eda_stage.employee_id = staff_hist.employee_id
-  AND eda_stage.date_actual >= staff_hist.effective_date
-  AND eda_stage.date_actual < staff_hist.next_effective_date
+    ON eda_stage.employee_id = staff_hist.employee_id
+      AND eda_stage.date_actual >= staff_hist.effective_date
+      AND eda_stage.date_actual < staff_hist.next_effective_date
   LEFT JOIN bonus
-  ON eda_stage.employee_id = bonus.employee_id
-  AND eda_stage.date_actual = bonus.bonus_date
+    ON eda_stage.employee_id = bonus.employee_id
+      AND eda_stage.date_actual = bonus.bonus_date
+  LEFT JOIN job_profiles 
+    ON staff_hist.job_workday_id_current = job_profiles.job_workday_id
+      AND eda_stage.date_actual >= job_profiles.valid_from
+      AND eda_stage.date_actual < job_profiles.valid_to
   WHERE is_termination_date
-  AND date_actual <= CURRENT_DATE() 
+    AND date_actual <= CURRENT_DATE() 
 
 ), 
 
@@ -383,6 +402,8 @@ pr AS (
     employee_type               AS pr_employee_type,
     job_title                   AS pr_job_title,
     jobtitle_speciality         AS pr_jobtitle_speciality,
+    job_id                      AS pr_job_id,
+    job_family                  AS pr_job_family,
     job_role                    AS pr_job_role,
     job_grade                   AS pr_job_grade,
     department                  AS pr_department,
@@ -421,6 +442,8 @@ hist_stage AS (
     job_grade            AS cur_job_grade,
     job_title            AS cur_job_title,
     jobtitle_speciality  AS cur_jobtitle_speciality,
+    job_id               AS cur_job_id,
+    job_family           AS cur_job_family,
     department           AS cur_department,
     division             AS cur_division,
     total_direct_reports AS cur_total_direct_reports,
@@ -448,6 +471,8 @@ hist_stage AS (
       WHEN COALESCE(cur_total_direct_reports, 0) != COALESCE(pr_total_direct_reports, 0) THEN 1
       WHEN COALESCE(cur_job_role, '1') != COALESCE(pr_job_role, '1') THEN 1
       WHEN COALESCE(cur_jobtitle_speciality, '1') != COALESCE(pr_jobtitle_speciality, '1') THEN 1
+      WHEN COALESCE(cur_job_id,'1') != COALESCE(pr_job_id,'1') THEN 1
+      WHEN COALESCE(cur_job_family,'1') != COALESCE(pr_job_family,'1') THEN 1
       WHEN COALESCE(cur_location_factor, '1') != COALESCE(pr_location_factor, '1') THEN 1
       WHEN COALESCE(cur_job_grade, '1') != COALESCE(pr_job_grade, '1') THEN 1
       WHEN COALESCE(cur_employee_type, '1') != COALESCE(pr_employee_type, '1') THEN 1
@@ -478,7 +503,7 @@ job_history AS (
     LAG(date_actual) OVER ( PARTITION BY employee_id ORDER BY date_actual DESC ),
     is_hire_date,
     is_termination_date
-  FROM eda_stage 
+  FROM eda 
   QUALIFY pr_job_title <> job_title OR is_hire_date = 'TRUE' 
 
 ),
@@ -522,6 +547,8 @@ SELECT
     WHEN COALESCE(hist_stage.cur_jobtitle_speciality, '1') != COALESCE(pr_jobtitle_speciality, '1') THEN 'Job Speciality Change'
     WHEN COALESCE(hist_stage.cur_location_factor, '1') != COALESCE(pr_location_factor, '1') THEN 'Location Factor Change'
     WHEN COALESCE(hist_stage.cur_job_grade, '1') != COALESCE(pr_job_grade, '1') THEN 'Job Grade Change'
+    WHEN COALESCE(hist_stage.cur_job_id,'1') != COALESCE(pr_job_id,'1') THEN 'Job Title Change'
+    WHEN COALESCE(hist_stage.cur_job_family,'1') != COALESCE(pr_job_family,'1') THEN 'Job Family Change'
     WHEN hist_stage.total_discretionary_bonuses >= 1 THEN 'Discretionary Bonus'
     ELSE NULL
   END                                AS job_change_reason,
@@ -535,6 +562,8 @@ SELECT
   hist_stage.cur_job_grade           AS job_grade,
   hist_stage.cur_job_title           AS job_title,
   hist_stage.cur_jobtitle_speciality AS jobtitle_speciality,
+  hist_stage.cur_job_id              AS job_id,
+  hist_stage.cur_job_family          AS job_family,  
   hist_stage.cur_employee_type       AS employee_type,
   cur_reports_to                     AS reports_to,
   cur_reports_to_id                  AS reports_to_id,

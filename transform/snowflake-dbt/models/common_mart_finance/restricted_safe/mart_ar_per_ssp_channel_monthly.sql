@@ -4,7 +4,7 @@
 ) }}
 
 {{ simple_cte([
-    ('fct_invoice_aging_detail', 'fct_invoice_aging_detail'),
+    ('driveload_invoice_aging_detail_source', 'driveload_invoice_aging_detail_source'),
     ('fct_invoice', 'fct_invoice'),
     ('dim_billing_account', 'dim_billing_account'),
     ('dim_date', 'dim_date')
@@ -15,16 +15,16 @@ reseller AS (
 /* Assign reseller as channel */
 
   SELECT
-    DATE(DATE_TRUNC('month', fct_invoice_aging_detail.accounting_period_end_date)) AS period,
-    fct_invoice_aging_detail.account_balance_impact                                AS balance,
+    DATE_TRUNC('month', DATE(driveload_invoice_aging_detail_source.accounting_period_end_date)) AS period,
+    driveload_invoice_aging_detail_source.account_balance_impact                                AS balance,
     CASE
       WHEN dim_billing_account.ssp_channel = 'Reseller'
         THEN 'Reseller'
       ELSE 'n/a'
-    END                                                                            AS channel
-  FROM fct_invoice_aging_detail
+    END                                                                                         AS channel
+  FROM driveload_invoice_aging_detail_source
   LEFT JOIN fct_invoice 
-    ON fct_invoice_aging_detail.dim_invoice_id = fct_invoice.dim_invoice_id
+    ON driveload_invoice_aging_detail_source.dim_invoice_id = fct_invoice.dim_invoice_id
   LEFT JOIN dim_billing_account 
     ON fct_invoice.dim_billing_account_id = dim_billing_account.dim_billing_account_id
   WHERE dim_billing_account.ssp_channel = 'Reseller'
@@ -37,16 +37,16 @@ non_reseller AS (
 /* Assign non-reseller as channel */
 
   SELECT
-    DATE(DATE_TRUNC('month', fct_invoice_aging_detail.accounting_period_end_date)) AS period,
-    fct_invoice_aging_detail.account_balance_impact                                AS balance,
+    DATE_TRUNC('month', DATE(driveload_invoice_aging_detail_source.accounting_period_end_date)) AS period,
+    driveload_invoice_aging_detail_source.account_balance_impact                                AS balance,
     CASE
       WHEN dim_billing_account.ssp_channel = 'Non-Reseller'
         THEN 'Non-Reseller'
       ELSE 'n/a'
-    END                                                                            AS channel
-  FROM fct_invoice_aging_detail
+    END                                                                                         AS channel
+  FROM driveload_invoice_aging_detail_source
   LEFT JOIN fct_invoice 
-    ON fct_invoice_aging_detail.dim_invoice_id = fct_invoice.dim_invoice_id
+    ON driveload_invoice_aging_detail_source.dim_invoice_id = fct_invoice.dim_invoice_id
   LEFT JOIN dim_billing_account 
     ON fct_invoice.dim_billing_account_id = dim_billing_account.dim_billing_account_id
   WHERE dim_billing_account.ssp_channel = 'Non-Reseller'
@@ -58,16 +58,16 @@ alliance AS (
 /* Assign alliance as channel */
 
   SELECT
-    DATE(DATE_TRUNC('month', fct_invoice_aging_detail.accounting_period_end_date)) AS period,
-    fct_invoice_aging_detail.account_balance_impact                                AS balance,
+    DATE_TRUNC('month', DATE(driveload_invoice_aging_detail_source.accounting_period_end_date)) AS period,
+    driveload_invoice_aging_detail_source.account_balance_impact                                AS balance,
     CASE
       WHEN dim_billing_account.ssp_channel = 'Reseller'
         THEN 'Alliance'
       ELSE 'n/a'
-    END                                                                            AS channel
-  FROM fct_invoice_aging_detail
+    END                                                                                         AS channel
+  FROM driveload_invoice_aging_detail_source
   LEFT JOIN fct_invoice 
-    ON fct_invoice_aging_detail.dim_invoice_id = fct_invoice.dim_invoice_id
+    ON driveload_invoice_aging_detail_source.dim_invoice_id = fct_invoice.dim_invoice_id
   LEFT JOIN dim_billing_account 
     ON fct_invoice.dim_billing_account_id = dim_billing_account.dim_billing_account_id
   WHERE dim_billing_account.dim_billing_account_id = '2c92a00c6ccd018d016d02a684e036fa' OR dim_billing_account.dim_billing_account_id = '2c92a00872989ae10172a044c43758f6'
@@ -109,10 +109,10 @@ total AS (
 /* Determine the total balances for all open invoices monthly */
 
   SELECT
-    DATE(DATE_TRUNC('month', fct_invoice_aging_detail.accounting_period_end_date)) AS period,
-    SUM(account_balance_impact)                                                    AS total_all_balance,
-    COUNT(account_balance_impact)                                                  AS count_all_open_invoices
-  FROM fct_invoice_aging_detail
+    DATE_TRUNC('month', DATE(driveload_invoice_aging_detail_source.accounting_period_end_date)) AS period,
+    SUM(account_balance_impact)                                                                 AS total_all_balance,
+    COUNT(account_balance_impact)                                                               AS count_all_open_invoices
+  FROM driveload_invoice_aging_detail_source
   GROUP BY accounting_period_end_date
 
 ),
@@ -155,5 +155,5 @@ cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-05-07",
-updated_date="2024-05-07"
+updated_date="2024-07-03"
 ) }}

@@ -125,6 +125,9 @@ renamed AS (
     source.commit_email_domain                                                                  AS commit_email_domain,
     commit_email_domain.classification                                                          AS commit_email_domain_classification,
     closest_provider.identity_provider                                                          AS identity_provider,
+    source.user_type_id                                                                         AS user_type_id,
+    source.user_type                                                                            AS user_type,
+    source.is_bot                                                                               AS is_bot,
 
     -- Expanded Attributes  (Not Found = Joined Row Not found for the Attribute)
     COALESCE(source.role, 'Unknown')                                                            AS role,
@@ -166,7 +169,7 @@ renamed AS (
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet",
-    updated_by="@tpoole",
+    updated_by="@michellecooper",
     created_date="2021-05-31",
-    updated_date="2022-08-25"
+    updated_date="2024-07-31"
 ) }}

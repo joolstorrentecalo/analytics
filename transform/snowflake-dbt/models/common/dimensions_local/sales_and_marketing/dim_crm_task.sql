@@ -1,16 +1,10 @@
-WITH prep_crm_task AS (
-
-  SELECT *
-  FROM {{ ref('prep_crm_task') }}
-  WHERE is_deleted = FALSE
-
-), final AS (
+WITH final AS (
 
 
   SELECT
 
     -- Surrogate key
-    prep_crm_task.dim_crm_task_sk,
+    prep_crm_task.dim_crm_task_sk, 
 
     -- Natural key
     prep_crm_task.task_id,
@@ -18,6 +12,7 @@ WITH prep_crm_task AS (
     -- Task infomation
     prep_crm_task.full_comments,
     prep_crm_task.task_subject,
+    prep_crm_task.partner_marketing_task_subject,
     prep_crm_task.task_status,
     prep_crm_task.task_subtype,
     prep_crm_task.task_type,
@@ -36,7 +31,6 @@ WITH prep_crm_task AS (
     -- Activity infromation
     prep_crm_task.activity_disposition,
     prep_crm_task.activity_source,
-    prep_crm_task.activity,
     prep_crm_task.csm_activity_type,
     prep_crm_task.sa_activity_type,
     prep_crm_task.gs_activity_type,
@@ -52,11 +46,7 @@ WITH prep_crm_task AS (
     prep_crm_task.call_duration_in_seconds,
     prep_crm_task.call_recording,
     prep_crm_task.is_answered,
-    prep_crm_task.is_bad_number,
-    prep_crm_task.is_busy,
     prep_crm_task.is_correct_contact,
-    prep_crm_task.is_not_answered,
-    prep_crm_task.is_left_message,
 
     -- Reminder information
     prep_crm_task.is_reminder_set,
@@ -111,7 +101,8 @@ WITH prep_crm_task AS (
     prep_crm_task.is_opportunity_initiation_call_task,
     prep_crm_task.is_opportunity_followup_call_task
 
-    FROM prep_crm_task
+    FROM {{ ref('prep_crm_task') }}
+    WHERE is_deleted = FALSE
 
 
 )
@@ -119,7 +110,7 @@ WITH prep_crm_task AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@michellecooper",
-    updated_by="@michellecooper",
+    updated_by="@rkohnke",
     created_date="2022-12-05",
-    updated_date="2023-03-13"
+    updated_date="2024-07-31"
 ) }}

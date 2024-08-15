@@ -16,6 +16,8 @@ WITH all_issues AS (
     last_edited_at::TIMESTAMP                                AS issue_last_edited_at,
     closed_at::TIMESTAMP                                     AS issue_closed_at,
     confidential::BOOLEAN                                    AS is_confidential,
+    pgp_is_deleted::BOOLEAN                                  AS is_deleted,
+    pgp_is_deleted_updated_at::TIMESTAMP                     AS is_deleted_updated_at,
     title::VARCHAR                                           AS issue_title,
     description::VARCHAR                                     AS issue_description,
 
@@ -70,6 +72,8 @@ combined AS (
     all_issues.issue_last_edited_at                          AS issue_last_edited_at,
     all_issues.issue_closed_at                               AS issue_closed_at,
     all_issues.is_confidential                               AS is_confidential,
+    all_issues.is_deleted                                    AS is_deleted,
+    all_issues.is_deleted_updated_at                         AS is_deleted_updated_at,
     internal_only.internal_issue_title                       AS issue_title,
     internal_only.internal_issue_description                 AS issue_description,
     all_issues.state                                         AS state,

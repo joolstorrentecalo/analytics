@@ -57,13 +57,12 @@ WITH source AS (
         type                                            AS sales_type,
         {{  sfdc_source_buckets('leadsource') }}
         stagename                                       AS stage_name,
-        revenue_type__c                                 AS order_type,
         {{ deal_path_cleaning('deal_path__c') }}        AS deal_path,
 
         -- opportunity information
         acv_2__c                                        AS acv,
         amount                                          AS amount,
-        IFF(acv_2__c >= 0, 1, 0)                        AS closed_deals, -- so that you can exclude closed deals that had negative impact
+        IFF(acv_2__c >= 0, 1, 0)                        AS is_closed_deals, -- so that you can exclude closed deals that had negative impact
         competitors__c                                  AS competitors,
         critical_deal_flag__c                           AS critical_deal_flag,
         {{sfdc_deal_size('arr_net__c', 'deal_size')}},
@@ -110,7 +109,7 @@ WITH source AS (
         start_date__c::DATE                             AS subscription_start_date,
         end_date__c::DATE                               AS subscription_end_date,
         NULL                                            AS true_up_value,
-        order_type_live__c                              AS order_type_live,
+        order_type_live__c                              AS order_type_current,
         order_type_test__c                              AS order_type_stamped,
         CASE
           WHEN order_type_stamped = '1. New - First Order'

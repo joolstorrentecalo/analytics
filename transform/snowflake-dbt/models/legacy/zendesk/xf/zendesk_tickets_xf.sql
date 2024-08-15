@@ -33,7 +33,8 @@ WITH zendesk_tickets AS (
       organization_id,
       sfdc_account_id,
       organization_tags,
-      organization_market_segment
+      organization_market_segment,
+      organization_region
     FROM {{ref('zendesk_organizations_source')}}
 
 ), zendesk_tickets_sla AS (
@@ -117,7 +118,10 @@ SELECT DISTINCT
   IFF(zendesk_tickets_sla.first_reply_time_sla <= zendesk_sla_policies.policy_metrics_target, 
       True, False)                                            AS was_sla_achieved,
   IFF(zendesk_tickets_sla.first_reply_time_sla > zendesk_sla_policies.policy_metrics_target,
-      True, False)                                            AS was_sla_breached
+      True, False)                                            AS was_sla_breached,
+  zendesk_users_submitter.user_region                         AS user_region,
+  zendesk_users_submitter.tags                                AS user_tags,
+  zendesk_organizations.organization_region                   AS organization_region
 
 FROM zendesk_tickets
 LEFT JOIN zendesk_ticket_metrics

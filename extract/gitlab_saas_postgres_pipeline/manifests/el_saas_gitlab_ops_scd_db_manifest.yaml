@@ -1,13 +1,7 @@
-connection_info:
-  postgres_source_connection:
-    database: GITLAB_OPS_DB_NAME
-    host: GITLAB_OPS_DB_HOST
-    pass: GITLAB_OPS_DB_PASS
-    port: PG_PORT
-    user: GITLAB_OPS_DB_USER
 tables:
   ci_builds:
     advanced_metadata: true
+    database_type: ops
     dbt_source_model: true
     export_schema: 'gitlab_ops_net'
     export_table: ci_builds
@@ -52,6 +46,7 @@ tables:
       FROM ci_builds
   label_links:
     advanced_metadata: true
+    database_type: ops
     dbt_source_model: true
     export_schema: 'gitlab_ops_net'
     export_table: 'label_links'
@@ -67,6 +62,7 @@ tables:
       FROM label_links
   members:
     advanced_metadata: true
+    database_type: ops
     dbt_source_model: true
     export_schema: 'gitlab_ops_net'
     export_table: 'members'

@@ -32,7 +32,6 @@ config_dict = os.environ.copy()
 HEADERS = {"apikey": config_dict.get("CLARI_API_KEY")}
 TIMEOUT = 60
 BASE_URL = "https://api.clari.com/v4"
-FORECAST_ID = "net_arr"
 
 
 def _calc_fiscal_quarter(date_time: datetime) -> str:
@@ -96,7 +95,7 @@ def get_fiscal_quarter() -> str:
     # return _get_previous_fiscal_quarter(execution_date)
 
 
-def get_forecast(fiscal_quarter: str) -> Dict[Any, Any]:
+def get_forecast(forecast_id: str, fiscal_quarter: str) -> Dict[Any, Any]:
     """
     Make a GET request to /forecast/{forecastId} endpoint
     This endpoint has less options, i.e can't return historical weeks,
@@ -104,7 +103,7 @@ def get_forecast(fiscal_quarter: str) -> Dict[Any, Any]:
     Will be used for the Daily DAG run
     """
     params = {"timePeriod": fiscal_quarter}
-    forecast_url = f"{BASE_URL}/forecast/{FORECAST_ID}"
+    forecast_url = f"{BASE_URL}/forecast/{forecast_id}"
     response = make_request(
         "GET", forecast_url, headers=HEADERS, params=params, timeout=TIMEOUT
     )
@@ -112,11 +111,11 @@ def get_forecast(fiscal_quarter: str) -> Dict[Any, Any]:
     return response.json()
 
 
-def start_export_report(fiscal_quarter: str) -> str:
+def start_export_report(forecast_id: str, fiscal_quarter: str) -> str:
     """
     Make POST request to start report export for a specific fiscal_quarter
     """
-    export_forecast_url = f"{BASE_URL}/export/forecast/{FORECAST_ID}"
+    export_forecast_url = f"{BASE_URL}/export/forecast/{forecast_id}"
 
     json_body = {"timePeriod": fiscal_quarter, "includeHistorical": True}
     response = make_request(
@@ -178,7 +177,7 @@ def get_report_results(job_id: str) -> Dict[Any, Any]:
 
 
 def upload_results_dict(
-    results_dict: Dict[Any, Any], fiscal_quarter: str
+    results_dict: Dict[Any, Any], forecast_id: str, fiscal_quarter: str
 ) -> Dict[Any, Any]:
     """
     Uploads the results_dict to Snowflake
@@ -188,6 +187,8 @@ def upload_results_dict(
         # update fiscal_quarter formatting to conform with dim table
         "api_fiscal_quarter": fiscal_quarter.replace("_", "-"),
         "dag_schedule": config_dict["task_schedule"],
+        "airflow_task_instance_key_str": config_dict["task_instance_key_str"],
+        "api_forecast_id": forecast_id,
     }
     loader_engine = snowflake_engine_factory(config_dict, "LOADER")
 
@@ -228,21 +229,25 @@ def check_valid_quarter(
 
 def main() -> None:
     """Main driver function"""
-    fiscal_quarter = get_fiscal_quarter()
-    info(f"Processing fiscal_quarter: {fiscal_quarter}")
+    forecast_ids = ["net_arr", "net_arr_ps_summary"]
+    for forecast_id in forecast_ids:
+        fiscal_quarter = get_fiscal_quarter()
+        info(
+            f"Processing forecast_id {forecast_id} in fiscal_quarter: {fiscal_quarter}"
+        )
 
-    # Daily DAG, only return the latest week
-    if config_dict["task_schedule"] == "daily":
-        results_dict = get_forecast(fiscal_quarter)
+        # Daily DAG, only return the latest week
+        if config_dict["task_schedule"] == "daily":
+            results_dict = get_forecast(forecast_id, fiscal_quarter)
 
-    # Quarterly DAG, return first few weeks of new quarter
-    elif config_dict["task_schedule"] == "quarterly":
-        job_id = start_export_report(fiscal_quarter)
-        poll_job_status(job_id)
-        results_dict = get_report_results(job_id)
+        # Quarterly DAG, return multiple weeks, including first few weeks of new quarter
+        elif config_dict["task_schedule"] == "quarterly":
+            job_id = start_export_report(forecast_id, fiscal_quarter)
+            poll_job_status(job_id)
+            results_dict = get_report_results(job_id)
 
-    check_valid_quarter(fiscal_quarter, results_dict)
-    upload_results_dict(results_dict, fiscal_quarter)
+        check_valid_quarter(fiscal_quarter, results_dict)
+        upload_results_dict(results_dict, forecast_id, fiscal_quarter)
 
 
 if __name__ == "__main__":

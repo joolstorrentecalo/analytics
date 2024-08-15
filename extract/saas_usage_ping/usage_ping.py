@@ -218,7 +218,7 @@ class UsagePing:
             # info(query_output)
             # convert 'numpy int' to 'int' so json can be written
             metrics_data = int(query_output.loc[0, "counter_value"])
-        except (KeyError, ValueError):
+        except (KeyError, ValueError, TypeError):
             metrics_data = 0
 
         except SQLAlchemyError as e:

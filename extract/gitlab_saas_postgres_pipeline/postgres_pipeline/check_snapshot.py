@@ -79,7 +79,7 @@ def check_snapshot_ci() -> None:
 
 def check_snapshot_main_db_incremental() -> None:
     """
-    The check snapshot main db incremental method is used to establish connectivity to the database.
+    The check snapshot main db incremental & scd method is used to establish connectivity to the database.
     """
     config_dict = os.environ.copy()
     database = config_dict.get("GITLAB_COM_DB_NAME")
@@ -96,25 +96,6 @@ def check_snapshot_main_db_incremental() -> None:
     check_snapshot_replica(engine)
     logging.info("Check health of snapshot")
     check_snapshot_health(engine)
-    logging.info("Complete")
-
-
-def check_snapshot_gitlab_dotcom_scd() -> None:
-    """
-    The check snapshot main db scd method is used to establish connectivity to the database.
-    """
-    config_dict = os.environ.copy()
-    database = config_dict.get("GITLAB_COM_DB_NAME")
-    host = config_dict.get("GITLAB_COM_DB_HOST")
-    password = config_dict.get("GITLAB_COM_DB_PASS")
-    port = config_dict.get("GITLAB_COM_SCD_PG_PORT")
-    user = config_dict.get("GITLAB_COM_DB_USER")
-    engine = create_engine(
-        f"postgresql://{user}:{password}@{host}:{port}/{database}",
-        connect_args={"sslcompression": 0, "options": "-c statement_timeout=9000000"},
-    )
-    logging.info(engine)
-    check_snapshot_replica(engine)
     logging.info("Complete")
 
 

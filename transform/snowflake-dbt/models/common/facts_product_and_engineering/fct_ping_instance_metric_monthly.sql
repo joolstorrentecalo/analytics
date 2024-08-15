@@ -3,8 +3,9 @@
 {{ config(
     tags=["product", "mnpi_exception"],
     materialized = "incremental",
-    unique_key = "ping_instance_metric_id",
+    unique_key = "ping_instance_metric_monthly_pk",
     on_schema_change="sync_all_columns",
+    incremental_strategy="delete+insert",
     post_hook=["DELETE FROM {{ this }} WHERE is_current_ping = FALSE "]
 ) }}
 
@@ -33,7 +34,8 @@ filtered_fct_ping_instance_metric AS (
   SELECT
     fct_ping_instance_metric.*,
     dim_ping_metric.time_frame,
-    dim_ping_instance.is_last_ping_of_month AS is_current_ping
+    dim_ping_instance.is_last_ping_of_month AS is_current_ping,
+    dim_ping_instance.ping_created_date_month
   FROM fct_ping_instance_metric
   INNER JOIN dim_ping_metric
     ON fct_ping_instance_metric.metrics_path = dim_ping_metric.metrics_path
@@ -74,6 +76,7 @@ time_frame_all_time_metrics AS (
 final AS (
 
   SELECT
+    {{ dbt_utils.generate_surrogate_key(['dim_installation_id', 'metrics_path', 'ping_created_date_month']) }} AS ping_instance_metric_monthly_pk,
     ping_instance_metric_id,
     dim_ping_instance_id,
     dim_product_tier_id,
@@ -102,6 +105,7 @@ final AS (
   UNION ALL
 
   SELECT
+    {{ dbt_utils.generate_surrogate_key(['dim_installation_id', 'metrics_path', 'ping_created_date_month']) }} AS ping_instance_metric_monthly_pk,
     ping_instance_metric_id,
     dim_ping_instance_id,
     dim_product_tier_id,
@@ -132,7 +136,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@icooper-acp",
-    updated_by="@pempey",
+    updated_by="@mdrussell",
     created_date="2022-05-09",
-    updated_date="2024-05-09"
+    updated_date="2024-05-21"
 ) }}

@@ -1,14 +1,8 @@
-connection_info:
-  postgres_source_connection:
-    database: CUSTOMERS_DB_NAME
-    host: CUSTOMERS_DB_HOST
-    pass: CUSTOMERS_DB_PASS
-    port: PG_PORT
-    user: CUSTOMERS_DB_USER
 tables:
   billing_accounts:
     advanced_metadata: true
     export_db: EXPORT_DB
+    database_type: customers
     export_schema: 'customers'
     export_table: 'billing_accounts'
     export_table_primary_key: id
@@ -23,6 +17,7 @@ tables:
       FROM billing_accounts
   billing_account_contacts:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'billing_account_contacts'
@@ -38,6 +33,7 @@ tables:
       FROM billing_account_contacts
   billing_account_memberships:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'billing_account_memberships'
@@ -52,6 +48,7 @@ tables:
       FROM billing_account_memberships
   cloud_activation_license_mappings:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'cloud_activation_license_mappings'
@@ -65,6 +62,7 @@ tables:
       FROM cloud_activation_license_mappings
   cloud_activations:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'cloud_activations'
@@ -83,6 +81,7 @@ tables:
       FROM cloud_activations
   customers:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'customers'
@@ -114,6 +113,7 @@ tables:
       FROM customers
   leads:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'leads'
@@ -149,6 +149,7 @@ tables:
       FROM leads
   license_seat_links:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'license_seat_links'
@@ -170,6 +171,7 @@ tables:
       FROM license_seat_links
   license_versions:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'license_versions'
@@ -186,6 +188,7 @@ tables:
       FROM license_versions
   licenses:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'licenses'
@@ -219,6 +222,7 @@ tables:
       FROM licenses
   orders:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'orders'
@@ -247,6 +251,7 @@ tables:
       FROM orders
   provisions:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'provisions'
@@ -263,6 +268,7 @@ tables:
       FROM provisions
   reconciliations:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'reconciliations'
@@ -286,6 +292,7 @@ tables:
       FROM reconciliations
   schema_migrations:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'schema_migrations'
@@ -296,6 +303,7 @@ tables:
       FROM schema_migrations
   self_managed_instance_activations:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'self_managed_instance_activations'
@@ -312,6 +320,7 @@ tables:
       FROM self_managed_instance_activations
   temporary_extension_histories:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'temporary_extension_histories'
@@ -333,6 +342,7 @@ tables:
       FROM temporary_extension_histories
   trial_histories:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'trial_histories'
@@ -351,6 +361,7 @@ tables:
       FROM trial_histories
   trials:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'trials'
@@ -369,6 +380,7 @@ tables:
       FROM trials
   trial_accounts:
     advanced_metadata: true
+    database_type: customers
     export_db: EXPORT_DB
     export_schema: 'customers'
     export_table: 'trial_accounts'
@@ -385,6 +397,7 @@ tables:
       FROM trial_accounts
   version_associations:
     export_db: EXPORT_DB
+    database_type: customers
     export_schema: 'customers'
     export_table: 'version_associations'
     export_table_primary_key: id
@@ -398,6 +411,7 @@ tables:
       FROM version_associations
   versions:
     export_db: EXPORT_DB
+    database_type: customers
     export_schema: 'customers'
     export_table: 'versions'
     export_table_primary_key: id

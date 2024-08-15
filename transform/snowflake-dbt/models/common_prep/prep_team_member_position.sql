@@ -218,7 +218,7 @@ position_history AS (
     job_profiles.position                                                                                                      AS position,
     job_profiles.job_family                                                                                                    AS job_family,
     job_profiles.management_level                                                                                              AS management_level,
-    job_profiles.job_grade                                                                                                     AS job_grade,
+    job_profiles.job_grade::VARCHAR                                                                                            AS job_grade,
     job_profiles.is_position_active                                                                                            AS is_position_active,
     staffing_history.effective_date                                                                                            AS effective_date
   FROM staffing_history

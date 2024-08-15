@@ -98,6 +98,13 @@ renamed AS (
     number_of_employees_manual_source_admin__c AS admin_manual_source_number_of_employees,
     account_address_manual_source_admin__c AS admin_manual_source_account_address,
     focus_partner__c AS is_focus_partner,
+    bdr_next_steps__c AS bdr_next_steps,
+    bdr_next_step_date__c::DATE AS bdr_recycle_date,
+    actively_working_start_date__c::DATE AS actively_working_start_date,
+    bdr_account_research__c AS bdr_account_research,
+    bdr_account_strategy__c AS bdr_account_strategy,
+    account_bdr_assigned_user_role__c AS account_bdr_assigned_user_role,
+    domains__c AS account_domains,
 
     --6 Sense Fields
     x6sense_6qa__c::BOOLEAN AS has_six_sense_6_qa,
@@ -114,6 +121,20 @@ renamed AS (
     x6sense_account_intent_score__c AS six_sense_account_intent_score,
     x6sense_segments__c AS six_sense_segments,
 
+    --Qualified Fields
+    days_since_last_activity_qualified__c AS qualified_days_since_last_activity,
+    qualified_signals_active_session_time__c AS qualified_signals_active_session_time,
+    qualified_signals_bot_conversation_count__c AS qualified_signals_bot_conversation_count,
+    q_condition__c AS qualified_condition,
+    q_score__c AS qualified_score,
+    q_trend__c AS qualified_trend,
+    q_meetings_booked__c AS qualified_meetings_booked,
+    qualified_signals_rep_conversation_count__c AS qualified_signals_rep_conversation_count,
+    signals_research_state__c AS qualified_signals_research_state,
+    signals_research_score__c AS qualified_signals_research_score,
+    qualified_signals_session_count__c AS qualified_signals_session_count,
+    q_visitor_count__c AS qualified_visitors_count,
+
     -- account demographics fields
 
     -- Add sales_segment_cleaning macro to avoid duplication in downstream models
@@ -129,6 +150,7 @@ renamed AS (
     account_demographics_employee_count__c AS account_employee_count,
     account_demographic_max_family_employees__c AS account_max_family_employee,
     account_demographics_upa_country__c AS account_upa_country,
+    account_demographics_upa_country_name__c AS account_upa_country_name,
     account_demographics_upa_state__c AS account_upa_state,
     account_demographics_upa_city__c AS account_upa_city,
     account_demographics_upa_street__c AS account_upa_street,

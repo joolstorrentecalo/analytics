@@ -50,7 +50,6 @@ WITH sfdc_opportunity_snapshots AS (
       type                           AS sales_type,
       {{  sfdc_source_buckets('leadsource') }}
       stagename                      AS stage_name,
-      revenue_type__c                AS order_type,
 
       --Stamped User Segment fields
       {{ sales_hierarchy_sales_segment_cleaning('user_segment_o__c') }}

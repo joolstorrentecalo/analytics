@@ -271,12 +271,13 @@
 
 {% docs mart_ping_instance_metric_monthly %}
 
-**Description:** Enriched instance Service Ping data for the last ping of the month per installation by ping and metric for 28-day and all-time metrics. This model is used for most monthly analysis and reporting. This is an enhanced version of `fct_ping_instance_metric_monthly`
+**Description:** Enriched instance Service Ping data for the last ping of the month per installation by ping and metric for 28-day and all-time metrics. This model is used for most monthly analysis and reporting. This is an enhanced version of `fct_ping_instance_metric_monthly`.
 - This data is enhanced with additional license, subscription, CRM account, and billing attributes for ease of analysis
 
 **Data Grain:**
-- dim_ping_instance_id
+- dim_installation_id
 - metrics_path
+- ping_created_date_month
 
 **Filters Applied to Model:**
 - Exclude non-production SaaS installations (ex: `staging.gitlab.com`)
@@ -313,8 +314,9 @@
 - This data is enhanced with additional license, subscription, CRM account, and billing attributes for ease of analysis
 
 **Data Grain:**
-- dim_ping_instance_id
+- dim_installation_id
 - metrics_path
+- ping_created_date_week
 
 **Filters Applied to Model:**
 - Exclude non-production SaaS installations (ex: `staging.gitlab.com`)

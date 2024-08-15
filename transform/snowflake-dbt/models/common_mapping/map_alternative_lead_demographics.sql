@@ -1,3 +1,8 @@
+{{ config(
+    materialized="table",
+    tags=["mnpi_exception"]
+) }}
+
 {{ simple_cte([
     ('dim_crm_person','dim_crm_person')
 ]) }},

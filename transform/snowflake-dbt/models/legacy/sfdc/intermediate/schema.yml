@@ -4,24 +4,24 @@ models:
     description: source model for SFDC Accounts
     columns:
       - name: account_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: account_name
-        tests:
+        data_tests:
           - not_null
       - name: is_sdr_target_account
-        tests:
+        data_tests:
           - not_null
   - name: sfdc_bizible_attribution_touchpoint
     description: Attribution touchpoints are on opportunities.
     columns:
         - name: touchpoint_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: campaign_id
-          tests:
+          data_tests:
               - not_null
               - relationships:
                     to: ref('sfdc_campaign')
@@ -30,60 +30,60 @@ models:
     description: Touch points are on leads and contacts.
     columns:
         - name: touchpoint_id
-          tests:
+          data_tests:
               - unique
               - not_null
   - name: sfdc_campaign
     description: source model for SFDC Campaigns
     columns:
         - name: campaign_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: campaign_name
-          tests:
+          data_tests:
               - not_null
   - name: sfdc_campaign_member
     description: The source model for SFDC Campaign Members
     columns:
         - name: campaign_member_id
-          tests:
+          data_tests:
               - not_null
               - unique
   - name: sfdc_contact
     description: source model for SFDC Contacts
     columns:
         - name: contact_id
-          tests:
+          data_tests:
               - not_null
               - unique
   - name: sfdc_executive_business_review
     description: base model for SFDC Executive Business Reviews
     columns:
         - name: account_id
-          tests:
+          data_tests:
               - not_null
               - relationships:
                     to: ref('sfdc_account')
                     field: account_id
         - name: ebr_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: ebr_date
-          tests:
+          data_tests:
               - not_null
         - name: owner_id
-          tests:
+          data_tests:
               - not_null
         - name: ebr_name
-          tests:
+          data_tests:
               - not_null
   - name: sfdc_lead
     description: base model for SFDC Leads
     columns:
         - name: lead_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: sales_segmentation
@@ -92,17 +92,17 @@ models:
     description: base model for SFDC Opportunities
     columns:
         - name: account_id
-          tests:
+          data_tests:
               - not_null
         - name: opportunity_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: opportunity_name
-          tests:
+          data_tests:
               - not_null
         - name: stage_name
-          tests:
+          data_tests:
               - not_null
               - relationships:
                     to: ref('sfdc_opportunity_stage')
@@ -111,40 +111,40 @@ models:
     description: base model for SFDC Opportunity Contact Role
     columns:
         - name: opportunity_contact_role_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: opportunity_id
-          tests:
+          data_tests:
               - not_null
         - name: contact_id
-          tests:
+          data_tests:
               - not_null
   - name: sfdc_opportunity_field_history
     description: base model for SFDC Opportunity Field History
     columns:
         - name: field_history_id
-          tests:
+          data_tests:
               - not_null
         - name: opportunity_id
-          tests:
+          data_tests:
               - not_null
   - name: sfdc_opportunity_stage
     description: base model for SFDC Opportunity Stages
     columns:
         - name: sfdc_id
-          tests:
+          data_tests:
               - not_null
               - unique
   - name: sfdc_professional_services_engagement
     description: base model for SFDC Professional Services Engagements
     columns:
         - name: ps_engagement_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: opportunity_id
-          tests:
+          data_tests:
               - not_null
               - relationships:
                     to: ref('sfdc_opportunity')
@@ -153,47 +153,47 @@ models:
     description: base model for SFDC Proof of Value
     columns:
         - name: account_id
-          tests:
+          data_tests:
               - relationships:
                     to: ref('dim_crm_account')
                     field: dim_crm_account_id
         - name: opportunity_id
-          tests:
+          data_tests:
               - relationships:
                     to: ref('sfdc_opportunity')
                     field: opportunity_id
         - name: pov_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: pov_status
-          tests:
+          data_tests:
               - not_null
   - name: sfdc_quote
     description: base model for SFDC Zuora Quotes
     columns:
         - name: quote_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: owner_id
-          tests:
+          data_tests:
               - not_null
   - name: sfdc_record_type
     description: base model for SFDC Record Types
     columns:
         - name: record_type_id
-          tests:
+          data_tests:
               - not_null
               - unique
         - name: record_type_name
-          tests:
+          data_tests:
               - not_null
   - name: sfdc_user_roles
     description: base model for SFDC User Roles
     columns:
         - name: id
-          tests:
+          data_tests:
               - not_null
               - unique
 
@@ -201,7 +201,7 @@ models:
     description: base model for SFDC Users
     columns:
         - name: user_id
-          tests:
+          data_tests:
               - not_null
               - unique
 
@@ -209,7 +209,7 @@ models:
     description: Base model for SFDC tasks
     columns:
       - name: task_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: full_comments

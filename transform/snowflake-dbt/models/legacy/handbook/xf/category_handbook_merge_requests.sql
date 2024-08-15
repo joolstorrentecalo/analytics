@@ -32,10 +32,9 @@ WITH merge_requests AS (
     FROM mr_files
     INNER JOIN merge_requests
       ON mr_files.merge_request_iid = merge_requests.merge_request_internal_id
-        AND merge_requests.project_id = 7764 --handbook project
+        AND merge_requests.project_id IN (7764,42817607) --handbook project
     LEFT JOIN file_classifications
       ON LOWER(mr_files.handbook_file_edited) LIKE '%' || file_classifications.handbook_path || '%'
-    WHERE merge_requests.is_merge_to_master 
 
 ), renamed AS (
 

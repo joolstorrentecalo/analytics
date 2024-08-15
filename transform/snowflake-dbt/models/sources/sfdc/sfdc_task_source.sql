@@ -16,7 +16,6 @@ WITH source AS (
       whatid                                    AS account_or_opportunity_id,
       recordtypeid                              AS record_type_id,
       related_to_account_name__c                AS related_to_account_name,
-      pf_order_id__c                            AS pf_order_id,
       related_to_lead__c                        AS related_lead_id,
       related_to_contact__c                     AS related_contact_id,
       related_to_opportunity__c                 AS related_opportunity_id,
@@ -27,6 +26,8 @@ WITH source AS (
       comments__c                               AS comments,
       description                               AS full_comments,
       subject                                   AS task_subject,
+      {{ partner_marketing_task_subject_cleaning('subject') }} 
+                                                AS partner_marketing_task_subject,
       activitydate                              AS task_date,
       createddate                               AS task_created_date,
       createdbyid                               AS task_created_by_id,
@@ -49,7 +50,6 @@ WITH source AS (
       -- Activity infromation
       activity_disposition__c                   AS activity_disposition,
       activity_source__c                        AS activity_source,
-      activity__c                               AS activity,
       csm_activity_type__c                      AS csm_activity_type,
       sa_activity_type__c                       AS sa_activity_type,
       gs_activity_type__c                       AS gs_activity_type,
@@ -65,11 +65,7 @@ WITH source AS (
       calldurationinseconds                     AS call_duration_in_seconds,
       call_recording__c                         AS call_recording,
       is_answered__c                            AS is_answered,
-      is_bad_number__c                          AS is_bad_number,
-      is_busy__c                                AS is_busy,
       is_correct_contact__c                     AS is_correct_contact,
-      is_not_answered__c                        AS is_not_answered,
-      is_left_message__c                        AS is_left_message,
 
       -- Reminder information
       isreminderset                             AS is_reminder_set,

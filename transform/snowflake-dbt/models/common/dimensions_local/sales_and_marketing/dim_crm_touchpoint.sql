@@ -95,6 +95,10 @@ WITH campaign_details AS (
       COALESCE(bizible_landing_page_utm_content, bizible_form_page_utm_content)     AS utm_content,
       COALESCE(bizible_landing_page_utm_allptnr, bizible_form_page_utm_allptnr)     AS utm_allptnr,
       COALESCE(bizible_landing_page_utm_partnerid, bizible_form_page_utm_partnerid) AS utm_partnerid,
+      
+      -- new utm parsing
+    {{ utm_campaign_parsing('utm_campaign') }}
+    {{ utm_content_parsing('utm_content') }}
       bizible_marketing_channel,
       bizible_marketing_channel_path,
       bizible_medium,
@@ -157,6 +161,10 @@ WITH campaign_details AS (
       COALESCE(bizible_landing_page_utm_allptnr, bizible_form_page_utm_allptnr)     AS utm_allptnr,
       COALESCE(bizible_landing_page_utm_partnerid, bizible_form_page_utm_partnerid) AS utm_partnerid,
 
+    -- new utm parsing
+    {{ utm_campaign_parsing('utm_campaign') }}
+    {{ utm_content_parsing('utm_content') }}
+
       bizible_marketing_channel,
       CASE
         WHEN dim_parent_campaign_id = '7014M000001dn8MQAQ' THEN 'Paid Social.LinkedIn Lead Gen'
@@ -209,6 +217,17 @@ WITH campaign_details AS (
       combined_touchpoints.utm_budget,
       combined_touchpoints.utm_allptnr,
       combined_touchpoints.utm_partnerid,
+      combined_touchpoints.utm_campaign_date,
+      combined_touchpoints.utm_campaign_region,
+      combined_touchpoints.utm_campaign_budget,
+      combined_touchpoints.utm_campaign_type,
+      combined_touchpoints.utm_campaign_gtm,
+      combined_touchpoints.utm_campaign_language,
+      combined_touchpoints.utm_campaign_name,
+      combined_touchpoints.utm_campaign_agency,
+      combined_touchpoints.utm_content_offer,
+      combined_touchpoints.utm_content_asset_type,
+      combined_touchpoints.utm_content_industry,
       combined_touchpoints.bizible_marketing_channel,
       combined_touchpoints.bizible_marketing_channel_path,
       combined_touchpoints.bizible_medium,
@@ -277,6 +296,7 @@ WITH campaign_details AS (
       ON combined_touchpoints.dim_crm_touchpoint_id = bizible_campaign_grouping.dim_crm_touchpoint_id
     LEFT JOIN devrel_influence_campaigns
       ON combined_touchpoints.bizible_ad_campaign_name = devrel_influence_campaigns.campaign_name
+    WHERE combined_touchpoints.dim_crm_touchpoint_id IS NOT NULL
 )
 
 {{ dbt_audit(
@@ -284,5 +304,5 @@ WITH campaign_details AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2021-01-21",
-    updated_date="2024-01-31" 
+    updated_date="2024-05-30" 
 ) }}

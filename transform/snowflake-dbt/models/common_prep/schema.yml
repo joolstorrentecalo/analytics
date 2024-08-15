@@ -5,7 +5,7 @@ models:
     description: '{{ doc("prep_alliance_type_scd") }}'
     columns:
       - name: dim_alliance_type_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
@@ -14,7 +14,7 @@ models:
     description: Prep table for Zuora Amendments that increment subscription versions. This prep table will be used in Facts and Dimensions.
     columns:
       - name: dim_amendment_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "arr"]
@@ -24,7 +24,7 @@ models:
     columns:
       - name: dim_app_release_sk
         description: '{{ ("dim_app_release_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: app_release_id
@@ -34,7 +34,7 @@ models:
     description: Prep table to select the kubernetes with agents and add aditional information such as the ultimate_namespace_id.
     columns:
       - name: cluster_agent_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -42,17 +42,17 @@ models:
     description: Base model for the dim_subscription snapshot data
     columns:
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_dr_partner_engagement
     description: '{{ doc("prep_dr_partner_engagement") }}'
     columns:
       - name: dim_dr_partner_engagement_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "sales_funnel"]
@@ -61,7 +61,7 @@ models:
     description: Prep table for the source data of the data being exposed in dimensional tables where various sources are combined.
     columns:
       - name: dim_environment_id
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common"]
@@ -70,13 +70,13 @@ models:
     description: ' {{ doc("prep_epic_user_request_collaboration_project") }} '
     columns:
       - name: epic_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: CONCAT(epic_id, dim_crm_account_id)
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -84,13 +84,13 @@ models:
     description: ' {{ doc("prep_epic_user_request") }} '
     columns:
       - name: epic_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: CONCAT(epic_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -98,13 +98,13 @@ models:
     description: ' {{ doc("prep_issue_user_request_collaboration_project") }} '
     columns:
       - name: dim_issue_sk
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: CONCAT(issue_id, dim_crm_account_id, dim_original_issue_project_id, original_issue_internal_id)
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -112,13 +112,13 @@ models:
     description: ' {{ doc("prep_issue_user_request") }} '
     columns:
       - name: dim_issue_sk
-        tests:
+        data_tests:
           - not_null
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
       - name: CONCAT(issue_id, dim_crm_account_id, dim_crm_opportunity_id, dim_ticket_id)
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -127,7 +127,7 @@ models:
     columns:
       - name: dim_campaign_id
         description: Unique identifier of a marketing campaign
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: campaign_partner_crm_id
@@ -142,7 +142,7 @@ models:
     columns:
       - name: dim_crm_person_id
         description: Unique identifier of a Salesforce contact or lead
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: is_high_priority
@@ -154,13 +154,98 @@ models:
         description: The Salesforce grade of the lead score for a lead/contact. 
       - name: is_defaulted_trial
         description: Boolean value of whether or not a lead/contact was defaulted to a trial.
+      - name: bizible_mql_touchpoint_id
+        description: The bizible touchpoint id, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_touchpoint_date
+        description: The bizible touchpoint date, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_form_url
+        description: The bizible touchpoint form url, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_sfdc_campaign_id
+        description: The sfdc campaign id, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_ad_campaign_name
+        description: The bizible touchpoint ad campaign name, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_marketing_channel
+        description: The bizible touchpoint marketing channel, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_marketing_channel_path
+        description: The bizible touchpoint marketing channel path, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_most_recent_touchpoint_id
+        description: The bizible touchpoint id, of the most recent touchpoint.  
+      - name: bizible_most_recent_touchpoint_date
+        description: The bizible touchpoint date, of the most recent touchpoint.  
+      - name: bizible_most_recent_form_url
+        description: The bizible touchpoint form url,of the most recent touchpoint. 
+      - name: bizible_most_recent_sfdc_campaign_id
+        description: The sfdc campaign id, of the most recent touchpoint. 
+      - name: bizible_most_recent_ad_campaign_name
+        description: The bizible touchpoint ad campaign name, of the most recent touchpoint.
+      - name: bizible_most_recent_marketing_channel
+        description: The bizible touchpoint marketing channel, of the most recent touchpoint. 
+      - name: bizible_most_recent_marketing_channel_path
+        description: The bizible touchpoint marketing channel path, of the most recent touchpoint.
+      - name: has_six_sense_6_qa
+        description: The 6QA status of the person for the product.
+      - name: six_sense_account_6_qa_end_date
+        description: The date the person's account was disqualified from 6QA status 
+      - name: six_sense_account_6_qa_start_date
+        description: The date the person's account qualified for 6QA status 
+      - name: six_sense_account_buying_stage
+        description: The 6QA buying stage of the person's account
+      - name: six_sense_account_profile_fit
+        description: A measure of how similar a person's company is to the ideal customer profile.
+      - name: six_sense_person_grade
+        description: The 6Sense gradation of a person's engagement score. 
+      - name: six_sense_person_profile_fit
+        description: A measure of how similar a person is to the ideal customer profile.
+      - name: six_sense_person_update_date
+        description: The latest update date and time when 6sense Scores were updated.
+      - name: six_sense_segments
+        description: The Person's 6QA segment. 
+      - name: inactive_contact
+        description: A SFDC Contact field that shows whether or not a given contact is still with the company/account they are related to. 
+
+  - name: prep_bizible_touchpoint_information
+    description: Touchpoint information from key marketing and sales milestones.
+    columns:
+      - name: sfdc_record_id
+        description: Primary key for Salesforce person records and the primary key for this dimension
+        tests:
+          - unique
+          - not_null
+      - name: bizible_mql_touchpoint_id
+        description: The bizible touchpoint id, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_touchpoint_date
+        description: The bizible touchpoint date, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_form_url
+        description: The bizible touchpoint form url, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_sfdc_campaign_id
+        description: The sfdc campaign id, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_ad_campaign_name
+        description: The bizible touchpoint ad campaign name, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_marketing_channel
+        description: The bizible touchpoint marketing channel, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_mql_marketing_channel_path
+        description: The bizible touchpoint marketing channel path, of the touchpoint directly preceding the person's Marketo MQL Date. 
+      - name: bizible_most_recent_touchpoint_id
+        description: The bizible touchpoint id, of the most recent touchpoint.  
+      - name: bizible_most_recent_touchpoint_date
+        description: The bizible touchpoint date, of the most recent touchpoint.  
+      - name: bizible_most_recent_form_url
+        description: The bizible touchpoint form url,of the most recent touchpoint. 
+      - name: bizible_most_recent_sfdc_campaign_id
+        description: The sfdc campaign id, of the most recent touchpoint. 
+      - name: bizible_most_recent_ad_campaign_name
+        description: The bizible touchpoint ad campaign name, of the most recent touchpoint.
+      - name: bizible_most_recent_marketing_channel
+        description: The bizible touchpoint marketing channel, of the most recent touchpoint. 
+      - name: bizible_most_recent_marketing_channel_path
+        description: The bizible touchpoint marketing channel path, of the most recent touchpoint.
 
   - name: prep_crm_user
     description: '{{ doc("prep_crm_user") }}'
     columns:
       - name: dim_crm_user_id
         description: Unique identifier of a Salesforce user
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -169,7 +254,7 @@ models:
     columns:
       - name: touchpoint_id
         description: Unique identifier of a Salesforce Bizible Person touchpoint
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -178,7 +263,7 @@ models:
     columns:
       - name: touchpoint_id
         description: Unique identifier of a Salesforce Bizible Attribution touchpoint
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -187,7 +272,7 @@ models:
     columns:
       - name: dim_crm_user_hierarchy_id
         description: Unique identifier of a sales hierarchy tier
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -196,7 +281,7 @@ models:
     columns:
       - name: dim_app_release_major_minor_sk
         description: '{{ doc("dim_app_release_major_minor_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: app_release_major_minor_id
@@ -207,7 +292,7 @@ models:
     columns:
       - name: dim_industry_id
         description: Unique identifier of an industry
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -216,7 +301,7 @@ models:
     columns:
       - name: dim_location_country_id
         description: Unique identifier of a country
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -225,7 +310,7 @@ models:
     columns:
       - name: dim_location_region_id
         description: Unique identifier of a geographical region
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -234,7 +319,7 @@ models:
     columns:
       - name: dim_bizible_marketing_channel_path_id
         description: Unique identifier of a Bizible marketing channel path
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -242,14 +327,14 @@ models:
     description: '{{ doc("dim_namespace_hist") }}'
     columns:
       - name: namespace_snapshot_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_namespace_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
@@ -257,10 +342,10 @@ models:
     description: '{{ doc("dim_namespace_plan_hist") }}'
     columns:
       - name: dim_namespace_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_namespace_plan_subscription_hist_id
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -268,11 +353,11 @@ models:
     description: '{{ doc("dim_namespace") }}'
     columns:
       - name: dim_namespace_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: ultimate_parent_namespace_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: namespace_is_ultimate_parent
@@ -283,7 +368,7 @@ models:
       - name: owner_id
       - name: namespace_type
         description: '{{ doc("namespace_type") }}'
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: has_avatar
@@ -328,7 +413,7 @@ models:
         description: '{{ doc("namespace_has_code_suggestions_enabled") }}'
       - name: is_currently_valid
         description: Flags whether the namespace is currently valid. `FALSE` if the namespace has been deleted.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: namespace_name_unmasked
@@ -340,20 +425,20 @@ models:
     description: '{{ doc("dim_order_hist") }}'
     columns:
       - name: dim_order_id
-        tests:
+        data_tests:
           - not_null
       - name: customer_id
-        tests:
+        data_tests:
           - not_null
       - name: product_rate_plan_id
       - name: dim_subscription_id
       - name: dim_namespace_id
       - name: dim_billing_account_id
       - name: order_created_at
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
@@ -362,7 +447,7 @@ models:
     columns:
       - name: dim_sales_qualified_source_id
         description: Unique identifier of a sales qualified opportunity source
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -371,7 +456,7 @@ models:
     columns:
       - name: dim_order_type_id
         description: Unique identifier of an order type
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -380,12 +465,12 @@ models:
     columns:
       - name: dim_sales_funnel_kpi_sk
         description: '{{ doc("dim_sales_funnel_kpi_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: sales_funnel_kpi_name
         description: '{{ doc("sales_funnel_kpi_name") }}'
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_deal_path
@@ -393,7 +478,7 @@ models:
     columns:
       - name: dim_deal_path_id
         description: Unique identifier of a deal_path
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -401,29 +486,29 @@ models:
     description: '{{ doc("prep_gitlab_dotcom_application_settings_monthly") }}'
     columns:
       - name: primary_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: snapshot_month
-        tests:
+        data_tests:
           - not_null
       - name: application_settings_id
-        tests:
+        data_tests:
           - not_null
       - name: shared_runners_minutes
         description: Default CI minutes limit for new all namespaces when no paid plan has been purchased.
-        tests:
+        data_tests:
           - not_null
       - name: repository_size_limit
         description: Default storage limit (per project reposity) for new all namespaces when no paid plan has been purchased.
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_gitlab_dotcom_plan
     description: '{{ doc("prep_gitlab_dotcom_plan") }}'
     columns:
       - name: dim_plan_id
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_plan_id") }}'
@@ -470,13 +555,17 @@ models:
         description: The date when the product expires and can't be subscribed to anymore
       - name: is_oss_or_edu_rate_plan
         description: Flag for rate plans containing OSS or EDU
+      - name: product_category
+        description: Categorizes Zuora products as either Add On Services or Base Products
+      - name: product_rate_plan_category
+        description: On created opportunities (Web store/Sales assisted), the Product category field is be populated at the Rate plan level in Salesforce. Aides identification of Agile Planning and Duo Pro SKUs, flowing from salesforce..
 
   - name: prep_ptp_scores_by_user
     description: '{{ doc("prep_ptp_scores_by_user") }}'
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
-        tests:
+        data_tests:
           - not_null
           
   - name: prep_ptp_scores_by_user_historical
@@ -484,18 +573,18 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
         description: First date score_group and ptp_source combo is valid from for the marketing contact
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
         description: Last date score_group and ptp_source combo is valid from for the marketin contact
 
   - name: prep_ptpt_scores_by_user
     description: '{{ doc("prep_ptpt_scores_by_user") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - dim_marketing_contact_id
@@ -503,16 +592,16 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
-        tests:
+        data_tests:
           - not_null
       - name: score_date
         description: Date of the score.
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_ptpf_scores_by_user
     description: '{{ doc("prep_ptpf_scores_by_user") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - dim_marketing_contact_id
@@ -520,16 +609,16 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
-        tests:
+        data_tests:
           - not_null
       - name: score_date
         description: Date of the score.
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_ptpl_scores_by_user
     description: '{{ doc("prep_ptpl_scores_by_user") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - dim_marketing_contact_id
@@ -537,11 +626,11 @@ models:
     columns:
       - name: dim_marketing_contact_id
         description: Unique identifier for the marketing contact.
-        tests:
+        data_tests:
           - not_null
       - name: score_date
         description: Date of the score.
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_sales_segment
@@ -549,7 +638,7 @@ models:
     columns:
       - name: dim_sales_segment_id
         description: Unique identifier of a sales segment
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -558,7 +647,7 @@ models:
     columns:
       - name: dim_sales_territory_id
         description: Unique identifier of a geo area
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -567,7 +656,7 @@ models:
     columns:
       - name: dim_subscription_id
         description: Unique identifier of a version of a subscription
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
@@ -584,7 +673,7 @@ models:
         description: The unique identifier of the subscription
       - name: subscription_status
         description: The status of the subscription
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: ['Active', 'Cancelled', 'Draft', 'Expired']
@@ -611,7 +700,7 @@ models:
         description: The month when the subscription term ends. This month is the same as the term end month or the cancelation month, as appropriate.
       - name: subscription_sales_type
         description: Identifies whether a subscription is Sales-Assisted or Self-Service / Web Direct.
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
                   values: ['Sales-Assisted', 'Self-Service']
@@ -633,7 +722,7 @@ models:
     description:  '{{doc("prep_subscription_lineage")}}'
     columns:
         - name: subscription_name_slugify
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: lineage
@@ -643,20 +732,20 @@ models:
     description: '{{ doc("prep_subscription_lineage_parentage_finish") }}'
     columns:
         - name: ultimate_parent_sub
-          tests:
+          data_tests:
             - not_null
         - name: child_sub
-          tests:
+          data_tests:
             - not_null
             - unique
         - name: cohort_month
-          tests:
+          data_tests:
             - not_null
         - name: cohort_quarter
-          tests:
+          data_tests:
             - not_null
         - name: cohort_year
-          tests:
+          data_tests:
             - not_null
   - name: prep_subscription_lineage_parentage_start
     description: '{{doc("prep_subscription_lineage_parentage_start")}}'
@@ -665,16 +754,16 @@ models:
     description: '{{ doc("prep_subscription_lineage_intermediate") }}'
     columns:
       - name: sub_row
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [ '1' ]
       - name: subscription_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: subscription_status
-        tests:
+        data_tests:
           - not_null
           - accepted_values:
               values: [ 'Active','Cancelled' ]
@@ -684,13 +773,13 @@ models:
     columns:
       - name: dim_product_tier_id
         description: "The unique identifier of Pricing tiers for Zuora Products"
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
       - name: product_tier_historical
         description: Product pricing tiers prior to [tier renaming](https://gitlab-com.gitlab.io/packaging-and-pricing/pricing-handbook/handbook/renaming_tiers/) (early 2021).
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
@@ -698,7 +787,7 @@ models:
         description: Pulls the product tier from `product_tier_historical` with the delivery type removed
       - name: product_tier_name
         description: Product [pricing tiers](https://about.gitlab.com/handbook/marketing/strategic-marketing/tiers/) for both SaaS and Self-Managed customers. Includes the mapping from SaaS - Silver to SaaS - Premium, and from SaaS - Gold to SaaS - Ultimate.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: product_tier_name_short
@@ -715,19 +804,19 @@ models:
     columns:
       - name: dim_license_id
         description: The unique ID of a generated license.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
       - name: license_md5
         description: The md5 hash of the license file. Use this field to join to fct_usage_ping_payloads.
-        tests:
+        data_tests:
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
       - name: license_sha256
         description: The license_sha256 is a secure hash created off the license file to be compliant with FIPS. This field can be used to join to the Service ping data.
-        tests: 
+        data_tests: 
           - not_null
           - unique
         tags: ["tdf", "common", "gainsight"]
@@ -762,33 +851,33 @@ models:
     description: '{{ doc("prep_usage_self_managed_seat_link") }}'
     columns:
       - name: customers_db_order_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: order_subscription_id
         description: Zuora subscription ID listed on the order in the Customers source database.
       - name: dim_subscription_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_original
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id_previous
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_crm_account_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_billing_account_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_product_tier_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: subscription_name
@@ -797,14 +886,14 @@ models:
         description: Count of active users currently on the customer's subcription. A count of 0 indicates that Seat Link has been turned off by the customer.
       - name: license_user_count
         description: Count of licensed users purchased with the customer's subcription.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: max_historical_user_count
         description: Maximum active user count ever reported over the lifetime of the customer's subcription.
       - name: report_date
         description: Day on which Seat Link usage data is reported. Should always be last day of month for historical months.
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: is_last_seat_link_report_per_subscription
@@ -822,7 +911,7 @@ models:
     description: '{{ doc("prep_latest_seat_link_installation") }}'
     columns:
       - name: latest_seat_link_installation_sk
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -840,17 +929,17 @@ models:
     description: '{{ doc("prep_saas_usage_ping_free_user_metrics") }}'
     columns:
       - name: dim_namespace_id
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: dim_subscription_id
       - name: dim_crm_account_id
       - name: reporting_month
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: ping_date
-        tests:
+        data_tests:
           - not_null
         tags: ["tdf", "common", "gainsight"]
       - name: usage_activity_by_stage_monthly.manage.events
@@ -1052,7 +1141,7 @@ models:
     description: '{{ doc("prep_event_all") }}'
     columns:
       - name: event_pk
-        # tests:
+        # data_tests:
           # - not_null
           # - unique
       - name: event_id
@@ -1062,15 +1151,17 @@ models:
     description: '{{ doc("prep_ci_pipeline") }}'
     columns:
       - name: dim_ci_pipeline_id
-        tests:
+        data_tests:
           - not_null
           - unique
+      - name: ci_pipeline_source 
+        description: Defines failure reasions based on the [pipeline.rb](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/enums/ci/pipeline.rb#L8-21) file
 
   - name: prep_action
     description: '{{ doc("prep_action") }}'
     columns:
       - name: dim_action_id
-        tests:
+        data_tests:
           - unique:
               config:
                 where: "created_at >= DATEADD('day',-3,CURRENT_DATE())"
@@ -1084,7 +1175,7 @@ models:
     description: '{{ doc("prep_user") }}'
     columns:
       - name: dim_user_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: is_blocked_user
@@ -1107,13 +1198,19 @@ models:
         description: User Country selected during registration
       - name: state
         description: A state that is part of the given country selected during registration 
+      - name: user_type_id
+        description: '{{ doc("user_type_id") }}'
+      - name: user_type
+        description: '{{ doc("user_type") }}'
+      - name: is_bot
+        description: '{{ doc("is_bot") }}'
 
   - name: prep_ci_build
     description: '{{ doc("prep_ci_build") }}'
     columns:
       - name: dim_ci_build_id
         description: Unique key of CI Build
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
@@ -1130,13 +1227,15 @@ models:
       - name: dim_ci_runner_id
         description: ID of the runner with which the CI build has been run.
       - name: dim_ci_stage_id
+      - name: failure_reason
+        description: The reason for build failure as defined in [commit_status.rb](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/enums/ci/commit_status.rb)
 
   - name: prep_ci_runner
     description: '{{ doc("prep_ci_runner") }}'
     columns:
       - name: dim_ci_runner_id
         description: The unique ID of the runner with which the CI build has been run
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: created_date_id
@@ -1165,32 +1264,32 @@ models:
     description: '{{ doc("dim_ci_stage") }}'
     columns:
       - name: dim_ci_stage_id
-        tests:
+        data_tests:
           - not_null
           - unique:
               config:
                 where: "created_at >= DATEADD('day',-3,CURRENT_DATE())"
       - name: dim_project_id
         description: Foreign key to `dim_project` that shows the ID of the project in which the stage was run. Defaults to `-1` if a project ID from the CI builds source table is not found in `dim_project`.
-        tests:
+        data_tests:
           - not_null
       - name: dim_ci_pipeline_id
         description: Foreign key to `dim_ci_pipeline` that shows the ID of the pipeline in which the stage was run. Defaults to `-1` if a CI pipeline ID from the CI builds source table is not found in `dim_ci_pipeline`.
-        tests:
+        data_tests:
           - not_null
       - name: created_date_id
         description: Foreign key to `dim_date` that shows the ID of the date on which the stage was created. Defaults to `-1` if a date ID from the CI builds source table is not found in `dim_date`.
-        tests:
+        data_tests:
           - not_null
       - name: created_at
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_issue
     description: '{{ doc("prep_issue") }}'
     columns:
       - name: dim_issue_sk
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: masked_label_title
@@ -1200,7 +1299,7 @@ models:
     description: '{{ doc("prep_note") }}'
     columns:
       - name: dim_note_id
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -1208,7 +1307,7 @@ models:
     description: '{{ doc("prep_merge_request") }}'
     columns:
       - name: dim_merge_request_sk
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -1216,18 +1315,18 @@ models:
     description: '{{ doc("prep_member_accepted_invites") }}'
     columns:
       - name: dim_member_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: ultimate_parent_namespace_id
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_epic
     description: '{{ doc("prep_epic") }}'
     columns:
       - name: dim_epic_sk
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: dim_plan_id_at_creation
@@ -1239,48 +1338,48 @@ models:
     description: '{{ doc("prep_deployment") }}'
     columns:
       - name: dim_deployment_id
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: prep_issue_severity
     description: '{{ doc("prep_issue_severity") }}'
     columns:
       - name: dim_issue_severity_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: issue_id
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: prep_label_links
     description: '{{ doc("prep_label_links") }}'
     columns:
       - name: dim_label_link_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_label_id
-        tests:
+        data_tests:
           - not_null
   - name: prep_labels
     description: '{{ doc("prep_labels") }}'
     columns:
       - name: dim_label_id
-        tests:
+        data_tests:
           - not_null
           - unique
   - name: prep_issue_links
     description: '{{ doc("prep_issue_links") }}'
     columns:
       - name: dim_issue_link_id
-        tests:
+        data_tests:
           - not_null
       - name: dim_issue_sk_source
-        tests:
+        data_tests:
           - not_null
       - name: dim_issue_sk_target
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_package
@@ -1288,7 +1387,7 @@ models:
     columns:
       - name: dim_package_sk
         description: '{{ ("dim_package_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: package_id
@@ -1316,7 +1415,7 @@ models:
     description: '{{ doc("prep_release") }}'
     columns:
       - name: dim_release_id
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -1325,7 +1424,7 @@ models:
     columns:
       - name: dim_requirement_sk
         description: '{{ doc("dim_requirement_sk") }}'
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: requirement_id
@@ -1356,7 +1455,7 @@ models:
         description: The label of a geographical region.
       - name: geozone_factor
         description: The location factor for the given geozone.
-        tests:
+        data_tests:
           - not_null
       - name: geozone_locality
         description: The locality at the level of the given geozone.
@@ -1386,7 +1485,7 @@ models:
         description: The metro area of a given locality.
       - name: locality
         description: The combination of area and country that uniquely defines a geographic location.
-        tests:
+        data_tests:
           - not_null
       - name: location_factor
         description: The label of a geographical region.
@@ -1401,7 +1500,7 @@ models:
     description: The host_id and host_name of the self-managed instance.
     columns:
       - name: dim_host_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: host_name
@@ -1410,7 +1509,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_todo_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: author_id
@@ -1424,7 +1523,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_issue_label_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1432,7 +1531,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_environment_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1440,7 +1539,7 @@ models:
     desctiption: Prep table used in `prep_event`
     columns:
       - name: dim_resource_milestone_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1448,7 +1547,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_ci_job_artifact_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1456,7 +1555,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_board_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1464,7 +1563,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_auto_devops_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1473,7 +1572,7 @@ models:
     columns:
       - name: dim_integration_sk
         description: '{{ doc("dim_integration_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: integration_id
@@ -1499,7 +1598,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_resource_weight_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1508,7 +1607,7 @@ models:
     columns:
       - name: dim_milestone_sk
         description: '{{ doc("dim_milestone_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: milestone_id
@@ -1542,7 +1641,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_ci_pipeline_schedule_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1550,7 +1649,7 @@ models:
     description: Prep table used in `prep_event`
     columns:
       - name: dim_ci_trigger_id
-        tests:
+        data_tests:
           - not_null
           - unique
 
@@ -1559,7 +1658,7 @@ models:
     columns:
       - name: dim_snippet_sk
         description: '{{ doc("dim_snippet_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: snippet_id
@@ -1585,7 +1684,7 @@ models:
     description: ' {{ doc("prep_ping_instance") }} '
     columns:
       - name: dim_ping_instance_id
-        tests:
+        data_tests:
           - not_null
           - unique
         description: '{{ doc("dim_ping_instance_id") }}'
@@ -1599,7 +1698,7 @@ models:
         description: '{{ doc("ping_created_at") }}'
       - name: uploaded_at
         description: '{{ doc("uploaded_at") }}'
-        tests:
+        data_tests:
           - not_null
       - name: original_edition
         description: '{{ doc("original_edition") }}'
@@ -1729,8 +1828,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: is_saas_dedicated
         description: '{{ doc("is_saas_dedicated") }}'
       - name: ping_delivery_type
@@ -1743,7 +1840,7 @@ models:
     description: ' {{ doc("prep_ping_instance_flattened") }} '
     columns:
       - name: ping_instance_flattened_id
-        tests:
+        data_tests:
           - not_null
           #- unique --Commenting this as the model is erroring out due to a waarehouse timeout limit of 1800 seconds
         description: The unique ID of the prep_ping_instance_flattened model consisting of dim_ping_instance_id and path
@@ -1797,8 +1894,6 @@ models:
         description: '{{ doc("ping_delivery_type") }}'
       - name: ping_deployment_type
         description: '{{ doc("ping_deployment_type") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: version
         description: '{{ doc("version_ping_model") }}'
 
@@ -1807,7 +1902,7 @@ models:
     columns:
       - name: zuora_user_id
         description: Unique identifier of a Zuora Billing user
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: email
@@ -1828,7 +1923,7 @@ models:
     columns:
       - name: dim_crm_task_sk
         description: The unique surrogate key of a [task activity](https://help.salesforce.com/s/articleView?id=sf.tasks.htm&type=5) related to Salesforce account, opportunity, lead, or contact.
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: full_comments
@@ -1843,7 +1938,7 @@ models:
     columns:
       - name: performance_indicator_pk
         description: The unique composite ID for the prep_performance_indicators_yaml consisting of _dbt_source_relation and unique_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: _dbt_source_relation
@@ -2099,15 +2194,51 @@ models:
       - name: is_staging_event
         description: '{{ doc("is_staging_event") }}'
       - name: gitlab_global_user_id
-        description: '{{ doc("code_suggestions_gitlab_global_user_id") }}'
+        description: '{{ doc("gitlab_global_user_id") }}'
       - name: gsc_feature_enabled_by_namespace_ids
         description: '{{ doc("gsc_feature_enabled_by_namespace_ids") }}'
+      - name: suggestion_source
+        description: ' {{ doc("code_suggestions_suggestion_source") }} '
+      - name: is_invoked
+        description: ' {{ doc("code_suggestions_is_invoked") }} '
+      - name: options_count
+        description: ' {{ doc("code_suggestions_options_count") }} '
+      - name: accepted_option
+        description: ' {{ doc("code_suggestions_accepted_option") }} '
+      - name: has_advanced_context
+        description: ' {{ doc("code_suggestions_has_advanced_context") }} '
+      - name: is_direct_connection
+        description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+      - name: instance_version
+        description: ' {{ doc("gsc_instance_version") }} '
+      - name: correlation_id
+        description: ' { doc("gsc_correlation_id") } '
+      - name: dim_instance_id
+        description: ' { doc("dim_instance_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
 
   - name: prep_snowplow_page_views_all
     description: View combining all snowplow_page_view partitions.
     
   - name: prep_team_member
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - employee_id
@@ -2115,10 +2246,10 @@ models:
     columns:
       - name: employee_id
         description: Workday Employee Identification 
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: first_name
       - name: last_name
@@ -2128,6 +2259,14 @@ models:
         description: Team member gitlab username 
       - name: region
         description: Current/latest region the team member resides in
+      - name: age_calculated 
+        description: Masked. Team member's age
+        meta:
+          masking_policy: analyst_people_sensitive    
+      - name: age_cohort 
+        description: Masked. Team member's age bucket
+        meta:
+          masking_policy: analyst_people_sensitive      
       - name: team_id
         description: Identification number of the team to which the particular team member belongs
       - name: hire_date
@@ -2160,6 +2299,14 @@ models:
         description: Masked. Team member date of birth
         meta:
           masking_policy: analyst_people_sensitive
+      - name: age_calculated 
+        description: Masked. Team member's age
+        meta:
+          masking_policy: analyst_people_sensitive    
+      - name: age_cohort 
+        description: Masked. Team member's age bucket
+        meta:
+          masking_policy: analyst_people_sensitive
       - name: key_talent_status 
         description: Masked. Team member Key Talent status
         meta:
@@ -2173,16 +2320,36 @@ models:
         meta:
           masking_policy: analyst_people_sensitive
       - name: employee_type
-        description: The employee type from the following list - Employee (PEO or Entity), Contractor (Independent, customer-to-customer or PEO), Intern, Consultant.
+        description: Masked. The employee type from the following list - Employee (PEO or Entity), Contractor (Independent, customer-to-customer or PEO), Intern, Consultant.
         meta:
           masking_policy: analyst_people_sensitive
+      - name: region_modified
+        description: Region modified for team members from the Americas. Team members are split into LATAM or NORAM
+      - name: gender_region
+        description: Masked. Team member's gender and region combined
+        meta:
+          masking_policy: analyst_people_sensitive
+      - name: ethnicity_region
+        description: Masked. Team member's ethnicity and region combined
+        meta:
+          masking_policy: analyst_people_sensitive
+      - name: urg_group
+        description: Masked. Team member's URG group
+        meta:
+          masking_policy: analyst_people_sensitive
+      - name: urg_region
+        description: Masked. Team member's URG region
+        meta:
+          masking_policy: analyst_people_sensitive
+  
+
 
   - name: prep_billing_account
     description: '{{ doc("prep_billing_account") }}'
     columns:
       - name: dim_billing_account_sk
         description: '{{ doc("dim_billing_account_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_crm_account_id
@@ -2216,7 +2383,7 @@ models:
     columns:
       - name: dim_user_sk
         description: '{{ doc("dim_user_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_user_id
@@ -2262,7 +2429,7 @@ models:
 
   - name: prep_team_member_position
     description: '{{ doc("prep_team_member_position") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - employee_id
@@ -2271,13 +2438,13 @@ models:
     columns:
       - name: dim_team_member_sk
         description: A unique ID for each team member.
-        tests:
+        data_tests:
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team. This field didn't exist before the move to Workday
       - name: employee_id
         description: Unique ID of the team member.
-        tests:
+        data_tests:
           - not_null
       - name: manager
         description: The team member's manager name
@@ -2310,13 +2477,13 @@ models:
       - name: is_current
         description: Whether the team member's job position is the most current as of the date the query is run
       - name: valid_from
-        tests: 
+        data_tests: 
           - not_null
       - name: valid_to
-        tests: 
+        data_tests: 
           - not_null
   - name: prep_team_status
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - dim_team_member_sk
@@ -2324,15 +2491,15 @@ models:
     columns:
       - name: dim_team_member_sk
         description: A unique ID for each team member.
-        tests:
+        data_tests:
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team.
-        tests:
+        data_tests:
           - not_null
       - name: employee_id
         description: Unique ID of the team member.
-        tests:
+        data_tests:
           - not_null
       - name: team_id
         description: Unique ID of the team.
@@ -2358,7 +2525,7 @@ models:
         description: Whether the team member's job position is active.
       - name: employment_status
         description: Employment Status (active, terminated). Other statuses will be added in the future (ie. Long term leave) 
-        tests:
+        data_tests:
           - not_null
       - name: termination_reason
         description: Categorical variable that indicates the reason why a team member has been terminated
@@ -2375,10 +2542,10 @@ models:
       - name: is_current
         description: Whether the team status is the most current as of the date the query is run.
       - name: valid_from
-        tests: 
+        data_tests: 
           - not_null
       - name: valid_to
-        tests: 
+        data_tests: 
           - not_null
  
   - name: prep_namespace_order_trial
@@ -2386,7 +2553,7 @@ models:
     columns:
       - name: dim_namespace_order_trial_sk
         description: '{{ doc("dim_namespace_order_trial_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_namespace_id
@@ -2422,12 +2589,12 @@ models:
     columns:
       - name: dim_order_sk
         description: The unique surrogate key of an Order that is created by hashing the `Order_id` column from Customers_db.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: internal_order_id
         description: The unique Id of the Order from Customers db. Can only be used to join back to CDot Orders
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: user_id
@@ -2476,17 +2643,17 @@ models:
     columns:
       - name: dim_cloud_activation_sk
         description: '{{ doc("dim_cloud_activation_sk") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_cloud_activation_id
         description: '{{ doc("dim_plan_id") }}'
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: internal_customer_id
         description: Membership Customer ID. This is internal to a Customer in CDot and can only be joined back to Customers db data.
-        tests:
+        data_tests:
           - not_null
       - name: dim_billing_account_id
         description: Membership Account ID. Join key between Customers and billings_accounts.
@@ -2498,16 +2665,16 @@ models:
         description: Timestamp when reminder email to submit seat utilization data was sent.
       - name: cloud_activation_created_at
         description: The date when the cloud licensing was activated/created on customer's instance
-        tests:
+        data_tests:
           - not_null
       - name: cloud_activation_updated_at
         description: The date when the cloud activation/licensing was updated on customer's instance
-        tests:
+        data_tests:
           - not_null
 
   - name: prep_license_subscription
     description: '{{ doc("prep_license_subscription") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - reporting_month
@@ -2516,11 +2683,11 @@ models:
     columns:
       - name: reporting_month
         description: '{{ doc("reporting_month") }}'
-        tests:
+        data_tests:
           - not_null
       - name: license_id
         description: '{{ doc("license_id") }}'
-        tests:
+        data_tests:
           - not_null
       - name: license_md5
         description: '{{ doc("license_md5") }}'
@@ -2546,6 +2713,8 @@ models:
         description: '{{ doc("dim_billing_account_id") }}'
       - name: crm_account_name
         description: '{{ doc("crm_account_name") }}'
+      - name: dim_crm_account_id
+        description: '{{ doc("dim_crm_account_id") }}'
       - name: dim_parent_crm_account_id
         description: '{{ doc("dim_parent_crm_account_id") }}'
       - name: parent_crm_account_name
@@ -2570,13 +2739,14 @@ models:
         description: '{{ doc("product_rate_plan_name_array") }}'
       - name: latest_subscription_id
         description: '{{ doc("latest_subscription_id") }}'
+
   
   - name: prep_marketo_person
     description: The core prep table of Marketo's person data.  
     columns:
       - name: dim_marketo_person_id
         description: The Unique person ID from Marketo
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dim_crm_person_id
@@ -2756,3 +2926,129 @@ models:
 
   - name: prep_snowplow_sessions_all
     description: '{{ doc("prep_snowplow_sessions_all") }}'
+
+  - name: prep_crm_case
+    description: '{{ doc("prep_crm_case") }}'
+    columns:
+      - name: case_id
+      - name: dim_crm_case_sk
+        description: surrogate key generated with dbt_utils
+      - name: dim_crm_case_pk
+        description: primary key
+      - name: dim_crm_account_id
+      - name: business_hours_id
+      - name: case_number
+      - name: contact_id
+      - name: from_chatter_feed_id
+      - name: owner_id AS dim_crm_user_id
+      - name: record_type_id
+      - name: source_id
+      - name: opportunity_id AS dim_crm_opportunity_id
+      - name: created_by_id
+      - name: closed_date
+      - name: description
+      - name: is_closed
+      - name: is_closed_on_create
+      - name: is_escalated
+      - name: origin
+      - name: priority
+      - name: reason
+      - name: resolution_action
+      - name: status
+      - name: subject
+      - name: case_type
+      - name: created_date
+      - name: spam_checkbox
+      - name: context
+      - name: feedback
+      - name: first_responded_date
+      - name: time_to_first_response
+      - name: next_steps
+      - name: next_steps_date
+      - name: is_deleted
+      - name: contact_email
+      - name: contact_fax
+      - name: contact_mobile
+      - name: contact_phone
+      - name: supplied_company
+      - name: supplied_email
+      - name: supplied_name
+      - name: supplied_phone
+      - name: days_create_to_close
+        description: DATEDIFF('DAY',source.created_date,source.closed_date)
+      - name: days_create_to_today
+        description: DATEDIFF('DAY',source.created_date,CURRENT_DATE)
+      - name: last_modified_by_id
+      - name: last_modified_date
+      - name: systemmodstamp
+
+  - name: prep_pto
+    description: '{{ doc("prep_pto") }}'
+    columns:
+      - name: hr_employee_id
+        description: The employee id of Workday
+        tests:
+          - not_null
+      - name: start_date
+        description: The team member's absence start date
+        tests: 
+          - not_null
+      - name: end_date
+        description: The team member's absence end date
+      - name: pto_date  
+        description: The team member's day of absence   
+        tests: 
+          - not_null
+      - name: is_pto
+        description: If this absence day overlaps with a PTO.
+        meta:
+          masking_policy: analyst_people_sensitive
+      - name: is_holiday
+        description: If this absence day overlaps with a holiday.
+      - name: pto_uuid
+        description: Unique identifier for this pto event
+      - name: pto_type_uuid
+        description: The UUID of this OOO Type.
+        meta:
+          masking_policy: analyst_people_sensitive
+      - name: pto_group_type
+        meta:
+          masking_policy: analyst_people_sensitive
+      - name: pto_status
+        description: Enum:"AP" "RQ" "DN" "CN" 2-character enumeration denoting the status of the OOO Event.
+          "AP" = Approved  "RQ" = Requested  "DN" = Denied  "CN" = Cancelled
+      - name: pto_status_name
+        description: The decoded pto_status
+      - name: total_hours
+        description: How long the user was OOO for. This is different from recorded_hours in that it is unaware of holidays and weekends.
+      - name: recorded_hours
+        description: How many hours were recorded as OOO for this event.
+      - name: absence_status
+        description: The team member's absence status.
+        meta:
+          masking_policy: analyst_people_sensitive
+      - name: employee_day_length
+        description: How long this User's "day" is in hours
+      - name: pto_day_of_week
+        description: Absence's day of the week. Number of the day of the week, with Sunday = 1 and Saturday = 7
+      - name: pto_type_name
+        meta:
+          masking_policy: analyst_people_sensitive
+
+
+  - name: prep_crm_case_history
+    description: '{{ doc("prep_crm_case_history") }}'
+    columns:
+      - name: case_history_id
+        description: primary key for the field value change
+      - name: case_id
+        description: id of the SFDC case that had a tracked field value change
+      - name: created_by_id
+        description: SFDC user id of the user that made the change
+      - name: case_field
+      - name: data_type
+      - name: new_value
+      - name: old_value
+      - name: is_deleted
+      - name: field_modified_at
+      

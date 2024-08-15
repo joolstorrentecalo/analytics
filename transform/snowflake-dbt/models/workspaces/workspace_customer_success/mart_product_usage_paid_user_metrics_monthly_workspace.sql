@@ -162,13 +162,6 @@
     FROM redis_metrics_28d_user
     WHERE metrics_path = 'redis_hll_counters.code_review.i_code_review_user_approve_mr_monthly'
 
-), audit_users AS (
-
-    SELECT
-      *
-    FROM redis_metrics_28d_user
-    WHERE metrics_path = 'counts_monthly.aggregated_metrics.compliance_features_track_unique_visits_union'
-
 ), epics_users AS (
 
     SELECT
@@ -204,6 +197,8 @@
       {{ get_keyed_nulls('billing_accounts.dim_billing_account_id') }}              AS dim_billing_account_id,
       {{ get_keyed_nulls('billing_accounts.dim_crm_account_id') }}                  AS dim_crm_account_id,
       monthly_sm_metrics.dim_subscription_id_original,
+      subscriptions.dim_oldest_subscription_in_cohort_id,
+      subscriptions.dim_oldest_crm_account_in_cohort_id,
       subscriptions.subscription_name,
       subscriptions.subscription_status,
       most_recent_subscription_version.subscription_status AS subscription_status_most_recent_version,
@@ -211,6 +206,8 @@
       subscriptions.term_end_date,
       most_recent_subscription_version.subscription_start_date,
       most_recent_subscription_version.subscription_end_date,
+      subscriptions.oldest_subscription_start_date,
+      subscriptions.oldest_subscription_cohort_month,
       monthly_sm_metrics.snapshot_date_id,
       monthly_sm_metrics.ping_created_at,
       monthly_sm_metrics.dim_ping_instance_id                                       AS dim_usage_ping_id,
@@ -406,7 +403,6 @@
       monthly_sm_metrics.ci_internal_pipelines_28_days_event,
       -- Wave 9
       monthly_sm_metrics.ci_builds_28_days_event,
-      monthly_sm_metrics.audit_features_28_days_user,
       monthly_sm_metrics.groups_all_time_event,
       monthly_sm_metrics.commit_ci_config_file_7_days_user,
       monthly_sm_metrics.ci_pipeline_config_repository_all_time_user,
@@ -444,6 +440,8 @@
       {{ get_keyed_nulls('billing_accounts.dim_billing_account_id') }}              AS dim_billing_account_id,
       {{ get_keyed_nulls('billing_accounts.dim_crm_account_id') }}                      AS dim_crm_account_id,
       monthly_saas_metrics.dim_subscription_id_original,
+      subscriptions.dim_oldest_subscription_in_cohort_id,
+      subscriptions.dim_oldest_crm_account_in_cohort_id,
       subscriptions.subscription_name,
       subscriptions.subscription_status,
       most_recent_subscription_version.subscription_status AS subscription_status_most_recent_version,
@@ -451,6 +449,8 @@
       subscriptions.term_end_date,
       most_recent_subscription_version.subscription_start_date,
       most_recent_subscription_version.subscription_end_date,
+      subscriptions.oldest_subscription_start_date,
+      subscriptions.oldest_subscription_cohort_month,
       monthly_saas_metrics.snapshot_date_id,
       monthly_saas_metrics.ping_created_at,
       NULL                                                                          AS dim_usage_ping_id,
@@ -644,7 +644,6 @@
       monthly_saas_metrics.ci_internal_pipelines_28_days_event,
       --Wave 9
       monthly_saas_metrics.ci_builds_28_days_event,
-      COALESCE(audit_users.distinct_users_whole_month, 0) AS audit_features_28_days_user,
       monthly_saas_metrics.groups_all_time_event,
       monthly_saas_metrics.commit_ci_config_file_7_days_user,
       monthly_saas_metrics.ci_pipeline_config_repository_all_time_user,
@@ -701,9 +700,6 @@
     LEFT JOIN user_approve_mr
       ON user_approve_mr.date_month = monthly_saas_metrics.snapshot_month
       AND user_approve_mr.ultimate_parent_namespace_id = monthly_saas_metrics.dim_namespace_id
-    LEFT JOIN audit_users
-      ON audit_users.date_month = monthly_saas_metrics.snapshot_month
-      AND audit_users.ultimate_parent_namespace_id = monthly_saas_metrics.dim_namespace_id
     LEFT JOIN epics_users
       ON epics_users.date_month = monthly_saas_metrics.snapshot_month
       AND epics_users.ultimate_parent_namespace_id = monthly_saas_metrics.dim_namespace_id
@@ -747,5 +743,5 @@
     created_by="@mdrussell",
     updated_by="@utkarsh060",
     created_date="2022-01-14",
-    updated_date="2024-03-13"
+    updated_date="2024-06-10"
 ) }}

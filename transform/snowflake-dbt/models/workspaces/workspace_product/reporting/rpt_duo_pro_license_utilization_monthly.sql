@@ -4,7 +4,7 @@
 ) }}
 
 {{ simple_cte([
-    ('mart_arr','mart_arr'),
+    ('mart_arr_all','mart_arr_with_zero_dollar_charges'),
     ('mart_ping_instance', 'mart_ping_instance'),
     ('dim_subscription', 'dim_subscription'),
     ('gitlab_dotcom_subscription_user_add_on_assignments', 'gitlab_dotcom_subscription_user_add_on_assignments'),
@@ -13,26 +13,59 @@
     ('mart_behavior_structured_event', 'mart_behavior_structured_event'),
     ('mart_ping_instance_metric_28_day', 'mart_ping_instance_metric_28_day'),
     ('mart_behavior_structured_event_code_suggestion', 'mart_behavior_structured_event_code_suggestion')
+
     ])
 }},
+
+all_duo_pro_monthly_seats AS (
+
+SELECT 
+  arr_month 
+    AS reporting_month,
+  subscription_name,
+  dim_subscription_id,
+  crm_account_name,
+  dim_crm_account_id,
+  dim_parent_crm_account_id,
+  product_deployment_type
+    AS product_deployment,
+  SUM(quantity) 
+    AS dp_seats,
+  SUM(arr)
+    AS dp_arr,
+  IFF(dp_arr > 0, TRUE, FALSE)
+    AS is_dp_subscription_paid
+FROM mart_arr_all
+WHERE arr_month BETWEEN '2024-02-01' AND CURRENT_DATE -- first duo pro arr
+  AND LOWER(product_rate_plan_name) LIKE '%duo pro%'
+GROUP BY ALL
+
+), 
+
+duo_pro_and_paired_tier AS ( --tier occurring concurrently with paid duo pro subscription
+
+SELECT 
+  duo_pro.*,
+  ARRAY_TO_STRING(ARRAY_AGG(DISTINCT SPLIT_PART(tier.product_tier_name, ' - ', 2)), ', ') -- multiple product tiers can show up within the same ARR reporting month
+    AS paired_tier,
+  IFF(paired_tier IN ('Premium, Ultimate', 'Ultimate, Premium'), 'Premium & Ultimate', paired_tier)
+    AS clean_paired_tier, -- not able to sort within group while using SPLIT_PART function - using this method for standard results
+FROM all_duo_pro_monthly_seats AS duo_pro
+LEFT JOIN mart_arr_all AS tier -- joining to get tier occuring within same month as add on
+  ON duo_pro.reporting_month = tier.arr_month
+  AND duo_pro.dim_crm_account_id = tier.dim_crm_account_id
+  AND LOWER(tier.product_rate_plan_name) NOT LIKE '%duo pro%'
+  AND LOWER(tier.product_rate_plan_name) NOT LIKE '%storage%'
+GROUP BY ALL
+
+), 
 
 sm_dedicated_duo_pro_monthly_seats AS ( -- duo pro monthly seats associated entities -- dedicated and SM in one CTE due to the same type of product entity identifier used - dim_installation_id
 
   SELECT DISTINCT
-    duo_pro.arr_month
-      AS reporting_month,
-    duo_pro.subscription_name,
-    duo_pro.dim_subscription_id,
-    duo_pro.crm_account_name,
-    duo_pro.dim_crm_account_id,
-    duo_pro.dim_parent_crm_account_id,
-    SPLIT_PART(duo_pro.product_rate_plan_name, ' - ', 1)
-      AS product_deployment,
-    'Duo Pro'                                                                                        AS add_on_name,
-    ARRAY_TO_STRING(ARRAY_AGG(DISTINCT SPLIT_PART(tier.product_tier_name, ' - ', 2)), ', ') -- multiple product tiers can show up within the same ARR reporting month
-      AS paired_tier,
-    IFF(paired_tier IN ('Premium, Ultimate', 'Ultimate, Premium'), 'Premium & Ulimate', paired_tier)
-      AS clean_paired_tier, -- not able to sort within group while using SPLIT_PART function - using this method for standard results
+    duo_pro.*,
+    'Duo Pro'                                                                                        
+      AS add_on_name, -- it've very possible that we will need to add additional add on names to this model in the future
     m.dim_installation_id
       AS product_entity_id,
     'dim_installation_id'
@@ -41,69 +74,44 @@ sm_dedicated_duo_pro_monthly_seats AS ( -- duo pro monthly seats associated enti
       AS is_product_entity_associated_w_subscription,
     MAX(m.major_minor_version_id)
       AS major_minor_version_id, --max major minor version within month
-    MAX(duo_pro.quantity)
-      AS duo_pro_seats -- max because left join to get product tier associated with add on causes duplicate records in base monthly reporting
-  FROM mart_arr AS duo_pro
+    MAX(duo_pro.dp_seats)
+      AS duo_pro_seats -- max because left join can result in duplicate records
+  FROM duo_pro_and_paired_tier AS duo_pro
   LEFT JOIN mart_ping_instance AS m -- joining to get installation id because that identifier is not in mart_arr
     ON duo_pro.dim_subscription_id = m.latest_subscription_id
-      AND m.ping_created_date_month = reporting_month
-      AND m.is_last_ping_of_month = TRUE
-  INNER JOIN mart_arr AS tier -- joining to get tier occuring within same month as add on
-    ON duo_pro.arr_month = tier.arr_month
-      AND duo_pro.dim_crm_account_id = tier.dim_crm_account_id
-      AND LOWER(tier.product_rate_plan_name) NOT LIKE '%duo pro%'
-      AND LOWER(tier.product_rate_plan_name) NOT LIKE '%storage%'
-      AND SPLIT_PART(tier.product_rate_plan_name, ' - ', 1) IN ('Self-Managed', 'Dedicated')
-  WHERE LOWER(duo_pro.product_rate_plan_name) LIKE '%duo pro%'
-    AND product_deployment IN ('Self-Managed', 'Dedicated')
-    AND reporting_month BETWEEN '2024-01-01' AND DATE_TRUNC(MONTH, DATEADD(MONTH, -1, CURRENT_DATE))
+    AND m.ping_created_date_month = reporting_month
+    AND m.is_last_ping_of_month = TRUE
+  WHERE duo_pro.product_deployment IN ('Self-Managed', 'Dedicated')
+    AND reporting_month BETWEEN '2024-02-01' AND DATE_TRUNC(MONTH, DATEADD(MONTH, -1, CURRENT_DATE))
   GROUP BY ALL
 
-),
+), 
 
 dotcom_duo_pro_monthly_seats AS ( -- duo pro monthly seats and associated entities 
 
   SELECT DISTINCT
-    duo_pro.arr_month
-      AS reporting_month,
-    duo_pro.subscription_name,
-    duo_pro.dim_subscription_id,
-    duo_pro.crm_account_name,
-    duo_pro.dim_crm_account_id,
-    duo_pro.dim_parent_crm_account_id,
-    SPLIT_PART(duo_pro.product_rate_plan_name, ' - ', 1)
-      AS product_deployment,
-    'Duo Pro'                                                                                        AS add_on_name,
-    ARRAY_TO_STRING(ARRAY_AGG(DISTINCT SPLIT_PART(tier.product_tier_name, ' - ', 2)), ', ') -- multiple product tiers can show up within the same ARR reporting month
-      AS paired_tier,
-    IFF(paired_tier IN ('Premium, Ultimate', 'Ultimate, Premium'), 'Premium & Ulimate', paired_tier)
-      AS clean_paired_tier, -- not able to sort within group while using SPLIT_PART function - using this method for standard results
+    duo_pro.*,
+    'Duo Pro'                                                                                        
+      AS add_on_name,
     s.namespace_id
       AS product_entity_id,
     'ultimate_parent_namespace_id'
       AS product_entity_type,
-    IFF(m.dim_installation_id IS NOT NULL, TRUE, FALSE)
+    IFF(s.namespace_id IS NOT NULL, TRUE, FALSE)
       AS is_product_entity_associated_w_subscription,
     MAX(m.major_minor_version_id)
       AS major_minor_version_id, --max major minor version within month
-    MAX(duo_pro.quantity)
-      AS duo_pro_seats -- max because left join to get product tier associated with add on causes duplicate records in base monthly reporting
-  FROM mart_arr AS duo_pro
+    MAX(duo_pro.dp_seats)
+      AS duo_pro_seats -- max because left join can result in duplicate records
+  FROM duo_pro_and_paired_tier AS duo_pro
   INNER JOIN dim_subscription AS s -- joining to get namespace id because that identifier is not in mart_arr
     ON duo_pro.dim_subscription_id = s.dim_subscription_id
   LEFT JOIN mart_ping_instance AS m -- for latest version
     ON m.ping_created_date_month = reporting_month
-      AND m.dim_installation_id = '8b52effca410f0a380b0fcffaa1260e7' -- installation id for Gitlab.com
-      AND m.is_last_ping_of_month = TRUE
-  INNER JOIN mart_arr AS tier -- joining to get tier occuring within same month as add on
-    ON duo_pro.arr_month = tier.arr_month
-      AND duo_pro.dim_crm_account_id = tier.dim_crm_account_id
-      AND LOWER(tier.product_rate_plan_name) NOT LIKE '%duo pro%'
-      AND LOWER(tier.product_rate_plan_name) NOT LIKE '%storage%'
-      AND SPLIT_PART(tier.product_rate_plan_name, ' - ', 1) IN ('SaaS')
-  WHERE LOWER(duo_pro.product_rate_plan_name) LIKE '%duo pro%'
-    AND product_deployment IN ('SaaS')
-    AND reporting_month BETWEEN '2024-01-01' AND DATE_TRUNC(MONTH, DATEADD(MONTH, -1, CURRENT_DATE))
+    AND m.dim_installation_id = '8b52effca410f0a380b0fcffaa1260e7' -- installation id for Gitlab.com
+    AND m.is_last_ping_of_month = TRUE
+  WHERE product_deployment = 'GitLab.com'
+    AND reporting_month BETWEEN '2024-02-01' AND DATE_TRUNC(MONTH, DATEADD(MONTH, -1, CURRENT_DATE))
   GROUP BY ALL
 
 ),
@@ -256,9 +264,10 @@ all_monthly_duo_pro_seats AS (
 
 ),
 
+
 final AS (
 
---Grain: dim_crm_account_id, reporting month, deployment, tier
+--Grain: dim_crm_account_id, dim_subscription_id, reporting_month
 --Because some SM and Dedicated installations can have multiple dim_crm_account_id values in mart_arr, including product_entity_id in the final model could lead to over counting seats purchased in a few cases
 
   SELECT
@@ -268,17 +277,17 @@ final AS (
     a.crm_account_name,
     a.dim_crm_account_id,
     a.dim_parent_crm_account_id,
-    IFF(a.product_deployment = 'SaaS', 'Gitlab.com', a.product_deployment)
-      AS product_deployment, --SaaS has not been replaced by .com terminology in all data models, but .com is the correct convention
+    a.product_deployment, 
     a.add_on_name,
     a.clean_paired_tier  
       AS paired_tier,                                                                          
     a.is_product_entity_associated_w_subscription,
+    a.is_dp_subscription_paid,
     MAX(a.major_minor_version_id)                                                                  
       AS major_minor_version_id,
     ZEROIFNULL(MAX(a.duo_pro_seats))                                                               
       AS paid_duo_pro_seats,
-    MAX(CASE WHEN a.product_deployment = 'SaaS' THEN ZEROIFNULL(s.number_of_seats_assigned)
+    MAX(CASE WHEN a.product_deployment = 'GitLab.com' THEN ZEROIFNULL(s.number_of_seats_assigned)
            ELSE null END)            
       AS count_seats_assigned,  -- only available for dotcom data - all SM/Dedicated deployments will show null  
     ZEROIFNULL(MAX(IFF(u.primitive = 'chat', ZEROIFNULL(u.count_active_users), NULL)))
@@ -314,5 +323,5 @@ final AS (
     created_by="@eneuberger",
     updated_by="@eneuberger",
     created_date="2024-05-07",
-    updated_date="2024-05-09"
+    updated_date="2024-05-16"
 ) }}

@@ -5,7 +5,7 @@ models:
       description: '{{ doc("zengrc_assessments_desc") }}'
       columns: 
         - name: assessment_id
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -13,7 +13,7 @@ models:
       description: '{{ doc("zengrc_audits_desc") }}'
       columns: 
         - name: audit_id
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -21,7 +21,7 @@ models:
       description: '{{ doc("zengrc_controls_desc") }}'
       columns: 
         - name: control_id
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -29,7 +29,7 @@ models:
       description: '{{ doc("zengrc_objectives_desc") }}'
       columns: 
         - name: objective_id
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -37,7 +37,7 @@ models:
       description: '{{ doc("zengrc_issues_desc") }}'
       columns: 
         - name: issue_id
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -45,7 +45,7 @@ models:
       description: '{{ doc("zengrc_requests_desc") }}'
       columns: 
         - name: request_id
-          tests:
+          data_tests:
             - not_null
             - unique
 
@@ -53,7 +53,7 @@ models:
       description: '{{ doc("zengrc_risks_desc") }}'
       columns: 
         - name: risk_id
-          tests:
+          data_tests:
             - not_null
             - unique
     
@@ -61,7 +61,7 @@ models:
       description: '{{ doc("zengrc_vendors_desc") }}'
       columns: 
         - name: vendor_id
-          tests:
+          data_tests:
             - not_null
             - unique
     
@@ -69,6 +69,6 @@ models:
       description: '{{ doc("zengrc_programs_desc") }}'
       columns: 
         - name: program_id
-          tests:
+          data_tests:
             - not_null
             - unique

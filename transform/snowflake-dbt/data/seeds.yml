@@ -35,3 +35,5 @@ seeds:
     description: A categorization of non GitLab team member snowflake users
   - name: test_employee_ids
     description: Employee IDs that were created as test or duplicate accounts in BambooHR. 
+  - name: gds_case_inputs
+    description: Case field keys and data for SMB SFDC case creation

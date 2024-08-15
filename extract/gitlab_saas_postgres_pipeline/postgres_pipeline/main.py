@@ -1,3 +1,4 @@
+import os
 import logging
 from typing import Dict
 
@@ -24,7 +25,13 @@ def filter_manifest(manifest_dict: Dict, load_only_table: str = None) -> None:
         }
 
 
-def main(file_path: str, load_type: str, load_only_table: str = None) -> None:
+def main(
+    file_path: str,
+    load_type: str,
+    connection_info_file_name: str,
+    database_type: str,
+    load_only_table: str = None,
+) -> None:
     """
     Read data from a postgres DB and upload it directly to Snowflake.
     """
@@ -35,9 +42,11 @@ def main(file_path: str, load_type: str, load_only_table: str = None) -> None:
     # When load_only_table specified reduce manifest to keep only relevant table config
     filter_manifest(manifest_dict, load_only_table)
 
+    connection_manifest_dict = manifest_reader(connection_info_file_name)
     postgres_engine, snowflake_engine, metadata_engine = get_engines(
-        manifest_dict["connection_info"]
+        connection_manifest_dict["connection_info"], database_type
     )
+
     logging.info(snowflake_engine)
 
     for table in manifest_dict["tables"]:
@@ -47,7 +56,7 @@ def main(file_path: str, load_type: str, load_only_table: str = None) -> None:
 
         # Call the correct function based on the load_type
         loaded = current_table.do_load(
-            load_type, postgres_engine, snowflake_engine, metadata_engine
+            load_type, postgres_engine, snowflake_engine, metadata_engine, database_type
         )
         if loaded:
             logging.info(f"Finished upload for table: {table}")

@@ -29,4 +29,5 @@ macros:
     description: '{{ doc("integrated_budget_holder")}}'
   - name: date_spine_7th_day
     description: '{{ doc("date_spine_7th_day")}}'
-    
+  - name: partner_marketing_task_subject_cleaning
+    description: '{{ doc("partner_marketing_task_subject_cleaning")}}'

@@ -46,6 +46,7 @@
       -- Background issue: https://gitlab.com/gitlab-data/analytics/-/issues/20395
       COALESCE(parent_crm_account_sales_segment_legacy, parent_crm_account_sales_segment)       AS parent_crm_account_sales_segment,
       parent_crm_account_industry,
+      parent_crm_account_geo,
       parent_crm_account_owner_team,
       parent_crm_account_sales_territory,
       dim_subscription_id,
@@ -54,6 +55,7 @@
       subscription_sales_type,
       product_tier_name,
       product_rate_plan_name,
+      product_deployment_type,
       product_delivery_type,
       product_ranking,
       service_type,
@@ -89,6 +91,7 @@
       -- Background issue: https://gitlab.com/gitlab-data/analytics/-/issues/20395
       parent_crm_account_sales_segment_legacy                                                   AS parent_crm_account_sales_segment,
       parent_crm_account_industry,
+      parent_crm_account_geo,
       NULL                                                                                      AS parent_crm_account_owner_team,
       NULL                                                                                      AS parent_crm_account_sales_territory,
       dim_subscription_id,
@@ -97,6 +100,7 @@
       subscription_sales_type,
       product_tier_name,
       product_rate_plan_name,
+      product_deployment_type,
       product_delivery_type,
       product_ranking,
       service_type,
@@ -135,6 +139,7 @@
        ELSE driveload_financial_metrics_program_phase_1_source.parent_crm_account_sales_segment
       END                                                                                          AS parent_crm_account_sales_segment,
       driveload_financial_metrics_program_phase_1_source.parent_crm_account_industry,
+      NULL                                                                                         AS parent_crm_account_geo,
       driveload_financial_metrics_program_phase_1_source.parent_crm_account_owner_team,
       driveload_financial_metrics_program_phase_1_source.parent_crm_account_sales_territory,
       NULL                                                                                         AS dim_subscription_id,
@@ -143,6 +148,7 @@
       driveload_financial_metrics_program_phase_1_source.subscription_sales_type,
       driveload_financial_metrics_program_phase_1_source.product_name,
       NULL                                                                                         AS product_rate_plan_name,
+      NULL                                                                                         AS product_deployment_type,
       driveload_financial_metrics_program_phase_1_source.product_category                          AS product_tier_name,
       CASE
         WHEN  driveload_financial_metrics_program_phase_1_source.delivery = 'Others' THEN 'SaaS'
@@ -209,6 +215,7 @@
        ELSE mart_arr_snapshot_model_combined.parent_crm_account_sales_segment
       END                                                                                       AS parent_crm_account_sales_segment,
       mart_arr_snapshot_model_combined.parent_crm_account_industry,
+      mart_arr_snapshot_model_combined.parent_crm_account_geo,
       mart_arr_snapshot_model_combined.parent_crm_account_owner_team,
       mart_arr_snapshot_model_combined.parent_crm_account_sales_territory                                      AS parent_crm_account_sales_territory,
       mart_arr_snapshot_model_combined.dim_subscription_id,
@@ -226,6 +233,7 @@
         ELSE mart_arr_snapshot_model_combined.product_tier_name
       END                                                                                       AS product_name,
       mart_arr_snapshot_model_combined.product_rate_plan_name,
+      mart_arr_snapshot_model_combined.product_deployment_type,
       mart_arr_snapshot_model_combined.product_tier_name,
       CASE
         WHEN  mart_arr_snapshot_model_combined.product_delivery_type = 'Others' THEN 'SaaS'
@@ -328,6 +336,7 @@
       parent_crm_account_billing_country,
       parent_crm_account_sales_segment,
       parent_crm_account_industry,
+      parent_crm_account_geo,
       parent_crm_account_owner_team,
       parent_crm_account_sales_territory,
       combined.dim_subscription_id,
@@ -341,6 +350,7 @@
         ELSE product_name
       END                                                                                AS product_name_grouped,
       product_rate_plan_name,
+      product_deployment_type,
       product_tier_name,
       product_delivery_type,
       product_ranking,
@@ -379,7 +389,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@iweeks",
-    updated_by="@chrissharp",
+    updated_by="@dgupta5",
     created_date="2021-08-16",
-    updated_date="2024-05-09"
+    updated_date="2024-07-24"
 ) }}

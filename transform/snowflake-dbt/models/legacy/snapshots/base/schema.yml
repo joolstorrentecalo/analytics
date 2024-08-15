@@ -12,14 +12,14 @@ models:
     columns:
       - name: customer_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: customer_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
   - name: customers_db_orders_snapshots_base
@@ -27,14 +27,14 @@ models:
     columns:
       - name: order_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: order_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
@@ -43,25 +43,25 @@ models:
     columns:
       - name: application_settings_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: application_settings_id
-        tests:
+        data_tests:
           - not_null
   - name: gitlab_dotcom_gitlab_subscriptions_snapshots_base
     description: This is the base model for snapshotted gitlab subscriptions data from the gitlab.com database.
     columns:
       - name: gitlab_subscription_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: gitlab_subscription_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
   - name: gitlab_dotcom_members_snapshots_base
@@ -69,14 +69,14 @@ models:
     columns:
       - name: member_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: member_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
   - name: gitlab_dotcom_namespaces_snapshots_base
@@ -84,26 +84,40 @@ models:
     columns:
       - name: namespace_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: namespace_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
-  
+  - name: gitlab_dotcom_project_ci_cd_settings_snapshots_base
+    description: '{{ doc("gitlab_dotcom_project_ci_cd_settings_snapshots_base") }}'
+    columns:
+      - name: project_ci_cd_settings_snapshot_pk
+        data_tests:
+          - not_null
+          - unique
+      - name: project_ci_cd_settings_snapshot_id
+        description: Auto-generated primary key when building the snapshot with dbt
+        data_tests:
+          - not_null
+      - name: project_id
+        data_tests:
+          - not_null
+
   - name: gitlab_dotcom_project_statistics_snapshots_base
     description: Base model for Gitlab.com project statistics snapshot
     columns:
       - name: project_statistics_id
-        tests:
+        data_tests:
           - not_null
       - name: project_id
-        tests:
+        data_tests:
           - not_null
 
   - name: gitlab_dotcom_namespace_details_snapshots_source
@@ -114,30 +128,30 @@ models:
     columns:
       - name: license_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt.
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: license_id
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
   - name: sfdc_account_snapshots_source
     description: This is the source model for snapshots of the salesforce account table for cleaning and renaming.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - account_id
             - dbt_valid_from
     columns:
       - name: account_id
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
       - name: zoom_info_company_name
         description: The name of the company matched by the Zoom Info enrichment process.
@@ -197,11 +211,11 @@ models:
     description: This is the base model for snapshots of the salesforce opportunity table for 2019-10-01 and forward.
     columns:
       - name: unique_key
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: opportunity_snapshot_id
-        tests:
+        data_tests:
           - not_null
       - name: id
           - not_null
@@ -210,32 +224,32 @@ models:
   
   - name: sfdc_contact_snapshots_source
     description: This is the source model for snapshots of the salesforce contact table.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - contact_id
             - dbt_valid_from
     columns:
       - name: contact_id
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
 
   - name: sfdc_lead_snapshots_source
     description: This is the source model for snapshots of the salesforce lead table.
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - lead_id
             - dbt_valid_from
     columns:
       - name: lead_id
-        tests:
+        data_tests:
           - not_null
       - name: dbt_valid_from
-        tests:
+        data_tests:
           - not_null
 
   - name: sfdc_user_snapshots_source
@@ -273,12 +287,12 @@ models:
     columns:
       - name: billing_account_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: billing_account_id
         description: A system-generated unique ID for billing accounts in CDot
-        tests:
+        data_tests:
           - not_null
       - name: zuora_account_id
         description: A unique Zuora account number associated with the User
@@ -291,7 +305,7 @@ models:
       - name: billing_account_created_at
         description: The date when any changes happened to the Billing account record for a customer
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
@@ -300,27 +314,27 @@ models:
     columns:
       - name: billing_account_contact_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: work_email
         description: Billing account contact's work email
       - name: zuora_account_id
         description: Zuora account id associated with the Billing Account Contact
-        tests:
+        data_tests:
           - not_null
       - name: zuora_contact_id
         description: Zuora contact id associated with the Billing Account Contact
-        tests:
+        data_tests:
           - not_null       
       - name: billing_account_contact_created_at
         description: The date the billing account contact was created
       - name: billing_account_contact_updated_at
         description: The date the billing account contact was updated
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 
@@ -330,16 +344,16 @@ models:
     columns:
       - name: cloud_activation_snapshot_id
         description: Auto-generated primary key when building the snapshot with dbt
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: cloud_activation_id
         description: A system-generated unique ID for Cloud activations in CDot
-        tests:
+        data_tests:
           - not_null
       - name: customer_id
         description: Membership Customer ID
-        tests:
+        data_tests:
           - not_null
       - name: billing_account_id
         description: Membership Account ID. Join key between Customers and billings_accounts.
@@ -350,13 +364,13 @@ models:
       - name: seat_utilization_reminder_sent_at
         description: Timestamp when reminder email to submit seat utilization data was sent.
       - name: cloud_activation_created_at
-        tests:
+        data_tests:
           - not_null
       - name: cloud_activation_updated_at
-        tests:
+        data_tests:
           - not_null
       - name: valid_from
-        tests:
+        data_tests:
           - not_null
       - name: valid_to
 

@@ -4,35 +4,35 @@ models:
   description: Clari export forcast data primariliy for use by the finance team.
   columns:
     - name: user
-      tests:
+      data_tests:
       - not_null
 - name: driveload_email_domain_classification_source
   description: SSOT for email domain classification for personal domains.
   columns:
     - name: domain
-      tests:
+      data_tests:
       - not_null
       - unique
     - name: classification
-      tests:
+      data_tests:
       - not_null
 - name: driveload_marketing_dnc_list_source
   description: List for unmarketable contacts in the email marketing db.
   columns:
     - name: email_address
-      tests:
+      data_tests:
       - not_null
 - name: driveload_ssa_coverage_fitted_curves_source
   description: Stores the result of fitting a curve to multiple metrics using the last 4 quarters as data points. These curves are leverage in the X-Ray dashboard and Quarterly Coverage metric reports.
   columns:
     - name: key_agg_day
-      tests:
+      data_tests:
       - not_null
 - name: driveload_ssa_quarterly_aggregated_metrics_for_coverage_source
   description: Quarterly pre-aggregated metrics per business grouping, used to fit a curve for performance tracking.
   columns:
     - name: agg_key_value
-      tests:
+      data_tests:
       - not_null
 - name: driveload_zuora_revenue_billing_waterfall_report_source
   description: Zuora Revenue Billing Waterfall Report downloaded monthly
@@ -60,3 +60,5 @@ models:
   description: Output of Finance's analysis determining timing differences between bookings and billings
 - name: driveload_pending_invoices_report_source
   description: Report of future dated pending invoices in Zuora (e.g. for multiyear ramp orders billed annually)
+- name: driveload_invoice_aging_detail_source
+  description: Report of historical invoice balances and days overdue per accounting period as in Zuora

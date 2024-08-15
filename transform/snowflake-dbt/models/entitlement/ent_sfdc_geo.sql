@@ -27,6 +27,7 @@ target_user_roles AS (
     ('CMO', TRUE),
     ('CRO', TRUE),
     ('Director - SA High Velocity', TRUE),
+    ('XDR Operations Sr.Manager_ALL_ALL_ALL', TRUE),
     ('Director CSM', TRUE),
     ('Director of Professional Services', TRUE),
     ('Executive', TRUE),
@@ -36,6 +37,7 @@ target_user_roles AS (
     ('Global CSE Director', TRUE),
     ('VP Sales Development', TRUE),
     ('VPSA', TRUE),
+    ('RM_ALL', TRUE),
     ('Executive - Global Minus Pubsec', FALSE),
     ('Implementation Engineers - Global (with/without Pubsec)', FALSE),
     ('Marketing Operations Manager', FALSE),
@@ -150,6 +152,20 @@ channel_sfdc_users AS (
   WHERE sfdc_user_source.is_active = TRUE 
 ),
 
+non_sfdc_safe AS (
+  -- This CTE if for filtering to a list of Tableau that have SAFE access 
+  -- but not Salesforce access.
+  SELECT
+    target_geos.target_geos AS crm_geo,
+    tableau_safe_users.user_email,
+    'tableau_safe' AS entitlement_basis
+  FROM tableau_safe_users
+  LEFT JOIN sfdc_filtered
+    ON sfdc_filtered.user_email = tableau_safe_users.user_email
+  CROSS JOIN target_geos
+  WHERE sfdc_filtered.user_email IS NULL
+),
+
 combined AS (
   SELECT 
     crm_geo,
@@ -180,6 +196,15 @@ combined AS (
     channel_sfdc_users.user_email,
     entitlement_basis
   FROM channel_sfdc_users
+
+  UNION ALL
+
+  SELECT DISTINCT
+    non_sfdc_safe.crm_geo,
+    non_sfdc_safe.user_email,
+    entitlement_basis
+  FROM non_sfdc_safe
+
 )
 
 SELECT *

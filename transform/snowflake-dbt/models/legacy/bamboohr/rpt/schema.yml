@@ -32,7 +32,7 @@ models:
     - name: month_date
     - name: breakout_type
       description: This identifies the breakout of the data. 
-      tests:
+      data_tests:
         - accepted_values:
                 values: ['all_attributes_breakout', 'kpi_breakout','eeoc_breakout','division_breakout','department_breakout', 'division_group_breakout']
     - name: department
@@ -143,22 +143,22 @@ models:
     - name: month_date
     - name: breakout_type
       description: Identifies if the breakout is at an all company level, division, or department.
-      tests:
+      data_tests:
         - accepted_values:
                 values: ['all_company_breakout','department_division_breakout','division_breakout']
     - name: department
     - name: division
     - name: planned_headcount
-      tests:
+      data_tests:
         - not_null
     - name: planned_hires
-      tests:
+      data_tests:
         - not_null
     - name: headcount_actual
-      tests:
+      data_tests:
         - not_null
     - name: hires_actual
-      tests:
+      data_tests:
         - not_null
     - name: actual_headcount_vs_planned_headcount
     - name: new_hire
@@ -187,22 +187,22 @@ models:
     description: This calculates the weighted number of team members outside of the compensation band. From the Comp Model (SheetLoad) we get how far from the top of the comp band team members are. Then we use the weighting model utilized by the Comp Team (the case when statement in the `joined` CTE) based on how far over the top of the band we are. The sum of the weights are divided by the total number of active team members to create this KPI. We only care about the state of this number on the last day of a calendar month. This model is used for reporting purposes and is broken out by division, department, and company by filtering on breakout_type to get to the grain needed. THIS MODEL SHOULD NOT BE CONSUMED FOR ANY ANALYSIS PRIOR TO SEPTERMBER 2019 and between May - September 2020.
     columns:
     - name: unique_key
-      tests:
+      data_tests:
       - not_null
       - unique
     - name: breakout_type
       description: Identifies if the columns are aggregated at the division, department or company level.
     - name: date_actual
-      tests:
+      data_tests:
       - not_null
     - name: division
-      # tests:
+      # data_tests:
       # - not_null
     - name: department
-      # tests:
+      # data_tests:
       # - not_null
     - name: sum_weighted_deviated_from_comp_calc
     - name: current_employees
-      tests:
+      data_tests:
       - not_null
     - name: percent_of_employees_outside_of_band

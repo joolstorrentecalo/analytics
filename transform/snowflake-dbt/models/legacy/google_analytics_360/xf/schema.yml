@@ -5,29 +5,29 @@ models:
       description: "Custom dimensions as found in Google Analytics Properties > Custom Definitions with their names"
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null
         - name: visitor_id
-          tests:
+          data_tests:
             - not_null
         - name: visit_start_time
-          tests:
+          data_tests:
             - not_null
     - name: ga360_session_hit_custom_dimension_xf
       description: "Custom dimensions as found in Google Analytics Properties > Custom Definitions with their names"
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null
         - name: visitor_id
-          tests:
+          data_tests:
             - not_null
         - name: hit_number
-          tests:
+          data_tests:
             - not_null
     - name: ga360_session_xf
       description: "https://support.google.com/analytics/answer/2731565?hl=en"
-      tests:
+      data_tests:
         - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - visit_id
@@ -35,5 +35,5 @@ models:
               - visit_start_time
       columns:
         - name: visit_id
-          tests:
+          data_tests:
             - not_null

@@ -6,7 +6,7 @@ models:
   columns:
     - name: xmau_metric_monthly_id
       description: The unique composite ID of a monthly xMAU metric in the rpt_xmau_metric_monthly model consisting of event_calendar_month, user_group, and event_name_array
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: event_calendar_month
@@ -47,7 +47,7 @@ models:
   columns:
     - name: event_plan_monthly_id
       description: The unique composite ID for the rpt_usage_event_plan_monthly model consisting of event_calendar_month, plat_id_at_event_month, and event_name
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: event_calendar_month
@@ -93,7 +93,7 @@ models:
   description: ' {{ doc("rpt_ping_metric_first_last_versions") }} '
   columns:
     - name: ping_metric_first_last_versions_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_metric_first_last_versions model consisting of metrics_path, ping_edition, and version_is_prerelease
@@ -134,7 +134,7 @@ models:
   description: ' {{ doc("rpt_ping_latest_subscriptions_monthly") }} '
   columns:
     - name: ping_latest_subscriptions_monthly_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_latest_subscriptions_monthly model consisting of ping_created_date_month, latest_subscription_id, dim_installation_id, ping_edition, and version_is_prerelease
@@ -179,7 +179,7 @@ models:
   description: ' {{ doc("rpt_ping_subscriptions_on_versions_estimate_factors_monthly") }} '
   columns:
     - name: ping_subscriptions_on_versions_estimate_factors_monthly_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_subscriptions_on_versions_estimate_factors_monthly model consisting of ping_created_date_month, metrics_path, ping_edition, estimation_grain and ping_deployment_type
@@ -230,7 +230,7 @@ models:
   description: ' {{ doc("rpt_ping_subscriptions_reported_estimate_factors_monthly") }} '
   columns:
     - name: ping_subscriptions_reported_estimate_factors_monthly_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_subscriptions_reported_estimate_factors_monthly model consisting of ping_created_date_month, metrics_path, ping_edition, estimation_grain and ping_deployment_type
@@ -281,7 +281,7 @@ models:
   description: ' {{ doc("rpt_ping_metric_estimate_factors_monthly") }} '
   columns:
     - name: ping_metric_estimate_factors_monthly_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_metric_estimate_factors_monthly model consisting of ping_created_date_month, metrics_path, ping_edition, estimation_grain and ping_deployment_type.
@@ -332,7 +332,7 @@ models:
   description: ' {{ doc("rpt_ping_metric_totals_w_estimates_monthly") }} '
   columns:
     - name: ping_metric_totals_w_estimates_monthly_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_metric_totals_w_estimates_monthly model consisting of ping_created_date_month, metrics_path, ping_edition, estimation_grain, ping_edition_product_tier and ping_deployment_type
@@ -391,7 +391,7 @@ models:
   description: ' {{ doc("rpt_ping_subscriptions_reported_counts_monthly") }} '
   columns:
     - name: ping_subscriptions_reported_counts_monthly_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_subscriptions_reported_counts_monthly model consisting of ping_created_date_month, metrics_path, ping_edition and ping_deployment_type
@@ -422,7 +422,7 @@ models:
   description: ' {{ doc("rpt_ping_subscriptions_on_versions_counts_monthly") }} '
   columns:
     - name: ping_subscriptions_on_versions_counts_monthly_id
-      tests:
+      data_tests:
         - not_null
         - unique
       description: The unique composite ID for the rpt_ping_subscriptions_on_versions_counts_monthly model consisting of ping_created_date_month, metrics_path, ping_edition, ping_delivery_type and ping_deployment_type
@@ -453,25 +453,25 @@ models:
   description: '{{ doc("rpt_gainsight_metrics_monthly_paid_saas") }}'
   columns:
     - name: dim_subscription_id
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: dim_subscription_id_original
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: dim_billing_account_id
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: dim_namespace_id
     - name: snapshot_month
       description: First day of the month in which data is being reported.
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: snapshot_date_id
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: instance_type
@@ -540,7 +540,7 @@ models:
       description: All-time count of projects with package registry configured ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_with_packages))
     - name: projects_with_packages_28_days_event
       description: '{{ doc("projects_with_packages_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: deployments_28_days_user
       description: Monthly count of unique users triggering deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyreleasedeployments))
@@ -650,171 +650,167 @@ models:
       description: Monthly count of MAU changing an issue’s iteration ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_iteration_changed_monthly))
     - name: protected_branches_28_days_user
       description: '{{ doc("protected_branches_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_cd_lead_time_usage_28_days_event
       description: '{{ doc("ci_cd_lead_time_usage_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_cd_deployment_frequency_usage_28_days_event
       description: '{{ doc("ci_cd_deployment_frequency_usage_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_with_repositories_enabled_all_time_user
       description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: environments_all_time_event
       description: '{{ doc("environments_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: feature_flags_all_time_event
       description: '{{ doc("feature_flags_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: successful_deployments_28_days_event
       description: '{{ doc("successful_deployments_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: failed_deployments_28_days_event
       description: '{{ doc("failed_deployments_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_compliance_framework_all_time_event
       description: '{{ doc("projects_compliance_framework_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: commit_ci_config_file_28_days_user
       description: '{{ doc("commit_ci_config_file_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: view_audit_all_time_user
       description: '{{ doc("view_audit_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: dependency_scanning_jobs_all_time_user
       description: '{{ doc("dependency_scanning_jobs_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: analytics_devops_adoption_all_time_user
       description: '{{ doc("analytics_devops_adoption_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_imported_all_time_event
       description: '{{ doc("projects_imported_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: preferences_security_dashboard_28_days_user
       description: '{{ doc("preferences_security_dashboard_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: web_ide_edit_28_days_user
       description: '{{ doc("web_ide_edit_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: auto_devops_pipelines_all_time_event
       description: '{{ doc("auto_devops_pipelines_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_prometheus_active_all_time_event
       description: '{{ doc("projects_prometheus_active_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: prometheus_enabled
       description: '{{ doc("prometheus_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: prometheus_metrics_enabled
       description: '{{ doc("prometheus_metrics_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: group_saml_enabled
       description: '{{ doc("group_saml_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: jira_issue_imports_all_time_event
       description: '{{ doc("jira_issue_imports_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: author_epic_all_time_user
       description: '{{ doc("author_epic_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: author_issue_all_time_user
       description: '{{ doc("author_issue_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: failed_deployments_28_days_user
       description: '{{ doc("failed_deployments_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: successful_deployments_28_days_user
       description: '{{ doc("successful_deployments_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: geo_enabled
       description: '{{ doc("geo_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: auto_devops_pipelines_28_days_user
       description: '{{ doc("auto_devops_pipelines_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: active_instance_runners_all_time_event
       description: '{{ doc("active_instance_runners_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: active_group_runners_all_time_event
       description: '{{ doc("active_group_runners_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: active_project_runners_all_time_event
       description: '{{ doc("active_project_runners_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: gitaly_version
       description: '{{ doc("gitaly_version_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: gitaly_servers_all_time_event
       description: '{{ doc("gitaly_servers_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_internal_pipelines_28_days_event
       description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_builds_28_days_event
       description: '{{ doc("ci_builds_28_days_event_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
-    - name: audit_features_28_days_user
-      description: '{{ doc("audit_features_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: groups_all_time_event
       description: '{{ doc("groups_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: commit_ci_config_file_7_days_user
       description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_pipeline_config_repository_all_time_user
       description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_pipeline_config_repository_all_time_event
       description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: pipeline_schedules_all_time_event
       description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: pipeline_schedules_all_time_user
       description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: is_missing_paid_seats
       description: Flags if there are currently active users, but no seats have been paid for
@@ -827,25 +823,25 @@ models:
   description: '{{ doc("rpt_gainsight_metrics_monthly_paid_self_managed") }}'
   columns:
     - name: dim_subscription_id
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: dim_subscription_id_original
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: dim_billing_account_id
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: dim_namespace_id
     - name: snapshot_month
       description: First day of the month in which data is being reported.
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: snapshot_date_id
-      tests:
+      data_tests:
         - not_null
       tags: ["tdf", "common", "gainsight"]
     - name: instance_type
@@ -914,7 +910,7 @@ models:
       description: All-time count of projects with package registry configured ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#countsprojects_with_packages))
     - name: projects_with_packages_28_days_event
       description: '{{ doc("projects_with_packages_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: deployments_28_days_user
       description: Monthly count of unique users triggering deployments ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#usage_activity_by_stage_monthlyreleasedeployments))
@@ -1024,171 +1020,167 @@ models:
       description: Monthly count of MAU changing an issue’s iteration ([source](https://docs.gitlab.com/ee/development/usage_ping/dictionary.html#redis_hll_countersissues_editg_project_management_issue_iteration_changed_monthly))
     - name: protected_branches_28_days_user
       description: '{{ doc("protected_branches_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_cd_lead_time_usage_28_days_event
       description: '{{ doc("ci_cd_lead_time_usage_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_cd_deployment_frequency_usage_28_days_event
       description: '{{ doc("ci_cd_deployment_frequency_usage_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_with_repositories_enabled_all_time_user
       description: '{{ doc("projects_with_repositories_enabled_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: environments_all_time_event
       description: '{{ doc("environments_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: feature_flags_all_time_event
       description: '{{ doc("feature_flags_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: successful_deployments_28_days_event
       description: '{{ doc("successful_deployments_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: failed_deployments_28_days_event
       description: '{{ doc("failed_deployments_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_compliance_framework_all_time_event
       description: '{{ doc("projects_compliance_framework_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: commit_ci_config_file_28_days_user
       description: '{{ doc("commit_ci_config_file_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: view_audit_all_time_user
       description: '{{ doc("view_audit_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: dependency_scanning_jobs_all_time_user
       description: '{{ doc("dependency_scanning_jobs_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: analytics_devops_adoption_all_time_user
       description: '{{ doc("analytics_devops_adoption_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_imported_all_time_event
       description: '{{ doc("projects_imported_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: preferences_security_dashboard_28_days_user
       description: '{{ doc("preferences_security_dashboard_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: web_ide_edit_28_days_user
       description: '{{ doc("web_ide_edit_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: auto_devops_pipelines_all_time_event
       description: '{{ doc("auto_devops_pipelines_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: projects_prometheus_active_all_time_event
       description: '{{ doc("projects_prometheus_active_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: prometheus_enabled
       description: '{{ doc("prometheus_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: prometheus_metrics_enabled
       description: '{{ doc("prometheus_metrics_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: group_saml_enabled
       description: '{{ doc("group_saml_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: jira_issue_imports_all_time_event
       description: '{{ doc("jira_issue_imports_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: author_epic_all_time_user
       description: '{{ doc("author_epic_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: author_issue_all_time_user
       description: '{{ doc("author_issue_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: failed_deployments_28_days_user
       description: '{{ doc("failed_deployments_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: successful_deployments_28_days_user
       description: '{{ doc("successful_deployments_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: geo_enabled
       description: '{{ doc("geo_enabled_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: auto_devops_pipelines_28_days_user
       description: '{{ doc("auto_devops_pipelines_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: active_instance_runners_all_time_event
       description: '{{ doc("active_instance_runners_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: active_group_runners_all_time_event
       description: '{{ doc("active_group_runners_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: active_project_runners_all_time_event
       description: '{{ doc("active_project_runners_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: gitaly_version
       description: '{{ doc("gitaly_version_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: gitaly_servers_all_time_event
       description: '{{ doc("gitaly_servers_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_internal_pipelines_28_days_event
       description: '{{ doc("ci_internal_pipelines_28_days_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_builds_28_days_event
       description: '{{ doc("ci_builds_28_days_event_desc") }}'
-      tests:
-        - dbt_utils.at_least_one
-    - name: audit_features_28_days_user
-      description: '{{ doc("audit_features_28_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: groups_all_time_event
       description: '{{ doc("groups_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: commit_ci_config_file_7_days_user
       description: '{{ doc("commit_ci_config_file_7_days_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_pipeline_config_repository_all_time_user
       description: '{{ doc("ci_pipeline_config_repository_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: ci_pipeline_config_repository_all_time_event
       description: '{{ doc("ci_pipeline_config_repository_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: pipeline_schedules_all_time_event
       description: '{{ doc("pipeline_schedules_all_time_event_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: pipeline_schedules_all_time_user
       description: '{{ doc("pipeline_schedules_all_time_user_desc") }}'
-      tests:
+      data_tests:
         - dbt_utils.at_least_one
     - name: is_missing_paid_seats
       description: Flags if there are currently active users, but no seats have been paid for
@@ -1205,7 +1197,7 @@ models:
   description: Simpler incremental version of the rpt_event_xmau_metric_monthly snapshot model
   columns:
     - name: xmau_metric_monthly_snapshot_id
-      tests:
+      data_tests:
         - not_null
       tags: ["mnpi_exception","edm_snapshot", "product"]
       description: The unique composite ID for the rpt_event_xmau_metric_monthly_snapshot_model model consisting of snapshot_id and xmau_metric_monthly_id
@@ -1262,7 +1254,7 @@ models:
   description: Simpler incremental version of the rpt_ping_metric_totals_w_estimates_monthly snapshot model
   columns:
     - name: ping_metric_totals_w_estimates_monthly_snapshot_id
-      tests:
+      data_tests:
         - not_null
       tags: ["mnpi_exception","edm_snapshot", "product"]
       description: The unique composite ID for the rpt_ping_metric_totals_w_estimates_monthly_snapshot_model model consisting of snapshot_id and ping_metric_totals_w_estimates_monthly_id
@@ -1335,7 +1327,7 @@ models:
   description: '{{ doc("rpt_product_navigation_base") }}'
   columns:
     - name: behavior_structured_event_pk
-      tests:
+      data_tests:
         - unique:
             config:
               where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
@@ -1421,7 +1413,7 @@ models:
   description: This data model stores Snowplow events related to the purchases on the Webstore for GitLab.com. This dataset can be used to understand user purchase journeys in detail and run funnel analysis to commute metrics like conversion rate, drop-off points etc.
   columns:
     - name: behavior_structured_event_pk
-      tests:
+      data_tests:
         - unique:
             config:
               where: "behavior_at >= DATEADD('day',-3,CURRENT_DATE())"
@@ -1505,15 +1497,14 @@ models:
 
 - name: rpt_namespace_onboarding
   description: '{{ doc("rpt_namespace_onboarding") }}'
-  tests:
+  data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - ultimate_parent_namespace_id
-            - trial_type
   columns:
     - name: ultimate_parent_namespace_id
       description: '{{ doc("dim_ultimate_parent_namespace_id") }}'
-      tests:
+      data_tests:
         - not_null
     - name: namespace_created_at
       description: '{{ doc("namespace_created_at") }}'
@@ -1548,11 +1539,19 @@ models:
     - name: trial_start_date
       description: First trial start date associated with the ultimate parent namespace from customers_db_trial_histories.
     - name: trial_type
-      description: '{{ doc("trial_type") }}'
+      description: Indicates the type of trial offering, such as Premium/Ultimate subscription or GitLab Duo Pro add-on. This is type 1 by default.
     - name: trial_type_name
-      description: '{{ doc("trial_type_name") }}'
+      description: Specifies the name of the trial offering type. The value 1 corresponds to Premium/Ultimate trials.
     - name: days_since_namespace_creation_at_trial
-      description: Date difference in days between ultimate parent namespace creation and trial start.
+      description: Date difference in days between ultimate parent namespace creation and trial type 1 start.
+    - name: trial_2_start_date
+      description: Trial type 2's start date associated with the ultimate parent namespace from customers_db_trial_histories.
+    - name: trial_2_type
+      description: Indicates the type of trial offering, such as Premium/Ultimate subscription or GitLab Duo Pro add-on. This is type 2 by default.
+    - name: trial_2_type_name
+      description: Specifies the name of the trial offering type. The value 2 corresponds to GitLab Duo Pro Trial.
+    - name: days_since_namespace_creation_at_trial_2
+      description: Date difference in days between ultimate parent namespace creation and trial type 2 start.
     - name: first_paid_subscription_start_date
       description: Date of first paid ultimate parent namespace subscription from mart_charge model.
     - name: days_since_namespace_creation_at_first_paid_subscription
@@ -1623,18 +1622,18 @@ models:
   description: '{{ doc("rpt_product_usage_health_score") }}'
   columns:
     - name: snapshot_month
-      tests:
+      data_tests:
         - not_null
       description: Month in which the product usage was reported.
     - name: primary_key
-      tests:
+      data_tests:
         - unique
         - not_null
       description: Unique ID for the common_mart_product.mart_product_usage_paid_user_metrics_monthly table for each row of usage data. This field can be used to join to the common_mart_product.mart_product_usage_paid_user_metrics_monthly table to pull in additional usage metrics that are not used for use case adoption scoring
     - name: crm_account_name
       description: The name of the account as it appears in Salseforce
     - name: dim_crm_account_id
-      tests:
+      data_tests:
         - not_null
       description: '{{ doc("dim_crm_account_id") }}'
     - name: customer_since_date
@@ -1654,11 +1653,11 @@ models:
     - name: subscription_name
       description: The name of the subscription as it appears in Zuora
     - name: dim_subscription_id_original 
-      tests: 
+      data_tests: 
         - not_null
       description: Unique identifier of a subscription, does not change when amendments are made to the subscription. This ID will have multiple dim_subscription_id values associated with it for each version of the original subscription
     - name: dim_subscription_id 
-      tests: 
+      data_tests: 
         - not_null
       description: Unique identifier of a version of a subscription
     - name: ultimate_subscription_flag
@@ -1666,11 +1665,11 @@ models:
     - name: is_oss_program
       description: This field is a flag that designates if a subscription is an OSS program or not. True = OSS Subscription, False = Not an OSS Subscription
     - name: delivery_type 
-      tests: 
+      data_tests: 
         - not_null
       description: '{{ doc("product_delivery_type") }}'
     - name: deployment_type 
-      tests: 
+      data_tests: 
         - not_null
       description: '{{ doc("ping_deployment_type") }}'
     - name: instance_type
@@ -1937,7 +1936,7 @@ models:
   columns:
     - name: suggestion_id
       description: '{{ doc("code_suggestions_suggestion_id")}} '
-      tests:
+      data_tests:
         - not_null
         - unique
     - name: language
@@ -2018,10 +2017,56 @@ models:
       description: '{{ doc("model_created_date") }}'
     - name: model_updated_date
       description: '{{ doc("model_updated_date") }}'
+    - name: suggestion_source
+      description: ' {{ doc("code_suggestions_suggestion_source") }} '
+    - name: is_invoked
+      description: ' {{ doc("code_suggestions_is_invoked") }} '
+    - name: options_count
+      description: ' {{ doc("code_suggestions_options_count") }} '
+    - name: accepted_option
+      description: ' {{ doc("code_suggestions_accepted_option") }} '
+    - name: has_advanced_context
+      description: ' {{ doc("code_suggestions_has_advanced_context") }} '
+    - name: is_direct_connection
+      description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+    - name: gitlab_global_user_id
+      description: '{{ doc("gitlab_global_user_id") }}'
+    - name: ultimate_parent_namespace_ids
+      description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }}'
+    - name: dim_installation_ids
+      description: '{{ doc("code_suggestions_dim_installation_ids") }}'
+    - name: dim_crm_account_ids
+      description: '{{ doc("code_suggestions_dim_crm_account_ids") }}'
+    - name: crm_account_names
+      description: '{{ doc("code_suggestions_crm_account_names") }}'
+    - name: namespace_is_internal
+      description: '{{ doc("code_suggestions_namespace_is_internal") }}'
+    - name: product_deployment_type
+      description: ' {{ doc("product_deployment_type") }} '
+    - name: gsc_instance_version
+      description: ' {{ doc("gsc_instance_version") }} '
+    - name: total_context_size_bytes
+      description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+    - name: content_above_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+    - name: content_below_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+    - name: context_items
+      description: ' {{ doc("code_suggestions_context_items") }}'
+    - name: context_items_count
+      description: ' {{ doc("code_suggestions_context_items_count") }}'
+    - name: input_tokens
+      description: ' {{ doc("code_suggestions_input_tokens") }}'
+    - name: output_tokens
+      description: ' {{ doc("code_suggestions_output_tokens") }}'
+    - name: context_tokens_sent
+      description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+    - name: context_tokens_used
+      description: ' {{ doc("code_suggestions_context_tokens_used") }}'
 
 - name: rpt_user_based_metric_counts_namespace_monthly
   description: '{{ doc("rpt_user_based_metric_counts_namespace_monthly") }}'
-  tests:
+  data_tests:
     - dbt_utils.expression_is_true:
         expression: "distinct_users_whole_month >= distinct_users_last_28d_month"
     - dbt_utils.unique_combination_of_columns:
@@ -2067,4 +2112,59 @@ models:
     - name: current_gitlab_plan_title
       description: '{{ doc("plan_name_modified") }}'
     - name: zoekt_rollout_categories
-      description: '{{ doc("zoekt_rollout_categories") }}'      
+      description: '{{ doc("zoekt_rollout_categories") }}'
+
+- name: rpt_behavior_code_suggestion_gateway_request
+  description: '{{ doc("rpt_behavior_code_suggestion_gateway_request") }}'
+  columns:
+    - name: behavior_structured_event_pk
+      description: '{{ doc("behavior_structured_event_pk") }}'
+      data_tests:
+        - unique
+        - not_null
+    - name: behavior_at
+      description: '{{ doc("behavior_at") }}'
+    - name: behavior_date
+      description: '{{ doc("behavior_date") }}'
+    - name: app_id
+      description: '{{ doc("app_id") }}'
+    - name: event_category
+      description: '{{ doc("event_category") }}'
+    - name: event_action
+      description: '{{ doc("event_action") }}'
+    - name: language
+      description: '{{ doc("code_suggestions_language") }}'
+    - name: delivery_type
+      description: '{{ doc("code_suggestions_delivery_type") }}'
+      accepted_values:
+        values: ['Self-Managed', 'SaaS']
+    - name: product_deployment_type
+      description: ' {{ doc("product_deployment_type") }} '
+    - name: prefix_length
+      description: '{{ doc("code_suggestions_prefix_length") }}'
+    - name: suffix_length
+      description: '{{ doc("code_suggestions_suffix_length") }}'
+    - name: is_direct_connection
+      description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+    - name: gitlab_global_user_id
+      description: '{{ doc("gitlab_global_user_id") }}'
+    - name: dim_instance_id
+      description: '{{ doc("dim_instance_id") }}'
+    - name: host_name
+      description: '{{ doc("host_name") }}'
+    - name: dim_installation_ids
+      description: '{{ doc("code_suggestions_dim_installation_ids") }}'
+    - name: namespace_ids
+      description: '{{ doc("code_suggestions_namespace_ids") }}'
+    - name: ultimate_parent_namespace_ids
+      description: '{{ doc("code_suggestions_ultimate_parent_namespace_ids") }}'
+    - name: namespace_is_internal
+      description: '{{ doc("code_suggestions_namespace_is_internal") }}'
+    - name: dim_crm_account_ids
+      description: '{{ doc("code_suggestions_dim_crm_account_ids") }}'
+    - name: crm_account_names
+      description: '{{ doc("code_suggestions_crm_account_names") }}'
+    - name: contexts
+      description: '{{ doc("contexts") }}'
+    - name: code_suggestions_context
+      description: '{{ doc("code_suggestions_context") }}'

@@ -241,6 +241,10 @@ sheets:
   #     - sales_funnel_targets_kpi_values
   #     - sales_funnel_targets_opportunity
   #     - sales_funnel_targets_matrix
+  - name: sales_dev_role_hierarchy
+    owner: '@dmicovic'
+    tabs:
+      - sales_dev_role_hierarchy
   - name: sales_dev_targets_fy25
     owner: '@dmicovic'
     tabs:
@@ -371,3 +375,7 @@ sheets:
     owner: '@nhervas'
     tabs: 
       - ci_runner_machine_type_mapping
+  - name: cost_centers_historical
+    owner: '@rakhireddy'
+    tabs: 
+      - cost_centers_historical

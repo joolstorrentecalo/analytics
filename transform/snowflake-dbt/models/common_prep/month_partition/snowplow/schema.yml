@@ -8,7 +8,7 @@ models:
       description: This is the primary events table which is the union of the Fishtown and GitLab tables. All of the unstructured events are unpacked - [link click tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#39-link-click-tracking), [form tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#3101-enableformtracking), and [time tracking](https://github.com/snowplow/snowplow/wiki/2-Specific-event-tracking-with-the-Javascript-tracker#timing).
       columns:
           - name: uploaded_at
-            tests:
+            data_tests:
                 - not_null
 
     - name: snowplow_unnested_errors
@@ -18,6 +18,7 @@ models:
       description: This is a view that references the duplicated event ids across the entire data set and is used to remove them from downstream models.
       columns:
           - name: event_id
+
     - name: snowplow_gitlab_events_context_flattened
       description: Expands custom `contexts` field in Snowplow events a wide, sparse table with all columns available for each event_id.
       columns:
@@ -112,7 +113,7 @@ models:
         - name: is_streaming
           description: ' {{ doc("code_suggestions_is_streaming") }} '
         - name: gitlab_global_user_id
-          description: ' doc("code_suggestions_gitlab_global_user_id") }}'
+          description: ' doc("gitlab_global_user_id") }}'
         - name: ide_extension_version_context
           description: ' {{ doc("ide_extension_version_context") }} '
         - name: ide_extension_version_context_schema
@@ -191,3 +192,37 @@ models:
           description: ' {{ doc("unload_event_end") }} '
         - name: unload_event_start
           description: ' {{ doc("unload_event_start") }} '
+        - name: suggestion_source
+          description: ' {{ doc("code_suggestions_suggestion_source") }} '
+        - name: is_invoked
+          description: ' {{ doc("code_suggestions_is_invoked") }} '
+        - name: options_count
+          description: ' {{ doc("code_suggestions_options_count") }} '
+        - name: accepted_option
+          description: ' {{ doc("code_suggestions_accepted_option") }} '
+        - name: has_advanced_context
+          description: ' {{ doc("code_suggestions_has_advanced_context") }} '
+        - name: is_direct_connection
+          description: ' {{ doc("code_suggestions_is_direct_connection") }} '
+        - name: instance_version
+          description: ' {{ doc("gsc_instance_version") }} '
+        - name: correlation_id
+          description: ' { doc("gsc_correlation_id") } '
+        - name: total_context_size_bytes
+          description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+        - name: content_above_cursor_size_bytes
+          description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+        - name: content_below_cursor_size_bytes
+          description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+        - name: context_items
+          description: ' {{ doc("code_suggestions_context_items") }}'
+        - name: context_items_count
+          description: ' {{ doc("code_suggestions_context_items_count") }}'
+        - name: input_tokens
+          description: ' {{ doc("code_suggestions_input_tokens") }}'
+        - name: output_tokens
+          description: ' {{ doc("code_suggestions_output_tokens") }}'
+        - name: context_tokens_sent
+          description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+        - name: context_tokens_used
+          description: ' {{ doc("code_suggestions_context_tokens_used") }}'

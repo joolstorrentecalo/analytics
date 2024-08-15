@@ -46,12 +46,32 @@
       gitlab_dotcom_ci_pipelines_source.lock_version, 
       gitlab_dotcom_ci_pipelines_source.auto_canceled_by_id, 
       gitlab_dotcom_ci_pipelines_source.pipeline_schedule_id, 
-      gitlab_dotcom_ci_pipelines_source.ci_pipeline_source, 
+      CASE 
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 1 THEN 'push'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 2 THEN 'web'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 3 THEN 'trigger'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 4 THEN 'schedule'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 5 THEN 'api'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 6 THEN 'external'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 7 THEN 'pipeline'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 8 THEN 'chat'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 9 THEN 'webide'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 10 THEN 'merge_request_event'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 11 THEN 'external_pull_request_event'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 12 THEN 'parent_pipeline'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 13 THEN 'ondemand_dast_scan'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 14 THEN 'ondemande_dast_validation'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 15 THEN 'security_orchestration_policy'
+        WHEN  gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 16 THEN 'container_registry_push'
+        ELSE NULL 
+        END as ci_pipeline_source, 
       gitlab_dotcom_ci_pipelines_source.config_source, 
       gitlab_dotcom_ci_pipelines_source.is_protected, 
       gitlab_dotcom_ci_pipelines_source.failure_reason          AS failure_reason_id,
       {{ map_ci_pipeline_failure_reason('failure_reason_id') }} AS failure_reason,
-      gitlab_dotcom_ci_pipelines_source.ci_pipeline_iid         AS ci_pipeline_internal_id
+      gitlab_dotcom_ci_pipelines_source.ci_pipeline_iid         AS ci_pipeline_internal_id,
+      gitlab_dotcom_ci_pipelines_source.is_deleted              AS is_deleted,
+      gitlab_dotcom_ci_pipelines_source.is_deleted_updated_at   AS is_deleted_updated_at
     FROM gitlab_dotcom_ci_pipelines_source
     LEFT JOIN prep_project ON gitlab_dotcom_ci_pipelines_source.project_id = prep_project.dim_project_id
     LEFT JOIN dim_namespace_plan_hist ON prep_project.ultimate_parent_namespace_id = dim_namespace_plan_hist.dim_namespace_id
@@ -66,7 +86,7 @@
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet_",
-    updated_by="@michellecooper",
+    updated_by="@utkarsh060",
     created_date="2021-06-10",
-    updated_date="2023-10-30"
+    updated_date="2024-07-09"
 ) }}

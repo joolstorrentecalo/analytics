@@ -11,6 +11,7 @@ And for all user removal types, requires one object only.
 """
 
 import logging
+from random import randint
 from typing import Union
 from utils_update_roles import DATABASES_KEY, ROLES_KEY, USERS_KEY
 
@@ -59,20 +60,24 @@ class RolesStruct:
             existing_values = self.roles_data[self.yaml_key]
         return RolesStruct.get_value_keys(existing_values)
 
-    def _add_value(self, new_value: dict):
+    def _add_value(self, new_value: dict, insert_position):
         """Adds a new entry to the yaml file"""
         new_value_key = list(new_value.keys())[0]
         if new_value_key in self.existing_value_keys:
             logging.info(f"{new_value_key} already exists in roles.yml, skipping")
         else:
             logging.info(f"Adding {self.yaml_key} {new_value_key}")
-            self.roles_data[self.yaml_key].append(new_value)
+            self.roles_data[self.yaml_key].insert(insert_position, new_value)
             self.existing_value_keys.append(new_value_key)
 
     def add_values(self):
         """Adds all new entries to the yaml file"""
+        list_len = len(self.roles_data[self.yaml_key])
+        # insert at a random position (to avoid MR conflict), but close to the end of the list
+        random_insert_position = randint(int(list_len * 0.85), list_len)
         for new_value in self.new_values:
-            self._add_value(new_value)
+            self._add_value(new_value, random_insert_position)
+            random_insert_position += 1
 
     def _filter_keys_to_remove(self, yaml_key: str, keys_to_remove: list):
         """

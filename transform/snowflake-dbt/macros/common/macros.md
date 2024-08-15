@@ -40,3 +40,25 @@ This macro is used to create a monthly metric value for all-time service ping me
 Creates a partner category from Sales Qualified Source and Resale Partner Name to be used in Sales Funnel reporting.
 
 {% enddocs %}
+
+{% docs macro_prep_snowplow_unnested_events_all %}
+
+This macro is used for transforming and processing Snowplow event data. It takes a unioned view of unnested Snowplow event data as input and performs additional transformations or operations on that data.
+
+The primary purpose of this macro is to provide flexibility in unioning the required number of monthly partitions of Snowplow event data and applying the same transformation logic to the unioned data. This approach avoids duplication of transformation logic across different models that may require different date ranges or partitions of data.
+
+For example, the `prep_snowplow_unnested_events_all` model requires 800 days of data, which could be covered by unioning multiple monthly partitions. In contrast, the `prep_snowplow_unnested_events_all_30` model only requires 30 days of data, necessitating the union of a smaller number of monthly partitions. However, both models can leverage the `macro_prep_snowplow_unnested_events_all` macro to apply the same transformation logic to their respective unioned data sets.
+
+{% enddocs %}
+
+{% docs utm_campaign_parsing %}
+
+Parses the new Marketing utm_campaign parameter into its consituent pieces, to be used in marketing reporting.
+
+{% enddocs %}
+
+{% docs utm_content_parsing %}
+
+Parses the new Marketing utm_content parameter into its consituent pieces, to be used in marketing reporting.
+
+{% enddocs %}

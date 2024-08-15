@@ -2,7 +2,7 @@
 
     {{
         config(
-          unique_key="job_code||'-'||job_workday_id",
+          unique_key='job_workday_id',
           strategy='check',
           check_cols=[
             'job_code',
@@ -17,5 +17,6 @@
     
     SELECT * 
     FROM {{ source('workday','job_profiles') }}
-    
+     WHERE NOT _fivetran_deleted 
+     AND _fivetran_synced >='2024-06-21'
 {% endsnapshot %}

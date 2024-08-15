@@ -6,7 +6,7 @@ models:
     columns:
       - name: event_pk
         description: primary key of the table. Unique ID of the event
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: event_id
@@ -19,19 +19,19 @@ models:
         description: ID of the user who triggered the event
       - name: plan_id_at_event_timestamp
         description: ID of the plan of the ultimate parent namespace when the event got triggered
-        tests:
+        data_tests:
           - not_null
       - name: plan_name_at_event_timestamp
         description: Name of the plan of the ultimate parent namespace when the event got triggered
-        tests:
+        data_tests:
           - not_null
       - name: created_date_id
         description: ID of the date when the event was created
-        tests:
+        data_tests:
           - not_null
       - name: event_created_at
         description: timestamp of the event
-        tests:
+        data_tests:
           - not_null
       - name: user_created_at
         description: timestamp of the user creation

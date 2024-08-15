@@ -36,7 +36,6 @@
       sheetload_sales_targets_source.role_level_3,
       sheetload_sales_targets_source.role_level_4,
       sheetload_sales_targets_source.role_level_5,
-      {{ get_keyed_nulls("
       CASE
         WHEN fiscal_months.fiscal_year = 2024 AND LOWER(sheetload_sales_targets_source.user_business_unit) = 'comm'
           THEN CONCAT(
@@ -94,12 +93,22 @@
                       fiscal_months.fiscal_year
                       )
         WHEN fiscal_months.fiscal_year >= 2025
-          THEN CONCAT(
+          THEN CONCAT( -- some targets don't use the role hierarchy so we still need to generate a geo key when role_name is null.
+                    COALESCE(
                     UPPER(sheetload_sales_targets_source.user_role_name),
+                    CONCAT( 
+                        UPPER(sheetload_sales_targets_source.user_segment),
+                        '-',
+                        UPPER(sheetload_sales_targets_source.user_geo), 
+                        '-',
+                        UPPER(sheetload_sales_targets_source.user_region),
+                        '-',
+                        UPPER(sheetload_sales_targets_source.user_area))
+                        ),
                     '-',
                     fiscal_months.fiscal_year
                     )
-        END")  }}                                                                                                                        AS dim_crm_user_hierarchy_sk,
+        END                                                                                                                         AS dim_crm_user_hierarchy_sk,
         fiscal_months.fiscal_year,
         fiscal_months.first_day_of_month
     FROM sheetload_sales_targets_source

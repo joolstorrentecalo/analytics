@@ -74,6 +74,7 @@ clari_task_previous_quarter = KubernetesPodOperator(
         **pod_env_vars,
         "logical_date": "{{ logical_date }}",  # Run previous quarter
         "task_schedule": TASK_SCHEDULE,
+        "task_instance_key_str": "{{ task_instance_key_str }}",
     },
     affinity=get_affinity("extraction"),
     tolerations=get_toleration("extraction"),
@@ -99,6 +100,7 @@ clari_task_new_quarter = KubernetesPodOperator(
         # Run today's quarter
         "logical_date": "{{ next_execution_date }}",
         "task_schedule": TASK_SCHEDULE,
+        "task_instance_key_str": "{{ task_instance_key_str }}",
     },
     affinity=get_affinity("extraction"),
     tolerations=get_toleration("extraction"),

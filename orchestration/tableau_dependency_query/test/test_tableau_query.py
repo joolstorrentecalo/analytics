@@ -12,8 +12,8 @@ def test_get_table_path_query():
     """
     Test get_table_path_query function
     """
-    table_name = "tickets"
-    expected_path = "raw:tap_zendesk.tickets"
+    table_name = "gitlab_db_ci_builds"
+    expected_path = "raw:tap_postgres.gitlab_db_ci_builds"
 
     # Patch get_response with mock
     actual_path = get_table_path_query(table_name)
