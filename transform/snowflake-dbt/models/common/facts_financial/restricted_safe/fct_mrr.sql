@@ -2,7 +2,7 @@
     "alias": "fct_mrr"
 }) }}
 
-/* grain: one record per rate_plan_charge per month. */
+/* grain: one record per rate_plan_charge per month */
 
 {{ simple_cte([
     ('dim_date', 'dim_date'),
