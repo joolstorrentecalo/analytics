@@ -2,7 +2,8 @@
     tags=["product"],
     materialized = "incremental",
     unique_key = "event_pk",
-    on_schema_change = "sync_all_columns"
+    on_schema_change = "sync_all_columns",
+    full_refresh=only_force_full_refresh()
 ) }}
 
 -- depends_on: {{ ref('prep_event') }}
