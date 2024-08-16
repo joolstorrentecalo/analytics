@@ -5880,6 +5880,16 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - jclapper:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - judume:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - seanhall:
       member_of:
         - snowflake_analyst
@@ -6937,6 +6947,14 @@ users:
       can_login: true
       member_of:
         - nwestbury
+  - jclapper:
+      can_login: true
+      member_of:
+        - jclapper
+  - judume:
+      can_login: true
+      member_of:
+        - judume
   - vshushlin:
       can_login: true
       member_of:
