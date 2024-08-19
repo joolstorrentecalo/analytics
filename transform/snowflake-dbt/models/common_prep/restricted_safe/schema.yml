@@ -320,6 +320,16 @@ models:
         data_tests:
           - not_null
 
+  - name: prep_mart_available_to_renew_new_snapshot_base
+    description: Base model for the mart_available_to_renew_new snapshot data
+    columns:
+      - name: primary_key
+        data_tests:
+          - not_null
+      - name: dbt_valid_from
+        data_tests:
+          - not_null
+
   - name: prep_sfdc_account
     description: '{{ doc("prep_sfdc_account") }}'
     columns:

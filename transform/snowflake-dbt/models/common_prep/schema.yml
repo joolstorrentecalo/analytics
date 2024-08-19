@@ -717,6 +717,8 @@ models:
         description: '{{ doc("dim_crm_opportunity_id_current_open_renewal") }}'
       - name: dim_crm_opportunity_id_closed_lost_renewal
         description: '{{ doc("dim_crm_opportunity_id_closed_lost_renewal") }}'
+      - name: ramp_id
+        description: The unique identifier of each ramp deal.
 
   - name: prep_subscription_lineage
     description:  '{{doc("prep_subscription_lineage")}}'

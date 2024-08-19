@@ -93,3 +93,10 @@ Compare balances and count per path vs. the total balances for all open invoices
 Comparison of booking, invoicing and payment amounts and counts
 
 {% enddocs %}
+
+{% docs mart_available_to_renew_new %}
+
+Captures ATR(available to renew) amounts for all the Subscriptions. ATR refers to what/how much is up for renewal in a given month (whether or not it actually ends up renewing). 
+
+{% enddocs %}
+

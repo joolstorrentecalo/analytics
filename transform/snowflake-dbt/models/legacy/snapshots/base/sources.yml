@@ -76,3 +76,4 @@ sources:
       - name: customers_db_billing_account_contacts_snapshots
       - name: customers_db_cloud_activations_snapshots
       - name: cost_centers_snapshots
+      - name: mart_available_to_renew_new_snapshot

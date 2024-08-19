@@ -56,6 +56,7 @@
       IFF(dim_billing_account_id_invoice_owner_account != dim_billing_account_id_creator_account, TRUE, FALSE)
                                                                                 AS was_purchased_through_reseller,
       zuora_subscription.multi_year_deal_subscription_linkage                   AS multi_year_deal_subscription_linkage,
+      zuora_subscription.ramp_id                                                AS ramp_id,
 
       --Date Information
       zuora_subscription.subscription_start_date                                AS subscription_start_date,
@@ -119,7 +120,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@ischweickartDD",
-    updated_by="@michellecooper",
+    updated_by="@snalamaru",
     created_date="2021-01-07",
-    updated_date="2023-04-12"
+    updated_date="2024-08-19"
 ) }}
