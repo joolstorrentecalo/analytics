@@ -378,7 +378,7 @@ models:
       - name: crm_user_area
         description: Area of the account owner associated with the subscription.
       - name: quantity
-        description: a sum of the quantity where the unit of measurement is 'Seats'.
+        description: Sum of the quantity where the unit of measurement is 'Seats'.
       - name: arr
         description: Annual recurring revenue associated with the subscription. 
 
@@ -390,4 +390,56 @@ models:
           data_tests:
             - not_null
           tags: [ "tdf", "mart", "atr" ]
+
+  - name: mart_available_to_renew_subscription_linkage
+    description: This model generates a list of subscriptions which will be available to renew in a given time period along with the renewal subscription linkage Ids.
+    columns:
+      - name: fiscal_year
+        description: Fiscal year when the subscription will be available to renew.
+        data_tests:
+          - not_null
+        tags: ["tdf", "mart", "atr"]
+      - name: fiscal_quarter_name_fy
+        description: Fiscal quarter when the subscription will be available to renew.
+      - name: dim_crm_opportunity_id
+        description: Unique identifier of the crm opportunity associated with the subscription.
+      - name: dim_crm_account_id
+        description: Unique identifier of the crm account associated with the subscription.
+      - name: dim_billing_account_id
+        description: Unique identifier of the billing account associated with the subscription.
+      - name: dim_subscription_id
+        description: Unique identifier of a subscription.
+        data_tests:
+          - not_null
+        tags: ["tdf", "mart", "atr"]
+      - name: subscription_name
+        description: Name applied to the subscription.
+      - name: renewal_subscription_id
+        description: The unique identifier of a renewal subscription associated with the renewal subscription linkage.
+      - name: renewal_subscription_name
+        description: Name of a renewal subscription associated with the current subscription.
+      - name: parent_crm_account_name
+        description: Name of the ultimate parent crm account associated with the subscription.
+      - name: atr_term_start_date
+        description: The minimum term start date of the Subscription
+      - name: atr_term_end_date
+        description: The maximum term end date of the Subscription
+      - name: dim_crm_user_id
+        description: Unique identifier of the account owner associated with the subscription.
+      - name: user_name
+        description: Name of the account owner associated with the subscription.
+      - name: user_role_id
+        description: Unique identifier of the role of the account owner associated with the subscription.
+      - name: crm_user_sales_segment
+        description: Segment of the account owner associated with the subscription.
+      - name: crm_user_geo
+        description: Geo of the account owner associated with the subscription.
+      - name: crm_user_region
+        description: Region of the account owner associated with the subscription.
+      - name: crm_user_area
+        description: Area of the account owner associated with the subscription.
+      - name: quantity
+        description: Sum of the quantity where the unit of measurement is 'Seats'.
+      - name: arr
+        description: Annual recurring revenue associated with the subscription. 
 

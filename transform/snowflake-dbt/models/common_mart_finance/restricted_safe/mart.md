@@ -100,3 +100,12 @@ Captures ATR(available to renew) amounts for all the Subscriptions. ATR refers t
 
 {% enddocs %}
 
+{% docs mart_available_to_renew_subscription_linkage %}
+
+Captures ATR(available to renew) amounts for all the Subscriptions along with the enewal subscription linkage IDs. ATR refers to what/how much is up for renewal in a given month (whether or not it actually ends up renewing). 
+
+{% enddocs %}
+
+
+
+
