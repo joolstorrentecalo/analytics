@@ -32,7 +32,7 @@
       SUM(ARR) AS ARR, 
       SUM(Quantity) AS Quantity
     FROM  {{ ref('mart_available_to_renew') }} 
-    GROUP BY 1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18
+    GROUP BY 1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19
 )
 
 {{ dbt_audit(
