@@ -541,14 +541,10 @@ def seed_and_upload_snowflake(
                 logging.info("Cells db backfill needs to run first")
 
             else:
-                logging.info("Swapping tables")
                 swap_temp_table(
                     target_engine,
                     database_kwargs["real_target_table"],
                     database_kwargs["target_table"],
-                )
-                logging.info(
-                    f"Finished swapping tables to Snowflake table '{database_kwargs['real_target_table']}'"
                 )
 
 
@@ -1069,6 +1065,7 @@ def swap_temp_table(engine: Engine, real_table: str, temp_table: str) -> None:
 
     drop_query = f"DROP TABLE IF EXISTS {TARGET_EXTRACT_SCHEMA}.{temp_table}"
     query_executor(engine, drop_query)
+    logging.info(f"Finished swapping tables to Snowflake table {real_table}")
 
 
 def update_import_query_for_delete_export(import_query: str, primary_key: str):
