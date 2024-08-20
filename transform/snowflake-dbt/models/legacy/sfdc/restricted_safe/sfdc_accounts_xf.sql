@@ -27,7 +27,7 @@ WITH sfdc_account AS (
       sfdc_record_type.business_process_id,
       sfdc_record_type.record_type_label,
       sfdc_record_type.record_type_description,
-      sfdc_record_type.record_type_modifying_object_type
+      sfdc_record_type.record_type_modifying_object_type,
       CASE 
         WHEN sfdc_account.ultimate_parent_sales_segment IN ('Large', 'Strategic')
           OR sfdc_account.division_sales_segment IN ('Large', 'Strategic') 
