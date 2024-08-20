@@ -1,8 +1,10 @@
 WITH sfdc_account AS (
 
     SELECT 
-      {{ dbt_utils.star(from=ref('sfdc_account'), except=["ACCOUNT_OWNER_USER_SEGMENT"])}}
-    FROM {{ ref('sfdc_account') }}
+      {{ dbt_utils.star(from=ref('sfdc_account_source'), except=["ACCOUNT_OWNER_USER_SEGMENT"])}}
+    FROM {{ ref('sfdc_account_source') }}
+    WHERE account_id IS NOT NULL
+    AND is_deleted = FALSE
 
 ), sfdc_users AS (
 
@@ -12,7 +14,7 @@ WITH sfdc_account AS (
 ), sfdc_record_type AS (
 
     SELECT *
-    FROM {{ ref('sfdc_record_type') }}     
+    FROM {{ ref('sfdc_record_type_source') }}     
 
 ), sfdc_account_deal_size_segmentation AS (
 
