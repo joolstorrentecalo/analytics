@@ -14,12 +14,7 @@ WITH sfdc_account AS (
 ), sfdc_record_type AS (
 
     SELECT *
-    FROM {{ ref('sfdc_record_type_source') }}     
-
-), sfdc_account_deal_size_segmentation AS (
-
-    SELECT *
-    FROM {{ ref('sfdc_account_deal_size_segmentation') }}
+    FROM {{ ref('sfdc_record_type_source') }}   
 
 ), joined AS (
 
@@ -32,8 +27,7 @@ WITH sfdc_account AS (
       sfdc_record_type.business_process_id,
       sfdc_record_type.record_type_label,
       sfdc_record_type.record_type_description,
-      sfdc_record_type.record_type_modifying_object_type,
-      sfdc_account_deal_size_segmentation.deal_size,
+      sfdc_record_type.record_type_modifying_object_type
       CASE 
         WHEN sfdc_account.ultimate_parent_sales_segment IN ('Large', 'Strategic')
           OR sfdc_account.division_sales_segment IN ('Large', 'Strategic') 
@@ -140,8 +134,6 @@ WITH sfdc_account AS (
       ON sfdc_account.owner_id = account_owner.user_id
     LEFT JOIN sfdc_record_type
       ON sfdc_account.record_type_id = sfdc_record_type.record_type_id
-    LEFT JOIN sfdc_account_deal_size_segmentation
-      ON sfdc_account.account_id = sfdc_account_deal_size_segmentation.account_id
 
 )
 
