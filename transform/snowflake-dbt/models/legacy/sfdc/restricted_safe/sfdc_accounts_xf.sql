@@ -7,7 +7,7 @@ WITH sfdc_account AS (
 ), sfdc_users AS (
 
     SELECT *
-    FROM {{ ref('sfdc_users') }}
+    FROM {{ ref('sfdc_users_source') }}
 
 ), sfdc_record_type AS (
 
