@@ -55,7 +55,7 @@
       ramp_id,
       is_ramp,
       myb_opportunity_id,
-      opportunity_id
+      dim_crm_opportunity_id
     FROM prep_subscription
     WHERE 
       is_ramp = 'Yes'
