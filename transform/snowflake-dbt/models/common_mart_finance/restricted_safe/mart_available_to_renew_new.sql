@@ -93,15 +93,15 @@
       dim_crm_opportunity.dim_crm_opportunity_id, 
       CASE
         WHEN sheetload_map_ramp_deal.dim_crm_opportunity_id IS NOT NULL THEN sheetload_map_ramp_deal."Overwrite_SSP_ID" 
-        WHEN zuora_ramps.opportunity_id IS NOT NULL THEN zuora_ramps.myb_opportunity_id
+        WHEN zuora_ramps.dim_crm_opportunity_id IS NOT NULL THEN zuora_ramps.myb_opportunity_id
         WHEN ramp_deals.dim_crm_opportunity_id IS NOT NULL THEN ramp_deals.ssp_id     
       END AS ramp_ssp_id_init,
       CASE 
         WHEN ramp_ssp_id_init != 'Not a ramp' 
           THEN ramp_ssp_id_init
-        ELSE LEFT(zuora_ramps.opportunity_id, 15) 
+        ELSE LEFT(zuora_ramps.dim_crm_opportunity_id, 15) 
       END AS ramp_ssp_id,
-      zuora_ramps.opportunity_id                     AS zuora_opp_id,
+      zuora_ramps.dim_crm_opportunity_id             AS zuora_opp_id,
       sheetload_map_ramp_deal.dim_crm_opportunity_id AS sheetload_opp_id,
       ramp_deals.dim_crm_opportunity_id              AS sf_ramp_deal_opp_id
     FROM dim_crm_opportunity	        
@@ -110,7 +110,7 @@
     LEFT JOIN ramp_deals          
      ON ramp_deals.dim_crm_opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id
     LEFT JOIN zuora_ramps
-     ON zuora_ramps.opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id
+     ON zuora_ramps.dim_crm_opportunity_id = dim_crm_opportunity.dim_crm_opportunity_id
     WHERE ramp_ssp_id IS NOT NULL 
 
 --Getting Subscription information
