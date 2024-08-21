@@ -1,10 +1,6 @@
 {{ config(
     materialized="table",
 ) }}
-
-{{ simple_cte([
-    ('mart_available_to_renew', 'mart_available_to_renew_new')
-]) }}
  
 -- ATR Calculation for all Quarters along with Renewal Linkage Subscriptions
 , renewal_linkage AS ( 
@@ -31,7 +27,7 @@
       crm_user_area,
       SUM(ARR) AS ARR, 
       SUM(Quantity) AS Quantity
-    FROM  {{ ref('mart_available_to_renew') }} 
+    FROM  {{ ref('mart_available_to_renew_new') }} 
     GROUP BY 1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19
 )
 

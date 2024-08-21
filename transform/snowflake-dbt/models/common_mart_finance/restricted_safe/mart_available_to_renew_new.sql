@@ -323,7 +323,7 @@
       subscription_charges.crm_user_region            AS crm_user_region,
       subscription_charges.crm_user_area              AS crm_user_area,
       
-      --ATR-related attributes including Seat Quantity & ARR 
+      --ATR related attributes including Seat Quantity & ARR 
       subscription_charges.ATR_term_start_date        AS ATR_term_start_date,
       subscription_charges.ATR_term_end_date          AS ATR_term_end_date,
       subscription_charges.quantity                   AS quantity,
