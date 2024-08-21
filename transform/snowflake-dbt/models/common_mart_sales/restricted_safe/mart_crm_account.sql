@@ -138,6 +138,8 @@
       dim_crm_account.bdr_account_research,
       dim_crm_account.bdr_account_strategy,
       dim_crm_account.account_bdr_assigned_user_role,
+      dim_crm_account.pubsec_type__c,
+
 
       --D&B Fields
       dim_crm_account.dnb_match_confidence_score,
@@ -184,6 +186,9 @@
       dim_crm_account.ptc_score,
       dim_crm_account.ptc_decile,
       dim_crm_account.ptc_score_group,
+      dim_crm_account.ptp_score_c,
+      dim_crm_account.ptp_score_value__c,
+      dim_crm_account.ptp_insights__c,
 
       --degenerative dimensions
       dim_crm_account.is_sdr_target_account,
