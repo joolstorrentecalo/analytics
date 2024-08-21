@@ -46,7 +46,7 @@
 
     SELECT 
       dim_crm_account_id,
-      subscription_id,
+      dim_subscription_id,
       subscription_name,
       subscription_version,
       subscription_status,
