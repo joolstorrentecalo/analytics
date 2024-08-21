@@ -3,7 +3,7 @@
 ) }}
  
 -- ATR Calculation for all Quarters along with Renewal Linkage Subscriptions
-, renewal_linkage AS ( 
+WITH renewal_linkage AS ( 
 
     SELECT DISTINCT
       fiscal_year,
