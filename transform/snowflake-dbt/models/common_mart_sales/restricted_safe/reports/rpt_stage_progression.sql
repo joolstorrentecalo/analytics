@@ -1,103 +1,193 @@
-WITH base AS(
-    SELECT 
-    dim_crm_opportunity_id,
-    dim_parent_crm_account_id,
-    report_role_level_1,
-    report_role_level_2,
-    report_role_level_3,
-    CASE
-        WHEN report_role_level_1 = 'APJ' THEN 'APJ'
-        WHEN report_role_level_1 = 'SMB' THEN 'SMB'
-        WHEN report_role_level_1 = 'PUBSEC' THEN 'PUBSEC'
-        WHEN report_role_level_2 = 'AMER_COMM' THEN 'AMER COMM'
-        WHEN report_role_level_1 = 'AMER' THEN 'AMER ENT'
-        WHEN report_role_level_2 = 'EMEA_COMM' THEN 'EMEA COMM'
-        WHEN report_role_level_2 = 'EMEA_NEUR' THEN 'EMEA NEUR'
-        WHEN report_role_level_2 = 'EMEA_DACH' THEN 'EMEA DACH'
-        WHEN report_role_level_2 = 'EMEA_SEUR' THEN 'EMEA SEUR'
-        WHEN report_role_level_2 = 'EMEA_META' THEN 'EMEA META'
-        WHEN report_role_level_2 = 'EMEA_TELCO' THEN 'EMEA TELCO'
-    END AS pipe_council_grouping,                                   -- replace with upstream column
-    sales_type,
-    intended_product_tier,
-    order_type,
-    sales_qualified_source_name,
-    close_date,
-    close_fiscal_quarter_name,
-    stage_name,
-    CASE
-        WHEN net_arr<50000 THEN 'Run-Rate Net ARR(<$50K)'
-        WHEN net_arr>=50000 AND net_arr<250000 THEN 'Mid Size Net ARR ($50K-$250K)'
-        WHEN net_arr>=250000 AND net_arr<500000 THEN 'Fat-Middle Net ARR ($250K-$500K)'
-        WHEN net_arr>=500000 AND net_arr<1000000 THEN 'Big Deal Net ARR ($500K-$1M)'
-        ELSE 'Jumbo Deal Net ARR (>$1M)'
-    END AS deal_size_grouping,                                      -- replace with upstream column
-    SUM(CASE WHEN stage_name IN ('1-Discovery', '2-Scoping','3-Technical Evaluation','4-Proposal', '5-Negotiating', '6-Awaiting Signature', '7-Closing') 
-        THEN net_arr END) AS open_pipe_1_plus,
-    SUM(CASE WHEN stage_name IN ('3-Technical Evaluation','4-Proposal', '5-Negotiating', '6-Awaiting Signature', '7-Closing') 
-        THEN net_arr END) AS open_pipe_3_plus,
-    SUM(CASE WHEN stage_name='Closed Won' 
-        THEN net_arr END) AS total_won_net_arr,
-    COUNT(CASE WHEN stage_name='Closed Won' 
-        THEN dim_crm_opportunity_id END) AS total_won_deals,
-    SUM(CASE WHEN stage_name='8-Closed Lost' 
-        THEN net_arr END) AS lost_pipe,
-    SUM(CASE WHEN stage_name NOT LIKE '%Closed%' 
-        THEN COALESCE(proserv_amount,professional_services_value) END) AS ps_amnt_open,
-    SUM(CASE WHEN stage_name='Closed Won' 
-        THEN COALESCE(proserv_amount,professional_services_value) END) AS ps_amnt_won,
-    SUM(CASE WHEN stage_name NOT LIKE '%Closed%'
-        THEN net_arr END) AS total_open_net_arr,
-    COUNT(CASE WHEN stage_name NOT LIKE '%Closed%'
-        THEN dim_crm_opportunity_id END) AS total_open_deals,
-    FROM prod.restricted_safe_common_mart_sales.mart_crm_opportunity
-    WHERE close_fiscal_quarter_date='2024-08-01'
-        AND sales_qualified_source_name<>'Web Direct Generated'
-        AND net_arr>0
-        AND opportunity_category NOT IN ('Decommission','Internal Correction')
-        AND lower(opportunity_name) NOT LIKE '%rebook%'
-    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14
+with base as (
+    select
+    --create date and close date
+    distinct dim_crm_opportunity_id, 
+    case when stage_name='7 - Closing' then '7-Closing'
+        when stage_name='Closed Lost' then '8-Closed Lost'
+        else stage_name end as stage_name,
+    arr_created_date as created_date, 
+    min(snapshot_date) stage_date
+    -- from prod.restricted_safe_common_mart_sales.mart_crm_opportunity_daily_snapshot
+    from {{ ref('mart_crm_opportunity_daily_snapshot') }}
+    where sales_qualified_source_name<>'Web Direct Generated'
+    and arr_created_date>='2020-02-01'
+    and sales_type<>'Renewal'
+    and is_web_portal_purchase=false
+    and opportunity_category not in ('Decommission','Internal Correction')
+    and lower(opportunity_name) not like '%rebook%'
+    and net_arr>0
+    --exclude renewal sales_type=renewal
+    --web portal purchase
+    --opp category: exclude decommission and internal correction
+    --opp name does not contain rebook
+    --net arr > 0 ?
+    group by 1,2,3
 ),
 
-current_qtr_targets AS(
-    SELECT crm_user_role_level_3,
-    CASE
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_1 = 'APJ' THEN 'APJ'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_1 = 'SMB' THEN 'SMB'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_1 = 'PUBSEC' THEN 'PUBSEC'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_2 = 'AMER_COMM' THEN 'AMER COMM'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_1 = 'AMER' THEN 'AMER ENT'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_2 = 'EMEA_COMM' THEN 'EMEA COMM'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_2 = 'EMEA_NEUR' THEN 'EMEA NEUR'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_2 = 'EMEA_DACH' THEN 'EMEA DACH'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_2 = 'EMEA_SEUR' THEN 'EMEA SEUR'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_2 = 'EMEA_META' THEN 'EMEA META'
-        WHEN prep_crm_user_hierarchy.crm_user_role_level_2 = 'EMEA_TELCO' THEN 'EMEA TELCO'
-    END AS pipe_council_grouping,                                     -- replace with upstream column
-    SUM(CASE WHEN fct_sales_funnel_target.kpi_name = 'Net ARR'
-        THEN fct_sales_funnel_target.allocated_target END) AS net_arr_target,
-    FROM prod.restricted_safe_common_mart_sales.mart_sales_funnel_target
-    LEFT JOIN prod.common.dim_date 
-        ON restricted_safe_common_mart_sales.mart_sales_funnel_target.target_month = dim_date.date_actual
-    LEFT JOIN prod.restricted_safe_common.fct_sales_funnel_target
-        ON restricted_safe_common_mart_sales.mart_sales_funnel_target.sales_funnel_target_id = fct_sales_funnel_target.sales_funnel_target_id
-    LEFT JOIN prod.common_prep.prep_crm_user_hierarchy
-        ON fct_sales_funnel_target.dim_crm_user_hierarchy_sk = prep_crm_user_hierarchy.dim_crm_user_hierarchy_sk
-    WHERE dim_date.day_of_month = 1
-        --AND pipe_council_grouping IS NOT NULL
-        AND mart_sales_funnel_target.kpi_name='Net ARR' 
-        AND fiscal_quarter_name_fy='FY25-Q3'
-        AND sales_qualified_source_name<>'Web Direct Generated'
-    GROUP BY 1,2
+stage_base as(
+    select
+    dim_crm_opportunity_id,
+    case when stage_name='0-Pending Acceptance' then 'stage0'
+        when stage_name='1-Discovery' then 'stage1'
+        when stage_name='2-Scoping' then 'stage2'
+        when stage_name='3-Technical Evaluation' then 'stage3'
+        when stage_name='4-Proposal' then 'stage4'
+        when stage_name='5-Negotiating' then 'stage5'
+        when stage_name='6-Awaiting Signature' then 'stage6'
+        when stage_name='7-Closing' then 'stage7'
+        when stage_name='8-Closed Lost' then 'closed_lost'
+        when stage_name='Closed Won' then 'closed_won'
+        end as stage_name, 
+    created_date, stage_date,
+    lag(stage_date,1) over(partition by dim_crm_opportunity_id order by stage_date) as prev_stage_date,
+    lag(stage_name,1) over(partition by dim_crm_opportunity_id order by stage_date) as prev_stage_name,
+    datediff(day,lag(stage_date,1) over(partition by dim_crm_opportunity_id order by stage_date),stage_date) as num_days_in_stage,
+    count(*) over(partition by dim_crm_opportunity_id order by stage_date) as stage_rank,
+    from base
+    -- join to live table for role levels crm_opp_owner_role_level_#
+    where stage_name in('0-Pending Acceptance','1-Discovery','2-Scoping','3-Technical Evaluation','4-Proposal','5-Negotiating','6-Awaiting Signature','7-Closing','8-Closed Lost','Closed Won')
+),
+
+stage_pivot as(
+    select *
+    from (select dim_crm_opportunity_id,created_date,stage_name,stage_date from stage_base)
+    pivot(max(stage_date) for stage_name in('stage0','stage1','stage2','stage3','stage4','stage5','stage6','stage7','closed_lost','closed_won'))
+),
+
+stage_dates as (
+    select 
+    dim_crm_opportunity_id,
+    case when "'closed_lost'" is not null then 'Lost'
+        when "'closed_won'" is not null then 'Won'
+        else 'Open' end as stage_category,
+    created_date,
+    "'stage0'" as stage0_date,
+    "'stage1'" as stage1_date,
+    "'stage2'" as stage2_date,
+    "'stage3'" as stage3_date,
+    "'stage4'" as stage4_date,
+    "'stage5'" as stage5_date,
+    "'stage6'" as stage6_date,
+    "'stage7'" as stage7_date,
+    coalesce("'closed_lost'","'closed_won'") as close_date
+    from stage_pivot
+),
+
+dates_adj as(
+    SELECT 
+    dim_crm_opportunity_id,stage_category,created_date,
+    --STAGE0
+    IFF(STAGE0_DATE IS NULL, 
+        IFF(STAGE1_DATE IS NULL, 
+            IFF(STAGE2_DATE IS NULL, 
+                IFF(STAGE3_DATE IS NULL, 
+                    IFF(STAGE4_DATE IS NULL, 
+                        IFF(STAGE5_DATE IS NULL, 
+                            IFF(STAGE6_DATE IS NULL, 
+                                IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE), 
+                            STAGE6_DATE), 
+                        STAGE5_DATE), 
+                    STAGE4_DATE), 
+                STAGE3_DATE), 
+            STAGE2_DATE), 
+        STAGE1_DATE), 
+    STAGE0_DATE) AS STAGE0_DATE,
+    --STAGE1
+    IFF(STAGE1_DATE IS NULL, 
+        IFF(STAGE2_DATE IS NULL, 
+            IFF(STAGE3_DATE IS NULL, 
+                IFF(STAGE4_DATE IS NULL, 
+                    IFF(STAGE5_DATE IS NULL, 
+                        IFF(STAGE6_DATE IS NULL, 
+                            IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE), 
+                        STAGE6_DATE), 
+                    STAGE5_DATE), 
+                STAGE4_DATE), 
+            STAGE3_DATE), 
+        STAGE2_DATE), 
+    STAGE1_DATE) AS STAGE1_DATE,
+    --STAGE2
+    IFF(STAGE2_DATE IS NULL, 
+        IFF(STAGE3_DATE IS NULL, 
+            IFF(STAGE4_DATE IS NULL, 
+                IFF(STAGE5_DATE IS NULL, 
+                    IFF(STAGE6_DATE IS NULL, 
+                        IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE), 
+                    STAGE6_DATE), 
+                STAGE5_DATE), 
+            STAGE4_DATE), 
+        STAGE3_DATE), 
+    STAGE2_DATE) AS STAGE2_DATE,
+    --STAGE3
+    IFF(STAGE3_DATE IS NULL, 
+        IFF(STAGE4_DATE IS NULL, 
+            IFF(STAGE5_DATE IS NULL, 
+                IFF(STAGE6_DATE IS NULL, 
+                    IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE), 
+                STAGE6_DATE), 
+            STAGE5_DATE), 
+        STAGE4_DATE), 
+    STAGE3_DATE) AS STAGE3_DATE,
+    --STAGE4
+    IFF(STAGE4_DATE IS NULL, 
+        IFF(STAGE5_DATE IS NULL, 
+            IFF(STAGE6_DATE IS NULL, 
+                IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE), 
+            STAGE6_DATE), 
+        STAGE5_DATE), 
+    STAGE4_DATE)  AS STAGE4_DATE,
+    --STAGE5
+    IFF(STAGE5_DATE IS NULL, 
+        IFF(STAGE6_DATE IS NULL, 
+            IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE), 
+        STAGE6_DATE), 
+    STAGE5_DATE) AS STAGE5_DATE,
+    --STAGE6
+    IFF(STAGE6_DATE IS NULL, 
+        IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE), 
+    STAGE6_DATE) AS STAGE6_DATE,
+    --STAGE7
+    IFF(STAGE7_DATE IS NULL, CLOSE_DATE, STAGE7_DATE) AS STAGE7_DATE,
+    --CLOSE_DATE
+    CLOSE_DATE                    
+    FROM stage_dates
+),
+
+opp_snap as(
+    select 
+    dim_crm_opportunity_id,stage_category,created_date,
+    stage0_date-created_date as create_days,
+    stage0_date,
+    stage1_date-stage0_date as stage0_days,
+    stage1_date,
+    stage2_date-stage1_date as stage1_days,
+    stage2_date,
+    stage3_date-stage2_date as stage2_days,
+    stage3_date,
+    stage4_date-stage3_date as stage3_days,
+    stage4_date,
+    stage5_date-stage4_date as stage4_days,
+    stage5_date,
+    stage6_date-stage5_date as stage5_days,
+    stage6_date,
+    stage7_date-stage6_date as stage6_days,
+    stage7_date,
+    close_date-stage7_date as stage7_days,
+    close_date,
+    case when stage_category='Open' then current_date()-coalesce(stage7_date,stage6_date,stage5_date,stage4_date,stage3_date,stage2_date,stage1_date,stage0_date,created_date) end as current_days
+    from dates_adj
+    --remove negatives
+    where (stage0_date-created_date>=0 or stage0_date-created_date is null)
+    and (stage1_date-stage0_date>=0 or stage1_date-stage0_date is null)
+    and (stage2_date-stage1_date>=0 or stage2_date-stage1_date is null)
+    and (stage3_date-stage2_date>=0 or stage3_date-stage2_date is null)
+    and (stage4_date-stage3_date>=0 or stage4_date-stage3_date is null)
+    and (stage5_date-stage4_date>=0 or stage5_date-stage4_date is null)
+    and (stage6_date-stage5_date>=0 or stage6_date-stage5_date is null)
+    and (stage7_date-stage6_date>=0 or stage7_date-stage6_date is null)
+    and (close_date-stage7_date>=0 or close_date-stage7_date is null)
+    --remove duplicates
+    and dim_crm_opportunity_id not in (select dim_crm_opportunity_id from dates_adj group by 1 having count(dim_crm_opportunity_id) > 1)
 )
 
-SELECT DISTINCT
-b.*,c.net_arr_target,
-a.parent_crm_account_industry,
-a.parent_crm_account_sales_segment,
-a.parent_crm_account_upa_country_name
-FROM base b
-LEFT JOIN current_qtr_targets c
-    ON c.pipe_council_grouping=b.pipe_council_grouping AND c.crm_user_role_level_3=b.report_role_level_3
-LEFT JOIN prod.restricted_safe_common_mart_sales.mart_crm_account a
-    ON a.dim_parent_crm_account_id=b.dim_parent_crm_account_id
+SELECT * FROM opp_snap
