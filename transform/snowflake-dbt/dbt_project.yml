@@ -656,6 +656,10 @@ models:
           +schema: workspace_product
         snowplow:
           +schema: workspace_product
+        restricted_safe:
+          +schema: restricted_safe_workspace_product
+          +tags: ["safe"]
+          secure: true
 
       workspace_saas_usage_ping:
         +tags: ["product", "service_ping"]
