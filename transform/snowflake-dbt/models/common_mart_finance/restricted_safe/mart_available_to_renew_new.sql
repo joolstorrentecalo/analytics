@@ -30,7 +30,7 @@
     term_start_date,
     term_end_date,
     ramp_id, ---Identifies ramps booked via current Ramp functionality
-    multi_year_deal_subscription_linkage AS myb_opportunity_id,---Equivalent to SSP ID in SF, deprecated now, used for identifying Legacy ramps,only the first year of ramp can ve identified by this opp_id
+    multi_year_deal_subscription_linkage AS myb_opportunity_id,---Equivalent to SSP ID in SF, deprecated now, used for identifying Legacy ramps,only the first year of ramp can be identified by this opp_id
     dim_crm_opportunity_id,
     CASE 
       WHEN ramp_id != '' OR  (multi_year_deal_subscription_linkage != '' AND multi_year_deal_subscription_linkage IS NOT NULL AND multi_year_deal_subscription_linkage != 'Not a ramp') 
