@@ -224,7 +224,7 @@
       MAX(term_end_date) AS max_term_end_date  
     FROM dim_subscription_base      
     WHERE ramp_ssp_id IS NOT NULL       
-    GROUP BY 1 HAVING COUNT(*) >= 1  
+    GROUP BY 1 HAVING COUNT(*) > 1  
 
 
 ----Calculating ATR start term and End term dates from Subscripion base
