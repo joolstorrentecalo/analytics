@@ -208,6 +208,7 @@ selectors:
           - config.schema:restricted_safe_workspace_sales
           - config.schema:restricted_safe_workspace_marketing
           - config.schema:restricted_safe_workspace_engineering
+          - config.schema:restricted_safe_workspace_product
 
   - name: contiguous_list
     description: This selector designed for use with the `make build-changes` command and will select the intersection of the passed list of models. 

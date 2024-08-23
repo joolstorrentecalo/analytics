@@ -1482,6 +1482,7 @@ roles:
             - prod.restricted_safe_workspace_finance
             - prod.restricted_safe_workspace_marketing
             - prod.restricted_safe_workspace_sales
+            - prod.restricted_safe_workspace_product
         tables:
           read:
             - prod.restricted_safe_common.*
@@ -1497,6 +1498,7 @@ roles:
             - prod.restricted_safe_workspace_finance.*
             - prod.restricted_safe_workspace_marketing.*
             - prod.restricted_safe_workspace_sales.*
+            - prod.restricted_safe_workspace_product.*
   - container_registry:
       privileges:
         databases:
@@ -2350,6 +2352,7 @@ roles:
             - prod.restricted_safe_workspace_engineering
             - prod.workspace_data_science
             - prod.workspace_sales
+            - prod.restricted_safe_workspace_product
         tables:
           read:
             - prod.restricted_safe_common.*
@@ -2366,6 +2369,7 @@ roles:
             - prod.restricted_safe_common_mart_product.*
             - prod.workspace_data_science.*
             - prod.workspace_sales.*
+            - prod.restricted_safe_workspace_product.*
   - commonroom_sensitive:
       warehouses:
         - dev_xs
