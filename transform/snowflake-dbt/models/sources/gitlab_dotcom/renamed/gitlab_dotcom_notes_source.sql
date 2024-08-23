@@ -1,3 +1,9 @@
+{{ config({
+    "materialized": "incremental",
+    "unique_key": "note_id"
+    })
+}}
+
 WITH all_notes AS (
 
   SELECT
@@ -23,7 +29,9 @@ WITH all_notes AS (
     discussion_id::VARCHAR                                AS discussion_id,
     cached_markdown_version::NUMBER                       AS cached_markdown_version,
     resolved_by_push::BOOLEAN                             AS resolved_by_push,
-    note_html::VARCHAR                                    AS note_html
+    note_html::VARCHAR                                    AS note_html,
+    pgp_is_deleted::BOOLEAN                               AS pgp_is_deleted,
+    pgp_is_deleted_updated_at::TIMESTAMP                  AS pgp_is_deleted_updated_at
   FROM {{ ref('gitlab_dotcom_notes_dedupe_source') }}
   WHERE note_id NOT IN (203215238) --https://gitlab.com/gitlab-data/analytics/merge_requests/1423
 ),
@@ -41,27 +49,29 @@ internal_notes AS (
 
 combined AS (
   SELECT
-    all_notes.note_id                 AS note_id,
+    all_notes.note_id,
     internal_notes.internal_note      AS note,
-    all_notes.noteable_type           AS noteable_type,
-    all_notes.note_author_id          AS note_author_id,
-    all_notes.created_at              AS created_at,
-    all_notes.updated_at              AS updated_at,
-    all_notes.project_id              AS project_id,
-    all_notes.attachment              AS attachment,
+    all_notes.noteable_type,
+    all_notes.note_author_id,
+    all_notes.created_at,
+    all_notes.updated_at,
+    all_notes.project_id,
+    all_notes.attachment,
     internal_notes.internal_line_code AS line_code,
-    all_notes.commit_id               AS commit_id,
-    all_notes.noteable_id             AS noteable_id,
-    all_notes.system                  AS system,
-    all_notes.note_updated_by_id      AS note_updated_by_id,
-    all_notes.position                AS position,
-    all_notes.original_position       AS original_position,
-    all_notes.resolved_at             AS resolved_at,
-    all_notes.resolved_by_id          AS resolved_by_id,
-    all_notes.discussion_id           AS discussion_id,
-    all_notes.cached_markdown_version AS cached_markdown_version,
-    all_notes.resolved_by_push        AS resolved_by_push,
-    internal_notes.internal_note_html AS note_html
+    all_notes.commit_id,
+    all_notes.noteable_id,
+    all_notes.system,
+    all_notes.note_updated_by_id,
+    all_notes.position,
+    all_notes.original_position,
+    all_notes.resolved_at,
+    all_notes.resolved_by_id,
+    all_notes.discussion_id,
+    all_notes.cached_markdown_version,
+    all_notes.resolved_by_push,
+    internal_notes.internal_note_html AS note_html,
+    all_notes.pgp_is_deleted,
+    all_notes.pgp_is_deleted_updated_at
   FROM all_notes
   LEFT JOIN internal_notes
     ON all_notes.note_id = internal_notes.internal_note_id
