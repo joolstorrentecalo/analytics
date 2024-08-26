@@ -29,3 +29,6 @@ models:
 
   - name: rpt_gtm_scaffold
     description: A scaffold table which contains all of the needed combinations of dimensions for joining (via a Tableau relationship) the GTM actuals and targets report tables.
+
+  - name: rpt_pushed_pipe_from_starting
+    description: A report table for FY25 data that shows of our starting pipeline opportunities that are expected to close in the quarter, what happens to those opportunities (and how many push)
