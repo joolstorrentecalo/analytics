@@ -65,9 +65,6 @@ dag = DAG(
     params=params,
 )
 
-dummy_start = DummyOperator(task_id="dummy_start", dag=dag)
-
-
 hackerone_extract_command = (
     f"{clone_and_setup_extraction_cmd} && " f"python hackerone/src/hackerone_extract.py"
 )
