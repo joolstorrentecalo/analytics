@@ -91,7 +91,7 @@ models:
             - paired_tier
     columns:
       - name: reporting_week
-        description: Week of reported seats associated with Duo Pro subscription and usage behavior starting on Sunday.
+        description: Week of reported seats associated with Duo Pro subscription and usage behavior starting on Monday.
       - name: subscription_name
         description: '{{ doc("subscription_name") }}'
       - name: dim_subscription_id
