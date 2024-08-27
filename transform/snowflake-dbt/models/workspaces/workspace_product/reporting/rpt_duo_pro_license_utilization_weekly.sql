@@ -22,7 +22,7 @@ all_duo_pro_weekly_seats AS (
 
 SELECT 
   arr_week
-    AS reporting_week, --WEEK STARTING ON SUNDAY
+    AS reporting_week, --week starting on monday
   subscription_name,
   dim_subscription_id,
   crm_account_name,
@@ -67,7 +67,7 @@ GROUP BY ALL
 ), 
 
 sm_dedicated_duo_pro_weekly_seats AS ( -- duo pro weekly seats associated entities -- dedicated and SM in one CTE due to the same type of product entity identifier used - dim_installation_id
---WEEK STARTING ON SUNDAY
+--week starting on monday
 
   SELECT DISTINCT
     duo_pro.*,
@@ -88,7 +88,7 @@ sm_dedicated_duo_pro_weekly_seats AS ( -- duo pro weekly seats associated entiti
     ON duo_pro.dim_subscription_id = m.latest_subscription_id
     AND m.ping_created_date_week = reporting_week
   WHERE duo_pro.product_deployment IN ('Self-Managed', 'Dedicated')
-    AND reporting_week BETWEEN '2024-02-18' AND DATEADD(day, -8, DATE_TRUNC(WEEK, current_date)) -- last week sunday (not including current week)
+    AND reporting_week BETWEEN '2024-02-18' AND DATEADD(day, -7, DATE_TRUNC(WEEK, current_date)) -- last week monday (not including current week)
   GROUP BY ALL
 
 ), 
@@ -116,7 +116,7 @@ dotcom_duo_pro_weekly_seats AS ( -- duo pro weekly seats and associated entities
     ON m.ping_created_date_week = reporting_week
     AND m.dim_installation_id = '8b52effca410f0a380b0fcffaa1260e7' -- installation id for Gitlab.com
   WHERE product_deployment = 'GitLab.com'
-    AND reporting_week BETWEEN '2024-02-18' AND DATEADD(day, -8, DATE_TRUNC(WEEK, current_date)) -- last week sunday (not including current week)
+    AND reporting_week BETWEEN '2024-02-18' AND DATEADD(day, -7, DATE_TRUNC(WEEK, current_date)) -- last week monday (not including current week)
   GROUP BY ALL
 
 ),
@@ -147,7 +147,7 @@ duo_pro_seat_assignments AS ( -- CTE to get number of seats assigned per namepsa
 dotcom_chat_users AS ( -- gitlab.com chat weekly users with subacriptions
 
   SELECT
-    DATEADD(day, -1, DATE_TRUNC(week, behavior_date))  --WEEK STARTING ON SUNDAY                 
+    DATE_TRUNC(week, behavior_date)  --week starting on monday                
       AS reporting_week,
     duo_pro.product_entity_id,
     duo_pro.product_entity_type,
@@ -194,7 +194,7 @@ sm_dedicated_chat_users AS ( -- sm & dedicated chat 28d count unique users with 
 dotcom_cs_users AS ( -- gitlab.com code_suggestions weekly users with subscriptions - first step is to flatten on the entity id
 
   SELECT
-    DATEADD(day, -1, DATE_TRUNC(week, behavior_date))  --WEEK STARTING ON SUNDAY                 
+    DATE_TRUNC(week, behavior_date)  --week starting on monday                
       AS reporting_week,    
     duo_pro.product_entity_id,
     duo_pro.product_entity_type,
@@ -218,7 +218,7 @@ dotcom_cs_users AS ( -- gitlab.com code_suggestions weekly users with subscripti
 sm_dedicated_cs_users AS ( -- sm & dedicated chat code suggestions users with subscriptions - first step is to flatten on the entity id
 
   SELECT
-    DATEADD(day, -1, DATE_TRUNC(week, behavior_date))  --WEEK STARTING ON SUNDAY                 
+    DATE_TRUNC(week, behavior_date)  --week starting on monday               
       AS reporting_week, 
     duo_pro.product_entity_id,
     duo_pro.product_entity_type,
