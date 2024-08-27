@@ -72,6 +72,14 @@ GAINSIGHT_BUCKET_NAME = Secret(
     "env", "GAINSIGHT_BUCKET_NAME", "airflow", "GAINSIGHT_BUCKET_NAME"
 )
 
+# HackerOne
+HACKERONE_API_USERNAME = Secret(
+    "env", "HACKERONE_API_USERNAME", "airflow", "HACKERONE_API_USERNAME"
+)
+HACKERONE_API_TOKEN = Secret(
+    "env", "HACKERONE_API_TOKEN", "airflow", "HACKERONE_API_TOKEN"
+)
+
 # Postgres
 PG_PORT = Secret("env", "PG_PORT", "airflow", "PG_PORT")
 
