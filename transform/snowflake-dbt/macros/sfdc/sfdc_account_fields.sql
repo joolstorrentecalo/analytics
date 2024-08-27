@@ -613,6 +613,9 @@ WITH map_merged_crm_account AS (
       ptc_scores.score                                               AS ptc_score,
       ptc_scores.decile                                              AS ptc_decile,
       ptc_scores.score_group                                         AS ptc_score_group,
+      sfdc_account.ptp_insights__c                                   AS ptp_insights,
+      sfdc_account.ptp_score_value__c                                AS ptp_score_value,
+      sfdc_account.ptp_score__c                                      AS ptp_score,
 
 
       --metadata
