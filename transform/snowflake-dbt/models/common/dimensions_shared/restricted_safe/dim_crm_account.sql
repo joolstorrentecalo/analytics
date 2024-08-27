@@ -161,7 +161,7 @@
       prep_crm_account.bdr_account_research,
       prep_crm_account.bdr_account_strategy,
       prep_crm_account.account_bdr_assigned_user_role,
-      prep_crm_account.pubsec_type__c,
+      prep_crm_account.pubsec_type,
 
       --measures (maintain for now to not break reporting)
       prep_crm_account.parent_crm_account_lam,
@@ -263,9 +263,9 @@
       prep_crm_account.ptc_score,
       prep_crm_account.ptc_decile,
       prep_crm_account.ptc_score_group,
-      prep_crm_account.ptp_score_c,
-      prep_crm_account.ptp_score_value__c,
-      prep_crm_account.ptp_insights__c
+      prep_crm_account.ptp_score,
+      prep_crm_account.ptp_score_value,
+      prep_crm_account.ptp_insights
     FROM prep_crm_account
     LEFT JOIN cohort_date
         ON cohort_date.dim_crm_account_id = prep_crm_account.dim_crm_account_id

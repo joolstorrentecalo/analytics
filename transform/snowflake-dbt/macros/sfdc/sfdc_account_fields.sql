@@ -456,6 +456,7 @@ WITH map_merged_crm_account AS (
       sfdc_account.bdr_account_research,
       sfdc_account.bdr_account_strategy,
       sfdc_account.account_bdr_assigned_user_role,
+      sfdc_account.pubsec_type__c                                         AS pubsec_type,
 
       --degenerative dimensions
       sfdc_account.is_sdr_target_account,
