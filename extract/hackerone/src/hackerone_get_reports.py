@@ -4,7 +4,7 @@ import sys
 from datetime import datetime, timedelta
 from logging import basicConfig, error, getLogger, info
 from time import sleep
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Union
 
 import pandas as pd
 import requests
@@ -50,7 +50,7 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
     page = 1
     while True:
         info(f"Getting reports, extracting page {page}")
-        params = {
+        params: Dict[str, Union[int, str]] = {
             "filter[program][]": "gitlab",
             "page[number]": page,
             "page[size]": 100,
