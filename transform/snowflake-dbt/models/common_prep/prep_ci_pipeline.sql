@@ -46,7 +46,25 @@
       gitlab_dotcom_ci_pipelines_source.lock_version, 
       gitlab_dotcom_ci_pipelines_source.auto_canceled_by_id, 
       gitlab_dotcom_ci_pipelines_source.pipeline_schedule_id, 
-      gitlab_dotcom_ci_pipelines_source.ci_pipeline_source, 
+      CASE 
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 1 THEN 'push'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 2 THEN 'web'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 3 THEN 'trigger'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 4 THEN 'schedule'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 5 THEN 'api'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 6 THEN 'external'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 7 THEN 'pipeline'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 8 THEN 'chat'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 9 THEN 'webide'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 10 THEN 'merge_request_event'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 11 THEN 'external_pull_request_event'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 12 THEN 'parent_pipeline'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 13 THEN 'ondemand_dast_scan'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 14 THEN 'ondemande_dast_validation'
+        WHEN gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 15 THEN 'security_orchestration_policy'
+        WHEN  gitlab_dotcom_ci_pipelines_source.ci_pipeline_source = 16 THEN 'container_registry_push'
+        ELSE NULL 
+        END as ci_pipeline_source, 
       gitlab_dotcom_ci_pipelines_source.config_source, 
       gitlab_dotcom_ci_pipelines_source.is_protected, 
       gitlab_dotcom_ci_pipelines_source.failure_reason          AS failure_reason_id,

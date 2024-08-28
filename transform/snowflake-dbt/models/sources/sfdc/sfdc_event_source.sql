@@ -62,14 +62,9 @@ WITH source AS (
       isrecurrence::BOOLEAN                  AS is_recurrence,
       isreminderset::BOOLEAN                 AS has_reminder_set,
       is_answered__c::FLOAT                  AS is_answered,
-      is_bad_number__c::FLOAT                AS is_bad_number, 
-      is_busy__c::FLOAT                      AS is_busy, 
       is_correct_contact__c::FLOAT           AS is_correct_contact,
-      is_left_message__c::FLOAT              AS is_left_message,
-      is_not_answered__c::FLOAT              AS is_not_answered,
       meeting_cancelled__c::BOOLEAN          AS is_meeting_canceled,
       close_task__c::BOOLEAN                 AS is_closed_event,
-      activity__c::FLOAT                     AS is_activity,
       {{ partner_marketing_task_subject_cleaning('subject') }} 
                                              AS partner_marketing_task_subject,  
 

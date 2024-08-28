@@ -54,10 +54,10 @@ WITH targets AS (
 
     --Opportunity Data
         opp_order_type,
-        crm_opp_owner_sales_segment_stamped,
-        crm_opp_owner_geo_stamped,
-        crm_opp_owner_region_stamped,
-        crm_opp_owner_area_stamped,
+        report_segment,
+        report_geo,
+        report_region,
+        report_area,
         sales_qualified_source_name,
         opp_lead_source,
         opp_source_buckets,
@@ -75,8 +75,8 @@ WITH targets AS (
     FROM {{ref('rpt_lead_to_revenue')}}
     WHERE (account_demographics_geo != 'JIHU'
      OR account_demographics_geo IS null) 
-     OR (crm_opp_owner_geo_stamped != 'JIHU'
-     OR crm_opp_owner_geo_stamped IS null)
+     OR (report_geo != 'JIHU'
+     OR report_geo IS null)
 
 ), date_base AS (
 
@@ -151,24 +151,24 @@ WITH targets AS (
         is_sao,
         opp_order_type,
         CASE 
-            WHEN crm_opp_owner_sales_segment_stamped = 'LARGE' 
+            WHEN report_segment = 'LARGE' 
                 THEN 'Large'
-            WHEN crm_opp_owner_sales_segment_stamped = 'MID-MARKET' 
+            WHEN report_segment = 'MID-MARKET' 
                 THEN 'Mid-Market'
-            WHEN crm_opp_owner_sales_segment_stamped = 'PUBSEC' 
+            WHEN report_segment = 'PUBSEC' 
                 THEN 'PubSec'
-            WHEN crm_opp_owner_sales_segment_stamped = 'OTHER' 
+            WHEN report_segment = 'OTHER' 
                 THEN 'Other'
-            ELSE crm_opp_owner_sales_segment_stamped
-        END AS crm_opp_owner_sales_segment_stamped_clean,
-        crm_opp_owner_geo_stamped,
+            ELSE report_segment
+        END AS report_segment_clean,
+        report_geo,
         opp_lead_source,
         opp_source_buckets,
         sales_qualified_source_name,
         parent_crm_account_lam,
         parent_crm_account_lam_dev_count,
-        crm_opp_owner_region_stamped,
-        crm_opp_owner_area_stamped,
+        report_region,
+        report_area,
         CASE 
             WHEN is_sao = true 
                 THEN dim_crm_opportunity_id 
@@ -180,8 +180,8 @@ WITH targets AS (
         ON rpt_lead_to_revenue_base.sales_accepted_date=date_base.date_day
     WHERE 1=1
         AND sales_accepted_date <= CURRENT_DATE
-        AND (crm_opp_owner_geo_stamped != 'JIHU'
-        OR crm_opp_owner_geo_stamped IS null)
+        AND (report_geo != 'JIHU'
+        OR report_geo IS null)
 
 ), inquiries AS (
 
@@ -237,10 +237,10 @@ WITH targets AS (
         date_range_month,
         date_range_quarter,
         date_range_year,
-        crm_opp_owner_sales_segment_stamped_clean AS sales_segment, 
-        crm_opp_owner_geo_stamped AS geo,
-        crm_opp_owner_region_stamped AS region,
-        crm_opp_owner_area_stamped AS area,
+        report_segment_clean AS sales_segment, 
+        report_geo AS geo,
+        report_region AS region,
+        report_area AS area,
         sales_qualified_source_name,
         opp_order_type AS order_type,
         opp_lead_source,

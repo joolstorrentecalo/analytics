@@ -1,17 +1,9 @@
-WITH
-source AS (
-  SELECT * FROM
-    {{ source('level_up', 'visits') }}
-),
+{{ config(
+    materialized='incremental',
+    unique_key=['user_id', 'event_timestamp']
+) }}
 
-intermediate AS (
-  SELECT
-    data.value,
-    source.uploaded_at
-  FROM
-    source
-  INNER JOIN LATERAL FLATTEN(input => source.jsontext['data']) AS data
-),
+{{ level_up_incremental('visits') }}
 
 parsed AS (
   SELECT

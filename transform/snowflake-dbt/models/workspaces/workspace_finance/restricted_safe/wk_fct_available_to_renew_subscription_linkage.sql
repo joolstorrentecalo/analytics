@@ -10,6 +10,7 @@
 , renewal_linkage AS ( 
 
     SELECT DISTINCT
+      fiscal_year,
       fiscal_quarter_name_fy, 
       dim_crm_account_id, 
       dim_crm_opportunity_id,
@@ -31,7 +32,7 @@
       SUM(ARR) AS ARR, 
       SUM(Quantity) AS Quantity
     FROM  {{ ref('wk_fct_available_to_renew') }} 
-    GROUP BY 1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18
+    GROUP BY 1,2,3,4,5,6,8,9,10,11,12,13,14,15,16,17,18,19
 )
 
 {{ dbt_audit(
@@ -39,7 +40,7 @@ cte_ref="renewal_linkage",
 created_by="@snalamaru",
 updated_by="@snalamaru",
 created_date="2024-04-01",
-updated_date="2024-04-22"
+updated_date="2024-08-22"
 ) }}
 
 

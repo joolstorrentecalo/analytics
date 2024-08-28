@@ -25,6 +25,8 @@ WITH source AS
            tags::VARCHAR                                                                     AS tags,
            job_title::VARCHAR                                                                AS job_title,
            last_organization::VARCHAR                                                        AS last_organization,
+           organization_name::VARCHAR                                                        AS organization_name,
+           organization_domain::VARCHAR                                                      AS organization_domain,
            _uploaded_at::TIMESTAMP                                                           AS _uploaded_at,
            _file_name::VARCHAR                                                               AS _file_name
     FROM source

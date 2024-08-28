@@ -120,7 +120,7 @@ models:
 
   - name: pump_disaster_relief_fund
     description: '{{ doc("pump_disaster_relief_fund") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - Employeenumber
@@ -158,25 +158,25 @@ models:
     description: '{{ doc("pump_smb_daily_case_automation") }}'
     columns:
       - name: CASE_TRIGGER
-        tests:
+        data_tests:
           - not_null
       - name: ACCOUNT_ID
-        tests:
+        data_tests:
           - not_null
       - name: ACCOUNT_TIER
       - name: CASE_TRIGGER_ID
-        tests:
+        data_tests:
           - not_null
       - name: STATUS
       - name: CASE_ORIGIN
       - name: TYPE
       - name: CASE_SUBJECT
-        tests:
+        data_tests:
           - not_null
       - name: OWNER_ID
       - name: CASE_REASON
       - name: RECORD_TYPE_ID
-        tests:
+        data_tests:
           - not_null
       - name: PRIORITY
       - name: CASE_OPPORTUNITY_ID
@@ -184,6 +184,8 @@ models:
       - name: CASE_CTA
       - name: CONTEXT_FINAL
       - name: REMOVE_FLAG
+      - name: CURRENT_PRICE
+      - name: RENEWAL_PRICE
 
 
 

@@ -1,15 +1,25 @@
+WITH prep_crm_user_daily_snapshot AS (
 
-{{ simple_cte([
+   SELECT
+    dim_crm_user_id,
+    employee_number,
+    user_role_name,
+    user_email,
+    user_name,
+    title,
+    department,
+    team,
+    manager_id,
+    manager_name,
+    is_active,
+    crm_user_sales_segment,
+    crm_user_geo,
+    crm_user_region,
+    crm_user_area,
+    snapshot_date
+  FROM {{ ref('prep_crm_user_daily_snapshot') }}
 
-    ('prep_crm_opportunity','prep_crm_opportunity'),
-    ('prep_date','prep_date'),
-    ('prep_crm_user_daily_snapshot','prep_crm_user_daily_snapshot'),
-    ('prep_team_member', 'prep_team_member'),
-    ('prep_crm_opportunity','prep_crm_opportunity')
-  ]) 
-}}
-
-, prep_crm_user_snapshot_base AS (
+), prep_crm_user_snapshot_base AS (
 
   SELECT
     dim_crm_user_id,
@@ -31,20 +41,23 @@
   FROM prep_crm_user_daily_snapshot
   WHERE snapshot_date >= '2022-10-11' --since this date we are observing improved data quality in terms of associated employee_id with the record
 
-),
-
-prep_team_member_base AS (
+), prep_team_member_base AS (
 
   SELECT
     employee_id,
     first_name,
     last_name
-  FROM prep_team_member
+  FROM {{ ref('prep_team_member') }}
   WHERE is_current
 
-),
+), prep_date AS (
 
-sales_dev_opps AS (
+  SELECT
+    date_id,
+    date_actual
+  FROM {{ ref('prep_date') }}
+
+), sales_dev_opps AS (
 
   SELECT DISTINCT
     dim_crm_account_id,
@@ -57,7 +70,7 @@ sales_dev_opps AS (
     order_type,
     is_net_arr_closed_deal,
     COALESCE(opportunity_business_development_representative, opportunity_sales_development_representative) AS sdr_bdr_user_id
-  FROM prep_crm_opportunity
+  FROM {{ ref('prep_crm_opportunity') }}
   LEFT JOIN prep_date AS created_date
     ON prep_crm_opportunity.created_date_id = created_date.date_id
   LEFT JOIN prep_date AS sales_accepted_date
@@ -66,22 +79,18 @@ sales_dev_opps AS (
     ON prep_crm_opportunity.stage_1_discovery_date_id = stage_1_discovery_date.date_id
   WHERE sdr_bdr_user_id IS NOT NULL
     AND opp_created_date >= '2022-10-11' --since this date we are observing improved data quality in terms of associated employee_id with the record
-
-),
-
-last_user_employee_id AS (
+    AND is_live = TRUE 
+    
+), last_user_employee_id AS (
 
   SELECT DISTINCT
     dim_crm_user_id,
     LAST_VALUE(employee_number IGNORE NULLS) OVER (PARTITION BY dim_crm_user_id ORDER BY snapshot_date) AS last_e_number
   FROM prep_crm_user_daily_snapshot
-  INNER JOIN
-    sales_dev_opps
-    ON prep_crm_user_daily_snapshot.dim_crm_user_id = sdr_bdr_user_id
+  INNER JOIN sales_dev_opps
+    ON prep_crm_user_daily_snapshot.dim_crm_user_id = sales_dev_opps.sdr_bdr_user_id
 
-),
-
-sales_dev_hierarchy_prep AS (
+), sales_dev_hierarchy_prep AS (
 
   SELECT
     sales_dev_rep.dim_crm_user_id     AS sales_dev_rep_user_id,
@@ -128,15 +137,17 @@ sales_dev_hierarchy_prep AS (
   LEFT JOIN last_user_employee_id AS leader_employee_id
     ON manager.manager_id = leader_employee_id.dim_crm_user_id
 
-),
-
-final AS (
+), final AS (
 
   SELECT DISTINCT
     sales_dev_hierarchy_prep.sales_dev_rep_user_id                                                         AS dim_crm_user_id,
     sales_dev_hierarchy_prep.sales_dev_rep_role_name,
+    sheetload_sales_dev_role_hierarchy_source.role_level_1                                                 AS sales_dev_rep_user_role_level_1,
+    sheetload_sales_dev_role_hierarchy_source.role_level_2                                                 AS sales_dev_rep_user_role_level_2,
+    sheetload_sales_dev_role_hierarchy_source.role_level_3                                                 AS sales_dev_rep_user_role_level_3,
+    sheetload_sales_dev_role_hierarchy_source.fiscal_year                                                  AS sales_dev_rep_user_role_hierarchy_fiscal_year,
     sales_dev_hierarchy_prep.sales_dev_rep_email,
-    COALESCE(rep.first_name || ' ' || rep.last_name, sales_dev_hierarchy_prep.sales_dev_rep_user_name)     AS sales_dev_rep_full_name,
+    COALESCE(rep.first_name || ' ' || rep.last_name, sales_dev_hierarchy_prep.sales_dev_rep_user_name)     AS sales_dev_rep_user_full_name,
     sales_dev_hierarchy_prep.sales_dev_rep_title,
     sales_dev_hierarchy_prep.sales_dev_rep_department,
     sales_dev_hierarchy_prep.sales_dev_rep_team,
@@ -148,22 +159,24 @@ final AS (
     sales_dev_hierarchy_prep.sales_dev_rep_employee_number,
     sales_dev_hierarchy_prep.snapshot_date,
     sales_dev_hierarchy_prep.sales_dev_rep_direct_manager_id,
-    COALESCE(manager.first_name || ' ' || manager.last_name, sales_dev_rep_direct_manager_name)            AS sales_dev_manager_full_name,
+    COALESCE(manager.first_name || ' ' || manager.last_name, sales_dev_rep_direct_manager_name)            AS sales_dev_rep_manager_full_name,
     sales_dev_hierarchy_prep.sales_dev_manager_email,
     sales_dev_hierarchy_prep.sales_dev_manager_employee_number,
     sales_dev_hierarchy_prep.sales_dev_manager_user_role_name,
     sales_dev_hierarchy_prep.sales_dev_leader_id,
     sales_dev_hierarchy_prep.sales_dev_leader_user_role_name,
-    COALESCE(leader.first_name || ' ' || leader.last_name, sales_dev_hierarchy_prep.sales_dev_leader_name) AS sales_dev_leader_full_name,
+    COALESCE(leader.first_name || ' ' || leader.last_name, sales_dev_hierarchy_prep.sales_dev_leader_name) AS sales_dev_rep_leader_full_name,
     sales_dev_hierarchy_prep.sales_dev_leader_employee_number,
     sales_dev_hierarchy_prep.sales_dev_leader_email
   FROM sales_dev_hierarchy_prep
-  LEFT JOIN prep_team_member AS rep
+  LEFT JOIN prep_team_member_base AS rep
     ON sales_dev_rep_employee_number = rep.employee_id
-  LEFT JOIN prep_team_member AS manager
+  LEFT JOIN prep_team_member_base AS manager
     ON sales_dev_manager_employee_number = manager.employee_id
-  LEFT JOIN prep_team_member AS leader
+  LEFT JOIN prep_team_member_base AS leader
     ON sales_dev_leader_employee_number = leader.employee_id
+  LEFT JOIN {{ ref('sheetload_sales_dev_role_hierarchy_source') }}
+    ON sales_dev_hierarchy_prep.sales_dev_rep_role_name=sheetload_sales_dev_role_hierarchy_source.user_role_name
 
 )
 
@@ -171,7 +184,7 @@ final AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@dmicovic",
+    updated_by="@rkohnke",
     created_date="2024-07-02",
-    updated_date="2024-07-04"
+    updated_date="2024-07-24"
 ) }}

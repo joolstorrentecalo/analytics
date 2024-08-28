@@ -217,7 +217,7 @@ models:
         +materialized: table
         +schema: driveload
         +tags: ["driveload"]
-      
+
       e2e_metrics:
         +materialized: table
         +schema: e2e_metrics
@@ -296,7 +296,13 @@ models:
         +materialized: table
         +schema: just_global_campaigns
 
+      kantata:
+        +materialized: table
+        +schema: kantata
+        +tags: ["mnpi"]
+
       level_up:
+        +materialized: table
         +schema: level_up
 
       linkedin_ads:
@@ -388,9 +394,6 @@ models:
 
       zendesk:
         +schema: zendesk
-
-      zendesk_community_relations:
-        +schema: zendesk_community_relations
 
       zengrc:
         +schema: zengrc

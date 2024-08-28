@@ -215,6 +215,15 @@ WITH map_merged_crm_account AS (
       --executive sponsor field
       executive_sponsor.name AS executive_sponsor,
 
+      --D&B Fields
+      sfdc_account.dnb_match_confidence_score,
+      sfdc_account.dnb_match_grade,
+      sfdc_account.dnb_connect_company_profile_id,
+      sfdc_account.dnb_duns,
+      sfdc_account.dnb_global_ultimate_duns,
+      sfdc_account.dnb_domestic_ultimate_duns,
+      sfdc_account.dnb_exclude_company,
+
       --6 sense fields
       sfdc_account.has_six_sense_6_qa,
       sfdc_account.risk_rate_guid,
@@ -396,6 +405,7 @@ WITH map_merged_crm_account AS (
       sfdc_account.demandbase_sessions,
       sfdc_account.demandbase_trending_offsite_intent,
       sfdc_account.demandbase_trending_onsite_engagement,
+      sfdc_account.account_domains,
       sfdc_account.is_locally_managed_account,
       sfdc_account.is_strategic_account,
       sfdc_account.partner_track,

@@ -194,6 +194,7 @@ gitlab-org/security-products/demos/coverage-fuzzing/swift-fuzzing-example,203363
 gitlab-org/security-products/demos/coverage-fuzzing/rust-fuzzing-example,20334170
 gitlab-org/security-products/demos/coverage-fuzzing/c-cpp-fuzzing-example,20162469
 gitlab-org/security-products/demos/coverage-fuzzing/go-fuzzing-example,19413496
+gitlab-org/security-products/analyzers/gitlab-advanced-sast,56828450, @mbenayoun
 gitlab-org/security-products/analyzers/kubesec,14853550, @amarpatel
 gitlab-org/security-products/analyzers/semgrep,24075172, @amarpatel
 gitlab-org/security-products/analyzers/command,23597850, @amarpatel

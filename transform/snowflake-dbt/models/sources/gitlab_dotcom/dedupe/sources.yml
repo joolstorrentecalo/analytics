@@ -311,6 +311,8 @@ sources:
         freshness: null
       - name: remote_development_agent_configs
         identifier: gitlab_db_remote_development_agent_configs
+      - name: related_epic_links
+        identifier: gitlab_db_related_epic_links
       - name: releases
         identifier: gitlab_db_releases
       - name: repository_languages
@@ -493,6 +495,8 @@ sources:
         identifier: gitlab_db_users_ops_dashboard_projects
       - name: web_hooks
         identifier: gitlab_db_web_hooks
+      - name: work_item_parent_links
+        identifier: gitlab_db_work_item_parent_links
       - name: work_item_types
         identifier: gitlab_db_work_item_types
       - name: workspaces

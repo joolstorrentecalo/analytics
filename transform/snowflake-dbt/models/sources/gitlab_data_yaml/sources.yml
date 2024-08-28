@@ -46,3 +46,4 @@ sources:
       - name: team
       - name: usage_ping_metrics
       - name: ux_department_pi
+      - name: cloud_connector

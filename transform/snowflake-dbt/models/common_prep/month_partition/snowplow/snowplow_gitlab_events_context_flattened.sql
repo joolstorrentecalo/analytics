@@ -75,13 +75,28 @@ WITH filtered_source as (
             {'field':'user_id', 'alias':'pseudonymized_user_id'},
             {'field':'source'},
             {'field':'is_gitlab_team_member',},
-            {'field':'feature_enabled_by_namespace_ids'}
+            {'field':'feature_enabled_by_namespace_ids'},
+            {'field':'instance_id', 'alias':"gsc_instance_id"},
+            {'field':'instance_version'},
+            {'field':'host_name', 'alias':"gsc_host_name"},
+            {'field':'realm', 'alias':"gsc_realm"},
+            {'field':'global_user_id'},
+            {'field':'correlation_id'}
             ]
         )
       }},
       IFF(google_analytics_id = '', NULL,
           SPLIT_PART(google_analytics_id, '.', 3) || '.' ||
           SPLIT_PART(google_analytics_id, '.', 4))::VARCHAR                                                                                                   AS google_analytics_client_id,
+      CASE
+        WHEN gsc_realm IN ('SaaS','saas') 
+          THEN 'SaaS'
+        WHEN gsc_realm IN ('Self-Managed','self-managed') 
+          THEN 'Self-Managed'
+        WHEN gsc_realm IS NULL 
+          THEN NULL
+        ELSE gsc_realm
+      END                                                                                                                                                     AS gsc_delivery_type,
 
       -- Web Page Context Columns
        {{
@@ -133,7 +148,17 @@ WITH filtered_source as (
             {'field':'options_count', 'formula':"NULLIF(context_data['options_count']::VARCHAR, 'null')", 'data_type':'number', 'alias':'options_count'},
             {'field':'accepted_option', 'data_type':'int'},
             {'field':'has_advanced_context', 'data_type':'boolean'},
-            {'field':'is_direct_connection', 'data_type':'boolean'}
+            {'field':'is_direct_connection', 'data_type':'boolean'},
+            {'field':'gitlab_instance_version'},
+            {'field':'total_context_size_bytes', 'data_type':'int'},
+            {'field':'content_above_cursor_size_bytes', 'data_type':'int'},
+            {'field':'content_below_cursor_size_bytes', 'data_type':'int'},
+            {'field':'context_items', 'data_type':'variant'},
+            {'field':'input_tokens', 'data_type':'int'},
+            {'field':'output_tokens', 'data_type':'int'},
+            {'field':'context_tokens_sent', 'data_type':'int'},
+            {'field':'context_tokens_used', 'data_type':'int'},
+            {'field':'debounce_interval', 'data_type':'int'}
             ]
         )
       }},
@@ -234,6 +259,9 @@ SELECT
   MAX(column_selection.source)                                AS source,
   MAX(column_selection.is_gitlab_team_member)                 AS is_gitlab_team_member,
   MAX(column_selection.feature_enabled_by_namespace_ids)      AS feature_enabled_by_namespace_ids,
+  COALESCE(MAX(column_selection.instance_version), MAX(column_selection.gitlab_instance_version))
+                                                              AS instance_version,
+  MAX(column_selection.correlation_id)                        AS correlation_id,
 
   MAX(column_selection.web_page_context)                      AS web_page_context,
   MAX(column_selection.web_page_context_schema)               AS web_page_context_schema,
@@ -257,21 +285,35 @@ SELECT
   MAX(column_selection.suffix_length)                         AS suffix_length,
   MAX(column_selection.language)                              AS language,
   MAX(column_selection.user_agent)                            AS user_agent,
-  MAX(column_selection.delivery_type)                         AS delivery_type,
+  COALESCE(MAX(column_selection.gsc_delivery_type),MAX(column_selection.delivery_type))
+                                                              AS delivery_type,
   MAX(column_selection.api_status_code)                       AS api_status_code,
   MAX(column_selection.duo_namespace_ids)                     AS duo_namespace_ids, 
   MAX(column_selection.saas_namespace_ids)                    AS saas_namespace_ids, 
   MAX(column_selection.namespace_ids)                         AS namespace_ids,
-  MAX(column_selection.instance_id)                           AS instance_id,
-  MAX(column_selection.host_name)                             AS host_name,
+  COALESCE(MAX(column_selection.gsc_instance_id),MAX(column_selection.instance_id))
+                                                              AS instance_id,
+  COALESCE(MAX(column_selection.gsc_host_name), MAX(column_selection.host_name))
+                                                              AS host_name,
   MAX(column_selection.is_streaming)                          AS is_streaming,
-  MAX(column_selection.gitlab_global_user_id)                 AS gitlab_global_user_id,
+  COALESCE(MAX(column_selection.global_user_id), MAX(column_selection.gitlab_global_user_id))
+                                                              AS gitlab_global_user_id,
   MAX(column_selection.suggestion_source)                     AS suggestion_source,
   MAX(column_selection.is_invoked)                            AS is_invoked,
   MAX(column_selection.options_count)                         AS options_count,
   MAX(column_selection.accepted_option)                       AS accepted_option,
   MAX(column_selection.has_advanced_context)                  AS has_advanced_context,
   MAX(column_selection.is_direct_connection)                  AS is_direct_connection,
+  MAX(column_selection.total_context_size_bytes)              AS total_context_size_bytes,
+  MAX(column_selection.content_above_cursor_size_bytes)       AS content_above_cursor_size_bytes,
+  MAX(column_selection.content_below_cursor_size_bytes)       AS content_below_cursor_size_bytes,
+  MAX(column_selection.context_items)                         AS context_items,
+  ARRAY_SIZE(MAX(column_selection.context_items))             AS context_items_count,
+  MAX(column_selection.input_tokens)                          AS input_tokens,
+  MAX(column_selection.output_tokens)                         AS output_tokens,
+  MAX(column_selection.context_tokens_sent)                   AS context_tokens_sent,
+  MAX(column_selection.context_tokens_used)                   AS context_tokens_used,
+  MAX(column_selection.debounce_interval)                     AS debounce_interval,
 
   MAX(column_selection.ide_extension_version_context)         AS ide_extension_version_context,
   MAX(column_selection.ide_extension_version_context_schema)  AS ide_extension_version_context_schema,

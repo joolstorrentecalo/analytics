@@ -35,7 +35,7 @@ code_suggestion_context AS (
     fct_behavior_structured_event.duo_namespace_ids,
     fct_behavior_structured_event.saas_namespace_ids,
     fct_behavior_structured_event.namespace_ids,
-    fct_behavior_structured_event.instance_id,
+    fct_behavior_structured_event.dim_instance_id,
     fct_behavior_structured_event.host_name,
     fct_behavior_structured_event.is_streaming,
     fct_behavior_structured_event.gitlab_global_user_id,
@@ -44,7 +44,19 @@ code_suggestion_context AS (
     fct_behavior_structured_event.options_count,
     fct_behavior_structured_event.accepted_option,
     fct_behavior_structured_event.has_advanced_context,
-    fct_behavior_structured_event.is_direct_connection
+    fct_behavior_structured_event.is_direct_connection,
+    fct_behavior_structured_event.gsc_instance_version,
+    fct_behavior_structured_event.total_context_size_bytes,
+    fct_behavior_structured_event.content_above_cursor_size_bytes,
+    fct_behavior_structured_event.content_below_cursor_size_bytes,
+    fct_behavior_structured_event.context_items,
+    fct_behavior_structured_event.context_items_count,
+    fct_behavior_structured_event.input_tokens,
+    fct_behavior_structured_event.output_tokens,
+    fct_behavior_structured_event.context_tokens_sent,
+    fct_behavior_structured_event.context_tokens_used,
+    fct_behavior_structured_event.debounce_interval
+
   FROM fct_behavior_structured_event
   WHERE fct_behavior_structured_event.behavior_at >= '2023-08-01' -- no events added to context before Aug 2023
     AND fct_behavior_structured_event.has_code_suggestions_context = TRUE
@@ -156,15 +168,15 @@ context_with_installation_id AS (
 
   SELECT
     code_suggestion_context.behavior_structured_event_pk,
-    code_suggestion_context.instance_id,
+    code_suggestion_context.dim_instance_id,
     dim_installation.dim_installation_id,
     dim_installation.host_name,
     dim_installation.product_delivery_type,
     dim_installation.product_deployment_type
   FROM code_suggestion_context
   LEFT JOIN dim_installation
-    ON code_suggestion_context.instance_id = dim_installation.dim_instance_id
-  WHERE code_suggestion_context.instance_id IS NOT NULL
+    ON code_suggestion_context.dim_instance_id = dim_installation.dim_instance_id
+  WHERE code_suggestion_context.dim_instance_id IS NOT NULL
     AND (
       code_suggestion_context.host_name IS NULL
       OR code_suggestion_context.host_name = ''
@@ -174,16 +186,16 @@ context_with_installation_id AS (
 
   SELECT
     code_suggestion_context.behavior_structured_event_pk,
-    code_suggestion_context.instance_id,
+    code_suggestion_context.dim_instance_id,
     dim_installation.dim_installation_id,
     dim_installation.host_name,
     dim_installation.product_delivery_type,
     dim_installation.product_deployment_type
   FROM code_suggestion_context
   LEFT JOIN dim_installation
-    ON code_suggestion_context.instance_id = dim_installation.dim_instance_id
+    ON code_suggestion_context.dim_instance_id = dim_installation.dim_instance_id
       AND code_suggestion_context.host_name = dim_installation.host_name
-  WHERE code_suggestion_context.instance_id IS NOT NULL
+  WHERE code_suggestion_context.dim_instance_id IS NOT NULL
     AND code_suggestion_context.host_name IS NOT NULL
     AND code_suggestion_context.host_name != ''
 
@@ -292,5 +304,5 @@ combined AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-06-11"
+    updated_date="2024-08-23"
 ) }}

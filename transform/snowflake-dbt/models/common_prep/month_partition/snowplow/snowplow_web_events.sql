@@ -115,6 +115,10 @@ WITH all_events AS (
           WHEN ev.os_timezone = 'SystemV/HST10' THEN NULL
           WHEN ev.os_timezone = 'EuropeALondon' THEN 'Europe/London'
           WHEN ev.os_timezone = 'SystemV/CST6' THEN NULL
+          WHEN ev.os_timezone = 'America/New_York01ix691pvh' THEN NULL
+          WHEN ev.os_timezone = '9072hrct3fqlaw0xcgxjbdbltczan6sukm8evij7' THEN NULL
+          WHEN ev.os_timezone = 'cbbkv8gayz' THEN NULL
+          WHEN regexp_instr(ev.os_timezone,'oastify.com') != 0 THEN NULL
           ELSE ev.os_timezone
         END
         , '%2F', '/') AS os_timezone,

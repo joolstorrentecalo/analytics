@@ -89,6 +89,7 @@
       dim_crm_account.demandbase_sessions,
       dim_crm_account.demandbase_trending_offsite_intent,
       dim_crm_account.demandbase_trending_onsite_engagement,
+      dim_crm_account.account_domains,
       dim_crm_account.is_locally_managed_account,
       dim_crm_account.is_strategic_account,
       dim_crm_account.partner_track,
@@ -137,6 +138,15 @@
       dim_crm_account.bdr_account_research,
       dim_crm_account.bdr_account_strategy,
       dim_crm_account.account_bdr_assigned_user_role,
+
+      --D&B Fields
+      dim_crm_account.dnb_match_confidence_score,
+      dim_crm_account.dnb_match_grade,
+      dim_crm_account.dnb_connect_company_profile_id,
+      dim_crm_account.dnb_duns,
+      dim_crm_account.dnb_global_ultimate_duns,
+      dim_crm_account.dnb_domestic_ultimate_duns,
+      dim_crm_account.dnb_exclude_company,
 
       --6 sense fields
       dim_crm_account.has_six_sense_6_qa,
@@ -265,5 +275,5 @@
     created_by="@michellecooper",
     updated_by="@rkohnke",
     created_date="2022-08-10",
-    updated_date="2024-07-18"
+    updated_date="2024-08-15"
 ) }}

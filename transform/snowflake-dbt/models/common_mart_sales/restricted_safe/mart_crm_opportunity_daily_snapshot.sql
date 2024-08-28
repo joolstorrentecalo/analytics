@@ -7,7 +7,8 @@
     ('fct_crm_opportunity','fct_crm_opportunity_daily_snapshot'),
     ('dim_crm_account','dim_crm_account_daily_snapshot'),
     ('dim_crm_user', 'dim_crm_user_daily_snapshot'),
-    ('dim_date', 'dim_date')
+    ('dim_date', 'dim_date'),
+    ('dim_crm_user_hierarchy', 'dim_crm_user_hierarchy')
 ]) }},
 
 final AS (
@@ -27,6 +28,8 @@ final AS (
     fct_crm_opportunity.dim_parent_crm_opportunity_id,
     fct_crm_opportunity.duplicate_opportunity_id,
     fct_crm_opportunity.merged_opportunity_id,
+    fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
+
 
     -- opportunity attributes
     fct_crm_opportunity.opportunity_name,
@@ -145,7 +148,16 @@ final AS (
     fct_crm_opportunity.is_excluded_from_pipeline_created,
     fct_crm_opportunity.critical_deal_flag,
 
-
+    --live fields
+    fct_crm_opportunity.sales_qualified_source_live,
+    fct_crm_opportunity.sales_qualified_source_grouped_live,
+    fct_crm_opportunity.is_edu_oss_live,
+    fct_crm_opportunity.opportunity_category_live,
+    fct_crm_opportunity.is_jihu_account_live,
+    fct_crm_opportunity.deal_path_live,
+    fct_crm_opportunity.parent_crm_account_geo_live,
+    fct_crm_opportunity.order_type_live,
+    fct_crm_opportunity.order_type_grouped_live,
 
     -- account fields
     dim_crm_account.crm_account_name,
@@ -169,63 +181,23 @@ final AS (
     dim_crm_account.crm_account_zi_technologies,
     dim_crm_account.is_jihu_account,
 
-    -- crm opp owner/account owner fields stamped at SAO date
-    fct_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_sales_segment_stamped_grouped,
-    fct_crm_opportunity.sao_crm_opp_owner_geo_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_region_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_area_stamped,
-    fct_crm_opportunity.sao_crm_opp_owner_segment_region_stamped_grouped,
-    fct_crm_opportunity.sao_crm_opp_owner_sales_segment_geo_region_area_stamped,
-
-    -- crm opp owner/account owner stamped fields stamped at close date
-    fct_crm_opportunity.crm_opp_owner_stamped_name,
-    fct_crm_opportunity.crm_account_owner_stamped_name,
-    fct_crm_opportunity.user_segment_stamped AS crm_opp_owner_sales_segment_stamped,
-    fct_crm_opportunity.user_segment_stamped_grouped AS crm_opp_owner_sales_segment_stamped_grouped,
-    fct_crm_opportunity.user_geo_stamped AS crm_opp_owner_geo_stamped,
-    fct_crm_opportunity.user_region_stamped AS crm_opp_owner_region_stamped,
-    fct_crm_opportunity.user_area_stamped AS crm_opp_owner_area_stamped,
-    fct_crm_opportunity.user_business_unit_stamped AS crm_opp_owner_business_unit_stamped,
-    {{ sales_segment_region_grouped('fct_crm_opportunity.user_segment_stamped',
-        'fct_crm_opportunity.user_geo_stamped', 'fct_crm_opportunity.user_region_stamped') }}
-    AS crm_opp_owner_sales_segment_region_stamped_grouped,
-    fct_crm_opportunity.crm_opp_owner_sales_segment_geo_region_area_stamped,
-    fct_crm_opportunity.crm_opp_owner_user_role_type_stamped,
-
-    -- crm owner/sales rep live fields
-    opp_owner_live.crm_user_sales_segment,
-    opp_owner_live.crm_user_sales_segment_grouped,
-    opp_owner_live.crm_user_geo,
-    opp_owner_live.crm_user_region,
-    opp_owner_live.crm_user_area,
-    opp_owner_live.crm_user_business_unit,
-    {{ sales_segment_region_grouped('opp_owner_live.crm_user_sales_segment',
-        'opp_owner_live.crm_user_geo', 'opp_owner_live.crm_user_region') }}
-    AS crm_user_sales_segment_region_grouped,
-
-    -- crm account owner/sales rep live fields
-    account_owner_live.crm_user_sales_segment AS crm_account_user_sales_segment,
-    account_owner_live.crm_user_sales_segment_grouped AS crm_account_user_sales_segment_grouped,
-    account_owner_live.crm_user_geo AS crm_account_user_geo,
-    account_owner_live.crm_user_region AS crm_account_user_region,
-    account_owner_live.crm_user_area AS crm_account_user_area,
-    {{ sales_segment_region_grouped('account_owner_live.crm_user_sales_segment',
-        'account_owner_live.crm_user_geo', 'account_owner_live.crm_user_region') }}
-    AS crm_account_user_sales_segment_region_grouped,
-
     -- Pipeline Velocity Account and Opp Owner Fields and Key Reporting Fields
     fct_crm_opportunity.opportunity_owner_user_segment,
-    fct_crm_opportunity.report_geo,
-    fct_crm_opportunity.report_segment,
-    fct_crm_opportunity.report_region,
-    fct_crm_opportunity.report_area,
-    fct_crm_opportunity.report_role_name,
-    fct_crm_opportunity.report_role_level_1,
-    fct_crm_opportunity.report_role_level_2,
-    fct_crm_opportunity.report_role_level_3,
-    fct_crm_opportunity.report_role_level_4,
-    fct_crm_opportunity.report_role_level_5,
+    
+    
+    dim_crm_user_hierarchy.crm_user_sales_segment                           AS report_segment,
+    dim_crm_user_hierarchy.crm_user_geo                                     AS report_geo,
+    dim_crm_user_hierarchy.crm_user_region                                  AS report_region,
+    dim_crm_user_hierarchy.crm_user_area                                    AS report_area,
+    dim_crm_user_hierarchy.crm_user_business_unit                           AS report_business_unit,
+    dim_crm_user_hierarchy.crm_user_role_name                               AS report_role_name,
+    dim_crm_user_hierarchy.crm_user_role_level_1                            AS report_role_level_1,
+    dim_crm_user_hierarchy.crm_user_role_level_2                            AS report_role_level_2,
+    dim_crm_user_hierarchy.crm_user_role_level_3                            AS report_role_level_3,
+    dim_crm_user_hierarchy.crm_user_role_level_4                            AS report_role_level_4,
+    dim_crm_user_hierarchy.crm_user_role_level_5                            AS report_role_level_5,
+
+
     LOWER(
       account_owner_live.crm_user_sales_segment
     ) AS account_owner_user_segment,
@@ -497,6 +469,8 @@ final AS (
   LEFT JOIN dim_crm_user AS account_owner_live
     ON dim_crm_account.dim_crm_user_id = account_owner_live.dim_crm_user_id
       AND dim_crm_account.snapshot_id = account_owner_live.snapshot_id
+  LEFT JOIN dim_crm_user_hierarchy
+    ON fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
   LEFT JOIN dim_date created_date
     ON fct_crm_opportunity.created_date = created_date.date_actual
   LEFT JOIN dim_date sales_accepted_date

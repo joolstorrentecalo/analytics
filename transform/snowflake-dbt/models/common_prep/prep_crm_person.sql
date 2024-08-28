@@ -298,6 +298,8 @@ WITH biz_person AS (
           THEN TRUE
         ELSE FALSE
       END AS is_bdr_sdr_worked,
+      NULL AS assignment_date,
+      NULL AS assignment_type,
       created_date
 
 
@@ -479,6 +481,8 @@ WITH biz_person AS (
           THEN TRUE
         ELSE FALSE
       END AS is_bdr_sdr_worked,
+      assignment_date,
+      assignment_type,
       created_date
 
     FROM sfdc_leads
@@ -558,5 +562,5 @@ WITH biz_person AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-12-08",
-    updated_date="2024-07-24"
+    updated_date="2024-07-31"
 ) }}

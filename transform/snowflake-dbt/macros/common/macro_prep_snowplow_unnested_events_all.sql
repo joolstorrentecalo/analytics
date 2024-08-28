@@ -196,7 +196,19 @@ SELECT
   response_start                                                                                                    AS response_start,
   secure_connection_start                                                                                           AS secure_connection_start,
   unload_event_end                                                                                                  AS unload_event_end,
-  unload_event_start                                                                                                AS unload_event_start
+  unload_event_start                                                                                                AS unload_event_start,
+  instance_version                                                                                                  AS gsc_instance_version,
+  correlation_id                                                                                                    AS gsc_correlation_id,
+  total_context_size_bytes                                                                                          AS total_context_size_bytes,
+  content_above_cursor_size_bytes                                                                                   AS content_above_cursor_size_bytes,
+  content_below_cursor_size_bytes                                                                                   AS content_below_cursor_size_bytes,
+  context_items                                                                                                     AS context_items,
+  context_items_count                                                                                               AS context_items_count,
+  input_tokens                                                                                                      AS input_tokens,
+  output_tokens                                                                                                     AS output_tokens,
+  context_tokens_sent                                                                                               AS context_tokens_sent,
+  context_tokens_used                                                                                               AS context_tokens_used,
+  debounce_interval                                                                                                 AS debounce_interval
 FROM unioned_view
 
 {% endmacro %}

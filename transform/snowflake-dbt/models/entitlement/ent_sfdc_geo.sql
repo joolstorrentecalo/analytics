@@ -27,6 +27,7 @@ target_user_roles AS (
     ('CMO', TRUE),
     ('CRO', TRUE),
     ('Director - SA High Velocity', TRUE),
+    ('XDR Operations Sr.Manager_ALL_ALL_ALL', TRUE),
     ('Director CSM', TRUE),
     ('Director of Professional Services', TRUE),
     ('Executive', TRUE),

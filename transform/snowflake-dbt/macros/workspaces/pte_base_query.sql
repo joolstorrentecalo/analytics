@@ -205,11 +205,7 @@ WITH mart_arr_snapshot_bottom_up AS (
      , SUM(CASE WHEN type = 'Demo' THEN 1 ELSE 0 END) AS demo_task_count
      , SUM(CASE WHEN type = 'Sales Alignment' THEN 1 ELSE 0 END) AS sales_alignment_task_count
      , SUM(CASE WHEN type IS NOT NULL THEN 1 ELSE 0 END) as total_task_count
-     , SUM(is_answered__c) as is_answered_task
-     , SUM(is_busy__c) AS is_busy_task
      , SUM(is_correct_contact__c) AS is_correct_contact_task
-     , SUM(is_left_message__c) AS is_left_message_task
-     , SUM(is_not_answered__c) AS is_not_answered_task
     FROM {{ source('salesforce', 'task') }}
     WHERE createddate BETWEEN DATEADD('{{ period_type }}', -'{{ delta_value }}', '{{ end_date }}') AND '{{ end_date }}'  --filter PERIOD window. Because no histroic task table, going on createddate
     GROUP BY account_id
@@ -525,10 +521,7 @@ SELECT
     , COALESCE(ts.sales_alignment_task_count, 0) AS sales_alignment_task_cnt
     , COALESCE(ts.total_task_count, 0) AS total_task_cnt
     , COALESCE(ts.is_answered_task, 0) AS is_answered_task_flag
-    , COALESCE(ts.is_busy_task, 0) AS is_busy_task_flag
     , COALESCE(ts.is_correct_contact_task, 0) AS is_correct_contact_task_flag
-    , COALESCE(ts.is_left_message_task, 0) AS is_left_message_task_flag
-    , COALESCE(ts.is_not_answered_task, 0) AS is_not_answered_task_flag
     , CASE WHEN ts.account_id IS NOT NULL THEN 1 ELSE 0 END AS has_sfdc_tasks_flag
 
 --Bizible Fields

@@ -132,11 +132,7 @@
       {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_3_id') }}                                                     AS dim_crm_account_user_role_level_3_id,
       {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_4_id') }}                                                     AS dim_crm_account_user_role_level_4_id,
       {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_5_id') }}                                                     AS dim_crm_account_user_role_level_5_id,
-      CASE
-        WHEN close_fiscal_year < prep_date.current_fiscal_year
-          THEN dim_crm_user_hierarchy_account_user_sk  -- live account owner hierarchy
-        ELSE {{ get_keyed_nulls('sfdc_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk') }} -- stamped opp owner hierarchy
-      END                                                                                                                         AS dim_crm_current_account_set_hierarchy_sk,
+      sfdc_opportunity.dim_crm_current_account_set_hierarchy_sk,
       CASE
         WHEN close_fiscal_year < prep_date.current_fiscal_year
           THEN dim_crm_account_user_sales_segment_id
@@ -192,7 +188,6 @@
           THEN dim_crm_account_user_role_level_5_id
         ELSE dim_crm_opp_owner_role_level_5_id
       END                                                                                                                         AS dim_crm_current_account_set_role_level_5_id,
-
       sfdc_opportunity.ssp_id,
       sfdc_opportunity.ga_client_id,
 

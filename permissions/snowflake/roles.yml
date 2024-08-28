@@ -366,7 +366,6 @@ roles:
         - snowflake_db
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
   - analyst_growth:
@@ -395,7 +394,6 @@ roles:
         - snowplow
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
       privileges:
@@ -469,7 +467,6 @@ roles:
         - marketo
         - snowflake_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
       privileges:
@@ -513,7 +510,6 @@ roles:
         - snowflake_db
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
         - restricted_workspace_people
@@ -587,7 +583,6 @@ roles:
         - snowplow
         - version_db
         - zendesk
-        - zendesk_community_relations
         - zuora
         - zuora_central_sandbox
   - decisive_data:
@@ -978,14 +973,12 @@ roles:
             - raw.tap_zengrc
             - raw.tap_xactly
             - raw.tap_zendesk
-            - raw.tap_zendesk__community_relations
             - raw.public
         tables:
           write:
             - raw.tap_zengrc.*
             - raw.tap_xactly.*
             - raw.tap_zendesk.*
-            - raw.tap_zendesk__community_relations.*
   - people_operations:
       warehouses:
         - dev_xs
@@ -1800,6 +1793,7 @@ roles:
             - prod.restricted_safe_common_mart_product.rpt_user_request_issue_epic
             - prod.workspace_customer_success.mart_product_usage_health_score
             - prod.common_mart_product.rpt_product_usage_health_score
+            - prod.common_mart_product.rpt_product_usage_health_score_account_roll_up
             - prod.workspace_customer_success.mart_product_usage_paid_user_metrics_monthly_workspace
             - prod.pumps.pump_gainsight_metrics_monthly_paid
   - gainsight:
@@ -2631,6 +2625,17 @@ roles:
           read:
             - prep.tableau_cloud.*
             - raw.tableau_cloud.*
+  - tableau_backend:
+      privileges:
+        databases:
+          read:
+            - raw
+        schemas:
+          read:
+            - raw.tableau_fivetran
+        tables:
+          read:
+            - raw.tableau_fivetran.*
   - version_db:
       privileges:
         databases:
@@ -2678,19 +2683,6 @@ roles:
           read:
             - prep.workday.*
             - raw.workday.*
-  - workday_hcm:
-      warehouses:
-        - dev_xs
-      privileges:
-        databases:
-          read:
-            - raw
-        schemas:
-          read:
-            - raw.workday_hcm
-        tables:
-          read:
-            - raw.workday_hcm.*
   - xactly:
       warehouses:
         - dev_xs
@@ -2720,22 +2712,6 @@ roles:
           read:
             - prep.zendesk.*
             - raw.tap_zendesk.*
-  - zendesk_community_relations:
-      warehouses:
-        - dev_xs
-      privileges:
-        databases:
-          read:
-            - prep
-            - raw
-        schemas:
-          read:
-            - prep.zendesk_community_relations
-            - raw.tap_zendesk__community_relations
-        tables:
-          read:
-            - prep.zendesk_community_relations.*
-            - raw.tap_zendesk__community_relations.*
   - zengrc:
       warehouses:
         - dev_xs
@@ -3567,17 +3543,13 @@ roles:
         schemas:
           read:
             - raw.netsuite_fivetran
-            - raw.workday_hcm
           write:
             - raw.netsuite_fivetran
-            - raw.workday_hcm
         tables:
           read:
             - raw.netsuite_fivetran.*
-            - raw.workday_hcm.*
           write:
             - raw.netsuite_fivetran.*
-            - raw.workday_hcm.*
   - fkhalid:
       member_of:
         - commonroom_sensitive
@@ -3805,6 +3777,7 @@ roles:
   - jonglee:
       member_of:
         - data_science_readonly
+        - data_team_analyst
         - driveload
         - gainsight
         - gainsight_customer_success
@@ -4069,7 +4042,6 @@ roles:
         - snowflake_analyst_safe
         - snowplow
         - zendesk
-        - zendesk_community_relations
         - data_science
         - data_science_sensitive
         - feature_store
@@ -4230,6 +4202,7 @@ roles:
   - lmai:
       member_of:
         - analyst_engineering
+        - snowflake_analyst_safe
       warehouses:
         - dev_xs
         - reporting
@@ -4942,8 +4915,8 @@ roles:
         - pto
         - snowflake_analyst_safe
         - snowflake
+        - tableau_backend
         - workday
-        - workday_hcm
         - zengrc
       warehouses:
         - dev_xs
@@ -5319,7 +5292,6 @@ roles:
         - pto
         - snowflake_analyst_safe
         - workday
-        - workday_hcm
       warehouses:
         - dev_xs
   - snalamaru:
@@ -5776,6 +5748,11 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - tgao:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - rchanila:
       member_of:
         - snowflake_analyst
@@ -5856,6 +5833,11 @@ roles:
       warehouses:
         - dev_xs
   - aspringfield:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - ghickman:
       member_of:
         - snowflake_analyst
       warehouses:
@@ -5975,6 +5957,71 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - azubov:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - arivera:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - ecarey:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - ebenson:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - jslaughter:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - jgdoyon:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - julee:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - kjamoralin:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - krichardson:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - lionel:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - ohoralkoretska:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - tread:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - tvik:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - ichernikov:
       member_of:
         - snowflake_analyst
@@ -6011,6 +6058,7 @@ roles:
       member_of:
         - snowflake_analyst_safe
         - data_team_analyst
+        - tableau_backend
       warehouses:
         - dev_xs
   - jaltherr:
@@ -6048,6 +6096,18 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - jclapper:
+      member_of:
+        - analyst_sales
+        - snowflake_analyst_safe
+      warehouses:
+        - dev_xs
+  - judume:
+      member_of:
+        - analyst_sales
+        - snowflake_analyst_safe
+      warehouses:
+        - dev_xs
   - ttavares:
       member_of:
         - snowflake_analyst
@@ -6064,6 +6124,11 @@ roles:
       warehouses:
         - dev_xs
   - mvanremmerden:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - clohr:
       member_of:
         - snowflake_analyst
       warehouses:
@@ -6895,6 +6960,10 @@ users:
       can_login: true
       member_of:
         - avpfestin
+  - tgao:
+      can_login: true
+      member_of:
+        - tgao
   - trea:
       can_login: true
       member_of:
@@ -6907,6 +6976,14 @@ users:
       can_login: true
       member_of:
         - nveenhof
+  - jclapper:
+      can_login: true
+      member_of:
+        - jclapper
+  - judume:
+      can_login: true
+      member_of:
+        - judume
   - jcoghlan:
       can_login: true
       member_of:
@@ -6987,6 +7064,10 @@ users:
       can_login: true
       member_of:
         - nscoville
+  - clohr:
+      can_login: true
+      member_of:
+        - clohr
   - jaltherr:
       can_login: true
       member_of:
@@ -6995,6 +7076,10 @@ users:
       can_login: true
       member_of:
         - dchevalier
+  - ghickman:
+      can_login: true
+      member_of:
+        - ghickman
   - plopez:
       can_login: true
       member_of:
@@ -7031,6 +7116,58 @@ users:
       can_login: true
       member_of:
         - bparkhomchuk
+  - azubov:
+      can_login: true
+      member_of:
+        - azubov
+  - arivera:
+      can_login: true
+      member_of:
+        - arivera
+  - ecarey:
+      can_login: true
+      member_of:
+        - ecarey
+  - ebenson:
+      can_login: true
+      member_of:
+        - ebenson
+  - jslaughter:
+      can_login: true
+      member_of:
+        - jslaughter
+  - jgdoyon:
+      can_login: true
+      member_of:
+        - jgdoyon
+  - julee:
+      can_login: true
+      member_of:
+        - julee
+  - kjamoralin:
+      can_login: true
+      member_of:
+        - kjamoralin
+  - krichardson:
+      can_login: true
+      member_of:
+        - krichardson
+  - lionel:
+      can_login: true
+      member_of:
+        - lionel
+  - ohoralkoretska:
+      can_login: true
+      member_of:
+        - ohoralkoretska
+  - tread:
+      can_login: true
+      member_of:
+        - tread
+  - tvik:
+      can_login: true
+      member_of:
+        - tvik
 warehouses:
   - admin:
       size: x-small

@@ -101,6 +101,7 @@ renamed AS (
     bdr_account_research__c AS bdr_account_research,
     bdr_account_strategy__c AS bdr_account_strategy,
     account_bdr_assigned_user_role__c AS account_bdr_assigned_user_role,
+    domains__c AS account_domains,
 
     -- account demographics fields
 
@@ -121,6 +122,15 @@ renamed AS (
     account_demographics_upa_city__c AS account_upa_city,
     account_demographics_upa_street__c AS account_upa_street,
     account_demographics_upa_postal_code__c AS account_upa_postal_code,
+
+  --D&B Fields
+    dnbconnect__d_b_match_confidence_code__c::NUMERIC AS dnb_match_confidence_score,
+    dnbconnect__d_b_match_grade__c::TEXT AS dnb_match_grade,
+    dnbconnect__d_b_connect_company_profile__c::TEXT AS dnb_connect_company_profile_id,
+    duns__c::NUMERIC AS dnb_duns,
+    TRY_TO_NUMBER(global_ultimate_duns__c)::NUMERIC AS dnb_global_ultimate_duns,
+    TRY_TO_NUMBER(domestic_ultimate_duns__c)::NUMERIC AS dnb_domestic_ultimate_duns,
+    dnb_exclude_company__c::BOOLEAN AS dnb_exclude_company,
 
     -- present state info
     gs_health_score__c AS health_number,

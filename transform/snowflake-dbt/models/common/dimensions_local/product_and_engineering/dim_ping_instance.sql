@@ -122,7 +122,6 @@ usage_data_w_date AS (
                         LOWER((prep_ping_instance.raw_usage_data_payload['settings']['collected_data_categories']::VARCHAR)),
                         '"', ''), '[', ''), ']', '')                                                              AS collected_data_categories,
     prep_ping_instance.raw_usage_data_payload,
-    prep_ping_instance.ping_type,
 
     -- versions 
     REGEXP_REPLACE(NULLIF(prep_ping_instance.version, ''), '[^0-9.]+')                                            AS cleaned_version,
@@ -142,7 +141,7 @@ usage_data_w_date AS (
 {{ dbt_audit(
     cte_ref="usage_data_w_date",
     created_by="@icooper-acp",
-    updated_by="@pempey",
+    updated_by="@utkarsh060",
     created_date="2022-03-08",
-    updated_date="2024-04-01"
+    updated_date="2024-08-01"
 ) }}

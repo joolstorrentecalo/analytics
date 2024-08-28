@@ -1,3 +1,7 @@
+{{ config(
+    tags=["product"]
+) }}
+
 WITh prep AS (
 
     SELECT *  FROM {{ ref('prep_ci_pipeline')}}
@@ -29,7 +33,7 @@ WITh prep AS (
       lock_version, 
       auto_canceled_by_id, 
       pipeline_schedule_id, 
-      ci_pipeline_source, 
+      ci_pipeline_source,
       config_source, 
       is_protected, 
       failure_reason_id,

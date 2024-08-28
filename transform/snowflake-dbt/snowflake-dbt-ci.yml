@@ -1,5 +1,5 @@
 .snowflake_dbt_jobs: &snowflake_dbt_jobs
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.7
   stage: ⚙️ dbt Run
   before_script:
     - cd transform/snowflake-dbt/
@@ -38,7 +38,7 @@
     - merge_requests
   when: manual
   artifacts:
-    name: "dbt Compiled Files and logs"  
+    name: "dbt Compiled Files and logs"
     paths:
       - public
       - transform/snowflake-dbt/logs
@@ -96,34 +96,8 @@
     - echo $SNOWFLAKE_SNAPSHOT_DATABASE
     - if [ ! -z "$RAW_DB" ]; then SNOWFLAKE_LOAD_DATABASE="${CI_COMMIT_REF_NAME^^}_RAW"; fi
     - echo $SNOWFLAKE_LOAD_DATABASE
-    - export DBT_CI_STATE="--state reference_state"
-    - echo $DBT_CI_STATE
-    - DBT_CI_CHANGES=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD | xargs -n1 basename | grep '\.sql\|\.csv'  | sed -E "s/(.sql|.csv)/$DOWNSTREAM/g" )
-    # Getting the most current reference state from the main branch will include any changes from other merged branches
-    # If we can get the reference from the HEAD of the branch this could be solved.
-    # - export DBT_CI_SELECTION="state:modified."${STATE_MODIFIED:-"body"}${DOWNSTREAM:-""}
-    - export DBT_CI_SELECTION=""
-    - if [ -z "$SELECTION" ]; then DBT_CI_SELECTION=$DBT_CI_CHANGES; else DBT_CI_SELECTION=$SELECTION; fi
-    - echo $DBT_CI_SELECTION
-    - if [ -z "$DBT_CI_SELECTION" ]; then echo "No models selected." && exit 3; fi 
-    - export DBT_CI_FAIL_FAST=""
-    - if [ -z "$FAIL_FAST" ]; then DBT_CI_FAIL_FAST="--fail-fast"; fi
-    - echo $DBT_CI_FAIL_FAST
-    - export DBT_CI_EXCLUDE=""
-    - if [ ! -z "$EXCLUDE" ]; then DBT_CI_EXCLUDE="--exclude $EXCLUDE"; fi
-    - echo $DBT_CI_EXCLUDE
-    - export DBT_CI_FULL_REFRESH=""
-    - if [ ! -z "$FULL_REFRESH" ]; then DBT_CI_FULL_REFRESH="--full-refresh"; fi
-    - echo $DBT_CI_FULL_REFRESH
-    # VARS format "key":"value","key":"value"
-    - export DBT_CI_VARS=""
-    - if [ ! -z "$VARS" ]; then DBT_CI_VARS="--vars {$VARS}"; fi
-    - echo $DBT_CI_VARS
     - dbt deps $CI_PROFILE_TARGET
-    - dbt $DBT_CI_FAIL_FAST clone --select $DBT_CI_SELECTION $DBT_CI_EXCLUDE $CI_PROFILE_TARGET $DBT_CI_FULL_REFRESH $DBT_CI_STATE || FAILED=true
-    - if [ $FAILED ]; then echo "Cloning process failed" && exit 4; fi
-    - dbt $DBT_CI_FAIL_FAST build --select $DBT_CI_SELECTION $DBT_CI_EXCLUDE $CI_PROFILE_TARGET $DBT_CI_FULL_REFRESH --defer $DBT_CI_STATE  $DBT_CI_VARS || FAILED=true
-    - if [ $FAILED ]; then echo "Build process failed" && exit 5; fi
+    - make build-changes MODE="CI" CONTIGUOUS="$CONTIGUOUS" SELECTION="$SELECTION" EXCLUDE="$EXCLUDE" PROFILE_TARGET="$CI_PROFILE_TARGET" FULL_REFRESH="$FULL_REFRESH" FAIL_FAST="$FAIL_FAST" VARS="$VARS" DOWNSTREAM="$DOWNSTREAM"
 
 🎛️custom_invocation:
   <<: *snowflake_dbt_jobs
@@ -142,7 +116,7 @@
 
 
 📚✏️generate_dbt_docs:
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.7
   stage: ⚙️ dbt Run
   before_script:
     - cd transform/snowflake-dbt/
@@ -186,7 +160,7 @@
     - cp -r target $CI_PROJECT_DIR/public/dbt/
   tags:
     - analytics
-  
+
 # dbt tests
 .dbt_misc_jobs: &dbt_misc_jobs
   <<: *snowflake_dbt_jobs
@@ -245,7 +219,7 @@
 
 .safe_models_check: &safe_models_check
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.7
   before_script:
     - cd transform/snowflake-dbt/
     - echo $BRANCH_NAME
@@ -276,30 +250,14 @@
       - "transform/snowflake-dbt/models/**/*.sql"
     refs:
       - merge_request
-  allow_failure: true
+  allow_failure: False
 
 🚫safe_model_script:
   <<: *safe_models_check
   script:
+    - set +e
     - dbt deps $CI_PROFILE_TARGET
-    - dbt --quiet ls $CI_PROFILE_TARGET --models tag:mnpi+
-      --exclude
-        tag:mnpi_exception
-        config.database:$SNOWFLAKE_PREP_DATABASE
-        config.schema:restricted_safe_common
-        config.schema:restricted_safe_common_mapping
-        config.schema:restricted_safe_common_mart_finance
-        config.schema:restricted_safe_common_mart_sales
-        config.schema:restricted_safe_common_mart_marketing
-        config.schema:restricted_safe_common_mart_product
-        config.schema:restricted_safe_common_prep
-        config.schema:restricted_safe_legacy
-        config.schema:restricted_safe_workspace_finance
-        config.schema:restricted_safe_workspace_sales
-        config.schema:restricted_safe_workspace_marketing
-        config.schema:restricted_safe_workspace_engineering
-      --output json > safe_models.json
-    - python3 safe_model_check.py
+    - make safe-check PROFILE_TARGET="$CI_PROFILE_TARGET"
 
 # ======
 # Macro name Check
@@ -307,7 +265,7 @@
 
 .dbt_macro_check: &dbt_macro_check
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.7
   before_script:
     - cd transform/snowflake-dbt/
   tags:
@@ -354,7 +312,7 @@
 # ======
 .dbt_sql_lint: &dbt_sql_lint
   stage: 🛠 dbt Misc
-  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.6
+  image: registry.gitlab.com/gitlab-data/dbt-image:v0.0.7
   before_script:
     - cd transform/snowflake-dbt/
     - echo $BRANCH_NAME
@@ -392,7 +350,7 @@
 🛃dbt_sqlfluff:
   <<: *dbt_sql_lint
   script:
+    - set +e
+    - export CI_MERGE_REQUEST_DIFF_BASE_SHA=$CI_MERGE_REQUEST_DIFF_BASE_SHA
     - dbt deps $CI_PROFILE_TARGET
-    - export LINT_LIST=$(git diff origin/master...HEAD --name-only -- '*.sql'  | awk -F 'transform/snowflake-dbt/' '{print tolower($NF)}' | sort | uniq )
-    - echo $LINT_LIST
-    - sqlfluff lint $LINT_LIST --config .sqlfluff-ci
+    - make lint-models MODE="CI"

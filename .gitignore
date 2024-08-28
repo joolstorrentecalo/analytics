@@ -30,8 +30,11 @@ config.json
 /transform/snowflake-dbt/dbt_modules/*
 /transform/snowflake-dbt/dbt_packages/*
 /transform/safe_models.json
+/transform/snowflake-dbt/safe_models.json
 .env
 snowsql_rt.log_bootstrap
 .python-version
 sales_analytics_notebooks/daily/202307_tableau_consolidation/.ipynb_checkpoints/tableau_table_consolidation-checkpoint.ipynb
 !test_iter_csv.csv
+models_to_check.csv
+models_with_dependencies.csv

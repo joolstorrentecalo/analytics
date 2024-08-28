@@ -294,13 +294,32 @@ def get_renamed_table_name(
 
         if is_for_renaming(current_token=token, next_token=next_token):
             metric_table_name = utils.get_metric_table_name(next_token)
+            alias = next_token
 
-            token_list[index + i] = (
+            # Supporting special case when alias have no AS before it
+            nn_index = ""
+            try:
+                nn_index = str(tokenized_list[index + i + 2])
+            except IndexError:
+                nn_index = ""
+
+            if (
+                metric_table_name == "issues"
+                and next_token == "issues"
+                and nn_index in ["work_item_parent", "target"]
+            ):
+                alias = str(tokenized_list[index + i + 2])
+                # clear up duplicate aliases
+                token_list[index + i + 2] = " "
+
+            dedupe_statement = (
                 f"prep.gitlab_dotcom.gitlab_dotcom_"
                 f"{metric_table_name}"
                 f"_dedupe_source AS "
-                f"{next_token}"
+                f"{alias}"
             )
+
+            token_list[index + i] = dedupe_statement
 
 
 def get_tokenized_query_list(sql_query: str) -> list:

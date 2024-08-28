@@ -21,7 +21,7 @@ README.md          @iweeks @dvanrooijen2 @nmcavinue @amiebright
 [Data Engineering]
 /dags/                              @paul_armstrong @vedprakash2021 @rbacovic @jjstark
 /extract/                           @jjstark @paul_armstrong @vedprakash2021 @rbacovic
-/extract/tableau_con_man_config/    @paul_armstrong @pempey @iweeks @nmcavinue @jjstark @vedprakash2021
+/extract/tableau_con_man_config/    @nscoville @paul_armstrong @pempey @jjstark @vedprakash2021
 /load/                              @jjstark @paul_armstrong @vedprakash2021 @rbacovic
 /orchestration/                     @jjstark @paul_armstrong @vedprakash2021 @rbacovic
 /permissions/                       @dvanrooijen2 @paul_armstrong @jjstark @juwong
