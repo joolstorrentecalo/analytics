@@ -66,7 +66,8 @@ dag = DAG(
 )
 
 hackerone_extract_command = (
-    f"{clone_and_setup_extraction_cmd} && " f"python hackerone/src/hackerone_extract.py"
+    f"{clone_and_setup_extraction_cmd} && "
+    f"python hackerone/src/hackerone_get_reports.py"
 )
 
 hackerone_task_name = f"hackerone_get_reports"
@@ -87,8 +88,6 @@ hackerone_task = KubernetesPodOperator(
     ],
     env_vars={
         **pod_env_vars,
-        "data_interval_start": "{{ data_interval_start }}",
-        "data_interval_end": "{{ data_interval_end }}",
         "is_full_refresh": "{{params.is_full_refresh}}",
     },
     affinity=get_affinity("extraction"),
