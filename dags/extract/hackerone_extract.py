@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
-from airflow.operators.dummy_operator import DummyOperator
 from airflow.models.param import Param
 from airflow_utils import (
     DATA_IMAGE_3_10,
@@ -70,7 +69,7 @@ hackerone_extract_command = (
     f"python hackerone/src/hackerone_get_reports.py"
 )
 
-hackerone_task_name = f"hackerone_get_reports"
+hackerone_task_name = "hackerone_get_reports"
 
 hackerone_task = KubernetesPodOperator(
     **gitlab_defaults,

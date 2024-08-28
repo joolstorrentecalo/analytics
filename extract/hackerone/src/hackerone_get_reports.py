@@ -1,18 +1,18 @@
-import json
+"""
+Extract HackerOne reports from the HackerOne API.
+"""
 import os
 import sys
 from datetime import datetime, timedelta
 from logging import basicConfig, error, getLogger, info
 from time import sleep
-from typing import Any, Dict, Tuple, Union
+from typing import Dict, Tuple, Union
 
 import pandas as pd
 import requests
-from dateutil import parser as date_parser
 from gitlabdata.orchestration_utils import (
     dataframe_uploader,
     snowflake_engine_factory,
-    snowflake_stage_load_copy_remove,
 )
 
 config_dict = os.environ.copy()
@@ -80,8 +80,7 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
 
             if "next" not in response_json["links"]:
                 break
-            else:
-                page += 1  # move on to the next set of paginated results(cursor based paginated)
+            page += 1  # move on to the next set of paginated results(cursor based paginated)
         elif (
             response.status_code == 429
         ):  # if we hit rate limit, wait 60 seconds and try again
