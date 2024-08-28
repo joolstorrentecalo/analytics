@@ -15,6 +15,120 @@
   ]) 
 }}
 
+  SELECT
+    date_id,
+    date_day,
+    date_actual,
+    fiscal_year,
+    fiscal_quarter_name_fy,
+    first_day_of_week
+  FROM {{ref('dim_date')}}
+
+), mart_crm_person AS (
+
+  SELECT
+    dim_crm_person_id,
+    sfdc_record_id,
+    dim_crm_account_id,
+    true_inquiry_date_pt,
+    mql_date_latest,
+    account_demographics_sales_segment,
+    account_demographics_sales_segment_grouped,
+    account_demographics_geo,
+    is_mql,
+    is_first_order_person,
+    person_first_country,
+    lead_score_classification,
+    is_defaulted_trial,
+    lead_source,
+    status,
+    bizible_mql_form_url,
+    bizible_mql_ad_campaign_name,
+    bizible_mql_marketing_channel,
+    bizible_mql_marketing_channel_path,
+    bizible_most_recent_form_url,
+    bizible_most_recent_ad_campaign_name,
+    bizible_most_recent_marketing_channel,
+    bizible_most_recent_marketing_channel_path,
+    source_buckets,
+    email_domain_type,
+    sfdc_record_type,
+    propensity_to_purchase_score_group
+    marketo_last_interesting_moment,
+    marketo_last_interesting_moment_date
+  FROM {{ref('mart_crm_person')}}
+
+), mart_crm_account AS (
+
+  SELECT
+    dim_crm_account_id,
+    bdr_next_steps,
+    bdr_account_research,
+    bdr_account_strategy,
+    account_bdr_assigned_user_role,
+    bdr_recycle_date,
+    actively_working_start_date,
+    crm_account_owner,
+    owner_role,
+    crm_account_name,
+    crm_account_focus_account,
+    crm_account_owner_user_segment,
+    six_sense_account_profile_fit,
+    six_sense_account_reach_score,
+    six_sense_account_profile_score,
+    six_sense_account_buying_stage,
+    six_sense_account_numerical_reach_score,
+    six_sense_account_update_date,
+    six_sense_account_6_qa_start_date,
+    six_sense_account_6_qa_end_date,
+    six_sense_account_6_qa_age_days,
+    six_sense_account_intent_score,
+    six_sense_segments,
+    pte_score_group,
+    is_sdr_target_account,
+    is_first_order_available,
+    crm_account_type,
+    crm_account_industry,
+    crm_account_sub_industry,
+    parent_crm_account_territory,
+    parent_crm_account_sales_segment,
+    parent_crm_account_geo,
+    parent_crm_account_region,
+    parent_crm_account_area,
+    abm_tier,
+    crm_account_owner_id,
+    crm_account_owner,
+    owner_role
+  FROM {{ref('mart_crm_account')}}
+
+), dim_sales_dev_user_hierarchy AS (
+
+  SELECT
+    dim_crm_user_id,
+    sales_dev_rep_role_name,
+    sales_dev_rep_email,
+    sales_dev_rep_full_name,
+    sales_dev_rep_title,
+    sales_dev_rep_department,
+    sales_dev_rep_team,
+    sales_dev_rep_is_active,
+    crm_user_sales_segment,
+    crm_user_geo,
+    crm_user_region,
+    crm_user_area,
+    sales_dev_rep_employee_number,
+    sales_dev_rep_direct_manager_id,
+    sales_dev_manager_full_name,
+    sales_dev_manager_email,
+    sales_dev_manager_employee_number,
+    sales_dev_manager_user_role_name,
+    sales_dev_leader_id,
+    sales_dev_leader_user_role_name,
+    sales_dev_leader_full_name,
+    sales_dev_leader_employee_number,
+    sales_dev_leader_email
+  FROM {{ref('dim_sales_dev_user_hierarchy')}}
+
 ), sales_dev_opps AS (
 
   SELECT 
