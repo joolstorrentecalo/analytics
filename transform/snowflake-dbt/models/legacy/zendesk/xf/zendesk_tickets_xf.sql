@@ -13,6 +13,7 @@ WITH zendesk_tickets AS (
     SELECT
       ticket_id,
       solved_at,
+      gg
       LEAST(sla_reply_time_business_hours, sla_reply_time_calendar_hours) AS first_reply_time
     FROM {{ref('zendesk_ticket_metrics')}}
 
