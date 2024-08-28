@@ -1,18 +1,18 @@
+import json
 import os
 import sys
-from time import sleep
-import json
-import pandas as pd
 from datetime import datetime, timedelta
-from logging import info, basicConfig, getLogger, error
-from typing import Any, Dict
-from dateutil import parser as date_parser
-import requests
+from logging import basicConfig, error, getLogger, info
+from time import sleep
+from typing import Any, Dict, Tuple
 
+import pandas as pd
+import requests
+from dateutil import parser as date_parser
 from gitlabdata.orchestration_utils import (
-    snowflake_stage_load_copy_remove,
-    snowflake_engine_factory,
     dataframe_uploader,
+    snowflake_engine_factory,
+    snowflake_stage_load_copy_remove,
 )
 
 config_dict = os.environ.copy()
@@ -26,7 +26,7 @@ HACKERONE_API_TOKEN = config_dict.get("HACKERONE_API_TOKEN")
 IS_FULL_REFRESH = config_dict["IS_FULL_REFRESH"]
 
 
-def get_start_and_end_date() -> tuple[str, str]:
+def get_start_and_end_date() -> Tuple[str, str]:
     """
     This function will get the start and end date
     """
