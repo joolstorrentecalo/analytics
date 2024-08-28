@@ -1,5 +1,5 @@
 """
-Tests for hackerone_get_reports.py
+Test for hackerone_get_reports.py
 """
 
 import unittest
@@ -13,7 +13,7 @@ from hackerone_get_reports import (
 
 
 class TestHackerOneGetReports(unittest.TestCase):
-    @patch("hackerone_get_reports.IS_FULL_REFRESH", "False")
+    @patch("hackerone_get_reports.IS_FULL_REFRESH", False)
     def test_get_start_and_end_date_not_full_refresh(self):
         start_date, end_date = get_start_and_end_date()
         yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -21,7 +21,7 @@ class TestHackerOneGetReports(unittest.TestCase):
         self.assertEqual(start_date, yesterday)
         self.assertEqual(end_date, today)
 
-    @patch("hackerone_get_reports.IS_FULL_REFRESH", "True")
+    @patch("hackerone_get_reports.IS_FULL_REFRESH", True)
     def test_get_start_and_end_date_full_refresh(self):
         start_date, end_date = get_start_and_end_date()
         self.assertEqual(start_date, "2020-01-01T00:00:00Z")
