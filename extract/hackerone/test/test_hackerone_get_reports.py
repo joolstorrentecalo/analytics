@@ -14,6 +14,7 @@ from hackerone_get_reports import (
 
 class TestHackerOneGetReports(unittest.TestCase):
     """Test Class for hackerone_get_reports.py"""
+
     @patch("hackerone_get_reports.IS_FULL_REFRESH", False)
     def test_get_start_and_end_date_not_full_refresh(self):
         """Test get_start_and_end_date() when IS_FULL_REFRESH is False"""
