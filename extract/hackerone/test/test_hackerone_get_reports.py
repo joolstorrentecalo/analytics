@@ -13,8 +13,10 @@ from hackerone_get_reports import (
 
 
 class TestHackerOneGetReports(unittest.TestCase):
+    """Test Class for hackerone_get_reports.py"""
     @patch("hackerone_get_reports.IS_FULL_REFRESH", False)
     def test_get_start_and_end_date_not_full_refresh(self):
+        """Test get_start_and_end_date() when IS_FULL_REFRESH is False"""
         start_date, end_date = get_start_and_end_date()
         yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
         today = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -23,12 +25,14 @@ class TestHackerOneGetReports(unittest.TestCase):
 
     @patch("hackerone_get_reports.IS_FULL_REFRESH", True)
     def test_get_start_and_end_date_full_refresh(self):
+        """Test get_start_and_end_date() when IS_FULL_REFRESH is True"""
         start_date, end_date = get_start_and_end_date()
         self.assertEqual(start_date, "2020-01-01T00:00:00Z")
         self.assertTrue(end_date.startswith(datetime.now().strftime("%Y-%m-%d")))
 
     @patch("hackerone_get_reports.requests.get")
     def test_get_reports(self, mock_get):
+        """Test get_reports()"""
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
