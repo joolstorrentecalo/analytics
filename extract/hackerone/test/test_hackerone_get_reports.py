@@ -29,7 +29,9 @@ class TestHackerOneGetReports(unittest.TestCase):
         """Test get_start_and_end_date() when IS_FULL_REFRESH is True"""
         start_date, end_date = get_start_and_end_date()
         self.assertEqual(start_date, "2020-01-01T00:00:00Z")
-        self.assertTrue(end_date.startswith(datetime.now().strftime("%Y-%m-%dT00:00:00Z")))
+        self.assertTrue(
+            end_date.startswith(datetime.now().strftime("%Y-%m-%dT00:00:00Z"))
+        )
 
     @patch("hackerone_get_reports.requests.get")
     def test_get_reports(self, mock_get):
