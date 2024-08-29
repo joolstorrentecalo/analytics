@@ -23,6 +23,7 @@ DBT_IMAGE = "registry.gitlab.com/gitlab-data/dbt-image:v0.0.7"
 PERMIFROST_IMAGE = "registry.gitlab.com/gitlab-data/permifrost:v0.15.4"
 ANALYST_IMAGE = "registry.gitlab.com/gitlab-data/analyst-image:v0.0.2"
 TABLEAU_CONFIG_IMAGE = "registry.gitlab.com/gitlab-data/tableauconman:v0.1.18"
+TABLEAU_CONFIG_REPO = "git@gitlab.com:gitlab-data/tableau-config.git"
 
 SALES_ANALYTICS_NOTEBOOKS_PATH = "analytics/sales_analytics_notebooks"
 # Needed to find the correct drives as the path when running in cloud in the latest Airflow is different
@@ -370,3 +371,13 @@ dbt_install_deps_and_seed_nosha_cmd = f"""
 
 # command to exclude models (for test models) in dbt test command
 run_command_test_exclude = "--exclude staging.gitlab_com edm_snapshot"
+
+clone_tableau_repo_command = f"""
+    {data_test_ssh_key_cmd} &&
+    mkdir analytics &&
+    cd tableau_config &&
+    git init &&
+    git remote add origin {TABLEAU_CONFIG_REPO} &&
+    echo "Fetching commit $GIT_COMMIT" &&
+    git fetch origin --quiet &&
+    git checkout HEAD"""

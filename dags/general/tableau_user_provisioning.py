@@ -7,6 +7,7 @@ from kubernetes_helpers import get_affinity, get_toleration
 from airflow_utils import (
     TABLEAU_CONFIG_IMAGE,
     clone_and_setup_extraction_cmd,
+    clone_tableau_repo_command,
     gitlab_defaults,
     slack_failed_task,
     gitlab_pod_env_vars,
@@ -93,8 +94,8 @@ tableau_provision_settings = KubernetesPodOperator(
 
 # tableau Extract
 tableau_provision_users_cmd = f"""
-    {clone_and_setup_extraction_cmd} &&
-    TableauConMan provision-users --yaml_path='/TableauConMan/analytics/extract/tableau_con_man_config/src/provision_plan.yaml'
+    {clone_tableau_repo_command} &&
+    pwd 
 """
 
 # having both xcom flag flavors since we're in an airflow version where one is being deprecated
