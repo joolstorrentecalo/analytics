@@ -25,15 +25,22 @@ Calendar quarter, e.g. '1' for 2019-02-02
 {% enddocs %}
 
 {% docs date_day_of_week %}
-Number of the day of the week, with Sunday = 1 and Saturday = 7
+Number of the day of the week, with Monday = 1 and Sunday = 7
 {% enddocs %}
 
 {% docs date_first_day_of_week %}
-Calendar date of the first Sunday of that week, e.g. '2019-01-27' for 2019-02-02
+Calendar date of the first Monday of that week, e.g. '2019-01-28' for 2019-02-02
 {% enddocs %}
 
 {% docs date_week_of_year %}
 Calendar week of year, e.g. '5' for 2019-02-02
+
+- special_considerations:
+    - Week numbers range from 1 to 54.
+    - The last Monday of December will be considered part of week 1 of the next year if the following day (January 1st) is in week 1.
+    - For example, 2029-12-31 (a Monday) would be considered week 1 of 2030 as the next day (2030-01-01) is also week 1.
+    - This approach ensures a consistent week numbering across year boundaries.
+
 {% enddocs %}
 
 {% docs date_day_of_month %}

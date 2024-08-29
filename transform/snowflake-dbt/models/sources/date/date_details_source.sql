@@ -21,18 +21,14 @@ calculated AS (
     DATE_PART('year', date_day)                                                             AS year_actual,
     DATE_PART(QUARTER, date_day)                                                            AS quarter_actual,
 
-    DATE_PART(DAYOFWEEK, date_day) + 1                                                      AS day_of_week,
-    CASE WHEN day_name = 'Sun' THEN date_day
-      ELSE DATEADD('day', -1, DATE_TRUNC('week', date_day))
+    DATE_PART(DAYOFWEEKISO, date_day)                                                       AS day_of_week,
+    CASE WHEN day_name = 'Mon' THEN date_day
+      ELSE DATE_TRUNC('week', date_day)
     END                                                                                     AS first_day_of_week,
 
-    CASE WHEN day_name = 'Sun' THEN WEEK(date_day) + 1
-      ELSE WEEK(date_day)
-    END                                                                                     AS week_of_year_temp, --remove this column
-
-    CASE WHEN day_name = 'Sun' AND LEAD(week_of_year_temp) OVER (ORDER BY date_day) = '1'
+    CASE WHEN day_name = 'Mon' AND LEAD(WEEK(date_day)) OVER (ORDER BY date_day) = '1'
         THEN '1'
-      ELSE week_of_year_temp
+      ELSE WEEK(date_day)
     END                                                                                     AS week_of_year,
 
     DATE_PART('day', date_day)                                                              AS day_of_month,

@@ -822,7 +822,7 @@ The first day of the calendar week when the ping was created (YYYY-MM-DOW)
 
 {% docs is_last_ping_of_week %}
 
-Boolean flag set to True if this is the installation's (defined by `dim_installation_id`) last ping of the calendar week (defined by `ping_created_at`). This field leverages `first_day_of_week` from `common.dim_date`, which defines a week as starting on Sunday and ending on Saturday.
+Boolean flag set to True if this is the installation's (defined by `dim_installation_id`) last ping of the calendar week (defined by `ping_created_at`). This field leverages `first_day_of_week` from `common.dim_date`, which defines a week as starting on Monday and ending on Sunday.
 
 {% enddocs %}
 
