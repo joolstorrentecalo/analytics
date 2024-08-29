@@ -60,9 +60,9 @@ dag = DAG(
 
 # tableau Extract
 tableau_provision_settings_cmd = f"""
-    {clone_and_setup_extraction_cmd} &&
-    TableauConMan provision-settings --yaml_path='/TableauConMan/analytics/extract/tableau_con_man_config/src/provision_plan.yaml'
-"""
+    {clone_tableau_repo_command} &&
+    pwd
+    """
 
 # having both xcom flag flavors since we're in an airflow version where one is being deprecated
 tableau_provision_settings = KubernetesPodOperator(
