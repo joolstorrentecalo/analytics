@@ -26,10 +26,7 @@ calculated AS (
       ELSE DATE_TRUNC('week', date_day)
     END                                                                                     AS first_day_of_week,
 
-    CASE WHEN day_name = 'Mon' AND LEAD(WEEK(date_day)) OVER (ORDER BY date_day) = '1'
-        THEN '1'
-      ELSE WEEK(date_day)
-    END                                                                                     AS week_of_year,
+    WEEK(date_day)                                                                          AS week_of_year,
 
     DATE_PART('day', date_day)                                                              AS day_of_month,
 

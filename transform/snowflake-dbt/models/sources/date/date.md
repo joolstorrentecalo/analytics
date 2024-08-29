@@ -35,11 +35,13 @@ Calendar date of the first Monday of that week, e.g. '2019-01-28' for 2019-02-02
 {% docs date_week_of_year %}
 Calendar week of year, e.g. '5' for 2019-02-02
 
-- special_considerations:
-    - Week numbers range from 1 to 54.
-    - The last Monday of December will be considered part of week 1 of the next year if the following day (January 1st) is in week 1.
-    - For example, 2029-12-31 (a Monday) would be considered week 1 of 2030 as the next day (2030-01-01) is also week 1.
-    - This approach ensures a consistent week numbering across year boundaries.
+special_considerations:
+  - Week numbers range from 1 to 53.
+  - The first week of the year is the week containing January 1st.
+  - Week numbering is consistent with Snowflake's WEEK function, using WEEK_OF_YEAR_POLICY = 0.
+  - This approach ensures consistent week numbering across year boundaries.
+  - The last few days of December might be part of week 1 of the next year if January 1st falls early in the week.
+  - Similarly, the first few days of January might be part of the last week of the previous year if January 1st falls late in the week.
 
 {% enddocs %}
 
