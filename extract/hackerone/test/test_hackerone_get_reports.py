@@ -19,8 +19,8 @@ class TestHackerOneGetReports(unittest.TestCase):
     def test_get_start_and_end_date_not_full_refresh(self):
         """Test get_start_and_end_date() when IS_FULL_REFRESH is False"""
         start_date, end_date = get_start_and_end_date()
-        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        today = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
+        today = datetime.now().strftime("%Y-%m-%dT00:00:00Z")
         self.assertEqual(start_date, yesterday)
         self.assertEqual(end_date, today)
 
