@@ -33,9 +33,8 @@ pod_env_vars = {**gitlab_pod_env_vars, **{}}
 
 params = {
     "is_full_refresh": Param(
-        "False",
+        False,
         type="boolean",
-        default=False,
     )
 }
 
