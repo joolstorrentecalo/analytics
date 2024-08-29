@@ -374,7 +374,7 @@ run_command_test_exclude = "--exclude staging.gitlab_com edm_snapshot"
 
 clone_tableau_repo_command = f"""
     {data_test_ssh_key_cmd} &&
-    mkdir analytics &&
+    mkdir tableau_config &&
     cd tableau_config &&
     git init &&
     git remote add origin {TABLEAU_CONFIG_REPO} &&
