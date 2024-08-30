@@ -456,7 +456,7 @@ WITH map_merged_crm_account AS (
       sfdc_account.bdr_account_research,
       sfdc_account.bdr_account_strategy,
       sfdc_account.account_bdr_assigned_user_role,
-      sfdc_account.pubsec_type__c                                         AS pubsec_type,
+      sfdc_account.pubsec_type,
 
       --degenerative dimensions
       sfdc_account.is_sdr_target_account,
@@ -614,9 +614,9 @@ WITH map_merged_crm_account AS (
       ptc_scores.score                                               AS ptc_score,
       ptc_scores.decile                                              AS ptc_decile,
       ptc_scores.score_group                                         AS ptc_score_group,
-      sfdc_account.ptp_insights__c                                   AS ptp_insights,
-      sfdc_account.ptp_score_value__c                                AS ptp_score_value,
-      sfdc_account.ptp_score__c                                      AS ptp_score,
+      sfdc_account.ptp_insights                                      AS ptp_insights,
+      sfdc_account.ptp_score_value                                   AS ptp_score_value,
+      sfdc_account.ptp_score                                         AS ptp_score,
 
 
       --metadata

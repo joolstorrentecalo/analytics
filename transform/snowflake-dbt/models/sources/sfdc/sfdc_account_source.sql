@@ -240,7 +240,10 @@ renamed AS (
     zi_ultimate_parent_company_name__c AS zoom_info_ultimate_parent_company_name,
     zi_number_of_developers__c AS zoom_info_number_of_developers,
     zi_total_funding__c AS zoom_info_total_funding,
-
+    pubsec_type__c AS pubsec_type,
+    ptp_insights__c  AS ptp_insights,
+    ptp_score_value__c  AS ptp_score_value,
+    ptp_score__c  AS ptp_score,
     -- NF: Added on 20220427 to support EMEA reporting
     NULL                     AS is_key_account,
 
