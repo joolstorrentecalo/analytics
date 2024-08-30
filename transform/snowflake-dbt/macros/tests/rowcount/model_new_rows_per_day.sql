@@ -5,7 +5,7 @@ WITH dates AS (
     SELECT *
     FROM {{ ref('dim_date' )}}
     WHERE is_holiday = FALSE
-    AND day_of_week IN (2,3,4,5,6)
+    AND day_of_week NOT IN (6, 7)
 
 ), source AS (
 
