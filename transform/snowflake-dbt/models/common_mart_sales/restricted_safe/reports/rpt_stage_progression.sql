@@ -1,6 +1,5 @@
 WITH base AS (
   SELECT DISTINCT--create date and close date
-
     dim_crm_opportunity_id,
     CASE WHEN stage_name = '7 - Closing' THEN '7-Closing'
       WHEN stage_name = 'Closed Lost' THEN '8-Closed Lost'
@@ -10,9 +9,9 @@ WITH base AS (
     MIN(snapshot_date) AS stage_date
     -- from prod.restricted_safe_common_mart_sales.mart_crm_opportunity_daily_snapshot
   FROM {{ ref('mart_crm_opportunity_daily_snapshot') }}
-  WHERE sales_qualified_source_name <> 'Web Direct Generated'
+  WHERE sales_qualified_source_name != 'Web Direct Generated'
     AND arr_created_date >= '2020-02-01'
-    AND sales_type <> 'Renewal'
+    AND sales_type != 'Renewal'
     AND is_web_portal_purchase = FALSE
     AND opportunity_category NOT IN ('Decommission', 'Internal Correction')
     AND LOWER(opportunity_name) NOT LIKE '%rebook%'

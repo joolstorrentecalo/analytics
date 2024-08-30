@@ -35,3 +35,18 @@ This report model focuses exclusively on filtering out Renewal Opportunities fro
 This report model focuses exclusively on filtering out all Open Opportunities from `mart_crm_opportunity`.
 
 {% enddocs %}
+
+{% docs rpt_stage_progression %}
+
+This report provides a detailed timeline for each opportunity, including when it entered each stage, the duration it stayed in each stage, and its final outcome (Won, Lost, or Open).
+
+Each row represents a unique opportunity, recording the dates it entered each stage and the duration spent in each stage.
+
+- STAGE_CATEGORY indicates the final status (e.g., "Won").
+- CREATED_DATE is when the opportunity was created.
+- CREATE_DAYS shows the time from creation to the first stage.
+- For each stage (STAGE0 to STAGE7), the report includes the entry date and days spent in that stage.
+- CLOSE_DATE marks when the opportunity was closed.
+- CURRENT_DAYS tracks how long an open opportunity has remained in its current stage.
+
+{% enddocs %}
