@@ -42,7 +42,7 @@ This report provides a detailed timeline for each opportunity, including when it
 
 Each row represents a unique opportunity, recording the dates it entered each stage and the duration spent in each stage.
 
-- STAGE_CATEGORY indicates the final status (e.g., "Won").
+- STAGE_CATEGORY indicates the final status ("Won", "Open" or "Lost").
 - CREATED_DATE is when the opportunity was created.
 - CREATE_DAYS shows the time from creation to the first stage.
 - For each stage (STAGE0 to STAGE7), the report includes the entry date and days spent in that stage.
