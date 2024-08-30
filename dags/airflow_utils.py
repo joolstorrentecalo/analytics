@@ -376,8 +376,5 @@ clone_tableau_repo_command = f"""
     {data_test_ssh_key_cmd} &&
     mkdir tableau_config &&
     cd tableau_config &&
-    git init &&
-    git remote add origin {TABLEAU_CONFIG_REPO} &&
-    echo "Fetching commit $GIT_COMMIT" &&
-    git fetch origin --quiet &&
-    git checkout HEAD"""
+    git clone {TABLEAU_CONFIG_REPO}
+    """
