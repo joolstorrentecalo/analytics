@@ -207,7 +207,7 @@ tables:
       FROM ci_pipeline_schedules
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
-  ci_pipelines:
+  p_ci_pipelines:
     dbt_source_model: true
     is_incremental: True
     database_type: ci
@@ -238,7 +238,7 @@ tables:
       , failure_reason
       , iid
       , merge_request_id
-      FROM ci_pipelines
+      FROM p_ci_pipelines
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
   ci_pipelines_internal_only:
@@ -1988,6 +1988,36 @@ tables:
       FROM notification_settings
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
+  onboarding_progresses:
+    dbt_source_model: true
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'onboarding_progresses'
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , namespace_id
+      , created_at
+      , updated_at
+      , git_write_at
+      , merge_request_created_at
+      , pipeline_created_at
+      , user_added_at
+      , trial_started_at
+      , required_mr_approvals_enabled_at
+      , code_owners_enabled_at
+      , issue_created_at
+      , license_scanning_run_at
+      , secure_dependency_scanning_run_at
+      , secure_dast_run_at
+      , code_added_at
+      , ended_at
+      FROM onboarding_progresses
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
   operations_feature_flags:
     deletes_exempt: True
     is_incremental: True
@@ -2945,6 +2975,7 @@ tables:
       , id
       , gitpod_enabled
       , use_new_navigation
+      , early_access_program_participant
       FROM user_preferences
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp

@@ -21,6 +21,15 @@ models:
   - name: rpt_crm_opportunity_open
     description: '{{ doc("rpt_crm_opportunity_open") }}'
 
+  - name: rpt_gtm_crm_actuals
+    description: A report table with the GTM actuals contained in the GTM Operating Performance Tableau dashboard.
+
+  - name: rpt_gtm_pivoted_targets
+    description: Pivoted targets for the GTM Operating Performance KPI's - putting each KPI's target into its own column, instead of the kpi_name format.
+
+  - name: rpt_gtm_scaffold
+    description: A scaffold table which contains all of the needed combinations of dimensions for joining (via a Tableau relationship) the GTM actuals and targets report tables.
+
   - name: rpt_stage_progression
     description: '{{ doc("rpt_stage_progression") }}' 
     columns: 

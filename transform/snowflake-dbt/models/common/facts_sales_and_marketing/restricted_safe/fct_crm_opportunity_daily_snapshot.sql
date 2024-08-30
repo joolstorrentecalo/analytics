@@ -71,11 +71,7 @@ final AS (
     {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_3_id') }}                                                     AS dim_crm_account_user_role_level_3_id,
     {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_4_id') }}                                                     AS dim_crm_account_user_role_level_4_id,
     {{ get_keyed_nulls('sales_rep_account.dim_crm_user_role_level_5_id') }}                                                     AS dim_crm_account_user_role_level_5_id,
-    CASE
-      WHEN close_fiscal_year < prep_date.current_fiscal_year
-        THEN dim_crm_user_hierarchy_account_user_sk  -- live account owner hierarchy
-      ELSE {{ get_keyed_nulls('prep_crm_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk') }} -- stamped opp owner hierarchy
-    END                                                                                                                         AS dim_crm_current_account_set_hierarchy_sk,
+    prep_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
     CASE
       WHEN close_fiscal_year < prep_date.current_fiscal_year
         THEN dim_crm_account_user_sales_segment_id
@@ -131,7 +127,7 @@ final AS (
         THEN dim_crm_account_user_role_level_5_id
       ELSE dim_crm_opp_owner_role_level_5_id
     END                                                                                                                         AS dim_crm_current_account_set_role_level_5_id,
-
+    
     --live fields
     prep_crm_opportunity.sales_qualified_source_live,
     prep_crm_opportunity.sales_qualified_source_grouped_live,
@@ -180,10 +176,6 @@ final AS (
     prep_crm_opportunity.dim_parent_crm_account_id,
     prep_crm_opportunity.is_open,
     prep_crm_opportunity.opportunity_owner_user_segment,
-    prep_crm_opportunity.report_segment,
-    prep_crm_opportunity.report_geo,
-    prep_crm_opportunity.report_region,
-    prep_crm_opportunity.report_area,
     prep_crm_opportunity.opportunity_owner_role,
     prep_crm_opportunity.opportunity_owner_title,
     prep_crm_opportunity.opportunity_account_owner_role,
@@ -532,12 +524,6 @@ final AS (
     prep_crm_opportunity.competitors_circleci_flag,
     prep_crm_opportunity.competitors_bamboo_flag,
     prep_crm_opportunity.competitors_aws_flag,
-    prep_crm_opportunity.report_role_name,
-    prep_crm_opportunity.report_role_level_1,
-    prep_crm_opportunity.report_role_level_2,
-    prep_crm_opportunity.report_role_level_3,
-    prep_crm_opportunity.report_role_level_4,
-    prep_crm_opportunity.report_role_level_5,
     prep_crm_opportunity.cycle_time_in_days,
     prep_crm_opportunity.created_arr_in_snapshot_quarter,
     prep_crm_opportunity.closed_won_opps_in_snapshot_quarter,

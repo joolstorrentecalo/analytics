@@ -16,7 +16,7 @@ import os
 
 from logging import info
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from gitlabdata.orchestration_utils import make_request
 
 from thought_industries_api_helpers import (
@@ -27,6 +27,7 @@ from thought_industries_api_helpers import (
 )
 
 config_dict = os.environ.copy()
+RECORD_THRESHOLD = 9999  # will upload when record_count exceeds this threshold
 
 
 class ThoughtIndustries(ABC):
@@ -52,7 +53,7 @@ class ThoughtIndustries(ABC):
 
     def fetch_from_endpoint(
         self, original_epoch_start_ms: int, original_epoch_end_ms: int
-    ) -> List[Dict]:
+    ) -> Tuple[List[Dict], int]:
         """
         Based on the start & end epoch dates, continue calling the API
         until no more data is returned.
@@ -67,11 +68,13 @@ class ThoughtIndustries(ABC):
         Start —- prev_min # 3rd request
         ...
         """
-        final_events: List[Dict] = []
+        combined_events: List[Dict] = []
         events: List[Dict] = [{-1: "_"}]  # some placeholder val
         current_epoch_end_ms = original_epoch_end_ms  # init current epoch end
+        record_count = 0
         # while the response returns events records
-        while len(events) > 0:
+        # also check record_count because of Snowflake VARIANT value max size
+        while len(events) > 0 and record_count <= RECORD_THRESHOLD:
             params = {
                 "startDate": original_epoch_start_ms,
                 "endDate": current_epoch_end_ms,
@@ -91,9 +94,11 @@ class ThoughtIndustries(ABC):
 
             # response has events
             if events:
+                record_count += len(events)
+
                 events_to_log = [events[0]] + [events[-1]]
                 info(f"\nfirst & last event from latest response: {events_to_log}")
-                final_events = final_events + events
+                combined_events = combined_events + events
 
                 prev_epoch_end_ms = current_epoch_end_ms
 
@@ -111,7 +116,7 @@ class ThoughtIndustries(ABC):
             else:
                 info("\nThe last response had 0 events, stopping requests\n")
 
-        return final_events
+        return combined_events, current_epoch_end_ms
 
     def upload_events_to_snowflake(
         self, events: List[Dict], epoch_start_ms: int, epoch_end_ms: int
@@ -139,22 +144,44 @@ class ThoughtIndustries(ABC):
         )
 
     def fetch_and_upload_data(
-        self, epoch_start_ms: int, epoch_end_ms: int
-    ) -> List[Dict]:
-        """main function, fetch data from API, and upload to snowflake"""
-        if is_invalid_ms_timestamp(epoch_start_ms, epoch_end_ms):
+        self, original_epoch_start_ms: int, original_epoch_end_ms: int
+    ) -> List:
+        """
+        main function, fetch data from API, and upload to snowflake.
+        This was updated to upload in batches based on `RECORD_THRESHOLD`
+        This is necessary because Snowflake has a max size limit per VARIANT value
+
+        In the future, if `all_events` object becomes too big, it can be easily removed
+        However, it's currently useful for debugging
+        """
+        if is_invalid_ms_timestamp(original_epoch_start_ms, original_epoch_end_ms):
             raise ValueError(
                 "Invalid epoch timestamp(s). Make sure epoch timestamp is in MILLISECONDS. "
                 "Aborting now..."
             )
 
-        events = self.fetch_from_endpoint(epoch_start_ms, epoch_end_ms)
+        events_batched: List = [{}]
+        all_events: List = []
+        batch = 0
 
-        if events:
-            self.upload_events_to_snowflake(events, epoch_start_ms, epoch_end_ms)
-        else:
+        current_epoch_end_ms = original_epoch_end_ms
+
+        while events_batched:
+            events_batched, current_epoch_end_ms = self.fetch_from_endpoint(
+                original_epoch_start_ms, current_epoch_end_ms
+            )
+
+            if events_batched:
+                batch += 1
+                info(f"Uploading batch {batch} with {len(events_batched)} records...")
+                self.upload_events_to_snowflake(
+                    events_batched, original_epoch_start_ms, original_epoch_end_ms
+                )
+                all_events = all_events + events_batched
+
+        if batch == 0:
             info("No events data returned, nothing to upload")
-        return events
+        return all_events
 
 
 class CourseCompletions(ThoughtIndustries):
@@ -253,21 +280,9 @@ class EmailCaptures(ThoughtIndustries):
         return "incoming/v2/events/emailCapture"
 
 
-class Awards(ThoughtIndustries):
-    """Class for Awards endpoint"""
-
-    def get_name(self) -> str:
-        """implement abstract class"""
-        return "awards"
-
-    def get_endpoint_url(self) -> str:
-        """implement abstract class"""
-        return "incoming/v2/events/award"
-
-
 if __name__ == "__main__":
-    EPOCH_START_MS = 1715904400000
-    EPOCH_END_MS = 1716050561000
-    cls_to_run = CoursePurchases()
+    EPOCH_START_MS = 1722384000001
+    EPOCH_END_MS = 1722470400000
+    cls_to_run = CourseActions()
     result_events = cls_to_run.fetch_and_upload_data(EPOCH_START_MS, EPOCH_END_MS)
-    info(f"\nresult_events: {result_events[:10]}")
+    info(f"\nresult_events: {result_events[:2]}")

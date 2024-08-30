@@ -75,10 +75,10 @@ models:
     description: ' {{ doc("rpt_subscription_renewal_linking") }} '
     columns:
       - name: renewal_subscription_name
-        tests:
+        data_tests:
           - not_null
       - name: previous_term_subscription_name
-        tests:
+        data_tests:
           - not_null
 
   - name: rpt_accounting_period_balance_monthly 
@@ -86,7 +86,7 @@ models:
     columns:
       - name: period
         description: Calendar month and year when the transactions took place
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: starting_accounts_receivable
@@ -97,7 +97,7 @@ models:
     columns:
       - name: period
         description: Calendar month and year for which the metric is calculated
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: booking_amount
@@ -114,7 +114,7 @@ models:
     columns:
       - name: period
         description: Calendar month and year for which the metric is calculated
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dso and cei

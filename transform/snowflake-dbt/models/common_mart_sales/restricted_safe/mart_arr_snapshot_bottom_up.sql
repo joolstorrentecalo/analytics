@@ -165,6 +165,7 @@ WITH dim_billing_account AS (
       dim_product_detail.product_ranking                                                    AS product_ranking,
       dim_product_detail.service_type                                                       AS service_type,
       dim_product_detail.product_rate_plan_name                                             AS product_rate_plan_name,
+      dim_product_detail.product_rate_plan_charge_name                                      AS product_rate_plan_charge_name,
       dim_product_detail.is_licensed_user                                                   AS is_licensed_user,
       dim_product_detail.is_arpu                                                            AS is_arpu,
 
@@ -248,5 +249,5 @@ WITH dim_billing_account AS (
     created_by="@iweeks",
     updated_by="@chrissharp",
     created_date="2021-07-29",
-    updated_date="2023-05-29"
+    updated_date="204-08-27"
 ) }}

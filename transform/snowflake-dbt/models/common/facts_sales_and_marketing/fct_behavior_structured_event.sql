@@ -145,7 +145,8 @@ structured_event_renamed AS (
       input_tokens,
       output_tokens,
       context_tokens_sent,
-      context_tokens_used
+      context_tokens_used,
+      debounce_interval
 
 
     FROM {{ ref('prep_snowplow_unnested_events_all') }}
@@ -278,7 +279,7 @@ structured_events_w_dim AS (
       events_with_plan.output_tokens,
       events_with_plan.context_tokens_sent,
       events_with_plan.context_tokens_used,
-
+      events_with_plan.debounce_interval,
 
       -- Degenerate Dimensions (Service Ping)
       events_with_plan.gitlab_service_ping_context,
@@ -336,5 +337,5 @@ structured_events_w_dim AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2022-09-01",
-    updated_date="2024-08-06"
+    updated_date="2024-08-23"
 ) }}

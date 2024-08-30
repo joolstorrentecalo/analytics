@@ -138,7 +138,27 @@ models:
       description: '{{ doc("major_minor_version") }}'
     - name: latest_major_minor_version_num
       description: '{{ doc("major_minor_version_num") }}'
-    - name: is_internal_installation
+    - name: latest_is_internal_installation
       description: '{{ doc("is_internal_ping_model") }}'
-    - name: is_paid_subscription
+    - name: latest_is_paid_subscription
       description: '{{ doc("is_paid_subscription") }}'
+
+  - name: wk_cloud_connector_configuration
+    description: ' {{ doc("wk_cloud_connector_configuration") }} '
+    columns:
+      - name: environment_name
+        description: '{{ doc("cloud_connector_environment_name") }}'
+      - name: backend
+        description: '{{ doc("cloud_connector_backend") }}'
+      - name: feature_name
+        description: '{{ doc("cloud_connector_feature_name") }}'
+      - name: bundled_with_add_on_name
+        description: '{{ doc("cloud_connector_bundled_with_add_on_name") }}'
+      - name: unit_primitive_name
+        description: '{{ doc("cloud_connector_unit_primitive_name") }}'
+      - name: cut_off_date
+        description: '{{ doc("cloud_connector_cut_off_date") }}'
+      - name: min_gitlab_version
+        description: '{{ doc("cloud_connector_min_gitlab_version") }}'
+      - name: min_gitlab_version_for_free_access
+        description: '{{ doc("cloud_connector_min_gitlab_version_for_free_access") }}'

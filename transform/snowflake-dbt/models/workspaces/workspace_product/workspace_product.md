@@ -95,3 +95,28 @@ This model contains the installation-level attributes from the latest ping for e
 * The `latest_` prefix on the columns indicates the status as of the most recent ping.
 
 {% enddocs %}
+
+{% docs wk_cloud_connector_configuration %}
+
+**Description:** This model contains detailed information about cloud connector configurations within GitLab data ecosystem.
+- Data is extracted and cleaned from [cloud_connector.yml file](https://gitlab.com/gitlab-org/customers-gitlab-com/-/blob/main/config/cloud_connector.yml) in the underlying model.
+- [GitLab Cloud Connector](https://about.gitlab.com/direction/cloud-connector/) is a way to access services common to multiple GitLab deployments, instances, and cells.
+
+**Data Grain:**
+- environment_name
+- backend
+- feature_name
+- bundled_with_add_on_name
+- unit_primitive_name
+
+**Filters Applied to Model:**
+- None - `ALL Data` at the Atomic (`lowest level/grain`) is brought through from the source, providing a complete view of all cloud connector configurations.
+
+**Business Logic in this Model:**
+- None - this model does not contain any business logic
+
+**Other Comments:**
+- This model is crucial for understanding the features that differentiate Duo Pro and Duo Enterprise.
+- Consider using this model in conjunction with usage metrics to gain insights into the utilization of different cloud services.
+
+{% enddocs %}

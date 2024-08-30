@@ -1,4 +1,4 @@
-## Request for Data Import in Snowflake/Sisense Checklist
+## Request for Data Import in Snowflake/Tableau Checklist
 
 <!--
 Please complete all items. Ask questions in the #data slack channel
@@ -28,13 +28,26 @@ If none, please include a description
   - [ ] I don't know
 * [ ]  How long will this data need to reside in the Data team's data warehouse? Expiration Date: ______
 * [ ]  How do you want to name the table? Table Name: ______
-* [ ]  Update the due date on this issue for when you want this data in Sisense. (Note: The airflow job for sheetload runs every night and is immediately followed by a sheetload-specific dbt run)
+* [ ]  Update the due date on this issue for when you want this data in Tableau. (Note: The airflow job for sheetload runs every night and is immediately followed by a sheetload-specific dbt run)
 * [ ]  Provide who will be the owner of the file to fix potential data issues. @____
 
-### If you need data in Sisense but...
+### If you need data in Tableau but...
 
 - [ ] Do **NOT** need to link it to other data
-    * [ ]  Submitter please follow steps in [CSV Upload Sisense](https://doc.periscopedata.com/article/csv-upload)
+    * [ ]  Open CSV directly in Tableau -  Submitter needs to be a Tableau Creator. If the submitter is not a Tableau Creator, please reach out to #data-tableau Slack Channel for support. As a Tableau Creator, Submitter please follow steps in Tableau Cloud or Desktop:
+        
+       - Tableau Cloud
+          1. In Tableau Cloud, navigate to the "Explore" page.
+          1. Click on the "New" button and select "Workbook" to start a new project.
+          1. In the "Connect to Data" section, click "More" under the "Files" category and select the CSV file.
+          1. Click "Open" to load the file into Tableau Cloud.
+          1. Click on "Sheet 1" at the bottom of the screen to begin working on your Tableau project.
+
+      - Tableau Desktop
+          1. In Tableau Desktop select Connect to Data from the start page
+          1. In the To a File section, click More and select the CSV file
+          1. Click Open to load the file into Tableau
+          1. Click Sheet 1 at the bottom of the screen to start working on your Tableau project
     * [ ]  Submitter to close issue if this data will not be used again.
 
 ---
@@ -50,7 +63,7 @@ If none, please include a description
     * [ ] Data Team member to check file name and sheet names to match: The file will be located and loaded based on its name `boneyard.<table_name>`. The names of the sheets shared with the runner must be unique and in the `<file_name>.<tab_name>` format.
     * [ ] Data Team member to merge update after validation of data and MR
     * [ ] Submitter to wait 6 to 8 hours for data to become available (runs 4x per day), or if urgent to ask Data Engineer to trigger job
-    * [ ] Submitter to query in Sisense for table: ``` SELECT * FROM boneyard.[new-dbt-model-name] LIMIT 10 ```.
+    * [ ] Submitter to create a new data source in Tableau using the table: `boneyard.[new-dbt-model-name]`. The submitter needs to be a Tableau Creator. If the submitter is not a Tableau Creator, please reach out to #data-tableau Slack Channel for support.
 
 ---
 
@@ -63,7 +76,7 @@ If none, please include a description
       - [ ] [Edit the schema.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/models/sources/sheetload/schema.yml)
       - [ ] [Edit the sources.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/models/sources/sheetload/sources.yml)
       - [ ] Add a new base model under [sources-->sheetload repo](https://gitlab.com/gitlab-data/analytics/-/tree/master/transform/snowflake-dbt/models/sources/sheetload)
-      - **If the the data is required in SiSense**
+      - **If the the data is required in Tableau**
          - [ ] Add a new staging model under [staging-->sheetload repo](https://gitlab.com/gitlab-data/analytics/-/tree/master/transform/snowflake-dbt/models/staging/sheetload)
          - [ ] [Edit the schema.yml](https://gitlab.com/gitlab-data/analytics/-/blob/master/transform/snowflake-dbt/models/staging/sheetload/schema.yml)
     * [ ]  Data Team member to run the following CI Jobs on the MR:
@@ -73,5 +86,5 @@ If none, please include a description
     * [ ]  Data Analyst to assign MR to project maintainer for review (iterate until model is complete).
     * [ ]  Data Team project maintainers/owners to merge in dbt models
     * [ ]  If not urgent, data will be availble within 24 hours. If urgent, Data Engineer to run full refresh and inform when available.
-    * [ ]  Submitter to query in Sisense for table: ``` SELECT * FROM [new-dbt-model-name] LIMIT 10 ```.
+    * [ ]  Submitter to create a new data source in Tableau using the table: `boneyard.[new-dbt-model-name]`. The submitter needs to be a Tableau Creator. If the submitter is not a Tableau Creator, please reach out to #data-tableau Slack Channel for support.
 

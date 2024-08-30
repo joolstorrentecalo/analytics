@@ -168,6 +168,15 @@
       prep_crm_account.carr_account_family,
       prep_crm_account.carr_this_account,
 
+      --D&B Fields
+      prep_crm_account.dnb_match_confidence_score,
+      prep_crm_account.dnb_match_grade,
+      prep_crm_account.dnb_connect_company_profile_id,
+      prep_crm_account.dnb_duns,
+      prep_crm_account.dnb_global_ultimate_duns,
+      prep_crm_account.dnb_domestic_ultimate_duns,
+      prep_crm_account.dnb_exclude_company,
+
       --6 sense fields
       prep_crm_account.has_six_sense_6_qa,
       prep_crm_account.risk_rate_guid,
@@ -266,7 +275,7 @@
     created_by="@msendal",
     updated_by="@rkohnke",
     created_date="2020-06-01",
-    updated_date="2024-07-29"
+    updated_date="2024-08-15"
 ) }}
 
 

@@ -64,9 +64,9 @@ models:
             description: Product category is based on the rate plan name.
             data_tests:
               - accepted_values:
-                      values: ['GitHost', 'Other', 'SaaS - Ultimate', 'Basic', 'SaaS - Bronze', 'Self-Managed - Premium', 'Self-Managed - Starter', 'Self-Managed - Ultimate', 'Support', 'Plus', 'SaaS - Premium', 'Standard', 'Trueup', 'Storage', 'SaaS - Other', 'Dedicated - Ultimate', 'SaaS - AI Add Ons']
+                      values: ['GitHost', 'Other', 'SaaS - Ultimate', 'Basic', 'SaaS - Bronze', 'Self-Managed - Premium', 'Self-Managed - Starter', 'Self-Managed - Ultimate', 'Support', 'Plus', 'SaaS - Premium', 'Standard', 'Trueup', 'Storage', 'SaaS - Other', 'Dedicated - Ultimate', 'SaaS - AI Add Ons', 'Not Applicable']
                       config:
-                        severity: warn
+                        severity: error
     - name: zuora_rate_plan_charge
       description: Base model for Zuora Rate Plan Charges
       columns:

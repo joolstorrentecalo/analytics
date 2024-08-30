@@ -1,3 +1,7 @@
+{{ config(
+    tags=["product"]
+) }}
+
 WITh prep AS (
 
     SELECT *  FROM {{ ref('prep_ci_pipeline')}}

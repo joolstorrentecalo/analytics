@@ -139,6 +139,7 @@
       sfdc_account_snapshot.crm_account_owner_region,
       sfdc_account_snapshot.crm_account_owner_area,
       sfdc_account_snapshot.crm_account_owner_sales_segment_geo_region_area,
+      account_owner.dim_crm_user_hierarchy_sk                                                                       AS dim_crm_user_hierarchy_account_user_sk,
       account_owner.user_role_name                                                                                  AS crm_account_owner_role,
       account_owner.user_role_level_1                                                                               AS crm_account_owner_role_level_1,
       account_owner.user_role_level_2                                                                               AS crm_account_owner_role_level_2,
@@ -231,6 +232,7 @@
       live_date.day_of_fiscal_year_normalised                                                               AS snapshot_day_of_fiscal_year_normalised,
       live_date.last_day_of_fiscal_quarter                                                                  AS snapshot_last_day_of_fiscal_quarter,
       sfdc_account.parent_crm_account_geo                                                                   AS parent_crm_account_geo,
+      account_owner.dim_crm_user_hierarchy_sk                                                               AS dim_crm_user_hierarchy_account_user_sk,
       account_owner.crm_user_sales_segment                                                                  AS crm_account_owner_sales_segment,
       account_owner.crm_user_geo                                                                            AS crm_account_owner_geo,
       account_owner.crm_user_region                                                                         AS crm_account_owner_region,
@@ -422,6 +424,7 @@ LEFT JOIN cw_base
       {{ get_date_id('sfdc_opportunity.subscription_end_date') }}                                 AS subscription_end_date_id,
       {{ get_date_id('sfdc_opportunity.sales_qualified_date') }}                                  AS sales_qualified_date_id,
 
+      sfdc_opportunity_live.close_date                                                            AS close_date_live,
       close_date.first_day_of_fiscal_quarter                                                      AS close_fiscal_quarter_date,
       90 - DATEDIFF(DAY, sfdc_opportunity.snapshot_date, close_date.last_day_of_fiscal_quarter)   AS close_day_of_fiscal_quarter_normalised,
       -- The fiscal year has to be created from scratch instead of joining to the date model because of sales practices which put close dates out 100+ years in the future
@@ -430,6 +433,12 @@ LEFT JOIN cw_base
           THEN DATE_PART('year', sfdc_opportunity.close_date)
         ELSE (DATE_PART('year', sfdc_opportunity.close_date)+1) 
       END                                                                                         AS close_fiscal_year,
+
+      CASE 
+        WHEN DATE_PART('month', sfdc_opportunity_live.close_date) < 2
+          THEN DATE_PART('year', sfdc_opportunity_live.close_date)
+        ELSE (DATE_PART('year', sfdc_opportunity_live.close_date)+1) 
+      END                                                                                         AS close_fiscal_year_live,
 
       {{ get_date_id('sfdc_opportunity.iacv_created_date')}}                                      AS arr_created_date_id,
       sfdc_opportunity.iacv_created_date                                                          AS arr_created_date,
@@ -1116,116 +1125,89 @@ LEFT JOIN cw_base
       IFF(CONTAINS(sfdc_opportunity.competitors, 'CircleCI'),1,0) AS competitors_circleci_flag,
       IFF(CONTAINS(sfdc_opportunity.competitors, 'Bamboo'),1,0) AS competitors_bamboo_flag,
       IFF(CONTAINS(sfdc_opportunity.competitors, 'AWS'),1,0) AS competitors_aws_flag,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_sales_segment, sfdc_opportunity_live.crm_opp_owner_sales_segment_stamped)
-      ) AS report_segment,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_geo, sfdc_opportunity_live.crm_opp_owner_geo_stamped)
-      ) AS report_geo,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_region, sfdc_opportunity_live.crm_opp_owner_region_stamped)
-      ) AS report_region,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_area, sfdc_opportunity_live.crm_opp_owner_area_stamped)
-      ) AS report_area,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role, sfdc_opportunity_live.opportunity_owner_role)
-      ) AS report_role_name,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_1, sfdc_opportunity_live.crm_opp_owner_role_level_1)
-      ) AS report_role_level_1,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_2, sfdc_opportunity_live.crm_opp_owner_role_level_2)
-      ) AS report_role_level_2,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_3, sfdc_opportunity_live.crm_opp_owner_role_level_3)
-      ) AS report_role_level_3,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_4, sfdc_opportunity_live.crm_opp_owner_role_level_4)
-      ) AS report_role_level_4,
-      UPPER(
-        IFF(sfdc_opportunity.close_date < close_date.current_first_day_of_fiscal_year, sfdc_opportunity_live.crm_account_owner_role_level_5, sfdc_opportunity_live.crm_opp_owner_role_level_5)
-      ) AS report_role_level_5,
     CASE
-        WHEN close_fiscal_year < 2024
+        WHEN close_fiscal_year_live < 2024
           THEN CONCAT(
-                    UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_sales_segment_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_geo_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_geo_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_region_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_region_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_area_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_area_stamped),
                     '-',
                     close_fiscal_year
                     )
-        WHEN close_fiscal_year = 2024 AND LOWER(sfdc_opportunity.crm_opp_owner_business_unit_stamped) = 'comm'
-          THEN CONCAT(
-                    UPPER(sfdc_opportunity.crm_opp_owner_business_unit_stamped),
-                    '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_geo_stamped),
-                    '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
-                    '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_region_stamped),
-                    '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_area_stamped),
-                    '-',
-                    close_fiscal_year
-                    )
-        WHEN close_fiscal_year = 2024 AND LOWER(sfdc_opportunity.crm_opp_owner_business_unit_stamped) = 'entg'
+        WHEN close_fiscal_year_live = 2024 AND LOWER(sfdc_opportunity_live.crm_opp_owner_business_unit_stamped) = 'comm'
           THEN CONCAT(
                     UPPER(sfdc_opportunity.crm_opp_owner_business_unit_stamped),
                     '-',
                     UPPER(sfdc_opportunity.crm_opp_owner_geo_stamped),
                     '-',
+                    UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
+                    '-',
                     UPPER(sfdc_opportunity.crm_opp_owner_region_stamped),
                     '-',
                     UPPER(sfdc_opportunity.crm_opp_owner_area_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
-                    '-',
-                    close_fiscal_year
+                    close_fiscal_year_live
                     )
-        WHEN close_fiscal_year = 2024
-          AND (sfdc_opportunity.crm_opp_owner_business_unit_stamped IS NOT NULL AND LOWER(sfdc_opportunity.crm_opp_owner_business_unit_stamped) NOT IN ('comm', 'entg')) -- some opps are closed by non-sales reps, so fill in their values completely
+        WHEN close_fiscal_year_live = 2024 AND LOWER(sfdc_opportunity_live.crm_opp_owner_business_unit_stamped) = 'entg'
           THEN CONCAT(
-                    UPPER(sfdc_opportunity.crm_opp_owner_business_unit_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_business_unit_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_geo_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_geo_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_region_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_region_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_area_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_area_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_sales_segment_stamped),
                     '-',
-                    close_fiscal_year
+                    close_fiscal_year_live
                     )
-        WHEN close_fiscal_year = 2024 AND sfdc_opportunity.crm_opp_owner_business_unit_stamped IS NULL -- done for data quality issues
+        WHEN close_fiscal_year_live = 2024
+          AND (sfdc_opportunity_live.crm_opp_owner_business_unit_stamped IS NOT NULL AND LOWER(sfdc_opportunity_live.crm_opp_owner_business_unit_stamped) NOT IN ('comm', 'entg')) -- some opps are closed by non-sales reps, so fill in their values completely
           THEN CONCAT(
-                    UPPER(sfdc_opportunity.crm_opp_owner_sales_segment_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_business_unit_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_geo_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_sales_segment_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_region_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_geo_stamped),
                     '-',
-                    UPPER(sfdc_opportunity.crm_opp_owner_area_stamped),
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_region_stamped),
                     '-',
-                    close_fiscal_year
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_area_stamped),
+                    '-',
+                    close_fiscal_year_live
                     )
-        WHEN close_fiscal_year >= 2025
+        WHEN close_fiscal_year_live = 2024 AND sfdc_opportunity_live.crm_opp_owner_business_unit_stamped IS NULL -- done for data quality issues
+          THEN CONCAT(
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_sales_segment_stamped),
+                    '-',
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_geo_stamped),
+                    '-',
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_region_stamped),
+                    '-',
+                    UPPER(sfdc_opportunity_live.crm_opp_owner_area_stamped),
+                    '-',
+                    close_fiscal_year_live
+                    )
+        WHEN close_fiscal_year_live >= 2025
           THEN CONCAT(
 
-                      UPPER(COALESCE(sfdc_opportunity.opportunity_owner_role, sfdc_opportunity.opportunity_account_owner_role)),
+                      UPPER(COALESCE(sfdc_opportunity_live.opportunity_owner_role, sfdc_opportunity_live.opportunity_account_owner_role)),
                       '-',
-                      close_fiscal_year
+                      close_fiscal_year_live
                       ) 
       END AS dim_crm_opp_owner_stamped_hierarchy_sk, 
 
-      DATEDIFF(MONTH, arr_created_fiscal_quarter_date, close_fiscal_quarter_date) AS arr_created_to_close_diff,
+      UPPER(
+        IFF(sfdc_opportunity_live.close_date < close_date_live.current_first_day_of_fiscal_year, sfdc_opportunity_live.dim_crm_user_hierarchy_account_user_sk, dim_crm_opp_owner_stamped_hierarchy_sk)
+      ) AS dim_crm_current_account_set_hierarchy_sk,
 
-      CASE
+      DATEDIFF(MONTH, arr_created_fiscal_quarter_date, close_fiscal_quarter_date) AS arr_created_to_close_diff,
+      CASE        
         WHEN arr_created_to_close_diff BETWEEN 0 AND 2 THEN 'CQ'
         WHEN arr_created_to_close_diff BETWEEN 3 AND 5 THEN 'CQ+1'
         WHEN arr_created_to_close_diff BETWEEN 6 AND 8 THEN 'CQ+2'
@@ -1462,8 +1444,12 @@ LEFT JOIN cw_base
     ON sfdc_opportunity.dim_crm_opportunity_id = campaigns_per_opp.dim_crm_opportunity_id
   LEFT JOIN first_contact
     ON sfdc_opportunity.dim_crm_opportunity_id = first_contact.opportunity_id AND first_contact.row_num = 1
+  LEFT JOIN sfdc_opportunity_live
+    ON sfdc_opportunity_live.dim_crm_opportunity_id = sfdc_opportunity.dim_crm_opportunity_id
   LEFT JOIN dim_date AS close_date
     ON sfdc_opportunity.close_date = close_date.date_actual
+  LEFT JOIN dim_date AS close_date_live
+    ON sfdc_opportunity_live.close_date = close_date_live.date_actual
   LEFT JOIN dim_date AS created_date
     ON sfdc_opportunity.created_date = created_date.date_actual
   LEFT JOIN dim_date AS arr_created_date
@@ -1475,8 +1461,6 @@ LEFT JOIN cw_base
       AND sfdc_opportunity.order_type = net_iacv_to_net_arr_ratio.order_type
   LEFT JOIN sfdc_record_type_source 
     ON sfdc_opportunity.record_type_id = sfdc_record_type_source.record_type_id
-  LEFT JOIN sfdc_opportunity_live
-  ON sfdc_opportunity_live.dim_crm_opportunity_id = sfdc_opportunity.dim_crm_opportunity_id
   LEFT JOIN abm_tier_unioned
     ON sfdc_opportunity.dim_crm_opportunity_id=abm_tier_unioned.dim_crm_opportunity_id
       AND sfdc_opportunity.is_live = 1
@@ -1490,4 +1474,3 @@ LEFT JOIN cw_base
     created_date="2022-02-23",
     updated_date="2024-05-28"
 ) }}
-

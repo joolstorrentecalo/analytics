@@ -65,7 +65,7 @@ final AS (
     ROUND(((invoice_detail.payment_applied_to_invoice / total_billed.total_billed) * 100), 2) AS percentage_payment_applied_to_billed
 
   FROM invoice_detail
-  LEFT JOIN total_billed 
+  INNER JOIN total_billed 
     ON invoice_detail.invoice_period = total_billed.billed_period
   LEFT JOIN dim_date 
     ON invoice_detail.payment_period = dim_date.date_actual
@@ -77,5 +77,5 @@ cte_ref="final",
 created_by="@apiaseczna",
 updated_by="@apiaseczna",
 created_date="2024-05-08",
-updated_date="2024-05-08"
+updated_date="2024-08-22"
 ) }}

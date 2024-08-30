@@ -12,6 +12,7 @@ final AS (
     dept_workday_id::VARCHAR                     AS dept_workday_id,
     department_name::VARCHAR                     AS department_name,
     division::VARCHAR                            AS division,
+    division_workday_id::VARCHAR                 AS division_workday_id,
     cost_center_workday_id::VARCHAR              AS cost_center_workday_id,
     cost_center::VARCHAR                         AS cost_center,
     dept_inactive::BOOLEAN                       AS dept_inactive,

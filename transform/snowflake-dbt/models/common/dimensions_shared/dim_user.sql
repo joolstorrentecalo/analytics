@@ -1,4 +1,5 @@
 {{ config({
+    "tags": ["product"],
     "post-hook": "{{ missing_member_column(primary_key = 'dim_user_sk', not_null_test_cols = ['dim_user_id', 'user_id']) }}"
 }) }}
 

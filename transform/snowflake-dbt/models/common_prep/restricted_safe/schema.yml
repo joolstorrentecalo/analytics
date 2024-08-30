@@ -573,7 +573,7 @@ models:
 
   - name: prep_sales_dev_user_hierarchy
     description: View of the Sales Dev User Hierarchy
-    tests:
+    data_tests:
     - dbt_utils.unique_combination_of_columns:
         combination_of_columns:
           - dim_crm_user_id
@@ -581,7 +581,7 @@ models:
     columns: 
       - name: dim_crm_user_id
         description: The SFDC User id
-        tests:
+        data_tests:
           - not_null
       - name: sales_dev_rep_employee_number
         description: The Sales Dev Rep's employee number

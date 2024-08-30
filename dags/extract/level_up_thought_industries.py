@@ -60,7 +60,6 @@ endpoint_classes = (
     "CoursePurchases",
     "LearningPathActions",
     "EmailCaptures",
-    # "Awards",
 )
 extract_tasks = []
 

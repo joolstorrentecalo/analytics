@@ -168,7 +168,8 @@ filtered_code_suggestion_events AS (
     input_tokens,
     output_tokens,
     context_tokens_sent,
-    context_tokens_used
+    context_tokens_used,
+    debounce_interval
 
   FROM code_suggestions_joined_to_fact_and_dim
   WHERE app_id IN ('gitlab_ai_gateway', 'gitlab_ide_extension') --"official" Code Suggestions app_ids
@@ -181,5 +182,5 @@ filtered_code_suggestion_events AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-08-06"
+    updated_date="2024-08-23"
 ) }}

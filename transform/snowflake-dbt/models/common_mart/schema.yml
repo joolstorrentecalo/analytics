@@ -1605,3 +1605,5 @@ models:
       description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
     - name: context_tokens_used
       description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+    - name: debounce_interval
+      description: ' {{ doc("code_suggestions_debounce_interval") }}'

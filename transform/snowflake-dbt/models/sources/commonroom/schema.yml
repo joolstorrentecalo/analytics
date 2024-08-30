@@ -6,29 +6,27 @@ models:
     columns:
       - name: primary_key
         description: '{{ doc("commonroom_primary_key") }}'
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: activity_timestamp
-        tests:
+        data_tests:
           - not_null
       - name: activity_type
-        tests:
+        data_tests:
           - not_null
       - name: first_activity_date
       - name: full_name
         meta:
           sensitive: true
-        tests:
+        data_tests:
           - not_null
-        meta:
-          sensitive: true
       - name: member_id
       - name: profiles
         meta:
           sensitive: true
       - name: service_name
-        tests:
+        data_tests:
           - not_null
       - name: _uploaded_at
         description: '{{ doc("_uploaded_at") }}'
@@ -38,13 +36,13 @@ models:
     description: '{{ doc("commonroom_community_members_source") }}'
     columns:
       - name: primary_key
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: first_activity_date
       - name: first_activity_source
       - name: full_name
-        tests:
+        data_tests:
           - not_null
         meta:
           sensitive: true
@@ -61,7 +59,7 @@ models:
       - name: profiles
         meta:
           sensitive: true
-        tests:
+        data_tests:
           - not_null
       - name: segment_names
       - name: tags
@@ -77,16 +75,16 @@ models:
     description: '{{ doc("commonroom_organizations_source") }}'
     columns:
       - name: primary_key
-        tests:
+        data_tests:
             - unique
             - not_null
       - name: approx_revenue_max
       - name: approx_revenue_min
       - name: domain
-        tests:
+        data_tests:
           - not_null
       - name: employee_count
-        tests:
+        data_tests:
           - not_null
       - name: first_seen_date
       - name: first_seen_source
@@ -98,7 +96,7 @@ models:
       - name: organization_name
         meta:
           sensitive: true
-        tests:
+        data_tests:
           - not_null
       - name: _uploaded_at
         description: '{{ doc("_uploaded_at") }}'

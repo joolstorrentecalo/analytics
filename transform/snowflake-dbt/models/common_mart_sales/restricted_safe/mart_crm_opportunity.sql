@@ -33,6 +33,7 @@
       fct_crm_opportunity.merged_crm_opportunity_id,
       fct_crm_opportunity.record_type_id,
       fct_crm_opportunity.ssp_id,
+      fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
       dim_crm_account.dim_crm_account_id,
 
       -- opportunity attributes
@@ -194,16 +195,17 @@
       fct_crm_opportunity.is_abm_tier_closed_won,
 
       -- Key Reporting Fields
-      dim_crm_opportunity.report_segment,
-      dim_crm_opportunity.report_geo,
-      dim_crm_opportunity.report_region,
-      dim_crm_opportunity.report_area,
-      dim_crm_opportunity.report_role_name,
-      dim_crm_opportunity.report_role_level_1,
-      dim_crm_opportunity.report_role_level_2,
-      dim_crm_opportunity.report_role_level_3,
-      dim_crm_opportunity.report_role_level_4,
-      dim_crm_opportunity.report_role_level_5,
+      dim_crm_user_hierarchy.crm_user_sales_segment                                                         AS report_segment,
+      dim_crm_user_hierarchy.crm_user_geo                                                                   AS report_geo,
+      dim_crm_user_hierarchy.crm_user_region                                                                AS report_region,
+      dim_crm_user_hierarchy.crm_user_area                                                                  AS report_area,
+      dim_crm_user_hierarchy.crm_user_business_unit                                                         AS report_business_unit,
+      dim_crm_user_hierarchy.crm_user_role_name                                                             AS report_role_name,
+      dim_crm_user_hierarchy.crm_user_role_level_1                                                          AS report_role_level_1,
+      dim_crm_user_hierarchy.crm_user_role_level_2                                                          AS report_role_level_2,
+      dim_crm_user_hierarchy.crm_user_role_level_3                                                          AS report_role_level_3,
+      dim_crm_user_hierarchy.crm_user_role_level_4                                                          AS report_role_level_4,
+      dim_crm_user_hierarchy.crm_user_role_level_5                                                          AS report_role_level_5,
      
 
       -- Channel fields
@@ -485,11 +487,7 @@
     LEFT JOIN dim_date AS close_date
       ON fct_crm_opportunity.close_date_id = close_date.date_id
     LEFT JOIN dim_crm_user_hierarchy
-      ON fct_crm_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
-    LEFT JOIN dim_crm_user_hierarchy AS dim_crm_user_hierarchy_live
-      ON fct_crm_opportunity.dim_crm_user_hierarchy_live_sk = dim_crm_user_hierarchy_live.dim_crm_user_hierarchy_sk
-    LEFT JOIN dim_crm_user_hierarchy AS dim_crm_user_hierarchy_account_owner
-      ON fct_crm_opportunity.dim_crm_user_hierarchy_account_user_sk = dim_crm_user_hierarchy_account_owner.dim_crm_user_hierarchy_sk
+      ON fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_date AS created_date
       ON fct_crm_opportunity.created_date_id = created_date.date_id
     LEFT JOIN dim_date AS sales_accepted_date

@@ -344,7 +344,7 @@ high_value_case_prep AS (
     MAX(prep_crm_case.created_date) OVER (PARTITION BY prep_crm_case.dim_crm_account_id) AS last_high_value_date
   FROM prep_crm_case
   LEFT JOIN dim_crm_user
-    ON dim_crm_user.dim_crm_user_id = dim_crm_user.dim_crm_user_id
+    ON prep_crm_case.dim_crm_user_id = dim_crm_user.dim_crm_user_id
   WHERE prep_crm_case.record_type_id IN ('0128X000001pPRkQAM')
     --    and account_id = '0014M00001gTGESQA4'
     AND LOWER(prep_crm_case.subject) LIKE '%high value account%'
@@ -1186,7 +1186,7 @@ all_data AS (
     DATEDIFF('day', autorenew_switch.latest_switch_date, CURRENT_DATE) AS days_since_autorenewal_switch,
     COALESCE(prior_sub_25_eoa.dim_crm_account_id IS NOT NULL, FALSE)   AS prior_year_eoa_under_25_flag,
     COALESCE(duo_trials.contact_id IS NOT NULL, FALSE)                 AS duo_trial_on_account_flag,
-    CAST (duo_trials.marketo_last_interesting_moment_date AS DATE)     AS duo_trial_start_date,
+    CAST(duo_trials.marketo_last_interesting_moment_date AS DATE)      AS duo_trial_start_date,
     duo_trials.contact_id,
     duo_trials.order_number,
     COALESCE(failure_sub.dim_crm_account_id IS NOT NULL, FALSE)        AS payment_failure_flag,
@@ -1591,12 +1591,17 @@ case_output AS (
     COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
     CURRENT_DATE                                                                                                     AS query_run_date
   FROM distinct_cases
-  LEFT JOIN wk_sales_gds_cases
-    ON distinct_cases.account_id = wk_sales_gds_cases.dim_crm_account_id
-      AND distinct_cases.case_subject = wk_sales_gds_cases.subject
-      AND distinct_cases.case_opportunity_id = wk_sales_gds_cases.dim_crm_opportunity_id
+  LEFT JOIN prep_crm_case
+    ON distinct_cases.account_id = prep_crm_case.dim_crm_account_id
+      AND distinct_cases.case_subject = prep_crm_case.subject
+      AND (
+        distinct_cases.case_opportunity_id = prep_crm_case.dim_crm_opportunity_id OR (distinct_cases.case_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
+        OR
+        (prep_crm_case.dim_crm_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
+      )
+
   WHERE remove_flag = FALSE
-    AND wk_sales_gds_cases.dim_crm_account_id IS NULL
+    AND prep_crm_case.dim_crm_account_id IS NULL
 )
 
 {{ dbt_audit(

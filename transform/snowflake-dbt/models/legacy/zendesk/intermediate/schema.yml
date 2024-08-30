@@ -37,3 +37,9 @@ models:
         - name: ticket_id
           data_tests:
             - not_null
+    - name: zendesk_users
+      description: This is the base model for Zendesk Users
+      columns:
+      - name: user_id
+        data_tests:
+            - not_null

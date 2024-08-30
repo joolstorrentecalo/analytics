@@ -1366,6 +1366,10 @@ models:
         description: '{{ doc("oldest_subscription_start_date") }}'
       - name: oldest_subscription_cohort_month
         description: '{{ doc("oldest_subscription_cohort_month") }}'
+      - name: ramp_id
+        description: The unique identifier of each ramp deal.  
+      - name: is_ramp
+        description: The indicator flag to identify ramp deals based on ramp_id and multi_year_deal_subscription_linkage fields.
 
   - name: dim_app_release_major_minor
     description: '{{ doc("dim_app_release_major_minor") }}'
@@ -4855,6 +4859,20 @@ models:
         description: Qualified's count of visitors on the account
       - name: account_domains
         description: All domain names associated with this account, separated by a comma.
+      - name: dnb_match_confidence_score
+        description: This is a 1-10 number that describes the level of confidence in match quality between our Salesforce record and D&B's Company record. 10 means D&B is confident that this is a high quality match.
+      - name: dnb_match_grade
+        description: This is a series of letters (A, B, F, Z) that describe the match grade between our Salesforce record and D&B's Company record within particular fields. A means values match exactly, B means values are similar, F means values are different, and Z means values are missing. Fields are graded in this order - Account Name, Street number, Street Name, City, State/Region, Mailing Address, Telephone, Postal Code, Density, Uniqueness, Industry.
+      - name: dnb_connect_company_profile_id
+        description: This is the id of the D&B Connect Company Profile record that has been matched to this Salesforce Account record.
+      - name: dnb_duns
+        description: The Data Universal Numbering System (DUNS) is a 9-digit id number created by D&B to identify a business entity at a particular location.
+      - name: dnb_global_ultimate_duns
+        description: This is the DUNS of the highest global corporate linkage in this company hierarchy.
+      - name: dnb_domestic_ultimate_duns
+        description: This is the DUNS of the highest domestic corporate linkage (within each country) in this company hierarchy.
+      - name: dnb_exclude_company
+        description: This checkbox indicates that this Account record has been excluded from D&B enrichment.
 
   - name: dim_crm_account_daily_snapshot
     description: '{{ doc("dim_crm_account_daily_snapshot") }}'
@@ -5092,6 +5110,7 @@ models:
       - name: zoom_info_company_revenue
       - name: zoom_info_company_state_province
       - name: zoominfo_account_phone
+      
 
   - name: dim_crm_opportunity
     description: '{{ doc("dim_crm_opportunity") }}'
@@ -6407,6 +6426,8 @@ models:
                 error_if: ">10"
                 warn_if: ">10"
         description: '{{ doc("dim_behavior_website_page_sk") }}'
+      - name: page_url
+        description: '{{ doc("page_url") }}' 
       - name: page_url_host_path
         description: '{{ doc("page_url_host_path") }}' 
       - name: app_id
@@ -6518,6 +6539,10 @@ models:
         description: '{{ doc("page_view_index") }}' 
       - name: page_view_in_session_index
         description: '{{ doc("page_view_in_session_index") }}' 
+      - name: page_url
+        description: '{{ doc("page_url") }}'
+      - name: referrer_url
+        description: '{{ doc("referrer_url") }}'
       - name: created_by
         description: '{{ doc("created_by") }}'
       - name: updated_by
@@ -6838,6 +6863,8 @@ models:
         description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
       - name: context_tokens_used
         description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+      - name: debounce_interval
+        description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_30
     description: '{{ doc("fct_behavior_structured_event_30") }}'
@@ -7113,6 +7140,8 @@ models:
         description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
       - name: context_tokens_used
         description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+      - name: debounce_interval
+        description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_90
     description: '{{ doc("fct_behavior_structured_event_90") }}'
@@ -7388,6 +7417,8 @@ models:
         description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
       - name: context_tokens_used
         description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+      - name: debounce_interval
+        description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_experiment
     description:  '{{ doc("fct_behavior_structured_event_experiment") }}'
@@ -9880,6 +9911,8 @@ models:
       description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
     - name: context_tokens_used
       description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+    - name: debounce_interval
+      description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_ide_extension_version
     description: '{{ doc("fct_behavior_structured_event_ide_extension_version") }}'
@@ -9938,7 +9971,7 @@ models:
 
   - name: fct_team_member_absence
     description: '{{ doc("fct_team_member_absence") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - dim_team_member_sk
@@ -9948,27 +9981,27 @@ models:
     columns:
       - name: dim_team_member_sk
         description: A unique ID for each team member.
-        tests:
+        data_tests:
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team.
-        tests:
+        data_tests:
           - not_null
       - name: employee_id
         description: Unique ID of the team member.
-        tests:
+        data_tests:
           - not_null
       - name: position_valid_from
       - name: position_valid_to
       - name: absence_start
         description: The team member's absence start date
-        tests: 
+        data_tests: 
           - not_null
       - name: absence_end
         description: The team member's absence end date
       - name: absence_date  
         description: The team member's day of absence   
-        tests: 
+        data_tests: 
           - not_null
       - name: is_pto
         description: If this absence day overlaps with a PTO.

@@ -297,10 +297,16 @@ def get_renamed_table_name(
             alias = next_token
 
             # Supporting special case when alias have no AS before it
+            nn_index = ""
+            try:
+                nn_index = str(tokenized_list[index + i + 2])
+            except IndexError:
+                nn_index = ""
+
             if (
                 metric_table_name == "issues"
                 and next_token == "issues"
-                and str(tokenized_list[index + i + 2]) in ["work_item_parent", "target"]
+                and nn_index in ["work_item_parent", "target"]
             ):
                 alias = str(tokenized_list[index + i + 2])
                 # clear up duplicate aliases

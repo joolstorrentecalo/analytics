@@ -2063,6 +2063,8 @@ models:
       description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
     - name: context_tokens_used
       description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+    - name: debounce_interval
+      description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
 - name: rpt_user_based_metric_counts_namespace_monthly
   description: '{{ doc("rpt_user_based_metric_counts_namespace_monthly") }}'
@@ -2168,3 +2170,11 @@ models:
       description: '{{ doc("contexts") }}'
     - name: code_suggestions_context
       description: '{{ doc("code_suggestions_context") }}'
+
+- name: rpt_product_usage_health_score_account_roll_up
+  description: Pulls from `rpt_product_usage_health_score_account_calcs`, reducing the granularity from one record per _installation/namespace_ and subscription per month to one record per _account_ per month. This table is the SSOT for Use Case Adoption scores in the Gainsight scorecard.
+  data_tests:
+    - dbt_utils.unique_combination_of_columns:
+        combination_of_columns:
+          - reporting_month
+          - dim_crm_account_id

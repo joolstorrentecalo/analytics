@@ -698,9 +698,37 @@ Boolean flag set to True if the subscription is under an EDU or OSS Program. Thi
 
 {% docs dim_subscription_id %}
 
+Unique identifier of a version of a subscription
+
 {% enddocs %}
 
 {% docs dim_subscription_id_original %}
+
+Unique identifier of a subscription, does not change when amendments are made to the subscription. This ID will have multiple dim_subscription_id values associated with it for each version of the original subscription
+
+{% enddocs %}
+
+{% docs subscription_version %}
+
+The version number of the subscription
+
+{% enddocs %}
+
+{% docs dim_namespace_id %}
+
+The namespace ID of the instance (GitLab.com only)
+
+{% enddocs %}
+
+{% docs product_rate_plan_charge_name %}
+
+The name of the product rate plan charge
+
+{% enddocs %}
+
+{% docs charge_type %}
+
+Type of the charge
 
 {% enddocs %}
 
@@ -1635,6 +1663,12 @@ JSON object for custom contexts implemented during tracking implementation. [Mor
 
 {% enddocs %}
 
+{% docs page_url %}
+
+The page URL example: 'http://www.example.com'.
+
+{% enddocs %}
+
 {% docs page_url_host_path %}
 
 The page URL path of the event **with** the host (gitlab.com) information. Example: `gitlab.com/namespace9495566/project21362945/-/merge_requests/1575`. 
@@ -1703,7 +1737,7 @@ Boolean flag set to True if the event is triggered on a mobile device. This appe
 
 {% docs dim_behavior_website_page_sk %}
 
-Surrogate key consisting of page_url_host_path, app_id and page_url_scheme, easily JOINed to dim_behavior_website_page. This ID in generated in [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all) using `page_url_host_path`, `app_id` and `page_url_scheme`
+Surrogate key consisting of page_url_host_path, app_id and page_url_scheme, easily JOINed to dim_behavior_website_page. This ID in generated in [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all) using `page_url`, `app_id` and `page_url_scheme`
 
 {% enddocs %}
 
@@ -1788,6 +1822,12 @@ Timestamp of when a web page was first rendered for that `fct_behavior_website_p
 {% docs page_view_end_at %}
 
 Timestamp of when a web page was last rendered for that `fct_behavior_website_page_view_sk`. 
+
+{% enddocs %}
+
+{% docs referrer_url %}
+
+The referer URL. Example: 'www.google.de/'
 
 {% enddocs %}
 
@@ -2520,11 +2560,10 @@ The unique identifier that identifies a cloud activation.
 
 {% docs dim_crm_current_account_set_hierarchy_sk %}
 
-Sales hierarchy surrogate key that accounts for yearly changes in the sales hierarchy. Views all hierarchies through the lens of the current year hierarchy, and it reflects how the sales hierarchy is applied in practice. It choose between the opportunity owner stamped hierarchy, the live user hierarchy and the account hierarchy based on the following rules:
+Sales hierarchy surrogate key that accounts for yearly changes in the sales hierarchy. Views all hierarchies through the lens of the current year hierarchy, and it reflects how the sales hierarchy is applied in practice. It choose between the opportunity owner stamped hierarchy or the account owner live user hierarchy:
 
-1. If the fiscal year of the close_date of the opportunity is less than the current fiscal year AND the opp owner is NOT an hybrid user THEN `live user hierarchy`
-2. If the fiscal year of the close_date of the opportunity is less than the current fiscal year AND the opp owner IS an hybrid user THEN `account hierarchy`
-3. Any other case, use `opp owner stamped hierarchy`
+1. If the fiscal year of the live close_date of the opportunity is less than the current fiscal year, use the account owner live user hierarchy
+2. If the fiscal year of the live close_date of the opportunity is greater than or equal to the current fiscal year, use the opportunity owner stamped hierarchy
 
 {% enddocs %}
 
@@ -2999,6 +3038,12 @@ Total tokens sent as context to AI Gateway
 {% docs code_suggestions_context_tokens_used %}
 
 Total context tokens used in request to model provider
+
+{% enddocs %}
+
+{% docs code_suggestions_debounce_interval%}
+
+Number of milliseconds we wait between last keystroke and API request for Code Suggestions
 
 {% enddocs %}
 
@@ -3546,5 +3591,53 @@ User type name based on the [mapping](https://gitlab.com/gitlab-org/gitlab/-/blo
 {% docs is_bot %}
 
 Calculated field based on the [mapping](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/has_user_type.rb) of bot user types.
+
+{% enddocs %}
+
+{% docs cloud_connector_environment_name %}
+
+Name of the source environment, such as `production` or `staging`
+
+{% enddocs %}
+
+{% docs cloud_connector_backend %}
+
+Name of the backend who is serving the feature.
+
+{% enddocs %}
+
+{% docs cloud_connector_feature_name %}
+
+Name of the cloud connector feature such as code_suggestions, duo_chat etc.
+
+{% enddocs %}
+
+{% docs cloud_connector_bundled_with_add_on_name %}
+
+Name of the add-on under which the group of unit primitives are bundled and sold together. For Ex - code_suggestions and duo_chat are 2 UP sold together under `DUO_PRO` add-on.
+
+{% enddocs %}
+
+{% docs cloud_connector_unit_primitive_name %}
+
+Name of the unit primitive bundled with the add-on. Unit primitive is a smallest logical feature that a permission/access scope can govern.
+
+{% enddocs %}
+
+{% docs cloud_connector_cut_off_date %}
+
+The earliest date when the feature requires add-on seat purchase.
+
+{% enddocs %}
+
+{% docs cloud_connector_min_gitlab_version %}
+
+Minimum required GitLab version to use the feature.
+
+{% enddocs %}
+
+{% docs cloud_connector_min_gitlab_version_for_free_access %}
+
+Minimum required GitLab version to use the feature during free_access period (beta). If it's not set, the feature is available for all GitLab versions.
 
 {% enddocs %}

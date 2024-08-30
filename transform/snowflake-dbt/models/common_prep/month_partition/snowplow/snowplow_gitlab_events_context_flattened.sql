@@ -157,7 +157,8 @@ WITH filtered_source as (
             {'field':'input_tokens', 'data_type':'int'},
             {'field':'output_tokens', 'data_type':'int'},
             {'field':'context_tokens_sent', 'data_type':'int'},
-            {'field':'context_tokens_used', 'data_type':'int'}
+            {'field':'context_tokens_used', 'data_type':'int'},
+            {'field':'debounce_interval', 'data_type':'int'}
             ]
         )
       }},
@@ -312,6 +313,7 @@ SELECT
   MAX(column_selection.output_tokens)                         AS output_tokens,
   MAX(column_selection.context_tokens_sent)                   AS context_tokens_sent,
   MAX(column_selection.context_tokens_used)                   AS context_tokens_used,
+  MAX(column_selection.debounce_interval)                     AS debounce_interval,
 
   MAX(column_selection.ide_extension_version_context)         AS ide_extension_version_context,
   MAX(column_selection.ide_extension_version_context_schema)  AS ide_extension_version_context_schema,

@@ -1,0 +1,8 @@
+seeds:
+  - name: license_md5_to_subscription_mapping_temp
+    description: ''
+    columns:
+    - name: license_md5
+      description: ''
+    - name: zuora_subscription_id
+      description: ''

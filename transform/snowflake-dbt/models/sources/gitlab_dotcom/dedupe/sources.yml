@@ -261,6 +261,8 @@ sources:
         identifier: gitlab_db_notes_internal_only
       - name: notification_settings
         identifier: gitlab_db_notification_settings
+      - name: onboarding_progresses
+        identifier: gitlab_db_onboarding_progresses
       - name: oauth_access_tokens
         identifier: gitlab_db_oauth_access_tokens
       - name: packages_packages

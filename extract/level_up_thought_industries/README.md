@@ -55,10 +55,4 @@ CREATE OR REPLACE TABLE email_captures (
   jsontext variant,
   uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
 );
-
-CREATE OR REPLACE TABLE awards (
-  jsontext variant,
-  uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
-);
-
 ```

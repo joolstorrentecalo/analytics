@@ -1,13 +1,13 @@
 {{ config(
-    tags=["product"]
-) }}
 
-{{ config({
-    "materialized": "incremental",
-    "unique_key": "dim_ci_build_id",
-    "tmp_relation_type": "table"
-    })
-}}
+    materialized = "incremental",
+    unique_key = "dim_ci_build_id",
+    full_refresh = only_force_full_refresh(),
+    on_schema_change = "sync_all_columns",
+    tags=["product"],
+    tmp_relation_type = "table"
+
+) }}
 
 {{ simple_cte([
     ('dim_date', 'dim_date'),

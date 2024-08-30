@@ -338,7 +338,7 @@ high_value_case_prep AS (
     MAX(prep_crm_case.created_date) OVER (PARTITION BY prep_crm_case.dim_crm_account_id) AS last_high_value_date
   FROM prep_crm_case
   LEFT JOIN dim_crm_user
-    ON dim_crm_user.dim_crm_user_id = dim_crm_user.dim_crm_user_id
+    ON prep_crm_case.dim_crm_user_id = dim_crm_user.dim_crm_user_id
   WHERE prep_crm_case.record_type_id IN ('0128X000001pPRkQAM')
     --    and account_id = '0014M00001gTGESQA4'
     AND LOWER(prep_crm_case.subject) LIKE '%high value account%'
@@ -1538,14 +1538,24 @@ distinct_cases AS (
 
 case_output AS (
   SELECT
-    * EXCLUDE (context),
-    CASE WHEN owner_id != '00G8X000006WmU3' THEN CONCAT(context, ' Skip Queue Flag: True')
-      ELSE CONCAT(context, ' Skip Queue Flag: False')
-    END                                                                                AS context_final,
-    COALESCE(owner_id IS NULL AND case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
-    CURRENT_DATE                                                                       AS query_run_date
+    distinct_cases.* EXCLUDE (context),
+    CASE WHEN distinct_cases.owner_id != '00G8X000006WmU3' THEN CONCAT(distinct_cases.context, ' Skip Queue Flag: True')
+      ELSE CONCAT(distinct_cases.context, ' Skip Queue Flag: False')
+    END                                                                                                              AS context_final,
+    COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
+    CURRENT_DATE                                                                                                     AS query_run_date
   FROM distinct_cases
+  LEFT JOIN prep_crm_case
+    ON distinct_cases.account_id = prep_crm_case.dim_crm_account_id
+      AND distinct_cases.case_subject = prep_crm_case.subject
+      AND (
+        distinct_cases.case_opportunity_id = prep_crm_case.dim_crm_opportunity_id OR (distinct_cases.case_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
+        OR
+        (prep_crm_case.dim_crm_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
+      )
+
   WHERE remove_flag = FALSE
+    AND prep_crm_case.dim_crm_account_id IS NULL
 )
 
 {{ dbt_audit(

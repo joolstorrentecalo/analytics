@@ -5,7 +5,6 @@ from Postgres to Snowflake
 
 import pytest
 import sqlparse
-
 from extract.saas_usage_ping.transform_postgres_to_snowflake import (
     get_keyword_index,
     get_optimized_token,
@@ -601,3 +600,24 @@ def test_special_case_alias(input_query, expected_result):
     for index, query in enumerate(actual):
         for result in expected_result[index]:
             assert result in query
+
+
+@pytest.mark.parametrize(
+    "expected",
+    [
+        ("SELECT"),
+        ("'test_short'"),
+        ("TO_DATE(CURRENT_DATE)"),
+        ("prep.gitlab_dotcom.gitlab_dotcom_approval_project_rules_dedupe_source"),
+        ("approval_project_rules"),
+    ],
+)
+def test_short_sql(expected):
+    """
+    Test test_short_sql
+    """
+    input_metrics = {"test_short": 'SELECT COUNT(*) FROM "approval_project_rules"'}
+
+    actual = transform(json_data=input_metrics)
+
+    assert expected in actual["test_short"]

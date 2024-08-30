@@ -458,7 +458,8 @@ WITH filtered_source as (
       events_with_flattened_context.input_tokens,
       events_with_flattened_context.output_tokens,
       events_with_flattened_context.context_tokens_sent,
-      events_with_flattened_context.context_tokens_used
+      events_with_flattened_context.context_tokens_used,
+      events_with_flattened_context.debounce_interval
 
     FROM base
     LEFT JOIN events_with_flattened_context

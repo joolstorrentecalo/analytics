@@ -168,6 +168,7 @@ suggestion_level AS (
     requested.content_below_cursor_size_bytes,
     requested.context_items,
     requested.context_items_count,
+    requested.debounce_interval,
 
     --Fields that are not available on requested event. If not limited to a single possible event type, default to loaded event, fall back to others to maximize coverage
     accepted.accepted_option,
@@ -265,6 +266,6 @@ suggestion_level AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-08-06"
+    updated_date="2024-08-23"
 ) }}
 
