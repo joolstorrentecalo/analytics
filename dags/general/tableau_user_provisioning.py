@@ -29,6 +29,8 @@ from kube_secrets import (
     TABLEAU_DEFAULT_WORKBOOK_OWNER,
     SNOWFLAKE_TABLEAU_PASSWORD,
     SNOWFLAKE_TABLEAU_USERNAME,
+    GIT_DATA_TESTS_PRIVATE_KEY,
+    GIT_DATA_TESTS_CONFIG,
 )
 
 # Load the env vars into a dict and set Secrets
@@ -60,9 +62,9 @@ dag = DAG(
 
 # tableau Extract
 tableau_provision_settings_cmd = f"""
-    {clone_tableau_repo_command} &&
-    pwd
-    """
+    {clone_and_setup_extraction_cmd} &&
+    TableauConMan provision-settings --yaml_path='/TableauConMan/analytics/extract/tableau_con_man_config/src/provision_plan.yaml'
+"""
 
 # having both xcom flag flavors since we're in an airflow version where one is being deprecated
 tableau_provision_settings = KubernetesPodOperator(
@@ -95,7 +97,7 @@ tableau_provision_settings = KubernetesPodOperator(
 # tableau Extract
 tableau_provision_users_cmd = f"""
     {clone_tableau_repo_command} &&
-    pwd 
+  --  TableauConMan provision-users --yaml_path='/TableauConMan/analytics/extract/tableau_con_man_config/src/provision_plan.yaml'
 """
 
 # having both xcom flag flavors since we're in an airflow version where one is being deprecated
@@ -121,6 +123,8 @@ tableau_provision_users = KubernetesPodOperator(
         TABLEAU_DEFAULT_WORKBOOK_OWNER,
         SNOWFLAKE_TABLEAU_PASSWORD,
         SNOWFLAKE_TABLEAU_USERNAME,
+        GIT_DATA_TESTS_PRIVATE_KEY,
+        GIT_DATA_TESTS_CONFIG,
     ],
     env_vars=pod_env_vars,
     affinity=get_affinity("extraction"),
