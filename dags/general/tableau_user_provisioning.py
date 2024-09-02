@@ -29,8 +29,8 @@ from kube_secrets import (
     TABLEAU_DEFAULT_WORKBOOK_OWNER,
     SNOWFLAKE_TABLEAU_PASSWORD,
     SNOWFLAKE_TABLEAU_USERNAME,
-    GIT_DATA_TESTS_PRIVATE_KEY,
-    GIT_DATA_TESTS_CONFIG,
+    TABLEAU_CONFIG_SSH_KEY,
+    TABLEAU_CONFIG_SSH_CONFIG,
 )
 
 # Load the env vars into a dict and set Secrets
@@ -85,6 +85,8 @@ tableau_provision_settings = KubernetesPodOperator(
         TABLEAU_API_PUBLIC_TOKEN_SECRET,
         TABLEAU_API_PUBLIC_URL,
         TABLEAU_API_PUBLIC_SITE_NAME,
+        TABLEAU_CONFIG_SSH_KEY,
+        TABLEAU_CONFIG_SSH_CONFIG
     ],
     env_vars=pod_env_vars,
     affinity=get_affinity("extraction"),
@@ -123,8 +125,8 @@ tableau_provision_users = KubernetesPodOperator(
         TABLEAU_DEFAULT_WORKBOOK_OWNER,
         SNOWFLAKE_TABLEAU_PASSWORD,
         SNOWFLAKE_TABLEAU_USERNAME,
-        GIT_DATA_TESTS_PRIVATE_KEY,
-        GIT_DATA_TESTS_CONFIG,
+        TABLEAU_CONFIG_SSH_KEY,
+        TABLEAU_CONFIG_SSH_CONFIG
     ],
     env_vars=pod_env_vars,
     affinity=get_affinity("extraction"),
