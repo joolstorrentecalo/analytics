@@ -372,7 +372,15 @@ dbt_install_deps_and_seed_nosha_cmd = f"""
 # command to exclude models (for test models) in dbt test command
 run_command_test_exclude = "--exclude staging.gitlab_com edm_snapshot"
 
+# git commands
+tableau_config_ssh_key_cmd = """
+    mkdir ~/.ssh/ &&
+    touch ~/.ssh/id_rsa && touch ~/.ssh/config &&
+    echo "$TABLEAU_CONFIG_SSH_KEY" > ~/.ssh/id_rsa && chmod 0400 ~/.ssh/id_rsa &&
+    echo "$TABLEAU_CONFIG_SSH_CONFIG" > ~/.ssh/config"""
+
+
 clone_tableau_repo_command = f"""
-    {data_test_ssh_key_cmd} &&
+    {tableau_config_ssh_key_cmd} &&
     git clone {TABLEAU_CONFIG_REPO}
     """
