@@ -74,6 +74,12 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
                     "created_at": report["attributes"]["created_at"],
                     "bounties": report["relationships"]["bounties"],
                 }
+                # vulnerability_information contains sensitive information, so we need to nullify it
+                for report in reports_df["bounties"]:
+                    for bounty in report["data"]:
+                        bounty["relationships"]["report"]["data"]["attributes"][
+                            "vulnerability_information"
+                        ] = None
                 reports_df = pd.concat(
                     [reports_df, pd.DataFrame([report_data])], ignore_index=True
                 )
