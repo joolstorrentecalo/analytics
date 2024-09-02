@@ -203,13 +203,22 @@ account_rollup_calculations AS (
 final AS (
 
   SELECT
-    rpt_product_usage_health_score.* EXCLUDE (created_by, updated_by, model_created_date, model_updated_date, dbt_updated_at, dbt_created_at, primary_key),
-    COALESCE(account_rollup_calculations.arr_month,rpt_product_usage_health_score.snapshot_month) AS reporting_month,
-    account_rollup_calculations.arr_month,
-    account_rollup_calculations.dim_crm_account_id AS dim_crm_account_id_mart_arr_all,
-    account_rollup_calculations.crm_account_name AS mart_arr_all_account_name,
+    COALESCE(account_rollup_calculations.arr_month, rpt_product_usage_health_score.snapshot_month) AS reporting_month,
+    COALESCE(account_rollup_calculations.dim_crm_account_id, rpt_product_usage_health_score.dim_crm_account_id) AS dim_crm_account_id,
+    COALESCE(account_rollup_calculations.crm_account_name, rpt_product_usage_health_score.crm_account_name) AS crm_account_name,
+    COALESCE(account_rollup_calculations.account_age_months, rpt_product_usage_health_score.account_age_months) AS account_age_months,
+
+    rpt_product_usage_health_score.* EXCLUDE (dim_crm_account_id, snapshot_month, crm_account_name, account_age_months, license_utilization_color, user_engagement_color,
+        scm_color, ci_color, cd_color, security_color, deployment_type, delivery_type, created_by, updated_by, model_created_date, model_updated_date, dbt_updated_at, dbt_created_at, primary_key),
+
+    COALESCE(rpt_product_usage_health_score.license_utilization_color, 'No Data') AS license_utilization_color,
+    COALESCE(rpt_product_usage_health_score.user_engagement_color, 'No Data') AS user_engagement_color,
+    COALESCE(rpt_product_usage_health_score.scm_color, 'No Data') AS scm_color,
+    COALESCE(rpt_product_usage_health_score.ci_color, 'No Data') AS ci_color,
+    COALESCE(rpt_product_usage_health_score.cd_color, 'No Data') AS cd_color,
+    COALESCE(rpt_product_usage_health_score.security_color, 'No Data') AS security_color,
     account_rollup_calculations.fy25_account_rank,
-    account_rollup_calculations.is_fy25_top_100_account,
+    COALESCE(account_rollup_calculations.is_fy25_top_100_account, FALSE) AS is_fy25_top_100_account,
     account_rollup_calculations.total_account_subscription_arr,
     account_rollup_calculations.total_account_base_products_arr,
     account_rollup_calculations.total_account_ultimate_arr,
@@ -242,7 +251,7 @@ final AS (
           'deployment_type',
           'dim_installation_id',
           'dim_namespace_id',
-          'account_rollup_calculations.dim_crm_account_id'
+          'COALESCE(account_rollup_calculations.dim_crm_account_id,rpt_product_usage_health_score.dim_crm_account_id)'
         ]
       ) }} AS primary_key
   FROM rpt_product_usage_health_score
@@ -252,12 +261,12 @@ final AS (
 )
 
 SELECT *,
-   LAG(account_level_ci_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_ci_color_previous_month,
-   LAG(account_level_ci_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_ci_color_previous_3_month,
-   LAG(account_level_scm_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_scm_color_previous_month,
-   LAG(account_level_scm_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_scm_color_previous_3_month,
-   LAG(account_level_cd_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_cd_color_previous_month,
-   LAG(account_level_cd_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_cd_color_previous_3_month,
-   LAG(account_level_security_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_security_color_previous_month,
-   LAG(account_level_security_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_security_color_previous_3_month 
+   LAG(account_level_ci_color) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_ci_color_previous_month,
+   LAG(account_level_ci_color, 3) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_ci_color_previous_3_month,
+   LAG(account_level_scm_color) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_scm_color_previous_month,
+   LAG(account_level_scm_color, 3) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_scm_color_previous_3_month,
+   LAG(account_level_cd_color) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_cd_color_previous_month,
+   LAG(account_level_cd_color, 3) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_cd_color_previous_3_month,
+   LAG(account_level_security_color) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_security_color_previous_month,
+   LAG(account_level_security_color, 3) OVER (PARTITION BY dim_crm_account_id ORDER BY reporting_month) AS account_level_security_color_previous_3_month 
 FROM final

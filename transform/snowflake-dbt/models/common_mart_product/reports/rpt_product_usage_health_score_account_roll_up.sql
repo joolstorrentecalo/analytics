@@ -9,7 +9,7 @@ WITH final AS (
 
   SELECT DISTINCT
     reporting_month,
-    dim_crm_account_id_mart_arr_all AS dim_crm_account_id,
+    dim_crm_account_id,
     max_ping_created_at,
     account_arr_reporting_usage_data,
     account_ultimate_arr_reporting_usage_data,
