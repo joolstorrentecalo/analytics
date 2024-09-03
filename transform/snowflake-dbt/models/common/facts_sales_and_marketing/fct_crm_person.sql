@@ -243,6 +243,8 @@ WITH account_dims_mapping AS (
         WHEN prep_true_inquiry_date != '9999-01-01'
         THEN prep_true_inquiry_date
       END                                                                                                       AS true_inquiry_date,
+      {{ get_date_id('true_inquiry_date') }}                                                                    AS true_inquiry_date_id,
+      {{ get_date_pt_id('true_inquiry_date') }}                                                                 AS true_inquiry_date_pt_id,
       mqls.first_mql_date::DATE                                                                                 AS mql_date_first,
       mqls.first_mql_date                                                                                       AS mql_datetime_first,
       CONVERT_TIMEZONE('America/Los_Angeles', mqls.first_mql_date)                                              AS mql_datetime_first_pt,
@@ -476,5 +478,5 @@ WITH account_dims_mapping AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-12-01",
-    updated_date="2024-07-31"
+    updated_date="2024-09-03"
 ) }}
