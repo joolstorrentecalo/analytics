@@ -415,7 +415,7 @@
     FROM mart_crm_attribution_touchpoint
     LEFT JOIN mart_crm_person
       ON mart_crm_attribution_touchpoint.dim_crm_person_id = mart_crm_person.dim_crm_person_id
-    LEFT JOIN mart_crm_opportunity opp
+    LEFT JOIN mart_crm_opportunity
       ON mart_crm_attribution_touchpoint.dim_crm_opportunity_id=mart_crm_opportunity.dim_crm_opportunity_id
     LEFT JOIN map_alternative_lead_demographics
       ON mart_crm_person.dim_crm_person_id=map_alternative_lead_demographics.dim_crm_person_id
