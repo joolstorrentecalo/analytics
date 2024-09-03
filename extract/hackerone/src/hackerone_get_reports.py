@@ -92,23 +92,12 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
             error(f"Error getting reports: {response.status_code}")
             sys.exit(1)
     # vulnerability_information contains sensitive information, so we need to nullify it
+    info("Nullifying vulnerability_information")
     for report in reports_df["bounties"]:
         for bounty in report["data"]:
-            print("vuln_infor before...")
-            print(
-                bounty["relationships"]["report"]["data"]["attributes"][
-                    "vulnerability_information"
-                ]
-            )
             bounty["relationships"]["report"]["data"]["attributes"][
                 "vulnerability_information"
             ] = None
-            print("vuln_infor after...")
-            print(
-                bounty["relationships"]["report"]["data"]["attributes"][
-                    "vulnerability_information"
-                ]
-            )
     return reports_df
 
 
