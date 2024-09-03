@@ -1,6 +1,6 @@
 {{ simple_cte([
-    ('person_base','mart_crm_person'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist', 'mart_crm_opportunity_stamped_hierarchy_hist'), 
+    ('mart_crm_person','mart_crm_person'),
+    ('mart_crm_opportunity', 'mart_crm_opportunity'), 
     ('mart_crm_touchpoint', 'mart_crm_touchpoint'),
     ('map_alternative_lead_demographics','map_alternative_lead_demographics'),
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
@@ -13,53 +13,53 @@
     ('sfdc_contact_history', 'sfdc_contact_history_source')
 ]) }}
 
-, person_base_with_tp AS (
+, mart_crm_person_with_tp AS (
 
     SELECT
   --IDs
       mart_crm_touchpoint.dim_crm_person_id,
       mart_crm_touchpoint.dim_crm_account_id,
       dim_crm_account.dim_parent_crm_account_id,
-      person_base.dim_crm_user_id,
-      person_base.crm_partner_id,
-      person_base.partner_prospect_id,
-      person_base.sfdc_record_id,
+      mart_crm_person.dim_crm_user_id,
+      mart_crm_person.crm_partner_id,
+      mart_crm_person.partner_prospect_id,
+      mart_crm_person.sfdc_record_id,
       mart_crm_touchpoint.dim_crm_touchpoint_id,
       mart_crm_touchpoint.dim_campaign_id,
 
   
   --Person Data
-      person_base.email_hash,
-      person_base.email_domain,
-      person_base.was_converted_lead,
-      person_base.email_domain_type,
-      person_base.is_valuable_signup,
-      person_base.status AS crm_person_status,
-      person_base.lead_source,
-      person_base.source_buckets,
-      person_base.is_mql,
-      person_base.is_inquiry,
-      person_base.is_lead_source_trial,
-      person_base.account_demographics_sales_segment_grouped,
-      person_base.account_demographics_sales_segment,
-      person_base.account_demographics_segment_region_grouped,
-      person_base.zoominfo_company_employee_count,
-      person_base.account_demographics_region,
-      person_base.account_demographics_geo,
-      person_base.account_demographics_area,
-      person_base.account_demographics_upa_country,
-      person_base.account_demographics_territory,
-      person_base.person_first_country,
-      person_base.partner_prospect_status,
-      person_base.prospect_share_status,
+      mart_crm_person.email_hash,
+      mart_crm_person.email_domain,
+      mart_crm_person.was_converted_lead,
+      mart_crm_person.email_domain_type,
+      mart_crm_person.is_valuable_signup,
+      mart_crm_person.status AS crm_person_status,
+      mart_crm_person.lead_source,
+      mart_crm_person.source_buckets,
+      mart_crm_person.is_mql,
+      mart_crm_person.is_inquiry,
+      mart_crm_person.is_lead_source_trial,
+      mart_crm_person.account_demographics_sales_segment_grouped,
+      mart_crm_person.account_demographics_sales_segment,
+      mart_crm_person.account_demographics_segment_region_grouped,
+      mart_crm_person.zoominfo_company_employee_count,
+      mart_crm_person.account_demographics_region,
+      mart_crm_person.account_demographics_geo,
+      mart_crm_person.account_demographics_area,
+      mart_crm_person.account_demographics_upa_country,
+      mart_crm_person.account_demographics_territory,
+      mart_crm_person.person_first_country,
+      mart_crm_person.partner_prospect_status,
+      mart_crm_person.prospect_share_status,
       dim_crm_account.is_first_order_available,
-      person_base.sales_segment_name AS person_sales_segment_name,
-      person_base.sales_segment_grouped AS person_sales_segment_grouped,
-      person_base.person_score,
-      person_base.behavior_score,
-      person_base.employee_bucket,
-      person_base.leandata_matched_account_sales_Segment,
-      person_base.sfdc_record_type,
+      mart_crm_person.sales_segment_name AS person_sales_segment_name,
+      mart_crm_person.sales_segment_grouped AS person_sales_segment_grouped,
+      mart_crm_person.person_score,
+      mart_crm_person.behavior_score,
+      mart_crm_person.employee_bucket,
+      mart_crm_person.leandata_matched_account_sales_Segment,
+      mart_crm_person.sfdc_record_type,
       map_alternative_lead_demographics.employee_count_segment_custom,
       map_alternative_lead_demographics.employee_bucket_segment_custom,
       COALESCE(map_alternative_lead_demographics.employee_count_segment_custom, 
@@ -67,7 +67,7 @@
       map_alternative_lead_demographics.geo_custom,
       UPPER(map_alternative_lead_demographics.geo_custom) AS inferred_geo,
       CASE
-          WHEN person_base.is_first_order_person = TRUE 
+          WHEN mart_crm_person.is_first_order_person = TRUE 
             THEN '1. New - First Order'
           ELSE '3. Growth'
       END AS person_order_type,
@@ -77,15 +77,15 @@
       is_defaulted_trial,
 
   --Person Dates
-      person_base.true_inquiry_date,
-      person_base.mql_date_latest_pt,
-      person_base.legacy_mql_date_first_pt,
-      person_base.mql_sfdc_date_pt,
-      person_base.mql_date_first_pt,
-      person_base.accepted_date,
-      person_base.accepted_date_pt,
-      person_base.qualifying_date,
-      person_base.qualifying_date_pt,
+      mart_crm_person.true_inquiry_date_pt,
+      mart_crm_person.mql_date_latest_pt,
+      mart_crm_person.legacy_mql_date_first_pt,
+      mart_crm_person.mql_sfdc_date_pt,
+      mart_crm_person.mql_date_first_pt,
+      mart_crm_person.accepted_date,
+      mart_crm_person.accepted_date_pt,
+      mart_crm_person.qualifying_date,
+      mart_crm_person.qualifying_date_pt,
 
   --Touchpoint Data
       'Person Touchpoint' AS touchpoint_type,
@@ -149,13 +149,13 @@
       mart_crm_touchpoint.count_net_new_mql AS new_mql_sum,
       mart_crm_touchpoint.count_net_new_accepted AS new_accepted_sum    
     FROM mart_crm_touchpoint
-    LEFT JOIN person_base 
-      ON mart_crm_touchpoint.dim_crm_person_id = person_base.dim_crm_person_id
-       AND mart_crm_touchpoint.email_hash = person_base.email_hash
+    LEFT JOIN mart_crm_person 
+      ON mart_crm_touchpoint.dim_crm_person_id = mart_crm_person.dim_crm_person_id
+       AND mart_crm_touchpoint.email_hash = mart_crm_person.email_hash
     LEFT JOIN map_alternative_lead_demographics
       ON mart_crm_touchpoint.dim_crm_person_id=map_alternative_lead_demographics.dim_crm_person_id
     LEFT JOIN dim_crm_account
-      ON person_base.dim_crm_account_id=dim_crm_account.dim_crm_account_id
+      ON mart_crm_person.dim_crm_account_id=dim_crm_account.dim_crm_account_id
 
   ), opp_base_with_batp AS (
     
@@ -266,39 +266,39 @@
       opp.resale_partner_name,
 
     --Person Data
-      person_base.dim_crm_person_id,
-      person_base.dim_crm_user_id,
-      person_base.crm_partner_id,
-      person_base.sfdc_record_id,
-      person_base.email_hash,
-      person_base.email_domain,
-      person_base.was_converted_lead,
-      person_base.email_domain_type,
-      person_base.is_valuable_signup,
-      person_base.status AS crm_person_status,
-      person_base.lead_source,
-      person_base.source_buckets,
-      person_base.is_mql,
-      person_base.is_inquiry,
-      person_base.is_lead_source_trial,
-      person_base.account_demographics_sales_segment_grouped,
-      person_base.account_demographics_sales_segment,
-      person_base.account_demographics_segment_region_grouped,
-      person_base.zoominfo_company_employee_count,
-      person_base.account_demographics_region,
-      person_base.account_demographics_geo,
-      person_base.account_demographics_area,
-      person_base.account_demographics_upa_country,
-      person_base.account_demographics_territory,
-      person_base.person_first_country,
+      mart_crm_person.dim_crm_person_id,
+      mart_crm_person.dim_crm_user_id,
+      mart_crm_person.crm_partner_id,
+      mart_crm_person.sfdc_record_id,
+      mart_crm_person.email_hash,
+      mart_crm_person.email_domain,
+      mart_crm_person.was_converted_lead,
+      mart_crm_person.email_domain_type,
+      mart_crm_person.is_valuable_signup,
+      mart_crm_person.status AS crm_person_status,
+      mart_crm_person.lead_source,
+      mart_crm_person.source_buckets,
+      mart_crm_person.is_mql,
+      mart_crm_person.is_inquiry,
+      mart_crm_person.is_lead_source_trial,
+      mart_crm_person.account_demographics_sales_segment_grouped,
+      mart_crm_person.account_demographics_sales_segment,
+      mart_crm_person.account_demographics_segment_region_grouped,
+      mart_crm_person.zoominfo_company_employee_count,
+      mart_crm_person.account_demographics_region,
+      mart_crm_person.account_demographics_geo,
+      mart_crm_person.account_demographics_area,
+      mart_crm_person.account_demographics_upa_country,
+      mart_crm_person.account_demographics_territory,
+      mart_crm_person.person_first_country,
       dim_crm_account.is_first_order_available,
-      person_base.sales_segment_name AS person_sales_segment_name,
-      person_base.sales_segment_grouped AS person_sales_segment_grouped,
-      person_base.person_score,
-      person_base.behavior_score,
-      person_base.employee_bucket,
-      person_base.leandata_matched_account_sales_Segment,
-      person_base.sfdc_record_type,
+      mart_crm_person.sales_segment_name AS person_sales_segment_name,
+      mart_crm_person.sales_segment_grouped AS person_sales_segment_grouped,
+      mart_crm_person.person_score,
+      mart_crm_person.behavior_score,
+      mart_crm_person.employee_bucket,
+      mart_crm_person.leandata_matched_account_sales_Segment,
+      mart_crm_person.sfdc_record_type,
       map_alternative_lead_demographics.employee_count_segment_custom,
       map_alternative_lead_demographics.employee_bucket_segment_custom,
       COALESCE(map_alternative_lead_demographics.employee_count_segment_custom, 
@@ -306,27 +306,27 @@
       map_alternative_lead_demographics.geo_custom,
       UPPER(map_alternative_lead_demographics.geo_custom) AS inferred_geo,
       CASE
-          WHEN person_base.is_first_order_person = TRUE 
+          WHEN mart_crm_person.is_first_order_person = TRUE 
             THEN '1. New - First Order'
           ELSE '3. Growth'
       END AS person_order_type,
       last_utm_campaign,
       last_utm_content,
-      person_base.prospect_share_status,
-      person_base.partner_prospect_status,
-      person_base.lead_score_classification,
-      person_base.is_defaulted_trial,
+      mart_crm_person.prospect_share_status,
+      mart_crm_person.partner_prospect_status,
+      mart_crm_person.lead_score_classification,
+      mart_crm_person.is_defaulted_trial,
 
   --Person Dates
-      person_base.true_inquiry_date,
-      person_base.mql_date_latest_pt,
-      person_base.legacy_mql_date_first_pt,
-      person_base.mql_sfdc_date_pt,
-      person_base.mql_date_first_pt,
-      person_base.accepted_date,
-      person_base.accepted_date_pt,
-      person_base.qualifying_date,
-      person_base.qualifying_date_pt,
+      mart_crm_person.true_inquiry_date_pt,
+      mart_crm_person.mql_date_latest_pt,
+      mart_crm_person.legacy_mql_date_first_pt,
+      mart_crm_person.mql_sfdc_date_pt,
+      mart_crm_person.mql_date_first_pt,
+      mart_crm_person.accepted_date,
+      mart_crm_person.accepted_date_pt,
+      mart_crm_person.qualifying_date,
+      mart_crm_person.qualifying_date_pt,
     
     -- Touchpoint Data
       'Attribution Touchpoint' AS touchpoint_type,
@@ -413,12 +413,12 @@
       END AS won_custom_net_arr
 
     FROM mart_crm_attribution_touchpoint
-    LEFT JOIN person_base
-      ON mart_crm_attribution_touchpoint.dim_crm_person_id = person_base.dim_crm_person_id
-    LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist opp
+    LEFT JOIN mart_crm_person
+      ON mart_crm_attribution_touchpoint.dim_crm_person_id = mart_crm_person.dim_crm_person_id
+    LEFT JOIN mart_crm_opportunity opp
       ON mart_crm_attribution_touchpoint.dim_crm_opportunity_id=opp.dim_crm_opportunity_id
     LEFT JOIN map_alternative_lead_demographics
-      ON person_base.dim_crm_person_id=map_alternative_lead_demographics.dim_crm_person_id
+      ON mart_crm_person.dim_crm_person_id=map_alternative_lead_demographics.dim_crm_person_id
     LEFT JOIN dim_crm_account
       ON opp.dim_crm_account_id=dim_crm_account.dim_crm_account_id
     LEFT JOIN dim_crm_account partner_account
@@ -491,7 +491,7 @@
       is_defaulted_trial,
 
   --Person Dates
-      true_inquiry_date,
+      true_inquiry_date_pt,
       mql_date_latest_pt,
       legacy_mql_date_first_pt,
       mql_sfdc_date_pt,
@@ -656,7 +656,7 @@
       0 AS pipeline_custom_net_arr,
       0 AS won_custom,
       0 AS won_custom_net_arr
-  FROM person_base_with_tp
+  FROM mart_crm_person_with_tp
   
   UNION ALL
   
@@ -724,7 +724,7 @@
       is_defaulted_trial,
     
     --Person Dates
-      true_inquiry_date,
+      true_inquiry_date_pt,
       mql_date_latest_pt,
       legacy_mql_date_first_pt,
       mql_sfdc_date_pt,
@@ -1093,7 +1093,7 @@
     ON cohort_base_combined.dim_crm_touchpoint_id = person_history_final.dim_crm_touchpoint_id 
     AND cohort_base_combined.sfdc_record_id = person_history_final.sfdc_record_id
   LEFT JOIN dim_date inquiry_date
-    ON cohort_base_combined.true_inquiry_date = inquiry_date.date_day
+    ON cohort_base_combined.true_inquiry_date_pt = inquiry_date.date_day
   LEFT JOIN dim_date mql_date
     ON cohort_base_combined.mql_date_latest_pt = mql_date.date_day
   LEFT JOIN dim_date opp_create_date

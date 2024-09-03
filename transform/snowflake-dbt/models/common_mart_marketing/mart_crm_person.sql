@@ -32,6 +32,8 @@
       mql_date_first.first_day_of_month        AS mql_month_first,
       mql_date_first_pt.first_day_of_month     AS mql_month_first_pt,
       mql_date_latest.date_day                 AS mql_date_latest,
+      mql_date_latest_pt.fiscal_quarter_name_fy
+                                               AS mql_fiscal_quarter_name_fy,
       initial_mql_date_first_pt.date_day       AS initial_mql_date_first_pt,
       initial_mql_date_first.first_day_of_month
                                                AS initial_mql_month_first,
@@ -71,7 +73,12 @@
       contact_created_date.first_day_of_month  AS contact_created_month,
       contact_created_date_pt.first_day_of_month
                                                AS contact_created_month_pt,
-      fct_crm_person.true_inquiry_date         AS true_inquiry_date,
+      true_inquiry_date.date_day               AS true_inquiry_date,
+      true_inquiry_date_pt.date_day            AS true_inquiry_date_pt,
+      true_inquiry_date.first_day_of_month     AS true_inquiry_month,
+      true_inquiry_date_pt.first_day_of_month  AS true_inquiry_month_pt,
+      true_inquiry_date_pt.fiscal_quarter_name_fy
+                                               AS true_inquiry_fiscal_quarter_name_fy,
       inquiry_date.date_day                    AS inquiry_date,
       inquiry_date_pt.date_day                 AS inquiry_date_pt,
       inquiry_date.first_day_of_month          AS inquiry_month,
@@ -277,6 +284,10 @@
       ON fct_crm_person.contact_created_date_id = contact_created_date.date_id
     LEFT JOIN dim_date AS contact_created_date_pt
       ON fct_crm_person.contact_created_date_pt_id = contact_created_date_pt.date_id
+    LEFT JOIN dim_date AS true_inquiry_date
+      ON fct_crm_person.true_inquiry_date_id = true_inquiry_date.date_id
+    LEFT JOIN dim_date AS true_inquiry_date_pt
+      ON fct_crm_person.true_inquiry_date_pt_id = true_inquiry_date_pt.date_id
     LEFT JOIN dim_date AS inquiry_date
       ON fct_crm_person.inquiry_date_id = inquiry_date.date_id
     LEFT JOIN dim_date AS inquiry_date_pt
@@ -353,5 +364,5 @@
     created_by="@iweeks",
     updated_by="@rkohnke",
     created_date="2020-12-07",
-    updated_date="2024-07-31",
+    updated_date="2024-09-03",
   ) }}  

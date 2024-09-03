@@ -51,7 +51,7 @@
         opp_account_demographics_geo,
         opp_account_demographics_territory,
         opp_account_demographics_area,
-        true_inquiry_date,
+        true_inquiry_date_pt,
         mql_date_latest_pt,
         opp_created_date,
         sales_accepted_date,
@@ -104,14 +104,14 @@
         opp_account_demographics_geo,
         opp_account_demographics_territory,
         opp_account_demographics_area,
-        true_inquiry_date,
+        true_inquiry_date_pt,
         mql_date_latest_pt,
         opp_created_date,
         sales_accepted_date,
         close_date,
         CASE
-            WHEN true_inquiry_date IS NOT NULL AND mql_date_latest_pt IS NOT NULL
-                THEN SUM(mql_date_latest_pt - true_inquiry_date)
+            WHEN true_inquiry_date_pt IS NOT NULL AND mql_date_latest_pt IS NOT NULL
+                THEN SUM(mql_date_latest_pt - true_inquiry_date_pt)
             ELSE NULL
         END AS inquiry_to_mql_days,
         CASE
@@ -144,5 +144,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2024-06-20",
-    updated_date="2024-07-24",
+    updated_date="2024-09-03",
 ) }}

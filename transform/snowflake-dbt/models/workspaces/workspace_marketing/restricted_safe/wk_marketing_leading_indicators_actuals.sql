@@ -24,7 +24,7 @@
         mql_sum,
 
     --Person Dates
-        true_inquiry_date,
+        true_inquiry_date_pt,
         mql_date_first_pt,
         mql_date_latest_pt,
 
@@ -51,9 +51,9 @@
         is_sao
     FROM rpt_lead_to_revenue
     WHERE (account_demographics_geo != 'JIHU'
-     OR account_demographics_geo IS null) 
+     OR account_demographics_geo IS NULL) 
      AND (report_geo != 'JIHU'
-     OR report_geo IS null)
+     OR report_geo IS NULL)
 
 ), date_base AS (
 
@@ -69,11 +69,11 @@
 
     SELECT
         date_base.*,
-        true_inquiry_date,
+        true_inquiry_date_pt,
         CASE 
-            WHEN true_inquiry_date IS NOT null 
+            WHEN true_inquiry_date_pt IS NOT NULL 
                 THEN email_hash
-            ELSE null
+            ELSE NULL
         END AS actual_inquiry,
         email_domain_type,
         person_order_type,
@@ -93,7 +93,7 @@
         ON rpt_lead_to_revenue_base.true_inquiry_date=date_base.date_day    
     WHERE 1=1
     AND (account_demographics_geo != 'JIHU'
-        OR account_demographics_geo IS null)
+        OR account_demographics_geo IS NULL)
 
  ), mql_prep AS (
      
@@ -102,7 +102,7 @@
         is_mql,
         CASE 
         WHEN is_mql = true THEN email_hash
-        ELSE null
+        ELSE NULL
         END AS mqls,
         email_domain_type,
         person_order_type,
@@ -122,7 +122,7 @@
     ON rpt_lead_to_revenue_base.mql_date_latest_pt=date_base.date_day
   WHERE 1=1 
    AND (account_demographics_geo != 'JIHU'
-     OR account_demographics_geo IS null) 
+     OR account_demographics_geo IS NULL) 
   
 ), sao_prep AS (
      
@@ -154,7 +154,7 @@
         CASE 
             WHEN is_sao = true 
                 THEN dim_crm_opportunity_id 
-            ELSE null 
+            ELSE NULL 
         END AS saos,
         sales_accepted_date
     FROM rpt_lead_to_revenue_base
@@ -163,7 +163,7 @@
     WHERE 1=1
         AND sales_accepted_date <= CURRENT_DATE
         AND (report_geo != 'JIHU'
-        OR report_geo IS null)
+        OR report_geo IS NULL)
 
 ), inquiries AS (
 
@@ -341,5 +341,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-08-22",
-    updated_date="2023-08-22",
+    updated_date="2023-09-03",
   ) }}
