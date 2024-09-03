@@ -31,13 +31,11 @@ def get_start_and_end_date() -> Tuple[str, str]:
     This function will get the start and end date
     """
     # set start date as yesterdays date time and end data as todays date(start of the day at 00:00:00hrs) , if a full refresh is required then default date will be set
-    print(f"Full refresh is set to {IS_FULL_REFRESH}")
+    info(f"Full refresh is set to {IS_FULL_REFRESH}")
     if IS_FULL_REFRESH:
         start_date = "2020-01-01T00:00:00Z"
-        print(f"start date is set to {start_date}")
     else:
         start_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
-        print(f"start date is set to {start_date}")
     end_date = datetime.now().strftime("%Y-%m-%dT00:0:00Z")
 
     return start_date, end_date
