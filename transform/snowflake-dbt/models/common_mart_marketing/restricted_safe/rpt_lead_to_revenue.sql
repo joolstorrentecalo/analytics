@@ -215,6 +215,7 @@
       mart_crm_opportunity.is_jihu_account,
       mart_crm_opportunity.is_edu_oss,
       mart_crm_opportunity.stage_1_discovery_date,
+      mart_crm_opportunity.stage_3_technical_evaluation_date,
 
       --Account Data
       mart_crm_account.crm_account_name,
@@ -427,7 +428,7 @@
       ON mart_crm_opportunity.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE mart_crm_opportunity.created_date >= '2021-02-01'
       OR mart_crm_opportunity.created_date IS NULL
-    {{dbt_utils.group_by(n=118)}}
+    {{dbt_utils.group_by(n=119)}}
     
 ), cohort_base_combined AS (
   
@@ -544,6 +545,7 @@
       is_jihu_account,
       is_edu_oss,
       stage_1_discovery_date,
+      stage_3_technical_evaluation_date,
 
   --Account Data
       COALESCE(mart_crm_person_with_tp.crm_account_name,opp_base_with_batp.crm_account_name) AS crm_account_name,
@@ -697,6 +699,20 @@
     DATE_TRUNC(month, sao_date.date_actual)  AS sao_date_range_month,
     sao_date.first_day_of_week               AS sao_date_range_week,
     sao_date.date_id                         AS sao_date_range_id,
+
+    --stage_1_date fields
+    stage_1_date.fiscal_year                     AS stage_1_date_range_year,
+    stage_1_date.fiscal_quarter_name_fy          AS stage_1_date_range_quarter,
+    DATE_TRUNC(month, stage_1_date.date_actual)  AS stage_1_date_range_month,
+    stage_1_date.first_day_of_week               AS stage_1_date_range_week,
+    stage_1_date.date_id                         AS stage_1_date_range_id,
+
+    --stage_3_date fields
+    stage_3_date.fiscal_year                     AS stage_3_date_range_year,
+    stage_3_date.fiscal_quarter_name_fy          AS stage_3_date_range_quarter,
+    DATE_TRUNC(month, stage_3_date.date_actual)  AS stage_3_date_range_month,
+    stage_3_date.first_day_of_week               AS stage_3_date_range_week,
+    stage_3_date.date_id                         AS stage_3_date_range_id,
   
     --closed_date fields
     closed_date.fiscal_year                     AS closed_date_range_year,
@@ -720,6 +736,10 @@
     ON cohort_base_combined.opp_created_date = opp_create_date.date_day
   LEFT JOIN dim_date AS sao_date
     ON cohort_base_combined.sales_accepted_date = sao_date.date_day
+  LEFT JOIN dim_date AS stage_1_date
+    ON cohort_base_combined.stage_1_discovery_date = sao_date.date_day
+  LEFT JOIN dim_date AS stage_3_date
+    ON cohort_base_combined.stage_3_technical_evaluation_date = sao_date.date_day
   LEFT JOIN dim_date AS closed_date
     ON cohort_base_combined.close_date = closed_date.date_day
   LEFT JOIN dim_date AS touchpoint_date

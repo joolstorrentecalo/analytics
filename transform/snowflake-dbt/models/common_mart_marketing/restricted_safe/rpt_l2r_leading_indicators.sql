@@ -27,7 +27,7 @@
         is_defaulted_trial,
 
     --Person Dates
-         true_inquiry_date_pt_pt,
+         true_inquiry_date_pt,
         mql_date_first_pt,
         mql_date_latest_pt,
 
@@ -54,7 +54,7 @@
         is_sao
     FROM rpt_lead_to_revenue
     LEFT JOIN dim_date inquiry_date 
-        ON rpt_lead_to_revenue. true_inquiry_date_pt_pt=inquiry_date.date_actual
+        ON rpt_lead_to_revenue. true_inquiry_date_pt=inquiry_date.date_actual
     LEFT JOIN dim_date mql_date 
         ON rpt_lead_to_revenue.mql_date_first_pt=mql_date.date_actual
     LEFT JOIN dim_date sao_date 

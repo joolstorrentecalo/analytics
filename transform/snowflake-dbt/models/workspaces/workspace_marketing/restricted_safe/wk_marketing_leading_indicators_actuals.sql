@@ -90,7 +90,7 @@
         parent_crm_account_lam_dev_count
     FROM rpt_lead_to_revenue_base
     LEFT JOIN date_base
-        ON rpt_lead_to_revenue_base.true_inquiry_date=date_base.date_day    
+        ON rpt_lead_to_revenue_base.true_inquiry_date_pt=date_base.date_day    
     WHERE 1=1
     AND (account_demographics_geo != 'JIHU'
         OR account_demographics_geo IS NULL)
