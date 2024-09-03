@@ -2,10 +2,13 @@
 Test for hackerone_get_reports.py
 """
 
+import os
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 import pandas as pd
+
+os.environ["is_full_refresh"] = "True"
 from hackerone_get_reports import (
     get_start_and_end_date,
     get_reports,

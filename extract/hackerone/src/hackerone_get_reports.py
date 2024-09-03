@@ -36,7 +36,7 @@ def get_start_and_end_date() -> Tuple[str, str]:
         start_date = "2020-01-01T00:00:00Z"
     else:
         start_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
-    end_date = datetime.now().strftime("%Y-%m-%dT00:0:00Z")
+    end_date = datetime.now().strftime("%Y-%m-%dT00:00:00Z")
 
     return start_date, end_date
 
