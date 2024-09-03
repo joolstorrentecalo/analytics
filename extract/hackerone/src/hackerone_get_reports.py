@@ -74,12 +74,6 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
                     "created_at": report["attributes"]["created_at"],
                     "bounties": report["relationships"]["bounties"],
                 }
-                # vulnerability_information contains sensitive information, so we need to nullify it
-                for report in reports_df["bounties"]:
-                    for bounty in report["data"]:
-                        bounty["relationships"]["report"]["data"]["attributes"][
-                            "vulnerability_information"
-                        ] = None
                 reports_df = pd.concat(
                     [reports_df, pd.DataFrame([report_data])], ignore_index=True
                 )
@@ -97,6 +91,12 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
         else:
             error(f"Error getting reports: {response.status_code}")
             sys.exit(1)
+        # vulnerability_information contains sensitive information, so we need to nullify it
+        for report in reports_df["bounties"]:
+            for bounty in report["data"]:
+                bounty["relationships"]["report"]["data"]["attributes"][
+                    "vulnerability_information"
+                ] = None
     return reports_df
 
 
