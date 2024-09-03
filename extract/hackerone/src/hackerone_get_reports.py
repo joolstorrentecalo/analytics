@@ -23,7 +23,7 @@ TIMEOUT = 60
 BASE_URL = "https://api.hackerone.com/v1/"
 HACKERONE_API_USERNAME = config_dict.get("HACKERONE_API_USERNAME")
 HACKERONE_API_TOKEN = config_dict.get("HACKERONE_API_TOKEN")
-IS_FULL_REFRESH = config_dict.get("IS_FULL_REFRESH")
+IS_FULL_REFRESH = config_dict["IS_FULL_REFRESH"]
 
 
 def get_start_and_end_date() -> Tuple[str, str]:
