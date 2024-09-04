@@ -252,8 +252,6 @@
       mart_crm_opportunity.sales_qualified_source_grouped,
       mart_crm_opportunity.crm_account_gtm_strategy,
       mart_crm_opportunity.crm_account_focus_account,
-      mart_crm_opportunity.crm_opp_owner_sales_segment_stamped_grouped,
-      mart_crm_opportunity.crm_opp_owner_sales_segment_region_stamped_grouped,
       mart_crm_opportunity.lead_source AS opp_lead_source,
       mart_crm_opportunity.calculated_deal_count,
       mart_crm_opportunity.days_in_stage,
@@ -423,7 +421,7 @@
       ON mart_crm_opportunity.dim_crm_account_id=dim_crm_account.dim_crm_account_id
     LEFT JOIN dim_crm_account partner_account
       ON mart_crm_opportunity.partner_account=partner_account.dim_crm_account_id
-  {{dbt_utils.group_by(n=203)}}
+  {{dbt_utils.group_by(n=201)}}
     
 ), cohort_base_combined AS (
   
@@ -578,8 +576,6 @@
       NULL AS sales_qualified_source_grouped,
       NULL AS crm_account_gtm_strategy,
       NULL AS crm_account_focus_account,
-      NULL AS crm_opp_owner_sales_segment_stamped_grouped,
-      NULL AS crm_opp_owner_sales_segment_region_stamped_grouped,
       NULL AS opp_lead_source,
       NULL AS calculated_deal_count,
       NULL AS days_in_stage,
@@ -811,8 +807,6 @@
       sales_qualified_source_grouped,
       crm_account_gtm_strategy,
       crm_account_focus_account,
-      crm_opp_owner_sales_segment_stamped_grouped,
-      crm_opp_owner_sales_segment_region_stamped_grouped,
       opp_lead_source,
       calculated_deal_count,
       days_in_stage,
@@ -1120,5 +1114,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-07-05",
-    updated_date="2024-07-24",
+    updated_date="2024-09-04",
   ) }}
