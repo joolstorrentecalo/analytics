@@ -5627,6 +5627,7 @@ roles:
         - zuora
       warehouses:
         - dev_xs
+        - dev_s
       owns:
         databases:
           - usinghal_prep
