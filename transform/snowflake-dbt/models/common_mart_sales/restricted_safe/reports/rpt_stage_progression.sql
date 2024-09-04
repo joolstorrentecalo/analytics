@@ -5,12 +5,12 @@ WITH base AS (
       WHEN stage_name = 'Closed Lost' THEN '8-Closed Lost'
       ELSE stage_name
     END                AS stage_name,
-    arr_created_date   AS created_date,
+    created_date   AS created_date,
     MIN(snapshot_date) AS stage_date
     -- from prod.restricted_safe_common_mart_sales.mart_crm_opportunity_daily_snapshot
   FROM {{ ref('mart_crm_opportunity_daily_snapshot') }}
   WHERE sales_qualified_source_name != 'Web Direct Generated'
-    AND arr_created_date >= '2020-02-01'
+    AND created_date >= '2020-02-01'
     AND sales_type != 'Renewal'
     AND is_web_portal_purchase = FALSE
     AND opportunity_category NOT IN ('Decommission', 'Internal Correction')
