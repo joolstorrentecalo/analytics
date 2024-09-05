@@ -24,12 +24,23 @@ fact AS (
 
   SELECT
     {{ dbt_utils.star(from=ref('fct_event_valid'), except=["CREATED_BY",
-        "UPDATED_BY","CREATED_DATE","UPDATED_DATE","MODEL_CREATED_DATE","MODEL_UPDATED_DATE","DBT_UPDATED_AT","DBT_CREATED_AT"]) }}
+        "UPDATED_BY","CREATED_DATE","UPDATED_DATE","MODEL_CREATED_DATE","MODEL_UPDATED_DATE","DBT_UPDATED_AT","DBT_CREATED_AT",
+        "ultimate_parent_namespace_type",
+        "namespace_is_internal",
+        "namespace_creator_is_blocked",
+        "namespace_created_at",
+        "user_created_at",
+        "project_is_learn_gitlab",
+        "project_is_imported",
+        "event_calendar_month",
+        "event_calendar_quarter",
+        "event_calendar_year",
+        "namespace_created_date"]) }}
   FROM fct_event_valid
   WHERE event_date >= DATEADD('month', -24, DATE_TRUNC('month',CURRENT_DATE))
   {% if is_incremental() %}
 
-      AND event_created_at > (SELECT MAX(event_created_at) FROM {{this}})
+      AND dimensions_checked_at > (SELECT MAX(records_updated_at) FROM {{this}})
 
   {% endif %}
 ), 
@@ -48,7 +59,8 @@ fact_with_dims AS (
     COALESCE(dim_project.is_imported, FALSE) AS project_is_imported,
     dim_date.first_day_of_month AS event_calendar_month,
     dim_date.quarter_name AS event_calendar_quarter,
-    dim_date.year_actual AS event_calendar_year
+    dim_date.year_actual AS event_calendar_year,
+    CURRENT_DATE AS records_updated_at
   FROM fact
   LEFT JOIN dim_namespace
     ON fact.dim_ultimate_parent_namespace_id = dim_namespace.dim_namespace_id
