@@ -42,6 +42,19 @@ def get_start_and_end_date() -> Tuple[str, str]:
     return start_date, end_date
 
 
+def nullify_vulnerability_information(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function will nullify the vulnerability information
+    """
+    info("Nullifying vulnerability_information")
+    for report in df["bounties"]:
+        for bounty in report["data"]:
+            bounty["relationships"]["report"]["data"]["attributes"][
+                "vulnerability_information"
+            ] = None
+    return df
+
+
 def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
     """
     This function will get the reports from hackerone
@@ -93,13 +106,8 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
         else:
             error(f"Error getting reports: {response.status_code}")
             sys.exit(1)
-    # vulnerability_information contains sensitive information, so we need to nullify it
-    info("Nullifying vulnerability_information")
-    for report in reports_df["bounties"]:
-        for bounty in report["data"]:
-            bounty["relationships"]["report"]["data"]["attributes"][
-                "vulnerability_information"
-            ] = None
+
+    reports_df = nullify_vulnerability_information(reports_df)
     return reports_df
 
 
@@ -128,7 +136,6 @@ def main() -> None:
     # set start date and end date
     start_date, end_date = get_start_and_end_date()
     # get reports from endpoint
-    reports_df = pd.DataFrame()
     reports_df = get_reports(start_date, end_date)
     # upload payload to snowflake
     upload_to_snowflake(reports_df)
