@@ -1,10 +1,15 @@
+{{ simple_cte([
+ ('dim_date', 'dim_date'),
+ ('mart_crm_opportunity_daily_snapshot', 'mart_crm_opportunity_daily_snapshot'),
+]) }},
+
 -- This will be a list of only the opps that are eligible open pipeline and closing in the quarter, per quarter.
 with fourth_day_flag AS  (
     SELECT DISTINCT
         DIM_CRM_OPPORTUNITY_ID as starting_opp_id,
         SNAPSHOT_FISCAL_QUARTER_DATE as starting_snapshot_fiscal_quarter_date
-    FROM prod.RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT
-    LEFT JOIN prod.common.DIM_DATE
+    FROM MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT
+    LEFT JOIN DIM_DATE
     ON MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT.SNAPSHOT_DATE = DIM_DATE.DATE_ACTUAL
     WHERE fiscal_year = '2025'-- just fy25
         AND STAGE_NAME NOT IN  ('0-Pending Acceptance', '00-Pre Opportunity', '9-Unqualified', '10-Duplicate') --filters out unqualified open opps
@@ -74,8 +79,8 @@ with fourth_day_flag AS  (
              ('0-Pending Acceptance', '00-Pre Opportunity', '9-Unqualified', '10-Duplicate') THEN TRUE
          END AS in_pipe
         , DAY_OF_FISCAL_QUARTER as snapshot_day_of_fiscal_quarter
-    FROM prod.RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT
-    LEFT JOIN prod.common.DIM_DATE
+    FROM MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT
+    LEFT JOIN DIM_DATE
     ON MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT.SNAPSHOT_DATE = DIM_DATE.DATE_ACTUAL
     WHERE   FISCAL_YEAR = '2025' --FISCAL_QUARTER_NAME_FY = 'FY25-Q1'
     AND (snapshot_date = LAST_DAY_OF_FISCAL_QUARTER -- last day of quarter
