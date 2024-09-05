@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 os.environ["is_full_refresh"] = "True"
+os.environ["execution_date"] = "2022-01-01"
 from hackerone_get_reports import (
     get_start_and_end_date,
     get_reports,
@@ -65,3 +66,22 @@ class TestHackerOneGetReports(unittest.TestCase):
         self.assertEqual(result.iloc[0]["id"], "123")
         self.assertEqual(result.iloc[0]["state"], "triaged")
         self.assertEqual(result.iloc[0]["created_at"], "2023-01-01T00:00:00Z")
+
+    @patch(
+        "hackerone_get_reports.nullify_vulnerability_information",
+        return_value=pd.DataFrame(),
+    )
+    def test_nullify_vulnerability_information(self, return_df):
+        """Check dataframe result"""
+        return_df = pd.DataFrame()
+        return_df["bounties"]["data"][0]["relationships"]["report"]["data"][
+            "attributes"
+        ]["vulnerability_information"] = None
+
+        self.assertIsInstance(return_df, pd.DataFrame)
+        # assert equal vulnerability information
+        self.assertIsNone(
+            return_df.iloc[0]["bounties"]["data"][0]["relationships"]["report"]["data"][
+                "attributes"
+            ]["vulnerability_information"]
+        )
