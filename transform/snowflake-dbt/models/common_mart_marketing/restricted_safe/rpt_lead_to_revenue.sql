@@ -15,7 +15,7 @@
 
 , mart_crm_person_with_tp AS (
 
-    SELECT DISTINCT
+    SELECT
   --IDs
       mart_crm_person.dim_crm_person_id,
       mart_crm_person.dim_crm_account_id,
@@ -668,7 +668,7 @@
 
 ), intermediate AS (
 
-  SELECT DISTINCT
+  SELECT
     {{ dbt_utils.generate_surrogate_key(['cohort_base_combined.dim_crm_person_id','cohort_base_combined.dim_crm_btp_touchpoint_id','cohort_base_combined.dim_crm_batp_touchpoint_id','cohort_base_combined.dim_crm_opportunity_id']) }}
                                                  AS lead_to_revenue_id,
     cohort_base_combined.*,
@@ -749,7 +749,7 @@
 
 ), final AS (
 
-    SELECT DISTINCT *
+    SELECT *
     FROM intermediate
 
 )
@@ -759,5 +759,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-09-03",
+    updated_date="2024-09-05",
   ) }}
