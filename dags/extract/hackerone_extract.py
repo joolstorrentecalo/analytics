@@ -87,6 +87,7 @@ hackerone_task = KubernetesPodOperator(
     env_vars={
         **pod_env_vars,
         "is_full_refresh": "{{params.is_full_refresh}}",
+        "execution_date": "{{execution_date}}",
     },
     affinity=get_affinity("extraction"),
     tolerations=get_toleration("extraction"),
