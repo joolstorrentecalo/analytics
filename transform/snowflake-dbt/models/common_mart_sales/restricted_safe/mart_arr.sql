@@ -194,7 +194,17 @@ WITH dim_billing_account AS (
       CASE
         WHEN arr > 5000 THEN 'ARR > $5K'
         WHEN arr <= 5000 THEN 'ARR <= $5K'
-      END                                        AS arr_band_calc
+      END                                        AS arr_band_calc,
+      arr_band_calc                              AS customer_band_level_1
+
+      CASE
+        WHEN arr <=5000 THEN '<=$5k'
+        WHEN arr >5000 and arr <=100000 THEN '$5k-$100K'
+        WHEN arr >100000 and arr <=1000000 THEN '$100K-$1M'
+        ELSE '>$1M'
+      END                                        AS customer_band_level_2
+END
+
     FROM parent_arr
 
 ), final_table AS (
