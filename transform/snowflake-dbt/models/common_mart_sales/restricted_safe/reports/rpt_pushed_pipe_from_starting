@@ -13,7 +13,7 @@ with fourth_day_flag AS  (
     ON MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT.SNAPSHOT_DATE = DIM_DATE.DATE_ACTUAL
     WHERE fiscal_year = '2025'-- just fy25
         AND STAGE_NAME NOT IN  ('0-Pending Acceptance', '00-Pre Opportunity', '9-Unqualified', '10-Duplicate') --filters out unqualified open opps
-        AND (IS_OPEN = TRUE OR CLOSE_DATE = DATEADD('day',4,SNAPSHOT_FISCAL_QUARTER_DATE)) -- is open, or closed day 4
+        AND (IS_OPEN = TRUE OR DAY_OF_FISCAL_QUARTER_NORMALISED = 4) -- is open, or closed day 4
             AND IS_ELIGIBLE_OPEN_PIPELINE = TRUE                           -- is eligible open pipe
             AND SNAPSHOT_FISCAL_QUARTER_DATE = CLOSE_FISCAL_QUARTER_DATE    --is closing this snapshot quarter on day 4
             AND close_fiscal_quarter_date IS NOT NULL                       -- has a close date
@@ -84,7 +84,7 @@ with fourth_day_flag AS  (
     ON MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT.SNAPSHOT_DATE = DIM_DATE.DATE_ACTUAL
     WHERE   FISCAL_YEAR = '2025' --FISCAL_QUARTER_NAME_FY = 'FY25-Q1'
     AND (snapshot_date = LAST_DAY_OF_FISCAL_QUARTER -- last day of quarter
-    OR SNAPSHOT_DATE = DATEADD('day',4,SNAPSHOT_FISCAL_QUARTER_DATE)   -- fourth day of quarter
+    OR DAY_OF_FISCAL_QUARTER_NORMALISED = 4   -- fourth day of quarter
     OR (snapshot_day_of_fiscal_quarter % 5 = 0) )   -- 5th day
     )
 
