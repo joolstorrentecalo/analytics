@@ -52,11 +52,11 @@ with fourth_day_flag AS  (
         , ORDER_TYPE_GROUPED
         , stage_name
         , DEAL_PATH_NAME
-         , product_category
+        , product_category
         , LAST_DAY_OF_FISCAL_QUARTER
-         , REPORT_ROLE_LEVEL_1
-         , REPORT_ROLE_LEVEL_2
-    ,      CASE
+        , REPORT_ROLE_LEVEL_1
+        , REPORT_ROLE_LEVEL_2
+        , CASE
                 WHEN report_role_level_2 IS NULL
                     THEN report_role_level_1
                 ELSE report_role_level_2
@@ -84,7 +84,7 @@ with fourth_day_flag AS  (
     ON MART_CRM_OPPORTUNITY_DAILY_SNAPSHOT.SNAPSHOT_DATE = DIM_DATE.DATE_ACTUAL
     WHERE   FISCAL_YEAR = '2025' --FISCAL_QUARTER_NAME_FY = 'FY25-Q1'
     AND (snapshot_date = LAST_DAY_OF_FISCAL_QUARTER -- last day of quarter
-    OR SNAPSHOT_DATE = DATEADD('day',4,SNAPSHOT_FISCAL_QUARTER_DATE)   --)-- fourth day of quarter)
+    OR SNAPSHOT_DATE = DATEADD('day',4,SNAPSHOT_FISCAL_QUARTER_DATE)   -- fourth day of quarter
     OR (snapshot_day_of_fiscal_quarter % 5 = 0) )   -- 5th day
     )
 
