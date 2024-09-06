@@ -8,32 +8,33 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 import pandas as pd
 
-os.environ["execution_date"] = "2022-01-01"
+os.environ["is_full_refresh"] = "False"
+os.environ["date_interval_start"] = "2022-01-01T08:00:00Z"
+os.environ["date_interval_end"] = "2022-01-02T08:00:00Z"
 from hackerone_get_reports import (
     get_start_and_end_date,
     get_reports,
 )
 
-
 class TestHackerOneGetReports(unittest.TestCase):
     """Test Class for hackerone_get_reports.py"""
 
-    @patch("hackerone_get_reports.IS_FULL_REFRESH", False)
+    @patch("hackerone_get_reports.is_full_refresh", "False")
     def test_get_start_and_end_date_not_full_refresh(self):
-        """Test get_start_and_end_date() when IS_FULL_REFRESH is False"""
+        """Test get_start_and_end_date() when is_full_refresh is False"""
         start_date, end_date = get_start_and_end_date()
-        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
-        today = datetime.now().strftime("%Y-%m-%dT00:00:00Z")
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT08:00:00Z")
+        today = datetime.now().strftime("%Y-%m-%dT08:00:00Z")
         self.assertEqual(start_date, yesterday)
         self.assertEqual(end_date, today)
 
-    @patch("hackerone_get_reports.IS_FULL_REFRESH", True)
+    @patch("hackerone_get_reports.is_full_refresh", "True")
     def test_get_start_and_end_date_full_refresh(self):
-        """Test get_start_and_end_date() when IS_FULL_REFRESH is True"""
+        """Test get_start_and_end_date() when is_full_refresh is True"""
         start_date, end_date = get_start_and_end_date()
-        self.assertEqual(start_date, "2020-01-01T00:00:00Z")
+        self.assertEqual(start_date, "2020-01-01T08:00:00Z")
         self.assertTrue(
-            end_date.startswith(datetime.now().strftime("%Y-%m-%dT00:00:00Z"))
+            end_date.startswith(datetime.now().strftime("%Y-%m-%dT08:00:00Z"))
         )
 
     @patch("hackerone_get_reports.requests.get")

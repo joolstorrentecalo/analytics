@@ -23,7 +23,7 @@ TIMEOUT = 60
 BASE_URL = "https://api.hackerone.com/v1/"
 HACKERONE_API_USERNAME = config_dict.get("HACKERONE_API_USERNAME")
 HACKERONE_API_TOKEN = config_dict.get("HACKERONE_API_TOKEN")
-IS_FULL_REFRESH = bool(config_dict["is_full_refresh"])
+is_full_refresh = os.environ["is_full_refresh"]
 
 
 def get_start_and_end_date() -> Tuple[str, str]:
@@ -31,14 +31,15 @@ def get_start_and_end_date() -> Tuple[str, str]:
     This function will get the start and end date
     """
     # set start date as yesterdays date time and end data as todays date(start of the day at 00:00:00hrs) , if a full refresh is required then default date will be set
-    info(f"Full refresh is set to : {IS_FULL_REFRESH}")
-    info(f"data_start is set to : {os.environ['data_interval_start']}")
-    info(f"data_end is set to : {os.environ['data_interval_end']}")
-    if IS_FULL_REFRESH:
+    info(f"Full refresh is set to : {is_full_refresh}")
+    
+    if is_full_refresh.lower() == "true":
         start_date = "2020-01-01T00:00:00Z"
     else:
-        start_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
-    end_date = os.environ["data_interval_end"]
+        data_interval_start = os.environ["data_interval_start"]
+        start_date = datetime.strptime(data_interval_start, "%Y-%m-%dT%H:%M:%SZ")
+    data_interval_end = os.environ["data_interval_end"]
+    end_date = datetime.strptime(data_interval_end, "%Y-%m-%dT%H:%M:%SZ")
 
     return start_date, end_date
 
