@@ -305,6 +305,7 @@ WITH account_dims_mapping AS (
       {{ get_date_id('qualified_date') }}                                                                       AS qualified_date_id,
       {{ get_date_pt_id('qualified_date') }}                                                                    AS qualified_date_pt_id,
       COALESCE(sfdc_contacts.initial_recycle_datetime, sfdc_leads.initial_recycle_datetime)::DATE               AS initial_recycle_date,
+      COALESCE(sfdc_contacts.initial_recycle_datetime, sfdc_leads.initial_recycle_datetime)                     AS initial_recycle_datetime,
       {{ get_date_id('initial_recycle_date') }}                                                                 AS initial_recycle_date_id,
       {{ get_date_pt_id('initial_recycle_date') }}                                                              AS initial_recycle_date_pt_id,
       COALESCE(sfdc_contacts.most_recent_recycle_datetime, sfdc_leads.most_recent_recycle_datetime)::DATE       AS most_recent_recycle_date,
@@ -478,5 +479,5 @@ WITH account_dims_mapping AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2020-12-01",
-    updated_date="2024-09-03"
+    updated_date="2024-09-06"
 ) }}
