@@ -16,6 +16,7 @@ from hackerone_get_reports import (
     get_reports,
 )
 
+
 class TestHackerOneGetReports(unittest.TestCase):
     """Test Class for hackerone_get_reports.py"""
 
