@@ -84,11 +84,7 @@ hackerone_task = KubernetesPodOperator(
         HACKERONE_API_USERNAME,
         HACKERONE_API_TOKEN,
     ],
-    env_vars={
-        **pod_env_vars,
-        "is_full_refresh": "{{params.is_full_refresh}}",
-        "execution_date": "{{execution_date}}",
-    },
+    env_vars={**pod_env_vars, "is_full_refresh": "{{params.is_full_refresh}}"},
     affinity=get_affinity("extraction"),
     tolerations=get_toleration("extraction"),
     arguments=[hackerone_extract_command],

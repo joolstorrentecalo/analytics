@@ -35,7 +35,6 @@ def get_start_and_end_date() -> Tuple[str, str]:
     if IS_FULL_REFRESH:
         start_date = "2020-01-01T00:00:00Z"
     else:
-        info(f"execution date: {os.environ['execution_date']}")
         start_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
     end_date = datetime.now().strftime("%Y-%m-%dT00:00:00Z")
 

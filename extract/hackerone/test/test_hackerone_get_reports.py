@@ -8,7 +8,6 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 import pandas as pd
 
-os.environ["is_full_refresh"] = "True"
 os.environ["execution_date"] = "2022-01-01"
 from hackerone_get_reports import (
     get_start_and_end_date,
