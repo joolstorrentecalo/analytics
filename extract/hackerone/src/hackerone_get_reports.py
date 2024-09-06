@@ -32,6 +32,8 @@ def get_start_and_end_date() -> Tuple[str, str]:
     """
     # set start date as yesterdays date time and end data as todays date(start of the day at 00:00:00hrs) , if a full refresh is required then default date will be set
     info(f"Full refresh is set to {IS_FULL_REFRESH}")
+    info(f"type of IS_FULL_REFRESH is {type(IS_FULL_REFRESH)}")
+    info(f"execution date is {os.environ['execution_date']}")
     if IS_FULL_REFRESH:
         start_date = "2020-01-01T00:00:00Z"
     else:
