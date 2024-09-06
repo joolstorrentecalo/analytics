@@ -37,9 +37,14 @@ def get_start_and_end_date() -> Tuple[str, str]:
         start_date = "2020-01-01T00:00:00Z"
     else:
         data_interval_start = os.environ["data_interval_start"]
-        start_date = datetime.strptime(data_interval_start, "%Y-%m-%dT%H:%M:%SZ")
+        # convert data_interval_start "%Y-%m-%dT%H:%M:%SZ"
+        start_date = datetime.strptime(
+            data_interval_start, "%Y-%m-%dT%H:%M:%S%z"
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
     data_interval_end = os.environ["data_interval_end"]
-    end_date = datetime.strptime(data_interval_end, "%Y-%m-%dT%H:%M:%SZ")
+    end_date = datetime.strptime(data_interval_end, "%Y-%m-%dT%H:%M:%S%z").strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
 
     return start_date, end_date
 
