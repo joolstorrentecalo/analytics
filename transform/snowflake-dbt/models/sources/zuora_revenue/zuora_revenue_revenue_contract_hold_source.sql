@@ -6,7 +6,7 @@ WITH zuora_revenue_revenue_contract_hold AS (
 
     SELECT *
     FROM {{source('zuora_revenue','zuora_revenue_revenue_contract_hold')}}
-    QUALIFY RANK() OVER (PARTITION BY rc_hold_id ORDER BY incr_updt_dt DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY rc_hold_id ORDER BY incr_updt_dt DESC) = 1
 
 ), renamed AS (
 

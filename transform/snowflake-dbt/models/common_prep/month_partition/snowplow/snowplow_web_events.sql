@@ -44,6 +44,7 @@ WITH all_events AS (
 
       ev.page_title,
 
+      ev.page_url,
       ev.page_urlscheme,
       ev.page_urlhost,
       ev.page_urlport,

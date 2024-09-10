@@ -2,11 +2,11 @@
 Run each class (which requests from its respective endpoint) from the command line
 """
 
-import os
 import logging
+import os
 from typing import Type
 
-import fire
+import click
 import thought_industries_api
 
 
@@ -48,9 +48,14 @@ def calculate_epoch():
     return epoch_start_ms, epoch_end_ms
 
 
-def main(class_name_to_run: str):
-    """dynamically create class, then call its fetch_and_upload_data()"""
-    # add 1 ms to avoid overlap
+@click.command()
+@click.option("--class-name-to-run")
+def execute_date_interval_endpoint(class_name_to_run: str):
+    """
+    dynamically create `date_interval_endpoint` class, then call its fetch_and_upload_data()
+
+    The data_interval_endpoint class takes in epoch_start_ms/epoch_end_ms parameters
+    """
     class_to_run = cls_factory(class_name_to_run)
 
     epoch_start_ms, epoch_end_ms = calculate_epoch()
@@ -60,9 +65,26 @@ def main(class_name_to_run: str):
     class_to_run.fetch_and_upload_data(epoch_start_ms, epoch_end_ms)
 
 
+@click.command()
+@click.option("--class-name-to-run")
+def execute_cursor_endpoint(class_name_to_run: str):
+    """
+    dynamically create `cursor_endpoint` class, then call its fetch_and_upload_data()
+    """
+    class_to_run = cls_factory(class_name_to_run)
+    class_to_run.fetch_and_upload_data()
+
+
 if __name__ == "__main__":
+    # set-up logging
     logging.basicConfig(level=logging.INFO)
     logging.getLogger("snowflake.connector.cursor").disabled = True
     logging.getLogger("snowflake.connector.connection").disabled = True
-    fire.Fire(main)
-    logging.info("Complete.")
+
+    # Add Click commands
+    cli = click.Group()
+    cli.add_command(execute_date_interval_endpoint)
+    cli.add_command(execute_cursor_endpoint)
+
+    # Run CLI
+    cli()

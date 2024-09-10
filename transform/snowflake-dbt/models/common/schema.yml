@@ -2746,7 +2746,7 @@ models:
   - name: dim_ci_runner
     description: '{{ doc("dim_ci_runner") }}'
     columns:
-      - name: dim_ci_runner_id
+      - name: dim_ci_runner_sk
         description: The unique ID of the runner with which the CI build has been run
         data_tests:
           - unique
@@ -6426,6 +6426,8 @@ models:
                 error_if: ">10"
                 warn_if: ">10"
         description: '{{ doc("dim_behavior_website_page_sk") }}'
+      - name: page_url
+        description: '{{ doc("page_url") }}' 
       - name: page_url_host_path
         description: '{{ doc("page_url_host_path") }}' 
       - name: app_id
@@ -6537,6 +6539,10 @@ models:
         description: '{{ doc("page_view_index") }}' 
       - name: page_view_in_session_index
         description: '{{ doc("page_view_in_session_index") }}' 
+      - name: page_url
+        description: '{{ doc("page_url") }}'
+      - name: referrer_url
+        description: '{{ doc("referrer_url") }}'
       - name: created_by
         description: '{{ doc("created_by") }}'
       - name: updated_by

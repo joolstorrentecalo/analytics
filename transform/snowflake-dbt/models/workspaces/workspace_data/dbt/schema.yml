@@ -16,7 +16,7 @@ models:
     - name: dbt_compilation_runtime
       description: 'The most recent not null compilation time elapsed for each DBT model.'
       columns:
-        - name: model_name
+        - name: model_unique_id
           data_tests:
             - not_null
             - unique

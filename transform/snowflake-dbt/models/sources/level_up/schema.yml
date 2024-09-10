@@ -1,9 +1,9 @@
 version: 2
 models:
-  - name: level_up_course_actions
+  - name: level_up_course_actions_source
     description: Returns information when a user enrolls, changes status, earns a certificate, or has their access revoked in a course.
     columns:
-      - name: id
+      - name: course_action_id
         data_tests:
           - not_null
           - unique
@@ -36,10 +36,12 @@ models:
       - name: sf_account_id
       - name: sf_contact_id
       - name: uploaded_at
-  - name: level_up_course_completions
+        data_tests:
+          - not_null
+  - name: level_up_course_completions_source
     description: Returns information when a course is completed by a user
     columns:
-      - name: id
+      - name: course_completion_id
         data_tests:
           - not_null
           - unique
@@ -72,7 +74,45 @@ models:
       - name: uploaded_at
         data_tests:
           - not_null
-  - name: level_up_course_views
+  - name: level_up_course_purchases_source
+    description: Returns information about course purchases
+    columns:
+      - name: course_purchase_id
+        data_tests:
+          - not_null
+          - unique
+      - name: transaction_id
+      - name: gift_recipient_email
+      - name: timestamp
+      - name: company_id
+      - name: coupon
+      - name: coupon_code
+      - name: purchasable_id
+      - name: purchasable_type
+      - name: charge_id
+      - name: group_id
+      - name: order_id
+      - name: revenue_type
+      - name: quantity
+      - name: variation
+      - name: shipping_method
+      - name: transaction_type
+      - name: course_sku
+      - name: course_slug
+      - name: course_title
+      - name: course_start_date
+      - name: is_success
+      - name: failure_code
+      - name: failure_message
+      - name: username
+      - name: user_id
+      - name: stripe_customer_id
+      - name: sf_contact_id
+      - name: sf_account_id
+      - name: referral_referrer
+      - name: referral_referrer_type
+      - name: referral_source
+  - name: level_up_course_views_source
     description: Returns information about pages within courses that are viewed as a learner
     data_tests:
       - dbt_utils.unique_combination_of_columns:
@@ -114,7 +154,56 @@ models:
       - name: uploaded_at
         data_tests:
           - not_null
-  - name: level_up_logins
+  - name: level_up_email_captures_source
+    description: Returns information when an email is entered by a user on a course paywall or waitlist.
+    columns:
+      - name: notifiable_type
+      - name: course_sku
+      - name: course_id
+        data_tests:
+          - not_null
+      - name: company_id
+      - name: company_host
+      - name: company_subdomain
+      - name: course_title
+      - name: anonymous_id
+      - name: source
+      - name: notifiable_id
+      - name: event_timestamp
+        data_tests:
+          - not_null
+      - name: username
+      - name: event
+      - name: email_capture_id
+        data_tests:
+          - not_null
+          - unique
+      - name: uploaded_at
+        data_tests:
+          - not_null
+  - name: level_up_learning_path_actions_source
+    description: Returns information when a learner enrolls, changes status, earns a certificate, or has their access revoked in a learning path.
+    columns:
+      - name: learning_path_action_id
+        data_tests:
+          - not_null
+          - unique
+      - name: source
+      - name: event_timestamp
+      - name: transaction_type
+      - name: username
+      - name: company_id
+      - name: notifiable_id
+      - name: learning_path_title
+      - name: learning_path_sku
+      - name: milestone_title
+      - name: user_id
+      - name: sf_contact_id
+      - name: sf_account_id
+      - name: uploaded_at
+        data_tests:
+          - not_null
+  - name: level_up_logins_source
     description: Returns information about logins. It includes browser & IP Address information
     data_tests:
       - dbt_utils.unique_combination_of_columns:
@@ -140,7 +229,7 @@ models:
       - name: uploaded_at
         data_tests:
           - not_null
-  - name: level_up_visits
+  - name: level_up_visits_source
     description: Returns information about logged-in users visiting the platform
     data_tests:
       - dbt_utils.unique_combination_of_columns:

@@ -195,11 +195,11 @@ SELECT
 
     SELECT DISTINCT  
       prep_sales_funnel_target.fiscal_year,
-      prep_crm_user_roles.crm_user_sales_segment                      AS user_segment,
-      prep_crm_user_roles.crm_user_geo                                AS user_geo,
-      prep_crm_user_roles.crm_user_region                             AS user_region,
-      prep_crm_user_roles.crm_user_area                               AS user_area,
-      prep_crm_user_roles.crm_user_business_unit                      AS user_business_unit,
+      COALESCE(prep_crm_user_roles.crm_user_sales_segment, prep_sales_funnel_target.user_segment)       AS user_segment, -- coalescing as some roles exist in targets but not yet in SFDC
+      COALESCE(prep_crm_user_roles.crm_user_geo, prep_sales_funnel_target.user_geo)                     AS user_geo,
+      COALESCE(prep_crm_user_roles.crm_user_region, prep_sales_funnel_target.user_region)               AS user_region,
+      COALESCE(prep_crm_user_roles.crm_user_area, prep_sales_funnel_target.user_area)                   AS user_area,
+      COALESCE(prep_crm_user_roles.crm_user_business_unit, prep_sales_funnel_target.user_business_unit) AS user_business_unit,
       prep_sales_funnel_target.dim_crm_user_hierarchy_sk,
       prep_sales_funnel_target.user_role_name,
       prep_sales_funnel_target.role_level_1,

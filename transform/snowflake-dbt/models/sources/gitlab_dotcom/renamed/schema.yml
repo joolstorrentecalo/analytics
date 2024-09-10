@@ -1059,6 +1059,23 @@ models:
           - not_null
           - unique
 
+  - name: gitlab_dotcom_onboarding_progresses_source
+    description: A base model for Gitlab.com onboarding_progresses.
+    columns:
+      - name: onboarding_progress_id
+        tags: ["tdf","gitlab_dotcom"]
+        data_tests:
+          - not_null
+          - unique
+      - name: created_at
+        tags: ["tdf", "gitlab_dotcom"]
+        data_tests:
+          - not_null
+      - name: updated_at
+        tags: ["tdf", "gitlab_dotcom"]
+        data_tests:
+          - not_null
+
   - name: gitlab_dotcom_plans_source
     description: >-
       A base model for Gitlab.com plans.
@@ -1251,22 +1268,6 @@ models:
         description: '{{ doc("visibility_documentation") }}'
       - name: project_description
         description: '{{ doc("visibility_documentation") }}'
-  - name: gitlab_dotcom_prometheus_alerts_source
-    description: Base model for Gitlab.com prometheus_alerts
-    columns:
-      - name: prometheus_alert_id
-        tags: ["tdf","gitlab_dotcom"]
-        data_tests:
-          - not_null
-          - unique
-      - name: created_at
-        tags: ["tdf","gitlab_dotcom"]
-        data_tests:
-          - not_null
-      - name: updated_at
-        tags: ["tdf","gitlab_dotcom"]
-        data_tests:
-          - not_null
   - name: gitlab_dotcom_releases_source
     description: Base model for Gitlab.com releases
     columns:
@@ -1515,7 +1516,7 @@ models:
         tags: ["tdf","gitlab_dotcom"]
         data_tests:
           - not_null
-        
+
   - name: gitlab_dotcom_subscription_user_add_on_assignments_source
     description: Base model for Gitlab.com subscriptions_add_ons_user_add_on_assignments
     columns:

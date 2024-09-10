@@ -8,7 +8,7 @@ WITH flex_cud AS (
     'shared'                                        AS infra_label,
     NULL                                            AS env_label,
     NULL                                            AS runner_label,
-    NULL                                            AS folder_label,
+    NULL                                            AS full_path,
     LOWER(flex_cud_lookback.pl_category)            AS pl_category,
     flex_cud_lookback.pl_percent                    AS pl_percent,
     'flex_cud_lookback'                             AS from_mapping
@@ -31,7 +31,7 @@ t2d_cud AS (
     'shared'                            AS infra_label,
     NULL                                AS env_label,
     NULL                                AS runner_label,
-    NULL                                AS folder_label,
+    NULL                                AS full_path,
     LOWER(t2d_cud_lookback.pl_category) AS pl_category,
     t2d_cud_lookback.pl_percent         AS pl_percent,
     't2d_cud_lookback'                  AS from_mapping
@@ -57,7 +57,7 @@ SELECT
   infra_label,
   env_label,
   runner_label,
-  folder_label,
+  full_path,
   LOWER(pl_category)           AS pl_category,
   pl_percent,
   LISTAGG(DISTINCT from_mapping, ' || ') WITHIN GROUP (

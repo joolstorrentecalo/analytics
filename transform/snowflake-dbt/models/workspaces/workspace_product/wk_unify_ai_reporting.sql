@@ -301,7 +301,7 @@ e.behavior_date,
       ELSE 'Unknown'
     END                                                 AS internal_or_external,
 COALESCE(c.client,'Unknown Client') AS client,
-e.event_value,
+ROUND(e.event_value/1000,1) AS event_value,
 e.event_action
 FROM
 {{ ref('mart_behavior_structured_event') }} e 
@@ -321,7 +321,7 @@ f.event_label,
 plans.plan AS plan_name,
 i.internal_or_external,
 clients.client,
-'Daily p50 Response Chunk Time' AS metric,
+'Daily p50 Response Chunk Time (chat only in Seconds)' AS metric,
 APPROX_PERCENTILE(p.event_value,0.5)  AS metric_value
 FROM
 prep_chunk p
@@ -351,7 +351,7 @@ f.event_label,
 plans.plan AS plan_name,
 i.internal_or_external,
 clients.client,
-'Daily p99 Response Chunk Time' AS metric,
+'Daily p99 Response Chunk Time (chat only in Seconds)' AS metric,
 APPROX_PERCENTILE(p.event_value,0.99)  AS metric_value
 FROM
 prep_chunk p
@@ -381,7 +381,7 @@ f.event_label,
 plans.plan AS plan_name,
 i.internal_or_external,
 clients.client,
-'Weekly p50 Response Chunk Time' AS metric,
+'Weekly p50 Response Chunk Time (chat only in Seconds)' AS metric,
 APPROX_PERCENTILE(p.event_value,0.5)  AS metric_value
 FROM
 prep_chunk p
@@ -411,7 +411,7 @@ f.event_label,
 plans.plan AS plan_name,
 i.internal_or_external,
 clients.client,
-'Weekly p99 Response Chunk Time' AS metric,
+'Weekly p99 Response Chunk Time (chat only in Seconds)' AS metric,
 APPROX_PERCENTILE(p.event_value,0.99)  AS metric_value
 FROM
 prep_chunk p
@@ -441,7 +441,7 @@ f.event_label,
 plans.plan AS plan_name,
 i.internal_or_external,
 clients.client,
-'Monthly p50 Response Chunk Time' AS metric,
+'Monthly p50 Response Chunk Time (chat only in Seconds)' AS metric,
 APPROX_PERCENTILE(p.event_value,0.5)  AS metric_value
 FROM
 prep_chunk p
@@ -471,7 +471,7 @@ f.event_label,
 plans.plan AS plan_name,
 i.internal_or_external,
 clients.client,
-'Monthly p99 Response Chunk Time' AS metric,
+'Monthly p99 Response Chunk Time (chat only in Seconds)' AS metric,
 APPROX_PERCENTILE(p.event_value,0.99)  AS metric_value
 FROM
 prep_chunk p

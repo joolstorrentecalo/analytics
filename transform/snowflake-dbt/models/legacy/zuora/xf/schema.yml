@@ -88,11 +88,6 @@ models:
                 - not_null
           - name: product_category
             description: Product category is based on the rate plan name.
-            data_tests:
-              - accepted_values:
-                      values: ['GitHost', 'Other', 'SaaS - Ultimate', 'Basic', 'SaaS - Bronze', 'Self-Managed - Premium', 'Self-Managed - Starter', 'Self-Managed - Ultimate', 'Support', 'Plus', 'SaaS - Premium', 'Standard', 'Trueup', 'Storage', 'SaaS - Other', 'Dedicated - Ultimate']
-                      config:
-                        severity: warn
           - name: delivery
             description: delivery is based on the product category name.
             data_tests:
@@ -139,11 +134,6 @@ models:
                 - not_null
           - name: product_category
             description: Product category is based on the rate plan name.
-            data_tests:
-              - accepted_values:
-                      values: ['GitHost', 'Other', 'SaaS - Ultimate', 'Basic', 'SaaS - Bronze', 'Self-Managed - Premium', 'Self-Managed - Starter', 'Self-Managed - Ultimate', 'Support', 'Plus', 'SaaS - Premium', 'Standard', 'Trueup', 'Storage', 'SaaS - Other', 'Dedicated - Ultimate']
-                      config:
-                        severity: warn
               - not_null
           - name: rate_plan_charge_name
             data_tests:

@@ -10,3 +10,9 @@ macros:
       - name: source_schema
         type: string
         description: Name of the source table (from schema.yml file). Default value is level_up.
+  - name: level_up_filter_gitlab_email
+    description: '{{ doc("level_up_filter_gitlab_email") }}'
+    arguments:
+      - name: column_name
+        type: string
+        description: Name of the column name in which to filter for gitlab emails

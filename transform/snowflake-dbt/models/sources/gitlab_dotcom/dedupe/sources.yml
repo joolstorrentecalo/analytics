@@ -261,6 +261,8 @@ sources:
         identifier: gitlab_db_notes_internal_only
       - name: notification_settings
         identifier: gitlab_db_notification_settings
+      - name: onboarding_progresses
+        identifier: gitlab_db_onboarding_progresses
       - name: oauth_access_tokens
         identifier: gitlab_db_oauth_access_tokens
       - name: packages_packages
@@ -294,9 +296,6 @@ sources:
         identifier: gitlab_db_project_statistics
       - name: projects
         identifier: gitlab_db_projects
-      - name: prometheus_alerts
-        identifier: gitlab_db_prometheus_alerts
-        freshness: null #https://gitlab.com/gitlab-data/analytics/-/issues/10835
       - name: protected_branches
         identifier: gitlab_db_protected_branches
       - name: protected_branch_merge_access_levels

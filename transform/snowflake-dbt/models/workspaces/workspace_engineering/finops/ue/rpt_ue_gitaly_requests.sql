@@ -29,7 +29,7 @@ inter_zone AS (
     date_day                           AS day,
     'inter-zone'                       AS usage_type,
     NULL                               AS metric_backend,
-    SUM(usage_amount_in_standard_unit) AS usage_gib,
+    SUM(usage_amount_in_pricing_units) AS usage_gib,
     SUM(net_cost)                      AS net_cost
   FROM {{ ref ('rpt_gcp_billing_pl_day_ext') }}
   WHERE gcp_project_id LIKE 'gitlab-gitaly-gprd-%'

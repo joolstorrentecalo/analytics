@@ -275,6 +275,12 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: crm_user_geo
+        data_tests:
+          - not_null
+      - name: crm_user_sales_segment
+        data_tests:
+          - not_null
 
   - name: prep_app_release_major_minor
     description: '{{ doc("prep_app_release_major_minor") }}'

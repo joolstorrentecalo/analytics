@@ -14,7 +14,7 @@ infralabel_pl AS (
     infralabel_pl.infra_label,
     NULL                      AS env_label,
     NULL                      AS runner_label,
-    NULL                      AS folder_label,
+    NULL                      AS full_path,
     LOWER(infralabel_pl.type) AS pl_category,
     infralabel_pl.allocation  AS pl_percent,
     'infralabel_pl'           AS from_mapping
@@ -33,7 +33,7 @@ projects_pl AS (
     NULL                    AS infra_label,
     NULL                    AS env_label,
     NULL                    AS runner_label,
-    NULL                    AS folder_label,
+    NULL                    AS full_path,
     LOWER(projects_pl.type) AS pl_category,
     projects_pl.allocation  AS pl_percent,
     'projects_pl'           AS from_mapping
@@ -52,7 +52,7 @@ folder_pl AS (
     NULL                  AS infra_label,
     NULL                  AS env_label,
     NULL                  AS runner_label,
-    folder_id             AS folder_label,
+    full_path             AS full_path,
     LOWER(folder_pl.type) AS pl_category,
     folder_pl.allocation  AS pl_percent,
     'folder_pl'           AS from_mapping
@@ -70,7 +70,7 @@ repo_storage_pl_daily AS ( -- gitaly costs in production project
     'gitaly'                                   AS infra_label,
     NULL                                       AS env_label,
     NULL                                       AS runner_label,
-    NULL                                       AS folder_label,
+    NULL                                       AS full_path,
     LOWER(repo_storage_pl_daily.finance_pl)    AS pl_category,
     repo_storage_pl_daily.percent_repo_size_gb AS pl_percent,
     'repo_storage_pl_daily'                    AS from_mapping
@@ -87,11 +87,39 @@ repo_storage_pl_daily_ext AS ( -- gitaly costs in gitlab-gitaly-gprd-* projects
     'gitaly'                                   AS infra_label,
     NULL                                       AS env_label,
     NULL                                       AS runner_label,
-    NULL                                       AS folder_label,
+    NULL                                       AS full_path,
     LOWER(repo_storage_pl_daily.finance_pl)    AS pl_category,
     repo_storage_pl_daily.percent_repo_size_gb AS pl_percent,
     'repo_storage_pl_daily'                    AS from_mapping
   FROM {{ ref ('repo_storage_pl_daily') }}
+
+),
+
+repo_storage_pl_daily_cdn AS ( --apply gitaly repository storage split to cdn skus
+  WITH sku_list AS (SELECT 'Cloud CDN Cache Fill from North America to Europe' AS sku
+    UNION ALL
+    SELECT 'Cloud CDN North America Intra-Region Cache Fill'
+    UNION ALL
+    SELECT 'Cloud CDN Cache Fill from North America to Asia Pacific'
+    UNION ALL
+    SELECT 'Cloud CDN Cache Fill from North America to Oceania'
+
+  )
+
+  SELECT
+    snapshot_day                               AS date_day,
+    'gitlab-production'                        AS gcp_project_id,
+    'Cloud Storage'                            AS gcp_service_description,
+    sku_list.sku                               AS gcp_sku_description,
+    NULL                                       AS infra_label,
+    NULL                                       AS env_label,
+    NULL                                       AS runner_label,
+    NULL                                       AS full_path,
+    LOWER(repo_storage_pl_daily.finance_pl)    AS pl_category,
+    repo_storage_pl_daily.percent_repo_size_gb AS pl_percent,
+    'repo_storage_pl_daily'                    AS from_mapping
+  FROM {{ ref ('repo_storage_pl_daily') }}
+  CROSS JOIN sku_list
 
 ),
 
@@ -105,7 +133,7 @@ container_registry_pl_daily AS (
     'registry'                                                  AS infra_label,
     NULL                                                        AS env_label,
     NULL                                                        AS runner_label,
-    NULL                                                        AS folder_label,
+    NULL                                                        AS full_path,
     LOWER(container_registry_pl_daily.finance_pl)               AS pl_category,
     container_registry_pl_daily.percent_container_registry_size AS pl_percent,
     'container_registry_pl_daily'                               AS from_mapping
@@ -124,7 +152,7 @@ container_registry_pl_daily_ext AS (
     'registry'                                                  AS infra_label,
     NULL                                                        AS env_label,
     NULL                                                        AS runner_label,
-    NULL                                                        AS folder_label,
+    NULL                                                        AS full_path,
     LOWER(container_registry_pl_daily.finance_pl)               AS pl_category,
     container_registry_pl_daily.percent_container_registry_size AS pl_percent,
     'container_registry_pl_daily'                               AS from_mapping
@@ -143,7 +171,7 @@ build_artifacts_pl_daily AS (
     'build_artifacts'                                     AS infra_label,
     NULL                                                  AS env_label,
     NULL                                                  AS runner_label,
-    NULL                                                  AS folder_label,
+    NULL                                                  AS full_path,
     LOWER(build_artifacts_pl_daily.finance_pl)            AS pl_category,
     build_artifacts_pl_daily.percent_build_artifacts_size AS pl_percent,
     'build_artifacts_pl_daily'                            AS from_mapping
@@ -161,7 +189,7 @@ build_artifacts_pl_dev_daily AS (
     'build_artifacts'              AS infra_label,
     'dev'                          AS env_label,
     NULL                           AS runner_label,
-    NULL                           AS folder_label,
+    NULL                           AS full_path,
     'internal'                     AS pl_category,
     1                              AS pl_percent,
     'build_artifacts_pl_dev_daily' AS from_mapping
@@ -179,7 +207,7 @@ runner_shared_gitlab_org AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     '1 - shared gitlab org runners'    AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 1'           AS from_mapping
@@ -198,7 +226,7 @@ runner_saas_small AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     '2 - shared saas runners - small'  AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 2'           AS from_mapping
@@ -223,7 +251,7 @@ runner_saas_small_ext AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 2'           AS from_mapping
@@ -243,7 +271,7 @@ runner_saas_medium AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     '3 - shared saas runners - medium' AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 3'           AS from_mapping
@@ -262,7 +290,7 @@ runner_saas_medium_ext AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 3'           AS from_mapping
@@ -281,7 +309,7 @@ runner_saas_large AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     '4 - shared saas runners - large'  AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 4'           AS from_mapping
@@ -300,7 +328,7 @@ runner_saas_large_ext AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 4'           AS from_mapping
@@ -319,7 +347,7 @@ runner_saas_xlarge AS (
     NULL                                AS infra_label,
     NULL                                AS env_label,
     '10 - shared saas runners - xlarge' AS runner_label,
-    NULL                                AS folder_label,
+    NULL                                AS full_path,
     ci_runners_pl_daily.pl              AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes  AS pl_percent,
     'ci_runner_pl_daily - 10'           AS from_mapping
@@ -338,7 +366,7 @@ runner_saas_xlarge_ext AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 10'          AS from_mapping
@@ -357,7 +385,7 @@ runner_saas_2xlarge AS (
     NULL                                AS infra_label,
     NULL                                AS env_label,
     '11 - shared saas runners - 2xlarge' AS runner_label,
-    NULL                                AS folder_label,
+    NULL                                AS full_path,
     ci_runners_pl_daily.pl              AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes  AS pl_percent,
     'ci_runner_pl_daily - 11'           AS from_mapping
@@ -376,7 +404,7 @@ runner_saas_2xlarge_ext AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 11'          AS from_mapping
@@ -395,7 +423,7 @@ runner_saas_medium_gpu AS (
     NULL                                   AS infra_label,
     NULL                                   AS env_label,
     '8 - shared saas runners gpu - medium' AS runner_label,
-    NULL                                   AS folder_label,
+    NULL                                   AS full_path,
     ci_runners_pl_daily.pl                 AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes     AS pl_percent,
     'ci_runner_pl_daily - 8'               AS from_mapping
@@ -414,7 +442,7 @@ runner_saas_medium_ext_gpu AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 8'           AS from_mapping
@@ -433,7 +461,7 @@ runner_saas_large_gpu AS (
     NULL                                  AS infra_label,
     NULL                                  AS env_label,
     '9 - shared saas runners gpu - large' AS runner_label,
-    NULL                                  AS folder_label,
+    NULL                                  AS full_path,
     ci_runners_pl_daily.pl                AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes    AS pl_percent,
     'ci_runner_pl_daily - 9'              AS from_mapping
@@ -451,7 +479,7 @@ runner_saas_large_gpu AS (
     NULL                                  AS infra_label,
     NULL                                  AS env_label,
     '9 - shared saas runners gpu - large' AS runner_label,
-    NULL                                  AS folder_label,
+    NULL                                  AS full_path,
     ci_runners_pl_daily.pl                AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes    AS pl_percent,
     'ci_runner_pl_daily - 9'              AS from_mapping
@@ -470,7 +498,7 @@ runner_saas_large_ext_gpu AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 9'           AS from_mapping
@@ -488,7 +516,7 @@ runner_saas_large_ext_gpu AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 9'           AS from_mapping
@@ -507,7 +535,7 @@ runner_saas_macos AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     '5 - shared saas macos runners'    AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 5'           AS from_mapping
@@ -526,7 +554,7 @@ runner_saas_private AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     '6 - private internal runners'     AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 6'           AS from_mapping
@@ -545,7 +573,7 @@ runner_saas_private_ext AS (
     NULL                               AS infra_label,
     NULL                               AS env_label,
     NULL                               AS runner_label,
-    NULL                               AS folder_label,
+    NULL                               AS full_path,
     ci_runners_pl_daily.pl             AS pl_category,
     ci_runners_pl_daily.pct_ci_minutes AS pl_percent,
     'ci_runner_pl_daily - 6'           AS from_mapping
@@ -576,7 +604,7 @@ haproxy_isp AS (
     'shared'                                                      AS infra_label,
     NULL                                                          AS env_label,
     NULL                                                          AS runner_label,
-    NULL                                                          AS folder_label,
+    NULL                                                          AS full_path,
     haproxy_pl.type                                               AS pl_category,
     haproxy_usage.percent_backend_ratio * haproxy_pl.allocation   AS pl_percent,
     CONCAT('haproxy-cpn-', haproxy_usage.backend_category)            AS from_mapping
@@ -593,10 +621,10 @@ haproxy_inter AS (
     'gitlab-production'                                         AS gcp_project_id,
     'Compute Engine'                                            AS gcp_service_description,
     'Network Inter Zone Egress'                                 AS gcp_sku_description, -- specific SKU mapping
-    'shared'                                                    AS infra_label,
+    NULL                                                        AS infra_label,
     NULL                                                        AS env_label,
     NULL                                                        AS runner_label,
-    NULL                                                        AS folder_label,
+    NULL                                                        AS full_path,
     haproxy_pl.type                                             AS pl_category,
     haproxy_usage.percent_backend_ratio * haproxy_pl.allocation AS pl_percent,
     CONCAT('haproxy-inter-egress-', haproxy_usage.backend_category) AS from_mapping
@@ -609,10 +637,26 @@ haproxy_inter AS (
     'gitlab-production'                                         AS gcp_project_id,
     'Compute Engine'                                            AS gcp_service_description,
     'Network Inter Zone Data Transfer Out'                      AS gcp_sku_description, -- specific SKU mapping
-    'shared'                                                    AS infra_label,
+    NULL                                                        AS infra_label,
     NULL                                                        AS env_label,
     NULL                                                        AS runner_label,
-    NULL                                                        AS folder_label,
+    NULL                                                        AS full_path,
+    haproxy_pl.type                                             AS pl_category,
+    haproxy_usage.percent_backend_ratio * haproxy_pl.allocation AS pl_percent,
+    CONCAT('haproxy-inter-egress-', haproxy_usage.backend_category) AS from_mapping
+  FROM haproxy_usage
+  INNER JOIN haproxy_pl
+    ON haproxy_usage.backend_category = haproxy_pl.metric_backend
+  UNION ALL
+    SELECT
+    haproxy_usage.date_day                                      AS date_day,
+    'gitlab-production'                                         AS gcp_project_id,
+    'Compute Engine'                                            AS gcp_service_description,
+    'Network Data Transfer Out via Carrier Peering Network - Americas Based'  AS gcp_sku_description, -- specific SKU mapping
+    NULL                                                        AS infra_label,
+    NULL                                                        AS env_label,
+    NULL                                                        AS runner_label,
+    NULL                                                        AS full_path,
     haproxy_pl.type                                             AS pl_category,
     haproxy_usage.percent_backend_ratio * haproxy_pl.allocation AS pl_percent,
     CONCAT('haproxy-inter-egress-', haproxy_usage.backend_category) AS from_mapping
@@ -622,41 +666,40 @@ haproxy_inter AS (
 ),
 
 haproxy_cdn AS (
-  -- rationale: apply same split on CDN thana lready exisitng haproxy split
-  WITH sku_list AS (SELECT 'Networking Cloud CDN Traffic Cache Egress to North America' AS sku
-    UNION ALL
-    SELECT 'Networking Cloud CDN Traffic Cache Egress to Europe'
-    UNION ALL
-    SELECT 'Cloud CDN Cache Fill from North America to Europe'
-    UNION ALL
-    SELECT 'Networking Cloud CDN Traffic Cache Egress to Asia'
-    UNION ALL
-    SELECT 'Networking Cloud CDN Traffic Cache Egress to Oceania'
-    UNION ALL
-    SELECT 'Networking Cloud Nat Data Processing'
-    UNION ALL
-    SELECT 'Networking Cloud CDN Traffic Cache Egress to Latin America'
-    UNION ALL
-    SELECT 'Cloud CDN Cache Fill from North America to Asia Pacific'
-
-  )
 
   SELECT
     haproxy_usage.date_day                                      AS date_day,
     'gitlab-production'                                         AS gcp_project_id,
-    NULL                                                        AS gcp_service_description,
-    sku_list.sku                                                AS gcp_sku_description, -- all CDN skus
+    'Networking'                                                AS gcp_service_description,
+    NULL                                                        AS gcp_sku_description, -- all CDN skus
     NULL                                                        AS infra_label,
     NULL                                                        AS env_label,
     NULL                                                        AS runner_label,
-    NULL                                                        AS folder_label,
+    NULL                                                        AS full_path,
     haproxy_pl.type                                             AS pl_category,
     haproxy_usage.percent_backend_ratio * haproxy_pl.allocation AS pl_percent,
     CONCAT('haproxy-cdn-', haproxy_usage.backend_category)          AS from_mapping
   FROM haproxy_usage
   INNER JOIN haproxy_pl
     ON haproxy_usage.backend_category = haproxy_pl.metric_backend
-  CROSS JOIN sku_list
+
+),
+
+pubsub AS (
+
+  SELECT
+    date_spine.date_day                                         AS date_day,
+    'gitlab-production'                                         AS gcp_project_id,
+    'Cloud Pub/Sub'                                             AS gcp_service_description,
+    NULL                                                        AS gcp_sku_description, -- all CDN skus
+    NULL                                                        AS infra_label,
+    NULL                                                        AS env_label,
+    NULL                                                        AS runner_label,
+    NULL                                                        AS full_path,
+    'internal'                                                  AS pl_category,
+    1                                                           AS pl_percent,
+    'pubsub internal'                                           AS from_mapping
+  FROM date_spine
 
 ),
 
@@ -749,6 +792,12 @@ cte_append AS (SELECT *
   UNION ALL
   SELECT *
   FROM haproxy_cdn
+  UNION ALL
+  SELECT * 
+  FROM repo_storage_pl_daily_cdn
+  UNION ALL
+  SELECT *
+  FROM pubsub
 )
 
 SELECT
@@ -759,7 +808,7 @@ SELECT
   infra_label,
   env_label,
   runner_label,
-  folder_label,
+  full_path,
   LOWER(pl_category)           AS pl_category,
   pl_percent,
   LISTAGG(DISTINCT from_mapping, ' || ') WITHIN GROUP (

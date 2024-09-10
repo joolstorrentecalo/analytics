@@ -1,9 +1,12 @@
 {{ config(
-    tags=["product", "mnpi_exception"],
+
     materialized = "incremental",
-    on_schema_change='sync_all_columns',
     unique_key = "ping_instance_flattened_id",
+    full_refresh = only_force_full_refresh(),
+    on_schema_change = "sync_all_columns",
+    tags=["product", "mnpi_exception"],
     tmp_relation_type = "table"
+
 ) }}
 
 

@@ -186,7 +186,7 @@ clone_stop:
   stage: 🐍 Python
   image: registry.gitlab.com/gitlab-data/ci-python-image:v0.0.4
   before_script:
-    - CHANGED_FILES=$(git diff --name-only ${CI_COMMIT_SHA} origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} | grep '\.py'$)
+    - CHANGED_FILES=$(git diff --name-only --diff-filter=d origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} ${CI_COMMIT_SHA} | grep '\.py'$)
   tags:
     - analytics
   only:
@@ -414,6 +414,8 @@ snowflake_provisioning_roles_yaml:
     - cd $CI_PROJECT_DIR/transform/snowflake-dbt/
     - rm packages.yml
     - mv docs-packages.yml packages.yml
+    - export DBT_RUNNER="${GITLAB_USER_ID}-0-${CI_JOB_ID}"
+    - echo $DBT_RUNNER
     - dbt deps --profiles-dir profile --target prod
     - dbt docs generate --profiles-dir profile --target prod
     - mkdir -p $CI_PROJECT_DIR/public/

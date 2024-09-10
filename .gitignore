@@ -8,7 +8,8 @@
 *.DS_Store
 *.idea
 *.csv
-!/transform/snowflake-dbt/data/*.csv
+!/transform/snowflake-dbt/data/*/*.csv
+!/transform/snowflake-dbt/seeds/*/*.csv
 *.csv.gz
 tmp_log.txt
 */*.env

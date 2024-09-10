@@ -128,8 +128,8 @@ renamed AS (
     dnbconnect__d_b_match_grade__c::TEXT AS dnb_match_grade,
     dnbconnect__d_b_connect_company_profile__c::TEXT AS dnb_connect_company_profile_id,
     duns__c::NUMERIC AS dnb_duns,
-    global_ultimate_duns__c::NUMERIC AS dnb_global_ultimate_duns,
-    domestic_ultimate_duns__c::NUMERIC AS dnb_domestic_ultimate_duns,
+    TRY_TO_NUMBER(global_ultimate_duns__c)::NUMERIC AS dnb_global_ultimate_duns,
+    TRY_TO_NUMBER(domestic_ultimate_duns__c)::NUMERIC AS dnb_domestic_ultimate_duns,
     dnb_exclude_company__c::BOOLEAN AS dnb_exclude_company,
 
     -- present state info

@@ -64,8 +64,10 @@ SELECT
       THEN 'Product Leadership'
     WHEN department = 'Product Monetization'
       THEN 'Monetization'
-    WHEN department = 'UX'
-      THEN 'UX Research'
+    WHEN department IN ('UX Research','Technical Writing', 'Product Design')
+      THEN 'UX'
+    WHEN department = 'Marketing Strategy and Analytics'
+      THEN 'Marketing Analytics'  
     WHEN department = 'Security'
       THEN 'Office of CISO'
     WHEN department in ('Field Marketing', 'Partner Marketing')

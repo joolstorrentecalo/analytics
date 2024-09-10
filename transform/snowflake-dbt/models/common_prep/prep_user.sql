@@ -48,7 +48,8 @@ user_preferences AS (
 
   SELECT
     user_id                                         AS user_id,
-    COALESCE(setup_for_company::VARCHAR, 'Unknown') AS setup_for_company
+    COALESCE(setup_for_company::VARCHAR, 'Unknown') AS setup_for_company,
+    COALESCE(early_access_program_participant::VARCHAR, 'Unknown') AS early_access_program_participant
   FROM gitlab_dotcom_user_preferences_source
 
 ),
@@ -134,6 +135,7 @@ renamed AS (
     COALESCE(TO_DATE(source.last_activity_on)::VARCHAR, 'Unknown')                              AS last_activity_date,
     COALESCE(TO_DATE(source.last_sign_in_at)::VARCHAR, 'Unknown')                               AS last_sign_in_date,
     COALESCE(user_preferences.setup_for_company, 'Not Found')                                   AS setup_for_company,
+    COALESCE(user_preferences.early_access_program_participant, 'Not Found')                    AS early_access_program_participant,
     COALESCE(user_details.jobs_to_be_done, 'Not Found')                                         AS jobs_to_be_done,
     COALESCE(customer_leads.for_business_use, 'Not Found')                                      AS for_business_use,
     COALESCE(customer_leads.employee_count, 'Not Found')                                        AS employee_count,
@@ -169,7 +171,7 @@ renamed AS (
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet",
-    updated_by="@michellecooper",
+    updated_by="@mdrussell",
     created_date="2021-05-31",
-    updated_date="2024-07-31"
+    updated_date="2024-08-29"
 ) }}

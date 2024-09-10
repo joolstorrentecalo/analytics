@@ -14,6 +14,7 @@
     SELECT
       dim_behavior_website_page_sk,
       app_id,
+      page_url,
       page_url_host_path,
       page_url_path,
       page_url_query,
@@ -30,13 +31,14 @@
       AND behavior_at > (SELECT max(max_event_timestamp) FROM {{ this }})
 
     {% endif %}
-    {{ dbt_utils.group_by(n=9) }}
+    {{ dbt_utils.group_by(n=10) }}
 
 ), referrer_url AS (
 
     SELECT
       dim_behavior_referrer_page_sk                                                 AS dim_behavior_website_page_sk,
       app_id,
+      referrer_url                                                                  AS page_url,
       referrer_url_host_path                                                        AS page_url_host_path,
       referrer_url_path                                                             AS page_url_path,
       referrer_url_query                                                            AS page_url_query,
@@ -54,7 +56,7 @@
       AND behavior_at > (SELECT MAX(max_event_timestamp) FROM {{ this }})
 
     {% endif %}
-    {{ dbt_utils.group_by(n=9) }}
+    {{ dbt_utils.group_by(n=10) }}
 
 ), page AS (
 
@@ -73,6 +75,7 @@
       dim_behavior_website_page_sk,
 
       -- Natural Keys
+      page_url,
       page_url_host_path,
       app_id,
       page_url_host,
@@ -251,14 +254,14 @@
       MIN(min_event_timestamp)                                                  AS min_event_timestamp,
       MAX(max_event_timestamp)                                                  AS max_event_timestamp
     FROM page
-    {{ dbt_utils.group_by(n=16) }}
+    {{ dbt_utils.group_by(n=17) }}
 
 )
 
 {{ dbt_audit(
     cte_ref="dim_with_sk",
     created_by="@chrissharp",
-    updated_by="@chrissharp",
+    updated_by="@michellecooper",
     created_date="2022-07-22",
-    updated_date="2023-01-20"
+    updated_date="2024-08-27"
 ) }}

@@ -8,7 +8,6 @@ import sys
 
 test_paths = [
     "extract/saas_usage_ping",
-    "extract/level_up_thought_industries/src",
     "extract/adaptive/src",
     "extract/data_classification",
 ]

@@ -1663,6 +1663,12 @@ JSON object for custom contexts implemented during tracking implementation. [Mor
 
 {% enddocs %}
 
+{% docs page_url %}
+
+The page URL example: 'http://www.example.com'.
+
+{% enddocs %}
+
 {% docs page_url_host_path %}
 
 The page URL path of the event **with** the host (gitlab.com) information. Example: `gitlab.com/namespace9495566/project21362945/-/merge_requests/1575`. 
@@ -1731,7 +1737,7 @@ Boolean flag set to True if the event is triggered on a mobile device. This appe
 
 {% docs dim_behavior_website_page_sk %}
 
-Surrogate key consisting of page_url_host_path, app_id and page_url_scheme, easily JOINed to dim_behavior_website_page. This ID in generated in [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all) using `page_url_host_path`, `app_id` and `page_url_scheme`
+Surrogate key consisting of page_url_host_path, app_id and page_url_scheme, easily JOINed to dim_behavior_website_page. This ID in generated in [prep_snowplow_unnested_events_all](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.prep_snowplow_unnested_events_all) using `page_url`, `app_id` and `page_url_scheme`
 
 {% enddocs %}
 
@@ -1816,6 +1822,12 @@ Timestamp of when a web page was first rendered for that `fct_behavior_website_p
 {% docs page_view_end_at %}
 
 Timestamp of when a web page was last rendered for that `fct_behavior_website_page_view_sk`. 
+
+{% enddocs %}
+
+{% docs referrer_url %}
+
+The referer URL. Example: 'www.google.de/'
 
 {% enddocs %}
 

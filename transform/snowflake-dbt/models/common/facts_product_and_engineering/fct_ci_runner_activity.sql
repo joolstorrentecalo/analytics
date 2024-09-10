@@ -42,7 +42,7 @@
       CASE
         WHEN dim_namespace.namespace_is_internal = TRUE
           THEN TRUE
-        WHEN prep_ci_runner.runner_type = 1
+        WHEN prep_ci_runner.ci_runner_type = 1
           THEN TRUE
           ELSE FALSE
       END                                                     AS is_paid_by_gitlab,
