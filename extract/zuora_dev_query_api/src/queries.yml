@@ -1,0 +1,28 @@
+connection_info:
+  pass: ZUORA_API_PASS
+  user: ZUORA_API_USER
+tables:
+  chargemetrics:
+    query: |- 
+      SELECT 
+        id
+        ,subscriptionowneraccountnumber
+        ,invoiceowneraccountnumber
+        ,subscriptionname
+        ,chargenumber
+        ,rateplanchargeid
+        ,productid
+        ,productrateplanid
+        ,productrateplanchargeid
+        ,amendmentid
+        ,amendmenttype
+        ,startdate
+        ,enddate
+        ,mrrgrossamount
+        ,mrrnetamount
+        ,mrrdiscountamount
+        ,tcvgrossamount
+        ,tcvnetamount
+        ,tcvdiscountamount
+        ,currency
+      FROM  ChargeMetrics

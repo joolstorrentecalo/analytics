@@ -322,6 +322,7 @@ roles:
   - analyst_core:
       warehouses:
         - dev_xs
+        - dev_s
         - dev_l
       member_of:
         - boneyard
@@ -509,6 +510,8 @@ roles:
         - snowplow
         - snowflake_db
         - version_db
+        - workday_hcm
+        - workday_hcm_sandbox
         - zendesk
         - zuora
         - zuora_central_sandbox
@@ -537,6 +540,22 @@ roles:
   - analyst_sales_sensitive:
       warehouses:
         - dev_xs
+  - analyst_support:
+      warehouses:
+        - dev_xs
+      member_of:
+        - snowflake_analyst
+        - zendesk
+      privileges:
+        databases:
+          read:
+            - prep
+        schemas:
+          read:
+            - prep.sensitive
+        tables:
+          read:
+            - prep.sensitive.zendesk_*
   - analyst_marketing_sensitive:
       warehouses:
         - dev_xs
@@ -640,6 +659,7 @@ roles:
       warehouses:
         - dev_l
         - dev_xs
+        - dev_s
         - dev_m
         - loading
         - loading_xl
@@ -784,6 +804,7 @@ roles:
             - raw.*.*
   - data_science:
       warehouses:
+        - dev_s
         - dev_xs
         - dev_l
       privileges:
@@ -833,6 +854,7 @@ roles:
             - raw.data_science.*
   - data_science_sensitive:
       warehouses:
+        - dev_s
         - dev_xs
         - dev_l
       member_of:
@@ -1001,6 +1023,7 @@ roles:
   - product_manager:
       warehouses:
         - dev_xs
+        - dev_s
         - dev_l
         - dev_xl
       member_of:
@@ -1086,9 +1109,10 @@ roles:
         - snowflake_db
   - transformer:
       warehouses:
-        - dev_l
-        - dev_m
         - dev_xs
+        - dev_s
+        - dev_m
+        - dev_l
         - dev_xl
         - transforming_s
         - transforming_l
@@ -1989,7 +2013,6 @@ roles:
             - raw.tap_postgres.gitlab_db_project_import_data
             - raw.tap_postgres.gitlab_db_project_mirror_data
             - raw.tap_postgres.gitlab_db_project_statistics
-            - raw.tap_postgres.gitlab_db_prometheus_alerts
             - raw.tap_postgres.gitlab_db_protected_branches
             - raw.tap_postgres.gitlab_db_releases
             - raw.tap_postgres.gitlab_db_repository_languages
@@ -2904,6 +2927,19 @@ roles:
           read:
             - raw.zuora_stitch_rest_api.*
             - prep.zuora_stitch_rest_api.*
+  - zuora_query_api_sandbox:
+      warehouses:
+        - dev_xs
+      privileges:
+        databases:
+          read:
+            - raw
+        schemas:
+          read:
+            - raw.zuora_query_api_sandbox
+        tables:
+          read:
+            - raw.zuora_query_api_sandbox.*
   - zuora_query_api:
       warehouses:
         - dev_xs
@@ -3118,6 +3154,7 @@ roles:
         - analyst_engineering
         - snowflake_analyst_safe
         - zuora_query_api
+        - zuora_query_api_sandbox
       warehouses:
         - dev_xs
       owns:
@@ -3281,6 +3318,7 @@ roles:
         - salesforce_sandbox
         - zuora_api_sandbox_stitch
         - zuora_stitch_rest_api
+        - zuora_query_api_sandbox
         - zuora
       warehouses:
         - dev_xs
@@ -3444,6 +3482,7 @@ roles:
         - analyst_marketing
         - data_team_analyst
         - snowflake_analyst_safe
+        - zuora_query_api_sandbox
       warehouses:
         - dev_xs
   - dmack:
@@ -4976,8 +5015,6 @@ roles:
         - snowflake
         - tableau_backend
         - workday
-        - workday_hcm
-        - workday_hcm_sandbox
         - zengrc
       warehouses:
         - dev_xs
@@ -5669,6 +5706,7 @@ roles:
         - data_team_analyst
         - snowflake_analyst_safe
         - xactly
+        - zuora_query_api_sandbox
       warehouses:
         - dev_xs
   - vburton:
@@ -5854,9 +5892,8 @@ roles:
         - dev_xs
   - mmagoma:
       member_of:
+        - analyst_support
         - gitlab_dotcom
-        - snowflake_analyst
-        - zendesk
       warehouses:
         - dev_xs
   - tganga:
@@ -6059,6 +6096,11 @@ roles:
         - snowflake_analyst
       warehouses:
         - dev_xs
+  - ndular:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
   - krichardson:
       member_of:
         - snowflake_analyst
@@ -6206,6 +6248,11 @@ roles:
       warehouses:
         - dev_xs
   - bparkhomchuk:
+      member_of:
+        - snowflake_analyst
+      warehouses:
+        - dev_xs
+  - swiskow:
       member_of:
         - snowflake_analyst
       warehouses:
@@ -7098,6 +7145,10 @@ users:
       can_login: true
       member_of:
         - rhook
+  - ndular:
+      can_login: true
+      member_of:
+        - ndular
   - fkhalid:
       can_login: true
       member_of:
@@ -7134,6 +7185,10 @@ users:
       can_login: true
       member_of:
         - jaltherr
+  - swiskow:
+      can_login: true
+      member_of:
+        - swiskow
   - dchevalier:
       can_login: true
       member_of:
@@ -7239,6 +7294,8 @@ warehouses:
       size: 4-x-large
   - dev_xs:
       size: x-small
+  - dev_s:
+      size: small
   - dev_m:
       size: medium
   - dev_l:

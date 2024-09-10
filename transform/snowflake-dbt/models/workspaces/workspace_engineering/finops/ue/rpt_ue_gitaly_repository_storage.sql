@@ -7,8 +7,8 @@
 with cloud_data as (
 
     SELECT date_day,
-    usage_standard_unit,
-    sum(usage_amount_in_standard_unit) as usage_amount_in_standard_units,
+    pricing_unit,
+    sum(usage_amount_in_pricing_units) as usage_amount_in_pricing_units,
     sum(net_cost) as net_cost
     FROM {{ ref ('rpt_gcp_billing_pl_day_ext')}}
     where level_2 = 'Repository Storage'
@@ -32,12 +32,12 @@ gitlab_data as (
 joined as (
 
     SELECT c.date_day,
-    c.usage_standard_unit,
-    c.usage_amount_in_standard_units,
+    c.pricing_unit,
+    c.usage_amount_in_pricing_units,
     c.net_cost,
     g.gitlab_repo_size_gb,
-    c.usage_amount_in_standard_units - g.gitlab_repo_size_gb as overhead_gb,
-    c.usage_amount_in_standard_units/g.gitlab_repo_size_gb as overhead_percent,
+    c.usage_amount_in_pricing_units * 30.41 - g.gitlab_repo_size_gb as overhead_gb,
+    c.usage_amount_in_pricing_units * 30.41/g.gitlab_repo_size_gb as overhead_percent,
     c.net_cost/(g.gitlab_repo_size_gb/1024) as monthly_unit_price_per_repo_tb
     FROM cloud_data c
     LEFT JOIN gitlab_data g

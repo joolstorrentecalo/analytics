@@ -230,6 +230,10 @@ models:
           +schema: sensitive
           secure: true
 
+      data_classification:
+        +schema: data_classification
+        +tags: ["data_classification"]
+
       data_science:
         +schema: data_science
         +tags: ["data_science"]
@@ -456,6 +460,10 @@ models:
         +tags: ["zuora_query_api", "mnpi" ]
 
       zuora_central_sandbox:
+        +schema: zuora_central_sandbox
+        +tags: [ "zuora_central_sandbox", "mnpi" ]
+
+      zuora_query_api_sandbox:
         +schema: zuora_central_sandbox
         +tags: [ "zuora_central_sandbox", "mnpi" ]
 

@@ -5,7 +5,6 @@ from os import environ
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from extract.data_classification.data_classification import DataClassification
 
 
@@ -235,6 +234,9 @@ def test_pii_query(mock_scope, data_classification, expected_value):
         "RAW",
         "PREP",
         "PROD",
+        "SELECT",
+        "INFORMATION_SCHEMA",
+        "REPLACE(table_type,'BASE TABLE','TABLE')",
     ],
 )
 def test_mnpi_metadata_update_query(data_classification, expected_value):
@@ -297,3 +299,11 @@ def test_get_pii_select_part_query(data_classification, input_value, expected_va
     """
     actual = data_classification._get_pii_select_part_query(input_value)
     assert expected_value in actual
+
+
+def test_brackets_mnpi_metadata_update_query(data_classification):
+    """
+    Test test_mnpi_metadata_update_query
+    """
+    query = data_classification.mnpi_metadata_update_query
+    assert query.count("(") == query.count(")") == 8

@@ -311,7 +311,7 @@ class DataClassification:
             " UNION "
             f"{self._get_mnpi_select_part_query(database_name=self.prep)} "
             " UNION "
-            f"{self._get_mnpi_select_part_query(database_name=self.prod)} "
+            f"{self._get_mnpi_select_part_query(database_name=self.prod)} )"
             f" AS full_table_list "
             f" ON full_table_list.classification_type                  = {self.table_name}.classification_type "
             f"AND full_table_list.table_catalog                        = {self.table_name}.database_name "

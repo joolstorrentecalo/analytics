@@ -2746,7 +2746,7 @@ models:
   - name: dim_ci_runner
     description: '{{ doc("dim_ci_runner") }}'
     columns:
-      - name: dim_ci_runner_id
+      - name: dim_ci_runner_sk
         description: The unique ID of the runner with which the CI build has been run
         data_tests:
           - unique

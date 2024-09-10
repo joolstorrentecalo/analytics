@@ -1,52 +1,12 @@
-""" The main test routine for Level Up """
-
-import os
+"""Test helper functions"""
 
 import pytest
-import requests
-import responses
 
-# can't import without key
-os.environ["LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY"] = "some_key"
-from extract.level_up_thought_industries.src.thought_industries_api import (
-    CourseCompletions,
-    Logins,
-    Visits,
-    CourseViews,
-)
-
-from extract.level_up_thought_industries.src.thought_industries_api_helpers import (
+from thought_industries_api_helpers import (
     iso8601_to_epoch_ts_ms,
     epoch_ts_ms_to_datetime_str,
     is_invalid_ms_timestamp,
 )
-
-
-def test_instantiation():
-    """Test that all child classes can be instantiated"""
-    class_name = "CourseCompletions"
-    try:
-        CourseCompletions()
-    except TypeError as err:
-        assert False, f"Failed to instantiate {class_name}: {str(err)}"
-
-    class_name = "Logins"
-    try:
-        Logins()
-    except TypeError as err:
-        assert False, f"Failed to instantiate {class_name}: {str(err)}"
-
-    class_name = "Visits"
-    try:
-        Visits()
-    except TypeError as err:
-        assert False, f"Failed to instantiate {class_name}: {str(err)}"
-
-    class_name = "CourseViews"
-    try:
-        CourseViews()
-    except TypeError as err:
-        assert False, f"Failed to instantiate {class_name}: {str(err)}"
 
 
 def test_iso8601_to_epoch_ts_ms():

@@ -4,7 +4,7 @@
 ) }}
 
 {{ simple_cte([
-    ('dim_ping_instance', 'dim_ping_instance'),
+    ('mart_ping_instance', 'mart_ping_instance'),
     ('mart_arr', 'mart_arr'),
     ('dim_date', 'dim_date')
     ])
@@ -17,7 +17,7 @@ user_counts AS (
     ping_delivery_type       AS delivery_type,
     ping_deployment_type     AS deployment_type,
     SUM(instance_user_count) AS total_user_count
-  FROM dim_ping_instance
+  FROM mart_ping_instance
   WHERE ping_created_date_month BETWEEN '2022-01-01' AND DATE_TRUNC('month', CURRENT_DATE) - 1 --arbitrary date range, exclude current month
     AND is_last_ping_of_month = TRUE
   GROUP BY 1, 2, 3

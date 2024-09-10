@@ -1,18 +1,63 @@
-WITH daily_usage AS (
+WITH source as (
+  SELECT
+    *
+  FROM {{ ref('mart_behavior_structured_event') }} AS e
+  WHERE
+    behavior_at BETWEEN '2023-04-21' AND CURRENT_DATE --first date of these events
+  GROUP BY ALL
+  ORDER BY
+    1 DESC
+
+),
+
+source_cs as (
+
+  SELECT
+    *
+  FROM {{ ref('ai_umau_cs') }}
+
+),
+
+daily_usage_llm AS (
+
   SELECT
     event_label,
     e.behavior_date             AS behavior_date,
     e.gsc_pseudonymized_user_id AS user_id
-  FROM {{ ref('mart_behavior_structured_event') }} AS e
+  FROM source AS e
   WHERE
-    behavior_at BETWEEN '2023-04-21' AND CURRENT_DATE --first date of these events
-    AND
     (
       e.event_action = 'execute_llm_method'
     )
   GROUP BY ALL
   ORDER BY
     1 DESC
+    
+),
+
+troubleshoot_job_feature as (
+
+  SELECT
+    event_label,
+    e.behavior_date             AS behavior_date,
+    e.gsc_pseudonymized_user_id AS user_id
+  FROM source AS e
+  WHERE
+    (
+      e.event_action = 'tokens_per_user_request_prompt'
+    )
+  GROUP BY ALL
+  ORDER BY
+    1 DESC
+
+),
+
+daily_usage as (
+
+    SELECT * FROM daily_usage_llm
+    UNION ALL
+    SELECT * FROM troubleshoot_job_feature
+
 ),
 
 cs AS (
@@ -23,7 +68,7 @@ cs AS (
     cs.unique_daily_count,
     cs.unique_7d_rolling_count,
     cs.unique_28d_rolling_count
-  FROM {{ ref('ai_umau_cs') }} AS cs
+  FROM source_cs AS cs
 
 ),
 

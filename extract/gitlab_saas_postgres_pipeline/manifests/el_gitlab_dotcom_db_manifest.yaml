@@ -2256,24 +2256,6 @@ tables:
       FROM projects
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
-  prometheus_alerts:
-    dbt_source_model: true
-    deletes_exempt: True
-    is_incremental: True
-    database_type: main
-    export_schema: 'gitlab_com'
-    export_table: 'prometheus_alerts'
-    export_table_primary_key: id
-    import_db: GITLAB_DB
-    import_query: |-
-      SELECT id
-      , created_at
-      , updated_at
-      , environment_id
-      , project_id
-      FROM prometheus_alerts
-      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
-        AND '{END_TIMESTAMP}'::timestamp
   protected_branch_merge_access_levels:
     dbt_source_model: true
     deletes_exempt: True

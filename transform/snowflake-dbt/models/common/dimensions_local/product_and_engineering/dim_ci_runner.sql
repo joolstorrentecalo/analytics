@@ -5,7 +5,16 @@
 WITH prep_ci_runner AS (
 
   SELECT
+
+    -- SURROGATE KEY
+    dim_ci_runner_sk,
+
+    --NATURAL KEY
+    ci_runner_id,
+
+    --LEGACY NATURAL KEY
     dim_ci_runner_id,
+
     -- FOREIGN KEYS
     created_date_id,
     created_at,
@@ -53,8 +62,8 @@ WITH prep_ci_runner AS (
     is_locked,
     access_level,
     maximum_timeout,
-    runner_type AS ci_runner_type,
-    CASE runner_type
+    ci_runner_type,
+    CASE ci_runner_type
       WHEN 1 THEN 'shared'
       WHEN 2 THEN 'group-runner-hosted runners'
       WHEN 3 THEN 'project-runner-hosted runners'
@@ -69,7 +78,7 @@ WITH prep_ci_runner AS (
 {{ dbt_audit(
     cte_ref="prep_ci_runner",
     created_by="@snalamaru",
-    updated_by="@michellecooper",
+    updated_by="@lisvinueza",
     created_date="2021-06-23",
-    updated_date="2024-05-17"
+    updated_date="2024-08-28"
 ) }}
