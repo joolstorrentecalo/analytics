@@ -69,22 +69,14 @@ class TestHackerOneGetReports(unittest.TestCase):
         self.assertEqual(result.iloc[0]["state"], "triaged")
         self.assertEqual(result.iloc[0]["created_at"], "2023-01-01T00:00:00Z")
 
-    @patch(
-        "hackerone_get_reports.nullify_vulnerability_information",
-        return_value=pd.DataFrame(),
-    )
+    @patch("hackerone_get_reports.nullify_vulnerability_information")
     def test_nullify_vulnerability_information(self, return_df):
         """Check dataframe result"""
-        sample_df = pd.DataFrame()
         sample_df = pd.DataFrame(
             {
-                "id": ["123", "456", "789"],
-                "state": ["triaged", "resolved", "new"],
-                "created_at": [
-                    "2023-01-01T00:00:00Z",
-                    "2023-01-02T00:00:00Z",
-                    "2023-01-03T00:00:00Z",
-                ],
+                "id": "123",
+                "state": "triaged",
+                "created_at": "2023-01-01T00:00:00Z",
                 "bounties": [
                     {
                         "data": [
@@ -106,7 +98,6 @@ class TestHackerOneGetReports(unittest.TestCase):
         )
 
         result_df = nullify_vulnerability_information(sample_df)
-        self.assertIsInstance(return_df, pd.DataFrame)
         self.assertEqual(
             result_df.iloc[0]["bounties"]["data"][0]["relationships"]["report"]["data"][
                 "attributes"
