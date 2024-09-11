@@ -480,5 +480,5 @@ combined_models AS (
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-04-11",
-    updated_date="2024-08-01",
+    updated_date="2024-09-11",
   ) }}
