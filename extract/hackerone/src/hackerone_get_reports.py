@@ -58,7 +58,7 @@ def nullify_vulnerability_information(df: pd.DataFrame) -> pd.DataFrame:
         for bounty in report["data"]:
             bounty["relationships"]["report"]["data"]["attributes"][
                 "vulnerability_information"
-            ] = 0
+            ] = "None"
     return df
 
 

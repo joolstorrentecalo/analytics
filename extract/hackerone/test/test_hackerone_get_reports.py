@@ -113,5 +113,5 @@ class TestHackerOneGetReports(unittest.TestCase):
             result_df.iloc[0]["bounties"]["data"][0]["relationships"]["report"]["data"][
                 "attributes"
             ]["vulnerability_information"],
-            None,
+            "None",
         )
