@@ -37,7 +37,6 @@ def get_start_and_end_date() -> Tuple[str, str]:
         start_date = "2020-01-01T00:00:00Z"
     else:
         data_interval_start = os.environ["data_interval_start"]
-        # convert data_interval_start "%Y-%m-%dT%H:%M:%SZ"
         start_date = datetime.strptime(
             data_interval_start, "%Y-%m-%dT%H:%M:%S%z"
         ).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -67,7 +66,6 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
     This function will get the reports from hackerone
     """
     info(f"Getting reports from {start_date} to {end_date}")
-    # call hackerone reports api and loop through paginated results
     reports_df = pd.DataFrame()
     page = 1
     while True:
@@ -88,7 +86,6 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
         )
         if response.status_code == 200:
             response_json = response.json()
-            # loop through each id in the response
             for report in response_json["data"]:
                 report_data = {
                     "id": report["id"],

@@ -76,7 +76,6 @@ class TestHackerOneGetReports(unittest.TestCase):
     def test_nullify_vulnerability_information(self, return_df):
         """Check dataframe result"""
         sample_df = pd.DataFrame()
-        # create a sample df based on with columns id, state, created_at, bounties
         sample_df = pd.DataFrame(
             {
                 "id": ["123", "456", "789"],
@@ -108,7 +107,6 @@ class TestHackerOneGetReports(unittest.TestCase):
 
         result_df = nullify_vulnerability_information(sample_df)
         self.assertIsInstance(return_df, pd.DataFrame)
-        # assert equal vulnerability information
         self.assertEqual(
             result_df.iloc[0]["bounties"]["data"][0]["relationships"]["report"]["data"][
                 "attributes"
