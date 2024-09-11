@@ -14,6 +14,7 @@ os.environ["date_interval_end"] = "2022-01-02T08:00:00Z"
 from hackerone_get_reports import (
     get_start_and_end_date,
     get_reports,
+    nullify_vulnerability_information,
 )
 
 
@@ -51,7 +52,7 @@ class TestHackerOneGetReports(unittest.TestCase):
                         "state": "triaged",
                         "created_at": "2023-01-01T00:00:00Z",
                     },
-                    "relationships": {"bounties": {}},
+                    "bounties": {},
                 }
             ],
             "links": {},
@@ -74,15 +75,43 @@ class TestHackerOneGetReports(unittest.TestCase):
     )
     def test_nullify_vulnerability_information(self, return_df):
         """Check dataframe result"""
-        return_df = pd.DataFrame()
-        return_df["bounties"]["data"][0]["relationships"]["report"]["data"][
-            "attributes"
-        ]["vulnerability_information"] = None
+        sample_df = pd.DataFrame()
+        # create a sample df based on with columns id, state, created_at, bounties
+        sample_df = pd.DataFrame(
+            {
+                "id": ["123", "456", "789"],
+                "state": ["triaged", "resolved", "new"],
+                "created_at": [
+                    "2023-01-01T00:00:00Z",
+                    "2023-01-02T00:00:00Z",
+                    "2023-01-03T00:00:00Z",
+                ],
+                "bounties": [
+                    {
+                        "data": [
+                            {
+                                "relationships": {
+                                    "report": {
+                                        "data": {
+                                            "attributes": {
+                                                "vulnerability_information": "Info 1"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                ],
+            }
+        )
 
+        result_df = nullify_vulnerability_information(sample_df)
         self.assertIsInstance(return_df, pd.DataFrame)
         # assert equal vulnerability information
-        self.assertIsNone(
-            return_df.iloc[0]["bounties"]["data"][0]["relationships"]["report"]["data"][
+        self.assertEqual(
+            result_df.iloc[0]["bounties"]["data"][0]["relationships"]["report"]["data"][
                 "attributes"
-            ]["vulnerability_information"]
+            ]["vulnerability_information"],
+            None,
         )

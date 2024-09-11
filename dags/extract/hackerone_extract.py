@@ -56,8 +56,8 @@ dag = DAG(
     default_args=default_args,
     # Run shortly before dbt dag which is at 8:45UTC
     schedule_interval="0 8 * * *",
-    start_date=datetime(2024, 9, 9),
-    catchup=True,
+    start_date=datetime(2024, 9, 11),
+    catchup=False,
     max_active_runs=1,
     concurrency=2,
     params=params,
