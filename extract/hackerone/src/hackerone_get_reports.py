@@ -3,6 +3,7 @@ Extract HackerOne reports from the HackerOne API.
 """
 import os
 import sys
+import json
 from datetime import datetime, timedelta
 from logging import basicConfig, error, getLogger, info
 from time import sleep
@@ -91,7 +92,7 @@ def get_reports(start_date: str, end_date: str) -> pd.DataFrame:
                     "id": report["id"],
                     "state": report["attributes"]["state"],
                     "created_at": report["attributes"]["created_at"],
-                    "bounties": report["relationships"]["bounties"],
+                    "bounties": json.dumps(report["relationships"]["bounties"]),
                 }
                 reports_df = pd.concat(
                     [reports_df, pd.DataFrame([report_data])], ignore_index=True
