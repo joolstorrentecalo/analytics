@@ -16,6 +16,7 @@ WITH base AS (
     AND opportunity_category NOT IN ('Decommission', 'Internal Correction')
     AND LOWER(opportunity_name) NOT LIKE '%rebook%'
     AND net_arr > 0
+    AND (is_eligible_open_pipeline = 1 OR LOWER(stage_name) LIKE '%clos%')
     --exclude renewal sales_type=renewal
     --web portal purchase
     --opp category: exclude decommission and internal correction
