@@ -42,6 +42,8 @@ discount_prep_step_1 AS (
     CASE
       WHEN fct_charge.list_price IS NOT NULL
         THEN fct_charge.list_price / NULLIFZERO(fct_invoice_item.quantity)
+      WHEN dim_charge.billing_period = 'Month' AND fct_charge.list_price IS NULL
+        THEN (fct_charge.extended_list_price/NULLIFZERO(fct_invoice_item.quantity))/dim_subscription.current_term
       ELSE (fct_charge.extended_list_price * 365 / NULLIFZERO(effective_days)) / NULLIFZERO(fct_invoice_item.quantity)
     END                                                                                                 AS list_price_per_unit,
     fct_invoice_item.arr / NULLIFZERO(fct_invoice_item.quantity)                                        AS arpu,
@@ -207,7 +209,7 @@ discount_prep_step_2 AS (
         THEN 'NE: Contractions'
       WHEN quantity_with_addon_update = 0
         THEN 'NE: Quantity=0'
-      WHEN parent_crm_account_name = 'CERN'
+      WHEN subscription_name = 'CERN UPLIFT RENEWAL AND TRUEUP'
         THEN 'CERN Deal in FY24-Q2 99.5% discount'
       WHEN discount_on_deal < 0
         THEN 'Negative_discount_data_issue'
