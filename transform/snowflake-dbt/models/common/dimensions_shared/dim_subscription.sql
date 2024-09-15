@@ -103,6 +103,8 @@ WITH prep_amendment AS (
     subscription.creator_account,
     subscription.was_purchased_through_reseller,
     subscription.multi_year_deal_subscription_linkage,
+    subscription.ramp_id,
+    subscription.is_ramp,
     COALESCE(dqf.is_data_quality_filter_subscription_slugify_flag, 0)               AS is_data_quality_filter_subscription_slugify_flag,
 
     --Date Information
@@ -194,6 +196,8 @@ WITH prep_amendment AS (
       subscription.creator_account,
       subscription.was_purchased_through_reseller,
       subscription.multi_year_deal_subscription_linkage,
+      subscription.ramp_id,
+      subscription.is_ramp,
 
       -- Oldest subscription date and cohort information
       oldest_subscription.subscription_start_date   AS oldest_subscription_start_date,
@@ -236,7 +240,7 @@ WITH prep_amendment AS (
 {{ dbt_audit(
     cte_ref="final",
     created_by="@snalamaru",
-    updated_by="@utkarsh060",
+    updated_by="@snalamaru",
     created_date="2020-12-16",
-    updated_date="2024-06-07"
+    updated_date="2024-08-23"
 ) }}

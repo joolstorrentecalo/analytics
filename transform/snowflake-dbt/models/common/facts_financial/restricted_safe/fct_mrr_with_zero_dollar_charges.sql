@@ -20,10 +20,10 @@
       prep_charge.dim_billing_account_id,
       prep_charge.dim_crm_account_id,
       prep_charge.subscription_status,
+      prep_charge.unit_of_measure,
       SUM(prep_charge.mrr)                                                                  AS mrr,
       SUM(prep_charge.arr)                                                                  AS arr,
       SUM(prep_charge.quantity)                                                             AS quantity,
-      ARRAY_AGG(prep_charge.unit_of_measure)                                                AS unit_of_measure
     FROM prep_charge
     INNER JOIN dim_date
       ON prep_charge.effective_start_month <= dim_date.date_actual
@@ -32,7 +32,7 @@
       AND dim_date.day_of_month = 1
     WHERE subscription_status NOT IN ('Draft')
       AND charge_type = 'Recurring'
-    {{ dbt_utils.group_by(n=8) }}
+    {{ dbt_utils.group_by(n=9) }}
 )
 
 {{ dbt_audit(

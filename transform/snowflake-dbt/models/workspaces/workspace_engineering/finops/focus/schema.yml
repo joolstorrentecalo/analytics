@@ -7,7 +7,7 @@ models:
     columns:
       - name: date_day
         description: Date of usage
-        tests:
+        data_tests:
           - not_null
 
       - name: billing_account_id
@@ -15,7 +15,7 @@ models:
 
       - name: billing_period_end
         description: End of billing period
-        tests:
+        data_tests:
           - not_null
 
       - name: sub_account_id
@@ -29,7 +29,7 @@ models:
 
       - name: pricing_quantity
         description: Usage quantity for pricing
-        tests:
+        data_tests:
           - not_null
 
       - name: pricing_unit

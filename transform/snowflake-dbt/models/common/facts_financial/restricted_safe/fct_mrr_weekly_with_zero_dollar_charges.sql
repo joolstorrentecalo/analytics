@@ -18,6 +18,7 @@
       ON prep_charge.dim_crm_account_id = dim_crm_account.dim_crm_account_id
     WHERE subscription_status NOT IN ('Draft')
       AND charge_type = 'Recurring'
+      AND is_included_in_arr_calc = TRUE
 
 
 ), dim_date_weekly AS (

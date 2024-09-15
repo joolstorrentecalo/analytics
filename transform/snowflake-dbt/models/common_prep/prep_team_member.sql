@@ -50,13 +50,13 @@ team_member_info AS (
 
   SELECT
     {{ dbt_utils.generate_surrogate_key(['employee_id', 'team_id_current', 'country_current','region_current','employee_type_current']) }} AS unique_key,
-    employee_id                                                                                                                                                                                                                                                                                                                                                                                                                                   AS employee_id,
-    team_id_current                                                                                                                                                                                                                                                                                                                                                                                                                               AS team_id,
-    country_current                                                                                                                                                                                                                                                                                                                                                                                                                               AS country,
-    region_current                                                                                                                                                                                                                                                                                                                                                                                                                                AS region,
-    employee_type_current                                                                                                                                                                                                                                                                                                                                                                                                                         AS employee_type,
-    effective_date                                                                                                                                                                                                                                                                                                                                                                                                                                AS valid_from,
-    LEAD(valid_from, 1, {{ var('tomorrow') }}) OVER (PARTITION BY employee_id ORDER BY valid_from)                                                                                                                                                                                                                                                                                                                                      AS valid_to
+    employee_id                                                                                                                            AS employee_id,
+    team_id_current                                                                                                                        AS team_id,
+    country_current                                                                                                                        AS country,
+    region_current                                                                                                                         AS region,
+    employee_type_current                                                                                                                  AS employee_type,
+    effective_date                                                                                                                         AS valid_from,
+    LEAD(valid_from, 1, {{ var('tomorrow') }}) OVER (PARTITION BY employee_id ORDER BY valid_from)                                         AS valid_to
   FROM {{ ref('staffing_history_approved_source') }}
 
 ),
@@ -71,14 +71,20 @@ staffing_history AS (
     employee_id,
     business_process_type,
     hire_date,
-    termination_date,
+    IFF(business_process_type IN (
+        'End Contingent Worker Contract',
+        'Termination'
+      ), effective_date, NULL)                                                                                                  AS termination_date,
     LAST_VALUE(hire_date IGNORE NULLS) OVER (PARTITION BY employee_id ORDER BY effective_date ROWS UNBOUNDED PRECEDING)         AS most_recent_hire_date,
-    IFF(termination_date IS NULL, TRUE, FALSE)                                                                                  AS is_current_team_member,
+    IFF(business_process_type IN (
+			  'End Contingent Worker Contract',
+        'Termination'
+			), FALSE, TRUE)                                                                                                           AS is_current_team_member,
     IFF(COUNT(hire_date) OVER (PARTITION BY employee_id ORDER BY effective_date ASC ROWS UNBOUNDED PRECEDING) > 1, TRUE, FALSE) AS is_rehire, -- team member is a rehire if they have more than 1 hire_date event
     effective_date                                                                                                              AS valid_from,
-    LEAD(valid_from, 1, {{ var('tomorrow') }}) OVER (PARTITION BY employee_id ORDER BY valid_from)                    AS valid_to
+    LEAD(valid_from, 1, {{ var('tomorrow') }}) OVER (PARTITION BY employee_id ORDER BY valid_from)                              AS valid_to
   FROM {{ ref('staffing_history_approved_source') }}
-  WHERE business_process_type = 'Hire' OR business_process_type = 'Termination' OR business_process_type = 'Contract Contingent Worker'
+  WHERE business_process_type in ('Hire', 'Termination', 'Contract Contingent Worker', 'End Contingent Worker Contract')
 
 ),
 

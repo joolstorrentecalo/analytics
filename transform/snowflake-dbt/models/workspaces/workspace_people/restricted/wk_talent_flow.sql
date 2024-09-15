@@ -7,7 +7,8 @@
     ('workday_terminations', 'workday_terminations'),
     ('staffing_history_approved_source', 'staffing_history_approved_source'),
     ('bamboohr_promotions_xf', 'bamboohr_promotions_xf'),
-    ('bamboohr_directionary_bonuses_xf', 'bamboohr_directionary_bonuses_xf')
+    ('bamboohr_directionary_bonuses_xf', 'bamboohr_directionary_bonuses_xf'),
+    ('job_profiles', 'blended_job_profiles_source')
     ])
 }},
 
@@ -60,7 +61,8 @@ hire_fut_stage AS (
 
   SELECT
     dir.*,
-    job_role.job_role
+    job_role.job_role,
+    job_role.job_grade
   FROM employee_directory AS dir
   LEFT JOIN max_dir_date ON 1 = 1
   LEFT JOIN job_role ON dir.employee_id = job_role.employee_id
@@ -101,6 +103,7 @@ eda_all AS (
     department,
     job_title,
     job_role,
+    job_grade,
     reports_to,
     is_promotion
   FROM employee_directory_intermediate
@@ -122,6 +125,7 @@ eda_all AS (
     department,
     job_title,
     job_role,
+    job_grade,
     reports_to,
     is_promotion
   FROM eda_fut
@@ -143,6 +147,7 @@ eda_all AS (
     last_department,
     last_job_title,
     job_role,
+    job_grade,
     last_supervisor,
     'FALSE' AS is_promotion
   FROM hire_fut
@@ -368,7 +373,10 @@ listing AS (
       ELSE listing_stage.department
     END                                                                                                          AS department,
     listing_stage.job_title,
-    listing_stage.job_role,
+    staff_hist.job_workday_id_current                                                                            AS job_id,
+    job_profiles.job_family                                                                                      AS job_family,
+    COALESCE(job_profiles.management_level, listing_stage.job_role)                                              AS job_role,
+    COALESCE(job_profiles.job_level::VARCHAR, listing_stage.job_grade)                                           AS job_grade,
     listing_stage.is_hire_date,
     listing_stage.is_termination_date,
     ''                                                                                                           AS termination_type,
@@ -399,6 +407,10 @@ listing AS (
   LEFT JOIN bonus
     ON listing_stage.employee_id = bonus.employee_id
       AND listing_stage.date_actual = bonus.bonus_date
+  LEFT JOIN job_profiles 
+    ON staff_hist.job_workday_id_current = job_profiles.job_workday_id
+      AND listing_stage.date_actual >= job_profiles.valid_from
+      AND listing_stage.date_actual < job_profiles.valid_to       
 
   UNION
 
@@ -430,7 +442,10 @@ listing AS (
       ELSE listing_stage.department
     END                                                                                                          AS department,
     listing_stage.job_title,
-    listing_stage.job_role,
+    staff_hist.job_workday_id_current                                                                            AS job_id,
+    job_profiles.job_family                                                                                      AS job_family,
+    COALESCE(job_profiles.management_level, listing_stage.job_role)                                              AS job_role,
+    COALESCE(job_profiles.job_level::VARCHAR, listing_stage.job_grade)                                           AS job_grade,
     listing_stage.is_hire_date,
     listing_stage.is_termination_date,
     term_type.type_termination_type                                                                              AS termination_type,
@@ -471,6 +486,10 @@ listing AS (
   LEFT JOIN bonus
     ON listing_stage.employee_id = bonus.employee_id
       AND listing_stage.date_actual = bonus.bonus_date
+  LEFT JOIN job_profiles 
+    ON staff_hist.job_workday_id_current = job_profiles.job_workday_id
+      AND listing_stage.date_actual >= job_profiles.valid_from
+      AND listing_stage.date_actual < job_profiles.valid_to        
   WHERE is_termination_date = 'True'
 
 ),
@@ -486,6 +505,7 @@ pr AS (
     cost_center   AS pr_cost_center,
     job_title     AS pr_job_title,
     job_role      AS pr_job_role,
+    job_grade     AS pr_job_grade,    
     department    AS pr_department,
     division      AS pr_division,
     employee_type AS pr_employee_type
@@ -517,6 +537,7 @@ hist_stage AS (
     cost_center         AS cur_cost_center,
     job_title           AS cur_job_title,
     job_role            AS cur_job_role,
+    job_grade           AS cur_job_grade,    
     department          AS cur_department,
     division            AS cur_division,
     hire_date,
@@ -555,6 +576,8 @@ hist_stage AS (
         THEN 1
       WHEN COALESCE(cur_job_role, '1') != COALESCE(pr_job_role, '1')
         THEN 1
+      WHEN COALESCE(cur_job_grade, '1') != COALESCE(pr_job_grade, '1')
+        THEN 1         
       WHEN COALESCE(cur_employee_type, '1') != COALESCE(pr_employee_type, '1')
         THEN 1
       WHEN cur_is_promotion = 'true'
@@ -615,6 +638,8 @@ final AS (
         THEN 'Job Title Change'
       WHEN COALESCE(hist_stage.cur_job_role, '1') != COALESCE(pr_job_role, '1')
         THEN 'Job Role Change'
+      WHEN COALESCE(hist_stage.cur_job_grade, '1') != COALESCE(pr_job_grade, '1')
+        THEN 'Job Grade Change'         
       WHEN COALESCE(hist_stage.cur_reports_to, '1') != COALESCE(pr_reports_to, '1')
         THEN 'Supervisor Change'
       WHEN hist_stage.total_discretionary_bonuses >= 1
@@ -627,6 +652,7 @@ final AS (
     hist_stage.cur_department                AS department,
     hist_stage.cur_job_title                 AS job_title,
     hist_stage.cur_job_role                  AS job_role,
+    hist_stage.cur_job_grade                 AS job_grade,    
     hist_stage.cur_reports_to                AS reports_to,
     hist_stage.hire_date,
     hist_stage.hire_rank,

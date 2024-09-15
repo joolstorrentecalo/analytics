@@ -4,12 +4,7 @@
     post_hook=["{{ missing_member_column(primary_key = 'dim_crm_person_id') }}"]
   )
 }}
-WITH crm_person AS (
-
-    SELECT *
-    FROM {{ ref('prep_crm_person') }}
-
-), final AS (
+WITH final AS (
 
     SELECT
       --id
@@ -124,6 +119,8 @@ WITH crm_person AS (
       is_defaulted_trial,
       lead_score_classification,
       person_first_country,
+      assignment_date,
+      assignment_type,
 
     --6 Sense Fields
       has_account_six_sense_6_qa,
@@ -151,7 +148,7 @@ WITH crm_person AS (
       bizible_most_recent_ad_campaign_name,
       bizible_most_recent_marketing_channel,
       bizible_most_recent_marketing_channel_path
-    FROM crm_person
+    FROM {{ ref('prep_crm_person') }}
 )
 
 {{ dbt_audit(
@@ -159,5 +156,5 @@ WITH crm_person AS (
     created_by="@jjstark",
     updated_by="@rkohnke",
     created_date="2020-09-10",
-    updated_date="2024-07-22"
+    updated_date="2024-07-31"
 ) }}

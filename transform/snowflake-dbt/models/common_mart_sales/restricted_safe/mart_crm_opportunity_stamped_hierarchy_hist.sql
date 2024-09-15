@@ -18,6 +18,7 @@
 
       --primary key
       fct_crm_opportunity.dim_crm_opportunity_id,
+      fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
       
       --surrogate keys
       dim_crm_account.dim_parent_crm_account_id,
@@ -177,6 +178,19 @@
       fct_crm_opportunity.is_abm_tier_sao,
       fct_crm_opportunity.is_abm_tier_closed_won,
 
+      -- Hierarchy reporting fields
+      report_hierarchy.crm_user_sales_segment                                                         AS report_segment,
+      report_hierarchy.crm_user_geo                                                                   AS report_geo,
+      report_hierarchy.crm_user_region                                                                AS report_region,
+      report_hierarchy.crm_user_area                                                                  AS report_area,
+      report_hierarchy.crm_user_business_unit                                                         AS report_business_unit,
+      report_hierarchy.crm_user_role_name                                                             AS report_role_name,
+      report_hierarchy.crm_user_role_level_1                                                          AS report_role_level_1,
+      report_hierarchy.crm_user_role_level_2                                                          AS report_role_level_2,
+      report_hierarchy.crm_user_role_level_3                                                          AS report_role_level_3,
+      report_hierarchy.crm_user_role_level_4                                                          AS report_role_level_4,
+      report_hierarchy.crm_user_role_level_5                                                          AS report_role_level_5,
+
       -- crm owner/sales rep live fields
       dim_crm_user_hierarchy_live.crm_user_sales_segment,
       dim_crm_user_hierarchy_live.crm_user_sales_segment_grouped,
@@ -316,16 +330,6 @@
 
       -- Pipeline Velocity Account and Opp Owner Fields and Key Reporting Fields
       dim_crm_opportunity.opportunity_owner_user_segment,
-      dim_crm_opportunity.report_segment,
-      dim_crm_opportunity.report_geo,
-      dim_crm_opportunity.report_region,
-      dim_crm_opportunity.report_area,
-      dim_crm_opportunity.report_role_name,
-      dim_crm_opportunity.report_role_level_1,
-      dim_crm_opportunity.report_role_level_2,
-      dim_crm_opportunity.report_role_level_3,
-      dim_crm_opportunity.report_role_level_4,
-      dim_crm_opportunity.report_role_level_5,
       LOWER(
         dim_crm_opportunity.crm_account_owner_sales_segment
       ) AS account_owner_user_segment,
@@ -607,6 +611,8 @@
       ON fct_crm_opportunity.dim_channel_type_id = dim_channel_type.dim_channel_type_id
     LEFT JOIN dim_date                                       AS dim_date_close_date
       ON fct_crm_opportunity.close_date = dim_date_close_date.date_day
+    LEFT JOIN dim_crm_user_hierarchy AS report_hierarchy
+      ON fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk = report_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_crm_user_hierarchy
       ON fct_crm_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_crm_user_hierarchy AS dim_crm_user_hierarchy_live

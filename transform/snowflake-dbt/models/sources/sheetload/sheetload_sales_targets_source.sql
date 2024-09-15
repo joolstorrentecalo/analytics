@@ -25,7 +25,7 @@
           role_level_3::VARCHAR                                                     AS role_level_3,
           role_level_4::VARCHAR                                                     AS role_level_4,
           role_level_5::VARCHAR                                                     AS role_level_5,
-          TRY_TO_NUMBER(REPLACE(allocated_target, ',', ''))::FLOAT                  AS allocated_target
+          TRY_TO_NUMBER(REPLACE(allocated_target, ',', ''), 38, 20)::FLOAT          AS allocated_target
         FROM source
 )
 

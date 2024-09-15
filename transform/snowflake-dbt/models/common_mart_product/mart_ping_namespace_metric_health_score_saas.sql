@@ -8,16 +8,21 @@
   })
 }}
 
-{% set gainsight_wave_metrics = dbt_utils.get_column_values(table=ref ('health_score_metrics'), column='metric_name', max_records=1000, default=['']) %}
+{% set gainsight_wave_metrics = dbt_utils.get_column_values(table=ref ('dim_ping_metric'), where="is_health_score_metric = TRUE", column='metrics_path', max_records=1000, default=['']) %}
 
 {{ simple_cte([
     ('prep_saas_usage_ping_namespace','prep_saas_usage_ping_namespace'),
     ('dim_date','dim_date'),
     ('bdg_namespace_subscription','bdg_namespace_order_subscription_monthly'),
-    ('gainsight_wave_metrics','health_score_metrics'),
     ('instance_types', 'dim_host_instance_type'),
     ('map_subscription_namespace_month', 'map_latest_subscription_namespace_monthly')
 ]) }}
+
+, health_score_metrics AS (
+    SELECT metrics_path
+    FROM {{ ref('dim_ping_metric') }}
+    WHERE is_health_score_metric = TRUE
+)
 
 , instance_types_ordering AS (
     SELECT
@@ -77,8 +82,8 @@
     LEFT JOIN namespace_subscription_monthly_distinct
       ON prep_saas_usage_ping_namespace.dim_namespace_id = namespace_subscription_monthly_distinct.dim_namespace_id
       AND dim_date.first_day_of_month = namespace_subscription_monthly_distinct.snapshot_month
-    INNER JOIN gainsight_wave_metrics
-      ON prep_saas_usage_ping_namespace.ping_name = gainsight_wave_metrics.metric_name
+    INNER JOIN health_score_metrics
+      ON prep_saas_usage_ping_namespace.ping_name = health_score_metrics.metrics_path
     LEFT JOIN map_subscription_namespace_month
       ON prep_saas_usage_ping_namespace.dim_namespace_id = map_subscription_namespace_month.dim_namespace_id
       AND dim_date.first_day_of_month = map_subscription_namespace_month.date_month
@@ -122,7 +127,7 @@
 {{ dbt_audit(
     cte_ref="pivoted",
     created_by="@mdrusell",
-    updated_by="@mdrussell",
+    updated_by="@utkarsh060",
     created_date="2022-10-12",
-    updated_date="2023-03-01"
+    updated_date="2024-08-01"
 ) }}

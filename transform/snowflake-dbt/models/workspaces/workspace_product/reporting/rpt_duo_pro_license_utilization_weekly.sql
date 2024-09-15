@@ -12,7 +12,8 @@
     ('gitlab_dotcom_memberships', 'gitlab_dotcom_memberships'),
     ('mart_behavior_structured_event', 'mart_behavior_structured_event'),
     ('mart_ping_instance_metric_weekly', 'mart_ping_instance_metric_weekly'),
-    ('rpt_behavior_code_suggestion_gateway_request', 'rpt_behavior_code_suggestion_gateway_request')
+    ('rpt_behavior_code_suggestion_gateway_request', 'rpt_behavior_code_suggestion_gateway_request'),
+    ('dim_product_detail', 'dim_product_detail')
 	
     ])
 }},
@@ -46,6 +47,7 @@ duo_pro_and_paired_tier AS ( --tier occurring concurrently with paid duo pro sub
 
 SELECT 
   duo_pro.*,
+  detail.is_oss_or_edu_rate_plan,
   ARRAY_TO_STRING(ARRAY_AGG(DISTINCT SPLIT_PART(tier.product_tier_name, ' - ', 2)), ', ') -- multiple product tiers can show up within the same ARR reporting week
     AS paired_tier,
   IFF(paired_tier IN ('Premium, Ultimate', 'Ultimate, Premium'), 'Premium & Ultimate', paired_tier)
@@ -54,8 +56,12 @@ FROM all_duo_pro_weekly_seats AS duo_pro
 LEFT JOIN mart_arr_all_weekly AS tier -- joining to get tier occuring within same week as add on
   ON duo_pro.reporting_week = tier.arr_week
   AND duo_pro.dim_crm_account_id = tier.dim_crm_account_id
+  AND duo_pro.dim_subscription_id = tier.dim_subscription_id -- add on will be on the same subscription as the tier
   AND LOWER(tier.product_rate_plan_name) NOT LIKE '%duo pro%'
   AND LOWER(tier.product_rate_plan_name) NOT LIKE '%storage%'
+  AND LOWER(tier.product_rate_plan_name) NOT LIKE '%success plan%' --new non-tier plan
+LEFT JOIN dim_product_detail AS detail
+  ON detail.dim_product_detail_id = tier.dim_product_detail_id
 GROUP BY ALL
 
 ), 
@@ -303,6 +309,8 @@ final AS (
       AS pct_assignment_seat_utilization,  -- only available for dotcom data - all SM/Dedicated deployments will show null     
     IFF(pct_assignment_seat_utilization > 1, 1,  pct_assignment_seat_utilization)
       AS standard_pct_assignment_seat_utilization,
+    COALESCE(a.is_oss_or_edu_rate_plan, FALSE) 
+      AS is_oss_or_edu_rate_plan
   FROM all_weekly_duo_pro_seats AS a
   LEFT JOIN unit_primitive_group_product_usage AS u
     ON a.reporting_week = u.reporting_week
@@ -322,5 +330,5 @@ final AS (
     created_by="@eneuberger",
     updated_by="@eneuberger",
     created_date="2024-07-22",
-    updated_date="2024-07-22"
+    updated_date="2024-08-26"
 ) }}

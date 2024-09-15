@@ -116,6 +116,17 @@
       worked_date_pt.date_day                  AS worked_date_pt,
       worked_date.first_day_of_month           AS worked_month,
       worked_date_pt.first_day_of_month        AS worked_month_pt,
+      initial_recycle_date.date_day            AS initial_recycle_date,
+      initial_recycle_date_pt.date_day         AS initial_recycle_date_pt,
+      initial_recycle_date.first_day_of_month  AS initial_recycle_month,
+      initial_recycle_date_pt.first_day_of_month 
+                                               AS initial_recycle_month_pt,
+      most_recent_recycle_date.date_day        AS most_recent_recycle_date,
+      most_recent_recycle_date_pt.date_day     AS most_recent_recycle_date_pt,
+      most_recent_recycle_date.first_day_of_month           
+                                               AS most_recent_recycle_month,
+      most_recent_recycle_date_pt.first_day_of_month       
+                                               AS most_recent_recycle_month_pt,
       fct_crm_person.high_priority_datetime,
       dim_crm_person.email_domain,
       dim_crm_person.email_domain_type,
@@ -181,6 +192,8 @@
       dim_crm_person.matched_account_owner_role,
       dim_crm_person.matched_account_account_owner_name,
       dim_crm_person.matched_account_sdr_assigned,
+      dim_crm_person.assignment_date,
+      dim_crm_person.assignment_type,
       dim_crm_person.matched_account_type,
       dim_crm_person.matched_account_gtm_strategy,
       dim_crm_person.matched_account_bdr_prospecting_status,
@@ -292,6 +305,14 @@
       ON fct_crm_person.legacy_mql_date_latest_id = legacy_mql_date_latest.date_id
     LEFT JOIN dim_date AS legacy_mql_date_latest_pt
       ON fct_crm_person.legacy_mql_date_latest_pt_id = legacy_mql_date_latest_pt.date_id
+    LEFT JOIN dim_date AS initial_recycle_date
+      ON fct_crm_person.initial_recycle_date_id = initial_recycle_date.date_id
+    LEFT JOIN dim_date AS initial_recycle_date_pt
+      ON fct_crm_person.initial_recycle_date_pt_id = initial_recycle_date_pt.date_id
+    LEFT JOIN dim_date AS most_recent_recycle_date
+      ON fct_crm_person.most_recent_recycle_date_id = most_recent_recycle_date.date_id
+    LEFT JOIN dim_date AS most_recent_recycle_date_pt
+      ON fct_crm_person.most_recent_recycle_date_pt_id = most_recent_recycle_date_pt.date_id
     LEFT JOIN dim_date AS mql_sfdc_date
       ON fct_crm_person.mql_sfdc_date_id = mql_sfdc_date.date_id
     LEFT JOIN dim_date AS mql_sfdc_date_pt
@@ -332,5 +353,5 @@
     created_by="@iweeks",
     updated_by="@rkohnke",
     created_date="2020-12-07",
-    updated_date="2024-07-22",
+    updated_date="2024-07-31",
   ) }}  

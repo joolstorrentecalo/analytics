@@ -1,7 +1,7 @@
 More information on this extraction is in the [handbook](https://about.gitlab.com/handbook/business-technology/data-team/platform/pipelines/#level-up--thought-industries-extract)
 
 
-### One-time Setup of Database Environment
+### One-time Setup of Snowflake Database Environment
 ```sql
 use role loader;
 use database <raw_db>;
@@ -56,9 +56,63 @@ CREATE OR REPLACE TABLE email_captures (
   uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
 );
 
-CREATE OR REPLACE TABLE awards (
+CREATE OR REPLACE TABLE users (
   jsontext variant,
   uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
 );
 
+CREATE OR REPLACE TABLE content (
+  jsontext variant,
+  uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
+);
+
+CREATE OR REPLACE TABLE meetings (
+  jsontext variant,
+  uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
+);
+
+CREATE OR REPLACE TABLE clients (
+  jsontext variant,
+  uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
+);
+
+CREATE OR REPLACE TABLE assessment_attempts (
+  jsontext variant,
+  uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
+);
+
+CREATE OR REPLACE TABLE coupons (
+  jsontext variant,
+  uploaded_at timestamp_ntz(9) default CAST(CURRENT_TIMESTAMP() AS TIMESTAMP_NTZ(9))
+);
+```
+
+### One-time Setup of Metadata Database Environment
+
+The Metadata database is a GCP CloudSQL database used to store the cursor state for each cursor-based endpoint.
+
+These are the initial steps to set it up:
+
+```sql
+CREATE DATABASE level_up_metadata;
+
+-- Switch to the database
+\c level_up_metadata;
+
+-- Create the schema
+CREATE SCHEMA prod_metadata;
+CREATE TABLE prod_metadata.cursor_state (
+    id SERIAL PRIMARY KEY,
+    endpoint varchar (255) NOT NULL,
+    cursor_id varchar (255) NOT NULL,
+    uploaded_at timestamp DEFAULT CURRENT_TIMESTAMP
+  );
+
+CREATE SCHEMA test_metadata;
+CREATE TABLE test_metadata.cursor_state (
+    id SERIAL PRIMARY KEY,
+    endpoint varchar (255) NOT NULL,
+    cursor_id varchar (255) NOT NULL,
+    uploaded_at timestamp DEFAULT CURRENT_TIMESTAMP
+  );
 ```

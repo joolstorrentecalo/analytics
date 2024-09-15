@@ -208,7 +208,7 @@ models:
     columns:
       - name: sfdc_record_id
         description: Primary key for Salesforce person records and the primary key for this dimension
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: bizible_mql_touchpoint_id
@@ -275,6 +275,12 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: crm_user_geo
+        data_tests:
+          - not_null
+      - name: crm_user_sales_segment
+        data_tests:
+          - not_null
 
   - name: prep_app_release_major_minor
     description: '{{ doc("prep_app_release_major_minor") }}'
@@ -717,6 +723,10 @@ models:
         description: '{{ doc("dim_crm_opportunity_id_current_open_renewal") }}'
       - name: dim_crm_opportunity_id_closed_lost_renewal
         description: '{{ doc("dim_crm_opportunity_id_closed_lost_renewal") }}'
+      - name: ramp_id
+        description: The unique identifier of each ramp deal.
+      - name: is_ramp
+        description: The indicator flag to identify ramp deals based on ramp_id and multi_year_deal_subscription_linkage fields.
 
   - name: prep_subscription_lineage
     description:  '{{doc("prep_subscription_lineage")}}'
@@ -1198,6 +1208,12 @@ models:
         description: User Country selected during registration
       - name: state
         description: A state that is part of the given country selected during registration 
+      - name: user_type_id
+        description: '{{ doc("user_type_id") }}'
+      - name: user_type
+        description: '{{ doc("user_type") }}'
+      - name: is_bot
+        description: '{{ doc("is_bot") }}'
 
   - name: prep_ci_build
     description: '{{ doc("prep_ci_build") }}'
@@ -1221,6 +1237,8 @@ models:
       - name: dim_ci_runner_id
         description: ID of the runner with which the CI build has been run.
       - name: dim_ci_stage_id
+      - name: failure_reason
+        description: The reason for build failure as defined in [commit_status.rb](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/enums/ci/commit_status.rb)
 
   - name: prep_ci_runner
     description: '{{ doc("prep_ci_runner") }}'
@@ -1820,8 +1838,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: is_saas_dedicated
         description: '{{ doc("is_saas_dedicated") }}'
       - name: ping_delivery_type
@@ -1888,8 +1904,6 @@ models:
         description: '{{ doc("ping_delivery_type") }}'
       - name: ping_deployment_type
         description: '{{ doc("ping_deployment_type") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: version
         description: '{{ doc("version_ping_model") }}'
 
@@ -2211,6 +2225,26 @@ models:
         description: ' { doc("gsc_correlation_id") } '
       - name: dim_instance_id
         description: ' { doc("dim_instance_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+      - name: debounce_interval
+        description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: prep_snowplow_page_views_all
     description: View combining all snowplow_page_view partitions.
@@ -2965,17 +2999,17 @@ models:
     columns:
       - name: hr_employee_id
         description: The employee id of Workday
-        tests:
+        data_tests:
           - not_null
       - name: start_date
         description: The team member's absence start date
-        tests: 
+        data_tests: 
           - not_null
       - name: end_date
         description: The team member's absence end date
       - name: pto_date  
         description: The team member's day of absence   
-        tests: 
+        data_tests: 
           - not_null
       - name: is_pto
         description: If this absence day overlaps with a PTO.

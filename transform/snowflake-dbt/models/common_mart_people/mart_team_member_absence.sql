@@ -33,9 +33,9 @@ WITH team_member AS (
 
 ),
 
-team_member_absence AS (
-
-  SELECT
+team_status AS (
+    
+    SELECT
     dim_team_member_sk   AS dim_team_member_sk,
     dim_team_sk          AS dim_team_sk,
     employee_id          AS employee_id,
@@ -49,7 +49,19 @@ team_member_absence AS (
     job_grade            AS job_grade,
     entity               AS entity,
     is_position_active,
-    is_current_team_member_position,
+    is_current AS is_current_team_member_position,
+    valid_from AS position_valid_from,
+    valid_to   AS position_valid_to
+    FROM {{ ref('fct_team_status') }}
+
+),
+
+team_member_absence AS (
+
+  SELECT
+    dim_team_member_sk   AS dim_team_member_sk,
+    dim_team_sk          AS dim_team_sk,
+    employee_id          AS employee_id,
     absence_date,
     absence_start,
     absence_end,
@@ -99,16 +111,16 @@ final AS (
     team_member.is_current_team_member,
     team_member.is_rehire,
     team_member.team_id,
-    team_member_absence.job_code,
-    team_member_absence.position,
-    team_member_absence.entity,
-    team_member_absence.job_family,
-    team_member_absence.job_specialty_single,
-    team_member_absence.job_specialty_multi,
-    team_member_absence.management_level,
-    team_member_absence.job_grade,
-    team_member_absence.is_position_active,
-    team_member_absence.is_current_team_member_position,
+    team_status.job_code,
+    team_status.position,
+    team_status.entity,
+    team_status.job_family,
+    team_status.job_specialty_single,
+    team_status.job_specialty_multi,
+    team_status.management_level,
+    team_status.job_grade,
+    team_status.is_position_active,
+    team_status.is_current_team_member_position,
     team_member_absence.absence_date,
     team_member_absence.absence_start,
     team_member_absence.absence_end,
@@ -130,6 +142,12 @@ final AS (
         team_member_absence.absence_date >= team_member.valid_to
         OR team_member_absence.absence_date <= team_member.valid_from
       )
+  LEFT JOIN team_status 
+    ON team_status.employee_id = team_member_absence.employee_id
+    AND NOT (
+      team_status.position_valid_to <= team_member_absence.absence_date
+      OR team_status.position_valid_from >= team_member_absence.absence_date
+    )
 )
 
 
@@ -138,5 +156,5 @@ final AS (
     created_by="@rakhireddy",
     updated_by="@rakhireddy",
     created_date="2024-05-15",
-    updated_date="2024-07-06"
+    updated_date="2024-08-05"
 ) }}

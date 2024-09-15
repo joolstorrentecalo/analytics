@@ -47,6 +47,7 @@ WITH source AS (
       turnonoperationalmetrics__c                 AS turn_on_operational_metrics,
       contractoperationalmetrics__c               AS contract_operational_metrics,
       multiyeardealsubscriptionlinkage__c         AS multi_year_deal_subscription_linkage,
+      rampid                                      AS ramp_id,
 
       --key_dates
       cancelleddate                               AS cancelled_date,

@@ -447,6 +447,20 @@ models:
         description: Qualified's count of visitors on the account
       - name: account_domains
         description: All domain names associated with this account, separated by a comma.
+      - name: dnb_match_confidence_score
+        description: This is a 1-10 number that describes the level of confidence in match quality between our Salesforce record and D&B's Company record. 10 means D&B is confident that this is a high quality match.
+      - name: dnb_match_grade
+        description: This is a series of letters (A, B, F, Z) that describe the match grade between our Salesforce record and D&B's Company record within particular fields. A means values match exactly, B means values are similar, F means values are different, and Z means values are missing. Fields are graded in this order - Account Name, Street number, Street Name, City, State/Region, Mailing Address, Telephone, Postal Code, Density, Uniqueness, Industry.
+      - name: dnb_connect_company_profile_id
+        description: This is the id of the D&B Connect Company Profile record that has been matched to this Salesforce Account record.
+      - name: dnb_duns
+        description: The Data Universal Numbering System (DUNS) is a 9-digit id number created by D&B to identify a business entity at a particular location.
+      - name: dnb_global_ultimate_duns
+        description: This is the DUNS of the highest global corporate linkage in this company hierarchy.
+      - name: dnb_domestic_ultimate_duns
+        description: This is the DUNS of the highest domestic corporate linkage (within each country) in this company hierarchy.
+      - name: dnb_exclude_company
+        description: This checkbox indicates that this Account record has been excluded from D&B enrichment.
 
   - name: mart_crm_opportunity
     description:  >-

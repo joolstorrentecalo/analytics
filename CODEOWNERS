@@ -160,22 +160,10 @@ transform/snowflake-dbt/models/marts/pumps_sensitive/       @jjstark @paul_armst
 # ======
 # dbt data file Overwrites
 # ======
-/transform/snowflake-dbt/data/cost_center_division_department_mapping.csv               @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/engineering_productivity_metrics_projects_to_include.csv  @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/excluded.csv                                              @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/handbook_file_classification_mapping.csv                  @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/historical_counts_maintainers_engineers.csv               @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/netsuite_expense_cost_category.csv                        @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/projects_part_of_product.csv                              @sgoldstein @dsatcher @m_gill @jeromezng @yanguo1
-/transform/snowflake-dbt/data/projects_part_of_product_ops.csv                          @sgoldstein @dsatcher @m_gill @jeromezng @yanguo1
-/transform/snowflake-dbt/data/raw_netsuite_currencies.csv                               @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/seeds.md                                                  @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/seeds.yml                                                 @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/snowflake_contract_rates.csv                              @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/version_usage_stats_to_stage_mappings.csv                 @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/zuora_asc_606_conversion_factors.csv                      @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/zuora_country_geographic_region.csv                       @iweeks @snalamaru @pempey @mdrussell
-/transform/snowflake-dbt/data/zuora_excluded_accounts.csv                               @iweeks @pempey @mdrussell @snalamaru
+[dbt Seed Data]                                                                         @iweeks @snalamaru @pempey @mdrussell
+/transform/snowflake-dbt/seeds/ 
+/transform/snowflake-dbt/seeds/seed_engineering/projects_part_of_product.csv            @sgoldstein @dsatcher @m_gill @jeromezng @yanguo1
+/transform/snowflake-dbt/seeds/seed_engineering/projects_part_of_product_ops.csv        @sgoldstein @dsatcher @m_gill @jeromezng @yanguo1
 
 [MNPI]
 transform/snowflake-dbt/safe_model_check.py                                             @dvanrooijen2 @jjstark

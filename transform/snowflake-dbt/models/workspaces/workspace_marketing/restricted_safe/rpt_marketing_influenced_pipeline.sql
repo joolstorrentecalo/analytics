@@ -12,16 +12,16 @@
 ]) }}
 
 , snapshot_dates AS (
-  SELECT DISTINCT
-  date_day,
-  fiscal_year,
-  fiscal_quarter,
-  fiscal_quarter_name_fy,
-  snapshot_date_fpa
-  FROM 
-  dim_date
-  WHERE 
-  day_of_fiscal_quarter_normalised = 90 AND date_day BETWEEN '2023-01-31' AND CURRENT_DATE-2
+  SELECT
+    date_day,
+    LAG(fiscal_year, 1) OVER (ORDER BY date_day) AS fiscal_year,
+    LAG(fiscal_quarter, 1) OVER (ORDER BY date_day) AS fiscal_quarter,
+    LAG(fiscal_quarter_name_fy, 1) OVER (ORDER BY date_day) AS fiscal_quarter_name_fy
+  FROM
+  dim_date 
+  WHERE day_of_fiscal_quarter = 4 
+    AND date_day >= '2023-01-31'
+  
   UNION 
   
 --latest snapshot for current quarter
@@ -29,13 +29,12 @@
   date_day,
   fiscal_year,
   fiscal_quarter,
-  fiscal_quarter_name_fy,
-  snapshot_date_fpa
+  fiscal_quarter_name_fy
   FROM 
   dim_date 
-  WHERE (day_of_fiscal_quarter_normalised BETWEEN 3 AND 89) AND date_day = CURRENT_DATE-2 
+  WHERE day_of_fiscal_quarter <> 4 AND date_day = CURRENT_DATE-2 
 
-    ORDER BY 1 DESC
+  ORDER BY 1 DESC
 
 
 ),  attribution_touchpoint_snapshot_base AS (
@@ -145,6 +144,27 @@ SELECT
   --    report_opportunity_user_sub_business_unit,
   --    report_opportunity_user_division,
   --    report_opportunity_user_asm,
+  live.report_role_level_1,
+  live.report_role_level_2,
+  SPLIT_PART(live.report_role_level_2, '_', 2)                         AS report_role_level_2_clean,
+  live.report_role_level_3,
+  COALESCE(SPLIT_PART(live.report_role_level_3, '_', 3),SPLIT_PART(live.report_role_level_2, '_', 2) )                         AS report_role_level_3_clean,
+  live.report_role_level_4,
+  live.report_role_level_5,
+  CASE
+  WHEN live.report_role_level_1 = 'APJ' THEN 'APJ'
+  WHEN live.report_role_level_1 = 'SMB' THEN 'SMB'
+  WHEN live.report_role_level_1 = 'PUBSEC' THEN 'PUBSEC'
+  WHEN live.report_role_level_2 = 'AMER_COMM' THEN 'AMER COMM'
+  WHEN live.report_role_level_1 = 'AMER' THEN 'AMER ENT'
+  WHEN live.report_role_level_2 = 'EMEA_COMM' THEN 'EMEA COMM'
+  WHEN live.report_role_level_2 = 'EMEA_NEUR' THEN 'EMEA NEUR'
+  WHEN live.report_role_level_2 = 'EMEA_DACH' THEN 'EMEA DACH'
+  WHEN live.report_role_level_2 = 'EMEA_SEUR' THEN 'EMEA SEUR'
+  WHEN live.report_role_level_2 = 'EMEA_META' THEN 'EMEA META'
+  WHEN live.report_role_level_2 = 'EMEA_TELCO' THEN 'EMEA TELCO'
+  END          
+  AS pipe_council_grouping,  
 
   --Flags
   live.is_sao,
@@ -224,6 +244,14 @@ combined_models AS (
     opportunity_snapshot_base.report_geo,
     opportunity_snapshot_base.report_area,
     opportunity_snapshot_base.report_region,
+    opportunity_snapshot_base.report_role_level_1,
+    opportunity_snapshot_base.report_role_level_2,
+    opportunity_snapshot_base.report_role_level_2_clean,
+    opportunity_snapshot_base.report_role_level_3,
+    opportunity_snapshot_base.report_role_level_3_clean,
+    opportunity_snapshot_base.report_role_level_4,
+    opportunity_snapshot_base.report_role_level_5,
+    opportunity_snapshot_base.pipe_council_grouping,
 
 --Touchpoint Dimensions
     attribution_touchpoint_snapshot_base.bizible_touchpoint_type,
@@ -366,6 +394,14 @@ combined_models AS (
     opportunity_snapshot_base.report_geo,
     opportunity_snapshot_base.report_area,
     opportunity_snapshot_base.report_region,
+    opportunity_snapshot_base.report_role_level_1,
+    opportunity_snapshot_base.report_role_level_2,
+    opportunity_snapshot_base.report_role_level_2_clean,
+    opportunity_snapshot_base.report_role_level_3,
+    opportunity_snapshot_base.report_role_level_3_clean,
+    opportunity_snapshot_base.report_role_level_4,
+    opportunity_snapshot_base.report_role_level_5,
+    opportunity_snapshot_base.pipe_council_grouping,
 
 
 --Touchpoint Dimensions

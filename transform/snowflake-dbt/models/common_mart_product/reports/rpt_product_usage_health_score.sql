@@ -99,10 +99,10 @@
         paid_user_metrics.ci_builds_all_time_event,
         paid_user_metrics.ci_runners_all_time_event,
         paid_user_metrics.ci_builds_28_days_event,
-        CASE WHEN ci_pipeline_utilization IS NULL THEN NULL
-            WHEN ci_pipeline_utilization < .25 THEN 25
-            WHEN ci_pipeline_utilization >= .25 and ci_pipeline_utilization < .50 THEN 63
-            WHEN ci_pipeline_utilization >= .50 THEN 88 end AS ci_pipeline_utilization_score,
+        CASE WHEN ci_pipeline_utilization > 0.333 THEN 88
+                  WHEN ci_pipeline_utilization > 0.1 AND ci_pipeline_utilization <= 0.333 THEN 63
+                  WHEN ci_pipeline_utilization <= 0.1 THEN 25
+                  ELSE NULL END AS ci_pipeline_utilization_score,
         CASE WHEN ci_pipeline_utilization_score IS NULL THEN NULL
             WHEN ci_pipeline_utilization_score = 25 THEN 'Red'
             WHEN ci_pipeline_utilization_score = 63 THEN 'Yellow'
@@ -342,5 +342,5 @@ from
     created_by="@snalamaru",
     updated_by="@jonglee1218",
     created_date="2023-12-10",
-    updated_date="2024-06-10"
+    updated_date="2024-06-26"
 ) }}

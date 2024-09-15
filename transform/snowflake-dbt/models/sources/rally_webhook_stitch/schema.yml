@@ -4,11 +4,11 @@ models:
     description: Data from Rally application indicating if user is optin or not
     columns:
       - name: email
-        tests:
+        data_tests:
           - not_null
       - name: opted_out
-        tests:
+        data_tests:
           - not_null
       - name: updated_at
-        tests:
+        data_tests:
           - not_null

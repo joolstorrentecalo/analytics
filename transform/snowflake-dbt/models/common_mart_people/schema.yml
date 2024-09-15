@@ -126,7 +126,7 @@ models:
 
   - name: mart_team_member_absence
     description: '{{ doc("mart_team_member_absence") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
              - dim_team_member_sk
@@ -136,13 +136,13 @@ models:
     columns:
       - name: dim_team_member_sk
         description: A unique ID for each team member
-        tests: 
+        data_tests: 
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team
       - name: employee_id
         description: Workday Employee Identification 
-        tests: 
+        data_tests: 
           - not_null
       - name: nationality
         description: Team member's nationality
@@ -232,13 +232,13 @@ models:
         description: Whether the team member's job position is the most current as of the date the query is run.
       - name: absence_start
         description: The team member's absence start date
-        tests: 
+        data_tests: 
           - not_null
       - name: absence_end
         description: The team member's absence end date
       - name: absence_date  
         description: The team member's day of absence   
-        tests: 
+        data_tests: 
           - not_null
       - name: is_pto
         description: If this absence day overlaps with a PTO.
