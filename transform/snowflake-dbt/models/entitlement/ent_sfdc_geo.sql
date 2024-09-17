@@ -41,7 +41,8 @@ target_user_roles AS (
     ('Executive - Global Minus Pubsec', FALSE),
     ('Implementation Engineers - Global (with/without Pubsec)', FALSE),
     ('Marketing Operations Manager', FALSE),
-    ('Marketing Program Manager', FALSE)
+    ('Marketing Program Manager', FALSE),
+    ('ABM Manager', FALSE)
   ) AS roles (target_roles, has_pubsec)
 ),
 

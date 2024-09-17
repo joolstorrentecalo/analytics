@@ -260,6 +260,7 @@
       sfdc_opportunity.partner_discount_calc,
       sfdc_opportunity.partner_margin_percentage,
       sfdc_opportunity.comp_channel_neutral,
+      sfdc_opportunity.aggregate_partner,
 
       -- additive fields
       sfdc_opportunity.incremental_acv                                                                                      AS iacv,
@@ -306,7 +307,6 @@
       sfdc_opportunity.days_in_stage,
       sfdc_opportunity.calculated_age_in_days,
       sfdc_opportunity.days_since_last_activity,
-      sfdc_opportunity.pre_military_invasion_arr,
       sfdc_opportunity.won_arr_basis_for_clari,
       sfdc_opportunity.arr_basis_for_clari,
       sfdc_opportunity.forecasted_churn_for_clari,

@@ -312,12 +312,6 @@
     "level": "namespace"
   },
   {
-    "counter_name": "counts.projects_with_prometheus_alerts",
-    "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(DISTINCT prometheus_alerts.project_id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_prometheus_alerts_dedupe_source AS prometheus_alerts LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = prometheus_alerts.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id  GROUP BY 1,2",
-    "time_window_query": false,
-    "level": "namespace"
-  },
-  {
     "counter_name": "counts.projects_with_terraform_reports",
     "counter_query": "SELECT namespaces_xf.namespace_ultimate_parent_id AS id, namespaces_xf.namespace_ultimate_parent_id,  COUNT(DISTINCT ci_job_artifacts.project_id) AS counter_value  FROM prep.gitlab_dotcom.gitlab_dotcom_ci_job_artifacts_dedupe_source AS ci_job_artifacts  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_projects_dedupe_source AS projects ON projects.id = ci_job_artifacts.project_id  LEFT JOIN prep.gitlab_dotcom.gitlab_dotcom_namespaces_dedupe_source AS namespaces ON projects.namespace_id = namespaces.id LEFT JOIN prod.legacy.gitlab_dotcom_namespaces_xf AS namespaces_xf ON namespaces.id = namespaces_xf.namespace_id WHERE ci_job_artifacts.file_type = 18 GROUP BY 1",
     "time_window_query": false,

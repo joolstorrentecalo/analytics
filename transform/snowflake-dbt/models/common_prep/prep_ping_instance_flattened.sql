@@ -34,6 +34,8 @@ WITH source AS (
         original_edition                                                                        AS original_edition,
         main_edition                                                                            AS main_edition,
         product_tier                                                                            AS product_tier,
+        is_dedicated_metric                                                                     AS is_dedicated_metric,
+        is_dedicated_hostname                                                                   AS is_dedicated_hostname,
         is_saas_dedicated                                                                       AS is_saas_dedicated,
         ping_delivery_type                                                                      AS ping_delivery_type,
         ping_deployment_type                                                                    AS ping_deployment_type,
@@ -53,7 +55,7 @@ WITH source AS (
   {{ dbt_audit(
       cte_ref="flattened_high_level",
       created_by="@icooper-acp",
-      updated_by="@utkarsh060",
+      updated_by="@mdrussell",
       created_date="2022-03-17",
-      updated_date="2024-08-01"
+      updated_date="2024-09-04"
   ) }}

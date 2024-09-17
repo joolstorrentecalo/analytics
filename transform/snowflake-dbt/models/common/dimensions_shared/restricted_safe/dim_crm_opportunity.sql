@@ -84,7 +84,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.churn_contraction_type,
       prep_crm_opportunity.churn_contraction_net_arr_bucket,
       prep_crm_opportunity.payment_schedule,
-      prep_crm_opportunity.comp_y2_iacv,
       prep_crm_opportunity.opportunity_term,
       prep_crm_opportunity.primary_solution_architect,
       prep_crm_opportunity.growth_type,
@@ -121,7 +120,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.renewal_swing_arr,
       prep_crm_opportunity.renewal_manager, 
       prep_crm_opportunity.renewal_forecast_health,
-      prep_crm_opportunity.renewal_ownership,
 
       --account people attributes
       prep_crm_opportunity.crm_account_owner_sales_segment,
@@ -192,6 +190,7 @@ WITH prep_crm_opportunity AS (
       -- channel reporting
       prep_crm_opportunity.dr_partner_deal_type,
       prep_crm_opportunity.dr_partner_engagement,
+      prep_crm_opportunity.aggregate_partner,
 
       -- vsa reporting
       prep_crm_opportunity.vsa_readout,
@@ -199,10 +198,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.vsa_url,
       prep_crm_opportunity.vsa_status,
       prep_crm_opportunity.vsa_end_date,
-
-      -- military invasion information
-      prep_crm_opportunity.military_invasion_comments,
-      prep_crm_opportunity.military_invasion_risk_scale,
 
       -- PS related
       prep_crm_opportunity.intended_product_tier,

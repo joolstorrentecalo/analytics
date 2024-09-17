@@ -56,6 +56,7 @@ the paid user count. Removing this filter could lead to double-counting of users
   * The exception is [Enterprise Agile Planning seats](https://docs.gitlab.com/ee/subscriptions/gitlab_com/#enterprise-agile-planning) (those _are_ included) since they are 
   incremental seats (and a base product license is not required to use them).
 * Seats are limited to subscriptions with a status of `Active` or `Cancelled`.
+* `Inherited` - Non-production GitLab.com usage is excluded.
 
 **Business Logic in this Model:**
 

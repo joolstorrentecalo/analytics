@@ -154,6 +154,25 @@ models:
       - name: uploaded_at
         data_tests:
           - not_null
+  - name: level_up_code_redemptions_source
+    description: Returns information when either a redemption or a registration code is redeemed by a learner
+    columns:
+      - name: company_host
+      - name: company_id
+      - name: company_subdomain
+      - name: event
+      - name: redemption_code
+        data_tests:
+          - not_null
+      - name: redemption_code_group_label
+      - name: event_timestamp
+      - name: username
+      - name: user_id
+        data_tests:
+          - not_null
+      - name: uploaded_at
+        data_tests:
+          - not_null
   - name: level_up_email_captures_source
     description: Returns information when an email is entered by a user on a course paywall or waitlist.
     columns:

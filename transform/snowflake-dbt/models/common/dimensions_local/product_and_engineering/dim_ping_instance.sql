@@ -81,6 +81,8 @@ usage_data_w_date AS (
     prep_ping_instance.container_registry_version                                                                 AS container_registry_version,
     IFF(prep_ping_instance.license_expires_at >= prep_ping_instance.ping_created_at 
         OR prep_ping_instance.license_expires_at IS NULL, prep_ping_instance.main_edition, 'EE Free')             AS cleaned_edition,
+    prep_ping_instance.is_dedicated_metric                                                                        AS is_dedicated_metric,
+    prep_ping_instance.is_dedicated_hostname                                                                      AS is_dedicated_hostname,
     prep_ping_instance.is_saas_dedicated                                                                          AS is_saas_dedicated,
     prep_ping_instance.ping_delivery_type                                                                         AS ping_delivery_type,
     prep_ping_instance.ping_deployment_type                                                                       AS ping_deployment_type,
@@ -141,7 +143,7 @@ usage_data_w_date AS (
 {{ dbt_audit(
     cte_ref="usage_data_w_date",
     created_by="@icooper-acp",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2022-03-08",
-    updated_date="2024-08-01"
+    updated_date="2024-09-04"
 ) }}

@@ -91,3 +91,14 @@ models:
               severity: warn
   - name: zuora_central_sandbox_subscription_source
     description: Source layer for Zuora Subscriptions for cleaning and renaming. This is from zuora_central_sandbox used to UAT changes to the Zuora Program.
+
+  - name: zuora_central_sandbox_charge_metrics_source
+    description: Source layer for Zuora charge metrics from the sandbox environment
+    columns:
+      - name: charge_metrics_id
+        tags: ["tdf", "zuora_central_sandbox"]
+        data_tests:
+          - not_null:
+              severity: warn
+          - unique:
+              severity: warn

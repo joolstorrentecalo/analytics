@@ -48,7 +48,7 @@ final AS (
   LEFT JOIN prep_date
     ON pto.pto_date = prep_date.date_actual
   WHERE pto.pto_status = 'AP'
-    AND pto_day_of_week BETWEEN 2 AND 6
+    AND NOT prep_date.day_name in ('Sat','Sun')
 )
 
 SELECT *

@@ -217,10 +217,22 @@
       location_country.country_name,
       location_country.iso_2_country_code,
       location_country.iso_3_country_code,
-      COALESCE(monthly_sm_metrics.ping_delivery_type, subscription_with_deployment_type.product_delivery_type, 'Self-Managed')
-                                                                                   AS delivery_type,
-      COALESCE(monthly_sm_metrics.ping_deployment_type, subscription_with_deployment_type.product_deployment_type, 'Self-Managed')
-                                                                                   AS deployment_type,
+      CASE
+        WHEN monthly_sm_metrics.is_dedicated_metric = TRUE THEN 'SaaS'
+        WHEN monthly_sm_metrics.is_dedicated_metric = FALSE THEN 'Self-Managed'
+        WHEN subscription_with_deployment_type.product_delivery_type IS NOT NULL THEN subscription_with_deployment_type.product_delivery_type
+        WHEN monthly_sm_metrics.is_dedicated_hostname = TRUE THEN 'SaaS'
+        WHEN monthly_sm_metrics.is_dedicated_hostname = FALSE THEN 'Self-Managed'
+        ELSE 'Self-Managed'
+      END AS delivery_type,
+      CASE
+        WHEN monthly_sm_metrics.is_dedicated_metric = TRUE THEN 'Dedicated'
+        WHEN monthly_sm_metrics.is_dedicated_metric = FALSE THEN 'Self-Managed'
+        WHEN subscription_with_deployment_type.product_deployment_type IS NOT NULL THEN subscription_with_deployment_type.product_deployment_type
+        WHEN monthly_sm_metrics.is_dedicated_hostname = TRUE THEN 'Dedicated'
+        WHEN monthly_sm_metrics.is_dedicated_hostname = FALSE THEN 'Self-Managed'
+        ELSE 'Self-Managed'
+      END AS deployment_type,
       monthly_sm_metrics.installation_creation_date,
       -- Wave 1
       DIV0(
@@ -741,7 +753,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mdrussell",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2022-01-14",
-    updated_date="2024-06-10"
+    updated_date="2024-09-09"
 ) }}

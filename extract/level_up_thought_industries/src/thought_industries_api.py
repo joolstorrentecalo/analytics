@@ -13,21 +13,23 @@ The parent class contains the bulk of the logic as the endpoints are very simili
 """
 
 import os
-
-from logging import info
 from abc import ABC, abstractmethod
+from datetime import datetime
+from logging import info
 from typing import Dict, List, Tuple
-from gitlabdata.orchestration_utils import make_request
 
+from gitlabdata.orchestration_utils import make_request
+from sqlalchemy.engine.base import Engine
+from sqlalchemy.sql import text, quoted_name
 from thought_industries_api_helpers import (
-    iso8601_to_epoch_ts_ms,
     epoch_ts_ms_to_datetime_str,
-    upload_payload_to_snowflake,
+    get_metadata_engine,
     is_invalid_ms_timestamp,
+    iso8601_to_epoch_ts_ms,
+    upload_dict_to_snowflake,
 )
 
 config_dict = os.environ.copy()
-RECORD_THRESHOLD = 9999  # will upload when record_count exceeds this threshold
 
 
 class ThoughtIndustries(ABC):
@@ -37,6 +39,10 @@ class ThoughtIndustries(ABC):
     HEADERS = {
         "Authorization": f'Bearer {config_dict["LEVEL_UP_THOUGHT_INDUSTRIES_API_KEY"]}'
     }
+    RECORD_THRESHOLD = 4999  # will upload when record_count exceeds this threshold
+    MAX_RETRY_COUNT = 7
+    SCHEMA_NAME = "level_up"
+    STAGE_NAME = "level_up_load_stage"
 
     @abstractmethod
     def get_endpoint_url(self):
@@ -50,6 +56,230 @@ class ThoughtIndustries(ABC):
         """Instantiate instance vars"""
         self.name = self.get_name()
         self.endpoint_url = self.get_endpoint_url()
+
+    def base_upload_to_snowflake(self, upload_dict: dict, batch: int):
+        """Base function to upload dict to Snowflake as Variant"""
+        table_name = self.name
+        json_dump_filename = f"level_up_{self.name}.json"
+
+        info(
+            f"Uploading batch {batch} with {len(upload_dict['data'])} records to Snowflake"
+        )
+        upload_dict_to_snowflake(
+            upload_dict=upload_dict,
+            schema_name=self.SCHEMA_NAME,
+            stage_name=self.STAGE_NAME,
+            table_name=table_name,
+            json_dump_filename=json_dump_filename,
+        )
+
+
+# ------------- Cursor-based endpoints -------------
+class CursorEndpoint(ThoughtIndustries):
+    """
+    Class used to provide functions to call cursor-based endpoints
+
+    The cursor position is saved within a metadata database
+    so that the position can be retrieved in future runs.
+    """
+
+    ENDPOINT_PREFIX = f"{ThoughtIndustries.BASE_URL}incoming/v2/"
+    METADATA_SCHEMA = os.environ.get("LEVEL_UP_METADATA_SCHEMA")
+
+    def __init__(self):
+        super().__init__()
+        self.results_key = self.name
+
+    def get_endpoint_url(self) -> str:
+        """implement abstract class"""
+        return f"{self.ENDPOINT_PREFIX}{self.name}"
+
+    def get_cursor_url(self, cursor: str) -> str:
+        """
+        In order to query for a page, the cursor must be passed into url
+        This function returns the properply formatted cursor url
+
+        If there is no cursor (first page of api call), just return the endpoint_url
+        """
+        if cursor:
+            formatted_cursor = f"?cursor={cursor}"
+            return f"{self.endpoint_url}{formatted_cursor}"
+        return self.endpoint_url
+
+    def read_cursor_state(self, metadata_engine: Engine) -> str:
+        """
+        query the database to see if there's an existing cursor page
+            - If there's an existing cursor return it
+            - Else return blank string
+        """
+        safe_schema = quoted_name(self.METADATA_SCHEMA, quote=True)
+
+        query = text(
+            f"""
+        SELECT cursor_id
+        FROM {safe_schema}.cursor_state
+        WHERE endpoint = :endpoint
+        ORDER BY uploaded_at DESC
+        LIMIT 1;
+        """
+        )
+
+        query_params = {"endpoint": self.name}
+        with metadata_engine.connect() as connection:
+            results = connection.execute(query, query_params).fetchall()
+        cursor = results[0][0] if results else ""
+        info(f"Cursor starting position: {cursor}")
+        return cursor
+
+    def write_cursor_state(self, cursor: str, metadata_engine: Engine):
+        """
+        After uploading to Snowflake, save the cursor into metadata db
+        Note: not all processed cursors are saved, just the most recent
+        after Snowflake upload.
+        """
+        safe_schema = quoted_name(self.METADATA_SCHEMA, quote=True)
+
+        query = text(
+            f"""
+            INSERT INTO {safe_schema}.cursor_state (endpoint, cursor_id, uploaded_at)
+            VALUES (:endpoint, :cursor_id, :uploaded_at);
+            """
+        )
+        query_params = {
+            "endpoint": self.name,
+            "cursor_id": cursor,
+            "uploaded_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"),
+        }
+
+        with metadata_engine.connect() as connection:
+            connection.execute(query, query_params)
+        info(f"Wrote cursor {cursor} to cursor_state table")
+
+    def fetch_from_endpoint(self, metadata_engine: Engine) -> Tuple[list, str, bool]:
+        """Return results from cursor-based endpoints"""
+        combined_results: List[Dict] = []
+        has_more = True
+        cursor = self.read_cursor_state(metadata_engine)
+
+        while has_more and len(combined_results) <= self.RECORD_THRESHOLD:
+            cursor_url = self.get_cursor_url(cursor)
+            info(f"Making request to cursor_url: {cursor_url}")
+            response = make_request(
+                "GET",
+                cursor_url,
+                headers=self.HEADERS,
+                timeout=60,
+                max_retry_count=self.MAX_RETRY_COUNT,
+            )
+
+            results = response.json().get(self.results_key)
+            page_info = response.json().get("pageInfo")
+
+            # response has events
+            if results:
+                combined_results = combined_results + results
+
+            has_more = page_info["hasMore"]
+            if has_more:
+                cursor = page_info["cursor"]
+
+        return combined_results, cursor, has_more
+
+    def upload_to_snowflake(self, results: list, batch: int):
+        """Upload dictionary to Snowflake"""
+        upload_dict = {
+            "data": results,
+            "data_interval_start": os.environ["data_interval_start"],
+            "data_interval_end": os.environ["data_interval_end"],
+        }
+        self.base_upload_to_snowflake(upload_dict, batch)
+
+    def fetch_and_upload_data(self):
+        """Fetch data and upload it to Snowflake"""
+        has_more, batch = True, 0
+        metadata_engine = get_metadata_engine()
+
+        while has_more:
+            results, cursor, has_more = self.fetch_from_endpoint(metadata_engine)
+            if results:
+                batch += 1
+                self.upload_to_snowflake(results, batch)
+            # upon successful snowflake upload, write cursor state
+            self.write_cursor_state(cursor, metadata_engine)
+
+        if batch == 0:
+            info("No results data returned, nothing to upload")
+        info(f"has_more={has_more}, there should be no more results to extract")
+
+
+class Users(CursorEndpoint):
+    """Class for Users endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "users"
+
+
+class Content(CursorEndpoint):
+    """Class for Users endpoint"""
+
+    def __init__(self):
+        super().__init__()
+        self.results_key = "contentItems"
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "content"
+
+
+class Meetings(CursorEndpoint):
+    """Class for Users endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "meetings"
+
+
+class Clients(CursorEndpoint):
+    """Class for Users endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "clients"
+
+
+class AssessmentAttempts(CursorEndpoint):
+    """Class for Users endpoint"""
+
+    def __init__(self):
+        super().__init__()
+        self.results_key = "assessmentAttempts"
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "assessment_attempts"
+
+    def get_endpoint_url(self) -> str:
+        """implement abstract class"""
+        return f"{self.ENDPOINT_PREFIX}assessmentAttempts"
+
+
+class Coupons(CursorEndpoint):
+    """Class for Users endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "coupons"
+
+
+# ------------- Data Interval-based endpoints -------------
+class DateIntervalEndpoint(ThoughtIndustries):
+    """
+    Parent class for data interval endpoints, i.e endpoints
+    where a start and end date are used to select what data is returned
+    """
+
+    ENDPOINT_PREFIX = f"{ThoughtIndustries.BASE_URL}incoming/v2/events/"
 
     def fetch_from_endpoint(
         self, original_epoch_start_ms: int, original_epoch_end_ms: int
@@ -68,43 +298,37 @@ class ThoughtIndustries(ABC):
         Start —- prev_min # 3rd request
         ...
         """
-        combined_events: List[Dict] = []
-        events: List[Dict] = [{-1: "_"}]  # some placeholder val
+        combined_results: List[Dict] = []
+        results: List[Dict] = [{-1: "_"}]  # some placeholder val
         current_epoch_end_ms = original_epoch_end_ms  # init current epoch end
-        record_count = 0
-        # while the response returns events records
-        # also check record_count because of Snowflake VARIANT value max size
-        while len(events) > 0 and record_count <= RECORD_THRESHOLD:
+        # while the response returns results records
+        # also check len(combined_results) because of Snowflake VARIANT value max size
+        while len(results) > 0 and len(combined_results) <= self.RECORD_THRESHOLD:
             params = {
                 "startDate": original_epoch_start_ms,
                 "endDate": current_epoch_end_ms,
             }
-            full_url = f"{self.BASE_URL}{self.endpoint_url}"
-            info(f"\nMaking request to {full_url} with params:\n{params}")
+            info(f"\nMaking request to {self.endpoint_url} with params:\n{params}")
             response = make_request(
                 "GET",
-                full_url,
+                self.endpoint_url,
                 headers=self.HEADERS,
                 params=params,
                 timeout=60,
-                max_retry_count=7,
+                max_retry_count=self.MAX_RETRY_COUNT,
             )
 
-            events = response.json().get("events")
+            results = response.json().get("events")
 
-            # response has events
-            if events:
-                record_count += len(events)
-
-                events_to_log = [events[0]] + [events[-1]]
-                info(f"\nfirst & last event from latest response: {events_to_log}")
-                combined_events = combined_events + events
+            # response has results
+            if results:
+                combined_results = combined_results + results
 
                 prev_epoch_end_ms = current_epoch_end_ms
 
                 # current_epoch_end will be the previous earliest timestamp
                 current_epoch_end_ms = (
-                    iso8601_to_epoch_ts_ms(events[-1]["timestamp"]) - 1
+                    iso8601_to_epoch_ts_ms(results[-1]["timestamp"]) - 1
                 )  # subtract by 1 sec from ts so that record isn't included again
                 # the endDate should be getting smaller each call
                 if current_epoch_end_ms >= prev_epoch_end_ms:
@@ -112,32 +336,26 @@ class ThoughtIndustries(ABC):
                     raise ValueError(
                         "endDate parameter has not changed since last call."
                     )
-            # no more events in response, should stop making requests
+            # no more results in response, should stop making requests
             else:
-                info("\nThe last response had 0 events, stopping requests\n")
+                info("\nThe last response had 0 results, stopping requests\n")
 
-        return combined_events, current_epoch_end_ms
+        return combined_results, current_epoch_end_ms
 
-    def upload_events_to_snowflake(
-        self, events: List[Dict], epoch_start_ms: int, epoch_end_ms: int
+    def upload_to_snowflake(
+        self, results: List[Dict], epoch_start_ms: int, epoch_end_ms: int, batch: int
     ):
-        """Upload event payload to Snowflake"""
+        """Upload event dict to Snowflake"""
 
         api_start_datetime = epoch_ts_ms_to_datetime_str(epoch_start_ms)
         api_end_datetime = epoch_ts_ms_to_datetime_str(epoch_end_ms)
         upload_dict = {
-            "data": events,
+            "data": results,
             "api_start_datetime": api_start_datetime,
             "api_end_datetime": api_end_datetime,
         }
 
-        schema_name = "level_up"
-        stage_name = "level_up_load_stage"
-        table_name = self.name
-        json_dump_filename = f"level_up_{self.name}.json"
-        upload_payload_to_snowflake(
-            upload_dict, schema_name, stage_name, table_name, json_dump_filename
-        )
+        self.base_upload_to_snowflake(upload_dict, batch)
         info(
             f"Completed writing to Snowflake for api_start_datetime {api_start_datetime} "
             f"& api_end_datetime {api_end_datetime}"
@@ -151,7 +369,7 @@ class ThoughtIndustries(ABC):
         This was updated to upload in batches based on `RECORD_THRESHOLD`
         This is necessary because Snowflake has a max size limit per VARIANT value
 
-        In the future, if `all_events` object becomes too big, it can be easily removed
+        In the future, if `all_results` object becomes too big, it can be easily removed
         However, it's currently useful for debugging
         """
         if is_invalid_ms_timestamp(original_epoch_start_ms, original_epoch_end_ms):
@@ -160,31 +378,30 @@ class ThoughtIndustries(ABC):
                 "Aborting now..."
             )
 
-        events_batched: List = [{}]
-        all_events: List = []
+        results: List = [{}]
+        all_results: List = []
         batch = 0
 
         current_epoch_end_ms = original_epoch_end_ms
 
-        while events_batched:
-            events_batched, current_epoch_end_ms = self.fetch_from_endpoint(
+        while results:
+            results, current_epoch_end_ms = self.fetch_from_endpoint(
                 original_epoch_start_ms, current_epoch_end_ms
             )
 
-            if events_batched:
+            if results:
                 batch += 1
-                info(f"Uploading batch {batch} with {len(events_batched)} records...")
-                self.upload_events_to_snowflake(
-                    events_batched, original_epoch_start_ms, original_epoch_end_ms
+                self.upload_to_snowflake(
+                    results, original_epoch_start_ms, original_epoch_end_ms, batch
                 )
-                all_events = all_events + events_batched
+                all_results = all_results + results
 
         if batch == 0:
-            info("No events data returned, nothing to upload")
-        return all_events
+            info("No results data returned, nothing to upload")
+        return all_results
 
 
-class CourseCompletions(ThoughtIndustries):
+class CourseCompletions(DateIntervalEndpoint):
     """Class for CourseCompletions endpoint"""
 
     def get_name(self) -> str:
@@ -193,10 +410,10 @@ class CourseCompletions(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/courseCompletion"
+        return f"{self.ENDPOINT_PREFIX}courseCompletion"
 
 
-class Logins(ThoughtIndustries):
+class Logins(DateIntervalEndpoint):
     """Class for Logins endpoint"""
 
     def get_name(self) -> str:
@@ -205,10 +422,10 @@ class Logins(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/login"
+        return f"{self.ENDPOINT_PREFIX}login"
 
 
-class Visits(ThoughtIndustries):
+class Visits(DateIntervalEndpoint):
     """Class for Visits endpoint"""
 
     def get_name(self) -> str:
@@ -217,10 +434,10 @@ class Visits(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/visit"
+        return f"{self.ENDPOINT_PREFIX}visit"
 
 
-class CourseViews(ThoughtIndustries):
+class CourseViews(DateIntervalEndpoint):
     """Class for CourseViews endpoint"""
 
     def get_name(self) -> str:
@@ -229,10 +446,10 @@ class CourseViews(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/courseView"
+        return f"{self.ENDPOINT_PREFIX}courseView"
 
 
-class CourseActions(ThoughtIndustries):
+class CourseActions(DateIntervalEndpoint):
     """Class for CourseActions endpoint"""
 
     def get_name(self) -> str:
@@ -241,10 +458,10 @@ class CourseActions(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/courseAction"
+        return f"{self.ENDPOINT_PREFIX}courseAction"
 
 
-class CoursePurchases(ThoughtIndustries):
+class CoursePurchases(DateIntervalEndpoint):
     """Class for CoursePurchases endpoint"""
 
     def get_name(self) -> str:
@@ -253,10 +470,10 @@ class CoursePurchases(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/coursePurchase"
+        return f"{self.ENDPOINT_PREFIX}coursePurchase"
 
 
-class LearningPathActions(ThoughtIndustries):
+class LearningPathActions(DateIntervalEndpoint):
     """Class for LearningPathActions endpoint"""
 
     def get_name(self) -> str:
@@ -265,10 +482,10 @@ class LearningPathActions(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/learningPathAction"
+        return f"{self.ENDPOINT_PREFIX}learningPathAction"
 
 
-class EmailCaptures(ThoughtIndustries):
+class EmailCaptures(DateIntervalEndpoint):
     """Class for EmailCaptures endpoint"""
 
     def get_name(self) -> str:
@@ -277,12 +494,29 @@ class EmailCaptures(ThoughtIndustries):
 
     def get_endpoint_url(self) -> str:
         """implement abstract class"""
-        return "incoming/v2/events/emailCapture"
+        return f"{self.ENDPOINT_PREFIX}emailCapture"
+
+
+class CodeRedemptions(DateIntervalEndpoint):
+    """Class for EmailCaptures endpoint"""
+
+    def get_name(self) -> str:
+        """implement abstract class"""
+        return "code_redemptions"
+
+    def get_endpoint_url(self) -> str:
+        """implement abstract class"""
+        return f"{self.ENDPOINT_PREFIX}redemptionCodeRedeem"
 
 
 if __name__ == "__main__":
+    # used for testing DateIntervalEndpoint
     EPOCH_START_MS = 1722384000001
     EPOCH_END_MS = 1722470400000
-    cls_to_run = CourseActions()
-    result_events = cls_to_run.fetch_and_upload_data(EPOCH_START_MS, EPOCH_END_MS)
+    course_actions = CourseActions()
+    result_events = course_actions.fetch_and_upload_data(EPOCH_START_MS, EPOCH_END_MS)
     info(f"\nresult_events: {result_events[:2]}")
+
+    # used for testing CursorEndpoint
+    users = Users()
+    users.fetch_and_upload_data()

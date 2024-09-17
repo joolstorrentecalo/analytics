@@ -201,7 +201,6 @@ final AS (
     fct_crm_opportunity.days_in_stage,
     fct_crm_opportunity.calculated_age_in_days,
     fct_crm_opportunity.days_since_last_activity,
-    fct_crm_opportunity.pre_military_invasion_arr,
     fct_crm_opportunity.won_arr_basis_for_clari,
     fct_crm_opportunity.arr_basis_for_clari,
     fct_crm_opportunity.forecasted_churn_for_clari,

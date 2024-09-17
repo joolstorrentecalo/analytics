@@ -30,6 +30,7 @@ join_product_component AS (
       ELSE CONCAT(infra_label, '-', from_mapping)
     END AS product_component
   FROM pl_day
+  
 
 ),
 

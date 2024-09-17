@@ -28,28 +28,32 @@ def get_file_name(config_name):
     elif config_name == "manifest_reduce":
         return "target/manifest.json"
     elif config_name == "gdpr_logs":
-        parse_log_data("gdpr_run_logs/dbt.log", "log_data.json")
-        return "log_data.json"
+        return "gdpr_run_logs"
     else:
         return "target/run_results.json"
 
 
-def parse_log_data(log_file_name: str, output_json_name: str):
+def parse_log_data(log_file_path: str):
     """
         Function to parse the json lines log output into something more manageable for the stage function
     :param log_file_name: File name to read
     :param output_json_name: File name to write json
     :return:
     """
-    if os.path.exists(log_file_name):
-        with open(log_file_name, "r") as file:
-            log_data = file.readlines()
+    for log_file_name in os.listdir(log_file_path):
+        if ".log" in log_file_name:
+            full_file_name = os.path.join(log_file_path, log_file_name)
+            with open(full_file_name, "r") as file:
+                log_data = file.readlines()
 
-        parsed_data = [json.loads(line) for line in log_data]
-        with open(output_json_name, "w", encoding="utf-8") as f:
-            json.dump(parsed_data, f, ensure_ascii=False, indent=4)
-    else:
-        logging.warning(f"File not found: {log_file_name}")
+            parsed_data = [json.loads(line) for line in log_data]
+            logging.info(
+                f"Writing {full_file_name} to {full_file_name.replace('.log', '.json')}"
+            )
+            with open(
+                full_file_name.replace(".log", ".json"), "w", encoding="utf-8"
+            ) as f:
+                json.dump(parsed_data, f, ensure_ascii=False, indent=4)
 
 
 def get_table_name(config_name, snowflake_database):
@@ -89,11 +93,9 @@ if __name__ == "__main__":
         "manifest" and "manifest_reduce" are separated
         to prevent shrink of manifest.json we are using for production documentation.
         """
-        if (
-            config_name == "manifest_reduce"
-            and get_file_size(file_to_measure=file_name)
-            >= COLUMN_LIMIT_SIZE_SNOWFLAKE_MB
-        ):
+        if (config_name == "manifest_reduce") and get_file_size(
+            file_to_measure=file_name
+        ) >= COLUMN_LIMIT_SIZE_SNOWFLAKE_MB:
             logging.info(
                 f"manifest file {file_name} "
                 f"is bigger than "
@@ -106,6 +108,22 @@ if __name__ == "__main__":
             save_json_file(reduced_json=reduced_json, target_file=file_name)
 
             logging.info(f"manifest file {file_name} reduced successfully.")
+
+        if config_name == "gdpr_logs":
+            parse_log_data(file_name)
+            # Loop through files in folder (logs come out of the process pre-split)
+            for f in os.listdir(file_name):
+                if ".json" in f:
+                    logging.info(f"Processing {f}")
+                    snowflake_stage_load_copy_remove(
+                        os.path.join(file_name, f),
+                        f"{snowflake_database}.dbt.dbt_load",
+                        get_table_name(config_name, snowflake_database),
+                        snowflake_engine,
+                    )
+
+            # end immediately after loading files so the next stage_copy_remove isn't run again for gdpr logs.
+            exit(0)
 
         snowflake_stage_load_copy_remove(
             file_name,

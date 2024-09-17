@@ -21,6 +21,7 @@ sources:
       - name: course_completions
       - name: course_purchases
       - name: course_views
+      - name: code_redemptions
       - name: email_captures
       - name: learning_path_actions
       - name: logins

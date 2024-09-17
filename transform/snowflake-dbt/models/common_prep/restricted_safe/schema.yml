@@ -108,8 +108,6 @@ models:
         description:  Renewals Manager supporting this Opportunity
       - name: renewal_forecast_health
         description: Red, Yellow, Green health rating based on the Net ARR field
-      - name: renewal_ownership
-        description: This field determines Rules of Engagement (ROE) and ownership for the Renewal between the Renewals Manager and the Account Executive
       - name: cycle_time_in_days
         description: '{{ doc("cycle_time_in_days") }}'
       - name: ptc_predicted_arr

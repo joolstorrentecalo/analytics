@@ -10,6 +10,6 @@
     
     SELECT * 
     FROM {{ source('zuora_revenue','zuora_revenue_manual_journal_entry') }}
-    QUALIFY RANK() OVER (PARTITION BY je_line_id ORDER BY incr_updt_dt DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY je_line_id ORDER BY incr_updt_dt DESC) = 1
 
 {% endsnapshot %}

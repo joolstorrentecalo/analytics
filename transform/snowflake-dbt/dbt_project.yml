@@ -140,6 +140,14 @@ models:
       default:
         snowplow_web_events:
           +enabled: false
+  # disabling the snowplow sessions columns because they do not work with the snowplow::pass_through_columns added for page_views (page_url AS page_url_original)
+  # more details in https://gitlab.com/gitlab-data/analytics/-/issues/21573
+    sessions:
+      default:
+        snowplow_sessions_tmp:
+          +enabled: false
+        snowplow_sessions:
+          +enabled: false
 
   # ------------------
   # Snowflake Spend Package https://gitlab.com/gitlab-data/snowflake_spend
@@ -221,6 +229,10 @@ models:
         sensitive:
           +schema: sensitive
           secure: true
+
+      data_classification:
+        +schema: data_classification
+        +tags: ["data_classification"]
 
       data_science:
         +schema: data_science

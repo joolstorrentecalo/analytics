@@ -78,6 +78,8 @@
       ping_instance_wave_sm.dim_installation_id,
       ping_instance_wave_sm.ping_delivery_type,
       ping_instance_wave_sm.ping_deployment_type,
+      ping_instance_wave_sm.is_dedicated_metric,
+      ping_instance_wave_sm.is_dedicated_hostname,
       -- Wave 1
       DIV0(
           ping_instance_wave_sm.license_billable_users,
@@ -304,7 +306,7 @@
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@mdrussell",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2022-10-12",
-    updated_date="2024-06-11"
+    updated_date="2024-09-09"
 ) }}

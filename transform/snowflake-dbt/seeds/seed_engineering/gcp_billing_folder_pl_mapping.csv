@@ -1,19 +1,22 @@
-folder_id,folder_name,free,paid,internal
-757630546449,analytics,0,0,1
-894877924163,billing,0,0,1
-706035117310,cloud-realms,0,0,1
-713428624300,customer success,0,1,0
-144814107006,development,0,0,1
-921382176677,distribution,0,0,1
-158815010779,group projects,0,0,1
-922106430841,it operations,0,0,1
-474104154307,monitoring,0,0,1
-781945921234,peopleops,0,0,1
-637571750657,sandbox,0,0,1
-1065226241900,security,0,0,1
-526018715250,security department,0,0,1
-285590385803,opstrace.com,0,0,1
-826849385640,ephemeral,0,0,1
-958496849776,security products,0,0,1
-154660360363,services,0,0,1
-1,common,0,0,1
+full_path,free,paid,internal
+"gitlab.com/transition%",0,0,1
+"gitlab-private.org%",0,0,1
+"gitlab.com/Infrastructure/Environments/Staging%",0,0,1
+"gitlab.com/Infrastructure/Ephemeral%",0,0,1
+"gitlab.com/Infrastructure/Services%",0,0,1
+"gitlab.com/cloud-realms/business-tech-realm-27666457%",0,0,1
+"gitlab.com/cloud-realms/dedicated-dev-realm-a3dd76fb%",0,0,1
+"gitlab.com/cloud-realms/eng-services-realm-dbc69de8",0,0,1
+"gitlab.com/cloud-realms/opstrace-realm-c170d0a4",0,0,1
+"gitlab.com/cloud-realms/sandbox-realm-639e27ff%",0,0,1
+"gitlab.com/cloud-realms/services-realm-1feec840%",0,0,1
+"opstrace.com",0,0,1
+"gitlabdemo.com%",0,0,1
+"gitlab.systems%",0,0,1
+"gitlab-cells.com%",0,0,1
+"gitlab-cells.dev%",0,0,1
+"gitlab.com/Infrastructure/Security Products",0,0,1
+"gitlab.com/cloud-realms/eng-infra-saas-realm-4f395ad7",0,0,1
+"gitlab.com/customers-gitlab-com",0,0,1
+
+

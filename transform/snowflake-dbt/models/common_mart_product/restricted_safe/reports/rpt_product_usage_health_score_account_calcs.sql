@@ -252,12 +252,12 @@ final AS (
 )
 
 SELECT *,
-   LAG(account_level_ci_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_ci_color_previous_month,
-   LAG(account_level_ci_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_ci_color_previous_3_month,
-   LAG(account_level_scm_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_scm_color_previous_month,
-   LAG(account_level_scm_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_scm_color_previous_3_month,
-   LAG(account_level_cd_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_cd_color_previous_month,
-   LAG(account_level_cd_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_cd_color_previous_3_month,
-   LAG(account_level_security_color) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_security_color_previous_month,
-   LAG(account_level_security_color, 3) OVER (PARTITION BY dim_crm_account_id_mart_arr_all ORDER BY reporting_month) AS account_level_security_color_previous_3_month 
+   LAG(account_level_ci_color) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_ci_color_previous_month,
+   LAG(account_level_ci_color, 3) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_ci_color_previous_3_month,
+   LAG(account_level_scm_color) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_scm_color_previous_month,
+   LAG(account_level_scm_color, 3) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_scm_color_previous_3_month,
+   LAG(account_level_cd_color) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_cd_color_previous_month,
+   LAG(account_level_cd_color, 3) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_cd_color_previous_3_month,
+   LAG(account_level_security_color) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_security_color_previous_month,
+   LAG(account_level_security_color, 3) OVER (PARTITION BY hostname_or_namespace_id ORDER BY snapshot_month) AS account_level_security_color_previous_3_month 
 FROM final

@@ -8,3 +8,6 @@ pages,0.33,0.33,0.34
 runner_saas,0,1,0
 security,0,0,1
 shared,0.33,0.33,0.34
+continuous_integration,0,1,0
+source_code_management,0,0,1
+code_review,0,0,1

@@ -207,6 +207,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Customer Success Project Lead
+        permission_rule: project_lead 
 
   - project_name: SAFE
     description: ""
@@ -216,6 +218,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Customer Success Project Lead 
         permission_rule: project_lead
 
 
@@ -245,6 +249,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Data Team Project Lead 
+        permission_rule: project_lead
 
 
   - project_name: SAFE
@@ -255,6 +261,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Data Team Project Lead 
         permission_rule: project_lead
 
 # ==========================================
@@ -283,6 +291,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Engineering Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -292,6 +302,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Engineering Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -319,6 +331,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Finance Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -328,6 +342,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Finance Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -355,6 +371,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Go To Market Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -364,6 +382,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Go To Market Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -389,6 +409,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Marketing Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -398,6 +420,7 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+      - group_name: Marketing Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -425,6 +448,8 @@ projects:
         permission_rule: view_limited
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: People Project Lead
+        permission_rule: project_lead
 
   - project_name: Restricted
     description: ""
@@ -437,6 +462,8 @@ projects:
         permission_rule: project_lead
       - group_name: General All Access
         permission_rule: view_limited
+      - group_name: People Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -446,6 +473,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: People Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -473,6 +502,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Product Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -482,6 +513,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Product Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -509,6 +542,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Sales Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -519,6 +554,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Sales Project Lead
+        permission_rule: project_lead
 
   - project_name: RSA SAFE
     description: ""
@@ -528,6 +565,8 @@ projects:
       - group_name: RSA SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Sales Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -555,6 +594,8 @@ projects:
         permission_rule: view
       - group_name: Production Project Lead
         permission_rule: project_lead
+      - group_name: Security Project Lead
+        permission_rule: project_lead
 
   - project_name: SAFE
     description: ""
@@ -564,6 +605,8 @@ projects:
       - group_name: General SAFE Access
         permission_rule: view
       - group_name: Production Project Lead
+        permission_rule: project_lead
+      - group_name: Security Project Lead
         permission_rule: project_lead
 
 # ==========================================
@@ -591,6 +634,7 @@ projects:
         permission_rule: view
       - group_name: Support Project Lead
         permission_rule: project_lead
+
 
   - project_name: SAFE
     description: ""
@@ -4184,12 +4228,6 @@ users:
     groups:
       - General All Access
       - People All Access
-  - user_name: dsamson
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: dsatcher
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -5508,7 +5546,7 @@ users:
       - General All Access
   - user_name: jonglee
     user_name_domain: gitlab.com
-    site_role: Creator
+    site_role: SiteAdministratorCreator
     auth_setting: SAML
     groups:
       - Data Team All Access
@@ -6268,12 +6306,6 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: lcoleman
-    user_name_domain: gitlab.com
-    site_role: ExplorerCanPublish
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: lemos
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -6559,12 +6591,6 @@ users:
       - RSA SAFE Access
       - Sales All Access
       - Customer Success Project Lead
-  - user_name: marsmith
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: mbabin
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -6895,12 +6921,6 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: mkuske
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: mkuswaya
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -7078,12 +7098,6 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: mross
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: msaleiko
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
@@ -7164,6 +7178,12 @@ users:
     groups:
       - General All Access
   - user_name: mwawrzyniak
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+  - user_name: mwielich
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML
@@ -8380,13 +8400,6 @@ users:
     auth_setting: SAML
     groups:
       - Data Team All Access
-      - General All Access
-      - General SAFE Access
-  - user_name: schoudhary
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
       - General All Access
       - General SAFE Access
   - user_name: schristos
@@ -10044,3 +10057,103 @@ users:
     groups:
       - General All Access
       - General SAFE Access
+  - user_name: lfellows
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+      - General SAFE Access
+  - user_name: dchaudhuri
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+  - user_name: maudl-ext
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access  
+  - user_name: muchikawa
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access        
+  - user_name: kkloss
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access     
+  - user_name: azaher
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access       
+  - user_name: stan
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access   
+  - user_name: darman
+    user_name_domain: gitlab.com
+    site_role: ExplorerCanPublish
+    auth_setting: SAML
+    groups:
+      - General All Access 
+      - General SAFE Access  
+  - user_name: hlange
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access   
+  - user_name: rshah
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access   
+  - user_name: mbenayoun
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+  - user_name: alasch
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+      - General SAFE Access
+  - user_name: ttavares
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+      - General SAFE Access
+  - user_name: mamos
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+  - user_name: achang
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+  - user_name: dhartuti
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access

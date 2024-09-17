@@ -275,6 +275,12 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: crm_user_geo
+        data_tests:
+          - not_null
+      - name: crm_user_sales_segment
+        data_tests:
+          - not_null
 
   - name: prep_app_release_major_minor
     description: '{{ doc("prep_app_release_major_minor") }}'
@@ -3057,4 +3063,21 @@ models:
       - name: old_value
       - name: is_deleted
       - name: field_modified_at
-      
+
+  - name: prep_team_member_history
+    description: '{{ doc("prep_team_member_history") }}'
+    columns:
+      - name: dim_team_member_sk
+        description: A unique ID for each team member.
+      - name: employee_id
+        description: Workday Employee Identification 
+      - name: hire_rank_asc
+        description: Hire event of a team member ranked earliest by date
+      - name: hired_date
+        description: Date of hire
+      - name: termination_date
+        description: Date of termination of employment  
+      - name: term_rank_asc
+        description: Termination event of a team member ranked earliest by date
+      - name: last_date
+        description:  Date of termination or current date, whichever comes first

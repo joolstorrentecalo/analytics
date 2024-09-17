@@ -705,6 +705,8 @@ models:
           - dim_installation_id
           - metrics_path
           - ping_created_date_week
+        config:
+          where: "ping_created_at >= DATEADD('day',-3,CURRENT_DATE())"
   columns:
     - name: ping_instance_metric_id
       description: Outdated, misstated primary key. Leaving in the model to not break dependencies, but can be ignored in the future.

@@ -147,11 +147,16 @@ models:
         tags: ["tdf","gitlab_dotcom"]
         data_tests:
           - not_null
-          - unique
+          - unique:
+              config:
+                where: "created_at >= DATEADD('day',-3,CURRENT_DATE())"
+
       - name: created_at
         tags: ["tdf","gitlab_dotcom"]
         data_tests:
-          - not_null
+          - not_null:
+              config:
+                where: "created_at >= DATEADD('day',-3,CURRENT_DATE())"
 
   - name: gitlab_dotcom_ci_group_variables_source
     description: Base model for Gitlab.com ci_group_variables
@@ -1268,22 +1273,6 @@ models:
         description: '{{ doc("visibility_documentation") }}'
       - name: project_description
         description: '{{ doc("visibility_documentation") }}'
-  - name: gitlab_dotcom_prometheus_alerts_source
-    description: Base model for Gitlab.com prometheus_alerts
-    columns:
-      - name: prometheus_alert_id
-        tags: ["tdf","gitlab_dotcom"]
-        data_tests:
-          - not_null
-          - unique
-      - name: created_at
-        tags: ["tdf","gitlab_dotcom"]
-        data_tests:
-          - not_null
-      - name: updated_at
-        tags: ["tdf","gitlab_dotcom"]
-        data_tests:
-          - not_null
   - name: gitlab_dotcom_releases_source
     description: Base model for Gitlab.com releases
     columns:
@@ -1532,7 +1521,7 @@ models:
         tags: ["tdf","gitlab_dotcom"]
         data_tests:
           - not_null
-        
+
   - name: gitlab_dotcom_subscription_user_add_on_assignments_source
     description: Base model for Gitlab.com subscriptions_add_ons_user_add_on_assignments
     columns:
