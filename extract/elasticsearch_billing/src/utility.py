@@ -65,6 +65,7 @@ def get_list_of_deployments():
     """
     deployments_url = f"/billing/costs/{org_id}/deployments"
     deployments_list = get_response(deployments_url)
+    info(deployments_list)
     output_list = []
     for deployments in deployments_list["deployments"]:
         deployment_id = deployments["deployment_id"]
