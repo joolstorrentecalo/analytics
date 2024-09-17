@@ -35,11 +35,12 @@ def get_itemized_costs_by_deployments():
     else:
         extraction_start_date = date_today.replace(day=1)
     extraction_end_date = date_today - timedelta(days=1)
-
+    info(f"{extraction_start_date} to {extraction_end_date}")
     # Get the list of deployments
     get_response_and_upload_costs_by_deployments(
         extraction_start_date, extraction_end_date, table_name
     )
+    info("Done")
 
 
 def get_reconciliation_data():
