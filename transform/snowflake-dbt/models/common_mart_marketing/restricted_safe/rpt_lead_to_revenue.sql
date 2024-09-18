@@ -149,7 +149,7 @@
     FROM mart_crm_person
     INNER JOIN dim_crm_person
       ON mart_crm_person.dim_crm_person_id = dim_crm_person.dim_crm_person_id
-    FULL JOIN mart_crm_account
+    LEFT JOIN mart_crm_account
       ON mart_crm_person.dim_crm_account_id = mart_crm_account.dim_crm_account_id
     LEFT JOIN mart_crm_touchpoint
       ON mart_crm_touchpoint.email_hash = mart_crm_person.email_hash
@@ -424,7 +424,7 @@
     FROM mart_crm_opportunity
     LEFT JOIN mart_crm_attribution_touchpoint
       ON mart_crm_opportunity.dim_crm_opportunity_id=mart_crm_attribution_touchpoint.dim_crm_opportunity_id
-    FULL JOIN mart_crm_account
+    LEFT JOIN mart_crm_account
       ON mart_crm_opportunity.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE mart_crm_opportunity.created_date >= '2021-02-01'
       OR mart_crm_opportunity.created_date IS NULL
@@ -663,7 +663,7 @@
       won_custom_net_arr,
       won_linear_net_arr
   FROM mart_crm_person_with_tp
-  FULL JOIN opp_base_with_batp
+  LEFT JOIN opp_base_with_batp
     ON mart_crm_person_with_tp.dim_crm_account_id=opp_base_with_batp.dim_crm_account_id
 
 ), intermediate AS (
@@ -737,9 +737,9 @@
   LEFT JOIN dim_date AS sao_date
     ON cohort_base_combined.sales_accepted_date = sao_date.date_day
   LEFT JOIN dim_date AS stage_1_date
-    ON cohort_base_combined.stage_1_discovery_date = sao_date.date_day
+    ON cohort_base_combined.stage_1_discovery_date = stage_1_date.date_day
   LEFT JOIN dim_date AS stage_3_date
-    ON cohort_base_combined.stage_3_technical_evaluation_date = sao_date.date_day
+    ON cohort_base_combined.stage_3_technical_evaluation_date = stage_3_date.date_day
   LEFT JOIN dim_date AS closed_date
     ON cohort_base_combined.close_date = closed_date.date_day
   LEFT JOIN dim_date AS touchpoint_date
