@@ -1,5 +1,5 @@
 WITH base AS (
-  SELECT DISTINCT--create date and close date
+  SELECT --create date and close date
     dim_crm_opportunity_id,
     CASE WHEN stage_name = '7 - Closing' THEN '7-Closing'
       WHEN stage_name = 'Closed Lost' THEN '8-Closed Lost'
@@ -7,7 +7,6 @@ WITH base AS (
     END                AS stage_name,
     created_date   AS created_date,
     MIN(snapshot_date) AS stage_date
-    -- from prod.restricted_safe_common_mart_sales.mart_crm_opportunity_daily_snapshot
   FROM {{ ref('mart_crm_opportunity_daily_snapshot') }}
   WHERE sales_qualified_source_name != 'Web Direct Generated'
     AND created_date >= '2020-02-01'
@@ -17,11 +16,6 @@ WITH base AS (
     AND LOWER(opportunity_name) NOT LIKE '%rebook%'
     AND net_arr > 0
     AND (is_eligible_open_pipeline = 1 OR LOWER(stage_name) LIKE '%clos%')
-    --exclude renewal sales_type=renewal
-    --web portal purchase
-    --opp category: exclude decommission and internal correction
-    --opp name does not contain rebook
-    --net arr > 0 ?
   GROUP BY 1, 2, 3
 ),
 
@@ -40,13 +34,8 @@ stage_base AS (
       WHEN stage_name = 'Closed Won' THEN 'closed_won'
     END                                                                                                          AS stage_name,
     created_date,
-    stage_date,
-    LAG(stage_date, 1) OVER (PARTITION BY dim_crm_opportunity_id ORDER BY stage_date)                            AS prev_stage_date,
-    LAG(stage_name, 1) OVER (PARTITION BY dim_crm_opportunity_id ORDER BY stage_date)                            AS prev_stage_name,
-    DATEDIFF(DAY, LAG(stage_date, 1) OVER (PARTITION BY dim_crm_opportunity_id ORDER BY stage_date), stage_date) AS num_days_in_stage,
-    COUNT(*) OVER (PARTITION BY dim_crm_opportunity_id ORDER BY stage_date)                                      AS stage_rank
+    stage_date
   FROM base
-  -- join to live table for role levels crm_opp_owner_role_level_#
   WHERE stage_name IN ('0-Pending Acceptance', '1-Discovery', '2-Scoping', '3-Technical Evaluation', '4-Proposal', '5-Negotiating', '6-Awaiting Signature', '7-Closing', '8-Closed Lost', 'Closed Won')
 ),
 
@@ -86,136 +75,15 @@ dates_adj AS (
     dim_crm_opportunity_id,
     stage_category,
     created_date,
-    --STAGE0
-    IFF(
-      stage0_date IS NULL,
-      IFF(
-        stage1_date IS NULL,
-        IFF(
-          stage2_date IS NULL,
-          IFF(
-            stage3_date IS NULL,
-            IFF(
-              stage4_date IS NULL,
-              IFF(
-                stage5_date IS NULL,
-                IFF(
-                  stage6_date IS NULL,
-                  IFF(stage7_date IS NULL, close_date, stage7_date),
-                  stage6_date
-                ),
-                stage5_date
-              ),
-              stage4_date
-            ),
-            stage3_date
-          ),
-          stage2_date
-        ),
-        stage1_date
-      ),
-      stage0_date
-    )                                                 AS stage0_date,
-    --STAGE1
-    IFF(
-      stage1_date IS NULL,
-      IFF(
-        stage2_date IS NULL,
-        IFF(
-          stage3_date IS NULL,
-          IFF(
-            stage4_date IS NULL,
-            IFF(
-              stage5_date IS NULL,
-              IFF(
-                stage6_date IS NULL,
-                IFF(stage7_date IS NULL, close_date, stage7_date),
-                stage6_date
-              ),
-              stage5_date
-            ),
-            stage4_date
-          ),
-          stage3_date
-        ),
-        stage2_date
-      ),
-      stage1_date
-    )                                                 AS stage1_date,
-    --STAGE2
-    IFF(
-      stage2_date IS NULL,
-      IFF(
-        stage3_date IS NULL,
-        IFF(
-          stage4_date IS NULL,
-          IFF(
-            stage5_date IS NULL,
-            IFF(
-              stage6_date IS NULL,
-              IFF(stage7_date IS NULL, close_date, stage7_date),
-              stage6_date
-            ),
-            stage5_date
-          ),
-          stage4_date
-        ),
-        stage3_date
-      ),
-      stage2_date
-    )                                                 AS stage2_date,
-    --STAGE3
-    IFF(
-      stage3_date IS NULL,
-      IFF(
-        stage4_date IS NULL,
-        IFF(
-          stage5_date IS NULL,
-          IFF(
-            stage6_date IS NULL,
-            IFF(stage7_date IS NULL, close_date, stage7_date),
-            stage6_date
-          ),
-          stage5_date
-        ),
-        stage4_date
-      ),
-      stage3_date
-    )                                                 AS stage3_date,
-    --STAGE4
-    IFF(
-      stage4_date IS NULL,
-      IFF(
-        stage5_date IS NULL,
-        IFF(
-          stage6_date IS NULL,
-          IFF(stage7_date IS NULL, close_date, stage7_date),
-          stage6_date
-        ),
-        stage5_date
-      ),
-      stage4_date
-    )                                                 AS stage4_date,
-    --STAGE5
-    IFF(
-      stage5_date IS NULL,
-      IFF(
-        stage6_date IS NULL,
-        IFF(stage7_date IS NULL, close_date, stage7_date),
-        stage6_date
-      ),
-      stage5_date
-    )                                                 AS stage5_date,
-    --STAGE6
-    IFF(
-      stage6_date IS NULL,
-      IFF(stage7_date IS NULL, close_date, stage7_date),
-      stage6_date
-    )                                                 AS stage6_date,
-    --STAGE7
-    IFF(stage7_date IS NULL, close_date, stage7_date) AS stage7_date,
-    --CLOSE_DATE
-    close_date
+    COALESCE(stage0_date, stage1_date, stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage0_date,
+    COALESCE(stage1_date, stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage1_date,
+    COALESCE(stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage2_date,
+    COALESCE(stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage3_date,
+    COALESCE(stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage4_date,
+    COALESCE(stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage5_date,
+    COALESCE(stage6_date, stage7_date, close_date, created_date) AS stage6_date,
+    COALESCE(stage7_date, close_date, created_date) AS stage7_date,
+    COALESCE(close_date, created_date) AS close_date,
   FROM stage_dates
 ),
 
@@ -224,38 +92,29 @@ opp_snap AS (
     dim_crm_opportunity_id,
     stage_category,
     created_date,
-    stage0_date - created_date                                                                                                                                                                 AS create_days,
+    stage0_date - created_date AS create_days,
     stage0_date,
-    stage1_date - stage0_date                                                                                                                                                                  AS stage0_days,
+    CASE WHEN stage1_date - stage0_date < 0 THEN 0 ELSE stage1_date - stage0_date END AS stage0_days,
     stage1_date,
-    stage2_date - stage1_date                                                                                                                                                                  AS stage1_days,
+    CASE WHEN stage2_date - stage1_date < 0 THEN 0 ELSE stage2_date - stage1_date END AS stage1_days,
     stage2_date,
-    stage3_date - stage2_date                                                                                                                                                                  AS stage2_days,
+    CASE WHEN stage3_date - stage2_date < 0 THEN 0 ELSE stage3_date - stage2_date END AS stage2_days,
     stage3_date,
-    stage4_date - stage3_date                                                                                                                                                                  AS stage3_days,
+    CASE WHEN stage4_date - stage3_date < 0 THEN 0 ELSE stage4_date - stage3_date END AS stage3_days,
     stage4_date,
-    stage5_date - stage4_date                                                                                                                                                                  AS stage4_days,
+    CASE WHEN stage5_date - stage4_date < 0 THEN 0 ELSE stage5_date - stage4_date END AS stage4_days,
     stage5_date,
-    stage6_date - stage5_date                                                                                                                                                                  AS stage5_days,
+    CASE WHEN stage6_date - stage5_date < 0 THEN 0 ELSE stage6_date - stage5_date END AS stage5_days,
     stage6_date,
-    stage7_date - stage6_date                                                                                                                                                                  AS stage6_days,
+    CASE WHEN stage7_date - stage6_date < 0 THEN 0 ELSE stage7_date - stage6_date END AS stage6_days,
     stage7_date,
-    close_date - stage7_date                                                                                                                                                                   AS stage7_days,
+    CASE WHEN close_date - stage7_date < 0 THEN 0 ELSE close_date - stage7_date END AS stage7_days,
     close_date,
-    CASE WHEN stage_category = 'Open' THEN CURRENT_DATE() - COALESCE(stage7_date, stage6_date, stage5_date, stage4_date, stage3_date, stage2_date, stage1_date, stage0_date, created_date) END AS current_days
+    CASE 
+      WHEN stage_category = 'Open' 
+      THEN CURRENT_DATE() - COALESCE(stage7_date, stage6_date, stage5_date, stage4_date, stage3_date, stage2_date, stage1_date, stage0_date, created_date) 
+    END AS current_days
   FROM dates_adj
-  --remove negatives
-  WHERE (stage0_date - created_date >= 0 OR stage0_date - created_date IS NULL)
-    AND (stage1_date - stage0_date >= 0 OR stage1_date - stage0_date IS NULL)
-    AND (stage2_date - stage1_date >= 0 OR stage2_date - stage1_date IS NULL)
-    AND (stage3_date - stage2_date >= 0 OR stage3_date - stage2_date IS NULL)
-    AND (stage4_date - stage3_date >= 0 OR stage4_date - stage3_date IS NULL)
-    AND (stage5_date - stage4_date >= 0 OR stage5_date - stage4_date IS NULL)
-    AND (stage6_date - stage5_date >= 0 OR stage6_date - stage5_date IS NULL)
-    AND (stage7_date - stage6_date >= 0 OR stage7_date - stage6_date IS NULL)
-    AND (close_date - stage7_date >= 0 OR close_date - stage7_date IS NULL)
-    --remove duplicates
-    AND dim_crm_opportunity_id NOT IN (SELECT dim_crm_opportunity_id FROM dates_adj GROUP BY 1 HAVING COUNT(dim_crm_opportunity_id) > 1)
 )
 
 SELECT * FROM opp_snap
