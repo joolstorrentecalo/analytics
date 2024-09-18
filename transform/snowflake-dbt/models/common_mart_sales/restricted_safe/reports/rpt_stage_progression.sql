@@ -5,18 +5,18 @@ WITH base AS (
       WHEN stage_name = 'Closed Lost' THEN '8-Closed Lost'
       ELSE stage_name
     END                AS stage_name,
-    created_date   AS created_date,
+    created_date,
     -- Some opptys should be excluded from reporting
     MIN(snapshot_date) AS stage_date
   FROM {{ ref('mart_crm_opportunity_daily_snapshot') }}
-  GROUP BY all
+  GROUP BY ALL
 ),
 
 reporting_eligibility AS (
 
-  SELECT 
+  SELECT
     dim_crm_opportunity_id,
-    CASE 
+    CASE
       WHEN (is_eligible_open_pipeline = 1 OR LOWER(stage_name) NOT LIKE '%clos%')
         AND sales_qualified_source_name != 'Web Direct Generated'
         AND created_date >= '2020-02-01'
@@ -25,7 +25,7 @@ reporting_eligibility AS (
         AND opportunity_category NOT IN ('Decommission', 'Internal Correction')
         AND LOWER(opportunity_name) NOT LIKE '%rebook%'
         AND net_arr > 0
-      THEN 1
+        THEN 1
       ELSE 0
     END AS is_eligible_reporting
   FROM {{ ref('mart_crm_opportunity') }}
@@ -44,8 +44,8 @@ stage_base AS (
       WHEN stage_name = '7-Closing' THEN 'stage7'
       WHEN stage_name = '8-Closed Lost' THEN 'closed_lost'
       WHEN stage_name = 'Closed Won' THEN 'closed_won'
-    END                                                                                                          AS stage_name,
-    CASE 
+    END                                                                                 AS stage_name,
+    CASE
       WHEN stage_name = '0-Pending Acceptance' THEN 0
       WHEN stage_name = '1-Discovery' THEN 1
       WHEN stage_name = '2-Scoping' THEN 2
@@ -54,14 +54,14 @@ stage_base AS (
       WHEN stage_name = '5-Negotiating' THEN 5
       WHEN stage_name = '6-Awaiting Signature' THEN 6
       WHEN stage_name = '7-Closing' THEN 7
-      WHEN stage_name IN ('8-Closed Lost','Closed Won') THEN 8
-    END AS stage_number,
+      WHEN stage_name IN ('8-Closed Lost', 'Closed Won') THEN 8
+    END                                                                                 AS stage_number,
     LAG(stage_number, 1) OVER (PARTITION BY dim_crm_opportunity_id ORDER BY stage_date) AS prev_stage_number,
     -- 1 if the opportunity regresses in stage, 0 otherwise
-    CASE 
+    CASE
       WHEN prev_stage_number IS NOT NULL AND prev_stage_number > stage_number THEN 1
       ELSE 0
-    END AS is_stage_regression,
+    END                                                                                 AS is_stage_regression,
     created_date,
     stage_date
   FROM base
@@ -71,7 +71,7 @@ stage_base AS (
 flag_stages AS (
   SELECT
     dim_crm_opportunity_id,
-    MAX(is_stage_regression ) AS is_stage_regression
+    MAX(is_stage_regression) AS is_stage_regression
   FROM stage_base
   GROUP BY dim_crm_opportunity_id
 ),
@@ -113,21 +113,21 @@ dates_adj AS (
     stage_dates.stage_category,
     stage_dates.created_date,
     COALESCE(stage0_date, stage1_date, stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage0_date,
-    COALESCE(stage1_date, stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage1_date,
-    COALESCE(stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage2_date,
-    COALESCE(stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage3_date,
-    COALESCE(stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage4_date,
-    COALESCE(stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage5_date,
-    COALESCE(stage6_date, stage7_date, close_date, created_date) AS stage6_date,
-    COALESCE(stage7_date, close_date, created_date) AS stage7_date,
-    COALESCE(close_date, created_date) AS close_date,
+    COALESCE(stage1_date, stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date)              AS stage1_date,
+    COALESCE(stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date)                           AS stage2_date,
+    COALESCE(stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date)                                        AS stage3_date,
+    COALESCE(stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date)                                                     AS stage4_date,
+    COALESCE(stage5_date, stage6_date, stage7_date, close_date, created_date)                                                                  AS stage5_date,
+    COALESCE(stage6_date, stage7_date, close_date, created_date)                                                                               AS stage6_date,
+    COALESCE(stage7_date, close_date, created_date)                                                                                            AS stage7_date,
+    COALESCE(close_date, created_date)                                                                                                         AS close_date,
     flag_stages.is_stage_regression,
     reporting_eligibility.is_eligible_reporting
   FROM stage_dates
-  LEFT JOIN flag_stages 
-    ON flag_stages.dim_crm_opportunity_id = stage_dates.dim_crm_opportunity_id
-  LEFT JOIN reporting_eligibility 
-    ON reporting_eligibility.dim_crm_opportunity_id = stage_dates.dim_crm_opportunity_id
+  LEFT JOIN flag_stages
+    ON stage_dates.dim_crm_opportunity_id = flag_stages.dim_crm_opportunity_id
+  LEFT JOIN reporting_eligibility
+    ON stage_dates.dim_crm_opportunity_id = reporting_eligibility.dim_crm_opportunity_id
 ),
 
 opp_snap AS (
@@ -135,7 +135,7 @@ opp_snap AS (
     dim_crm_opportunity_id,
     stage_category,
     created_date,
-    stage0_date - created_date AS create_days,
+    stage0_date - created_date                                                        AS create_days,
     stage0_date,
     -- Calculate days between stages; set to 0 if negative to handle unexpected stage transitions 
     CASE WHEN stage1_date - stage0_date < 0 THEN 0 ELSE stage1_date - stage0_date END AS stage0_days,
@@ -152,13 +152,13 @@ opp_snap AS (
     stage6_date,
     CASE WHEN stage7_date - stage6_date < 0 THEN 0 ELSE stage7_date - stage6_date END AS stage6_days,
     stage7_date,
-    CASE WHEN close_date - stage7_date < 0 THEN 0 ELSE close_date - stage7_date END AS stage7_days,
+    CASE WHEN close_date - stage7_date < 0 THEN 0 ELSE close_date - stage7_date END   AS stage7_days,
     close_date,
-    CASE 
-      WHEN stage_category = 'Open' 
-      THEN CURRENT_DATE() - COALESCE(stage7_date, stage6_date, stage5_date, stage4_date, stage3_date, stage2_date, stage1_date, stage0_date, created_date) 
-    END AS current_days,
-    is_stage_regression, 
+    CASE
+      WHEN stage_category = 'Open'
+        THEN CURRENT_DATE() - COALESCE(stage7_date, stage6_date, stage5_date, stage4_date, stage3_date, stage2_date, stage1_date, stage0_date, created_date)
+    END                                                                               AS current_days,
+    is_stage_regression,
     is_eligible_reporting
   FROM dates_adj
 )
