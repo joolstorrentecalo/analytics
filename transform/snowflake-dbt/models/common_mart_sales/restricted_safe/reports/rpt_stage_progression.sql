@@ -33,10 +33,35 @@ stage_base AS (
       WHEN stage_name = '8-Closed Lost' THEN 'closed_lost'
       WHEN stage_name = 'Closed Won' THEN 'closed_won'
     END                                                                                                          AS stage_name,
+    CASE 
+      WHEN stage_name = '0-Pending Acceptance' THEN 0
+      WHEN stage_name = '1-Discovery' THEN 1
+      WHEN stage_name = '2-Scoping' THEN 2
+      WHEN stage_name = '3-Technical Evaluation' THEN 3
+      WHEN stage_name = '4-Proposal' THEN 4
+      WHEN stage_name = '5-Negotiating' THEN 5
+      WHEN stage_name = '6-Awaiting Signature' THEN 6
+      WHEN stage_name = '7-Closing' THEN 7
+      WHEN stage_name IN ('8-Closed Lost','Closed Won') THEN 8
+    END AS stage_number,
+    LAG(stage_number, 1) OVER (PARTITION BY dim_crm_opportunity_id ORDER BY stage_date) AS prev_stage_number,
+    -- 1 if the opportunity regresses in stage, 0 otherwise
+    CASE 
+      WHEN prev_stage_number IS NOT NULL AND prev_stage_number > stage_number THEN 1
+      ELSE 0
+    END AS stage_regression,
     created_date,
     stage_date
   FROM base
   WHERE stage_name IN ('0-Pending Acceptance', '1-Discovery', '2-Scoping', '3-Technical Evaluation', '4-Proposal', '5-Negotiating', '6-Awaiting Signature', '7-Closing', '8-Closed Lost', 'Closed Won')
+),
+
+flag_stages AS (
+  SELECT
+    dim_crm_opportunity_id,
+    MAX(stage_regression) AS stage_regression -- Set the flag to 1 if an opportunity regressed stages
+  FROM stage_base
+  GROUP BY dim_crm_opportunity_id
 ),
 
 stage_pivot AS (
@@ -72,9 +97,9 @@ stage_dates AS (
 
 dates_adj AS (
   SELECT
-    dim_crm_opportunity_id,
-    stage_category,
-    created_date,
+    stage_dates.dim_crm_opportunity_id,
+    stage_dates.stage_category,
+    stage_dates.created_date,
     COALESCE(stage0_date, stage1_date, stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage0_date,
     COALESCE(stage1_date, stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage1_date,
     COALESCE(stage2_date, stage3_date, stage4_date, stage5_date, stage6_date, stage7_date, close_date, created_date) AS stage2_date,
@@ -84,7 +109,10 @@ dates_adj AS (
     COALESCE(stage6_date, stage7_date, close_date, created_date) AS stage6_date,
     COALESCE(stage7_date, close_date, created_date) AS stage7_date,
     COALESCE(close_date, created_date) AS close_date,
+    flag_stages.stage_regression
   FROM stage_dates
+  LEFT JOIN flag_stages 
+    ON flag_stages.dim_crm_opportunity_id = stage_dates.dim_crm_opportunity_id
 ),
 
 opp_snap AS (
@@ -94,6 +122,7 @@ opp_snap AS (
     created_date,
     stage0_date - created_date AS create_days,
     stage0_date,
+    -- Calculate days between stages; set to 0 if negative to handle unexpected stage transitions 
     CASE WHEN stage1_date - stage0_date < 0 THEN 0 ELSE stage1_date - stage0_date END AS stage0_days,
     stage1_date,
     CASE WHEN stage2_date - stage1_date < 0 THEN 0 ELSE stage2_date - stage1_date END AS stage1_days,
@@ -113,7 +142,8 @@ opp_snap AS (
     CASE 
       WHEN stage_category = 'Open' 
       THEN CURRENT_DATE() - COALESCE(stage7_date, stage6_date, stage5_date, stage4_date, stage3_date, stage2_date, stage1_date, stage0_date, created_date) 
-    END AS current_days
+    END AS current_days,
+    stage_regression
   FROM dates_adj
 )
 
