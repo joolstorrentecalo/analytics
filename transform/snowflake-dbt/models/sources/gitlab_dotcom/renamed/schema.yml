@@ -706,6 +706,42 @@ models:
       - name: created_at
       - name: updated_at
 
+  - name: gitlab_dotcom_incident_management_issuable_escalation_statuses_source
+    description: Base model for Gitlab.com Issuable Escalation Statuses
+    columns:
+      - name: status_id
+        tags: ["tdf","gitlab_dotcom"]
+        data_tests:
+          - not_null
+          - unique
+
+  - name: gitlab_dotcom_incident_management_timeline_event_tag_links_source
+    description: Base model for Gitlab.com Incident Management Timeline Event Tag Links
+    columns:
+      - name: event_tag_link_id
+        tags: ["tdf","gitlab_dotcom"]
+        data_tests:
+          - not_null
+          - unique
+
+  - name: gitlab_dotcom_incident_management_timeline_event_tags_source
+    description: Base model for Gitlab.com Incident Management Timeline Event Tags
+    columns:
+      - name: event_tag_id
+        tags: ["tdf","gitlab_dotcom"]
+        data_tests:
+          - not_null
+          - unique
+
+  - name: gitlab_dotcom_incident_management_timeline_events_source
+    description: Base model for Gitlab.com Incident Management Timeline Events
+    columns:
+      - name: timeline_event_id
+        tags: ["tdf","gitlab_dotcom"]
+        data_tests:
+          - not_null
+          - unique
+
   - name: gitlab_dotcom_issuable_severities_source
     description: Base model for Gitlab.com Incident Issue Severities
     columns:

@@ -37,6 +37,7 @@
       dim_crm_touchpoint.bizible_landing_page_raw,
       dim_crm_touchpoint.bizible_marketing_channel,
       dim_crm_touchpoint.bizible_marketing_channel_path,
+      dim_crm_touchpoint.marketing_review_channel_grouping,
       dim_crm_touchpoint.bizible_medium,
       dim_crm_touchpoint.bizible_referrer_page,
       dim_crm_touchpoint.bizible_referrer_page_raw,
@@ -365,5 +366,5 @@
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2021-02-18",
-    updated_date="2024-05-30"
+    updated_date="2024-09-12"
 ) }}

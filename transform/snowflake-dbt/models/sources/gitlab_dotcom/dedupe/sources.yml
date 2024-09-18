@@ -195,6 +195,14 @@ sources:
         identifier: gitlab_db_group_group_links
       - name: identities
         identifier: gitlab_db_identities
+      - name: incident_management_issuable_escalation_statuses
+        identifier: gitlab_db_incident_management_issuable_escalation_statuses
+      - name: incident_management_timeline_events
+        identifier: gitlab_db_incident_management_timeline_events
+      - name: incident_management_timeline_event_tags
+        identifier: gitlab_db_incident_management_timeline_event_tags
+      - name: incident_management_timeline_event_tag_links
+        identifier: gitlab_db_incident_management_timeline_event_tag_links
       - name: issuable_severities
         identifier: gitlab_db_issuable_severities
       - name: issue_assignees

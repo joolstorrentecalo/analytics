@@ -230,6 +230,21 @@ WITH campaign_details AS (
       combined_touchpoints.utm_content_industry,
       combined_touchpoints.bizible_marketing_channel,
       combined_touchpoints.bizible_marketing_channel_path,
+      CASE
+        WHEN combined_touchpoints.bizible_marketing_channel IN ('Paid Search', 'Content', 'Paid Social') 
+          THEN 'Paid Demand Gen'
+        WHEN combined_touchpoints.bizible_marketing_channel IN ('Event') 
+          THEN 'Events'
+        WHEN combined_touchpoints.bizible_marketing_channel IN ('Email') 
+          THEN 'Email Nurture'
+        WHEN combined_touchpoints.bizible_marketing_channel IN ('Other','Direct', 'Organic Search', 'Digital', 'Web Referral', 'Social') 
+          THEN 'Inbound Demand'
+        WHEN combined_touchpoints.bizible_marketing_channel IN ('SDR Generated') 
+          THEN 'Outbound Demand'
+        WHEN combined_touchpoints.bizible_marketing_channel IN ('Referral') 
+          THEN 'Partner'
+        ELSE CONCAT('not-grouped - ',combined_touchpoints.bizible_marketing_channel)
+      END AS marketing_review_channel_grouping,
       combined_touchpoints.bizible_medium,
       combined_touchpoints.bizible_referrer_page,
       combined_touchpoints.bizible_referrer_page_raw,
@@ -304,5 +319,5 @@ WITH campaign_details AS (
     created_by="@mcooperDD",
     updated_by="@rkohnke",
     created_date="2021-01-21",
-    updated_date="2024-05-30" 
+    updated_date="2024-09-12" 
 ) }}

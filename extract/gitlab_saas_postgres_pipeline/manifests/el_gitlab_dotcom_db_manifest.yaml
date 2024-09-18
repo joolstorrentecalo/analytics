@@ -1056,6 +1056,81 @@ tables:
       FROM gpg_signatures
       WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
         AND '{END_TIMESTAMP}'::timestamp
+  incident_management_issuable_escalation_statuses:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: incident_management_issuable_escalation_statuses
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , issue_id
+      , policy_id
+      , escalations_started_at
+      , resolved_at
+      , status
+      FROM incident_management_issuable_escalation_statuses
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  incident_management_timeline_events:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: incident_management_timeline_events
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , occurred_at
+      , project_id
+      , author_id
+      , issue_id
+      , updated_by_user_id
+      , promoted_from_note_id
+      , cached_markdown_version
+      , editable
+      FROM incident_management_timeline_events
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  incident_management_timeline_event_tags:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: incident_management_timeline_event_tags
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , created_at
+      , updated_at
+      , project_id
+      FROM incident_management_timeline_event_tags
+      WHERE updated_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
+  incident_management_timeline_event_tag_links:
+    deletes_exempt: True
+    is_incremental: True
+    database_type: main
+    export_schema: "gitlab_com"
+    export_table: incident_management_timeline_event_tag_links
+    export_table_primary_key: id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT id
+      , timeline_event_id
+      , timeline_event_tag_id
+      , created_at
+      FROM incident_management_timeline_event_tag_links
+      WHERE created_at BETWEEN '{BEGIN_TIMESTAMP}'::timestamp
+        AND '{END_TIMESTAMP}'::timestamp
   identities:
     dbt_source_model: true
     deletes_exempt: True

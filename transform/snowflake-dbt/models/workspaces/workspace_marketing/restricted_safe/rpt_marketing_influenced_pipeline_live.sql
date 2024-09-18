@@ -17,6 +17,7 @@
     mart_crm_attribution_touchpoint.bizible_integrated_campaign_grouping,
     mart_crm_attribution_touchpoint.bizible_marketing_channel,
     mart_crm_attribution_touchpoint.bizible_marketing_channel_path,
+    mart_crm_attribution_touchpoint.marketing_review_channel_grouping,
     mart_crm_attribution_touchpoint.bizible_ad_campaign_name,
     mart_crm_attribution_touchpoint.budget_holder,
     mart_crm_attribution_touchpoint.campaign_rep_role_name,
@@ -187,6 +188,7 @@ combined_models AS (
       THEN 'Web Direct.No Touchpoint'
       ELSE attribution_touchpoint_base.bizible_marketing_channel_path 
     END AS bizible_marketing_channel_path,
+    attribution_touchpoint_base.marketing_review_channel_grouping,
     attribution_touchpoint_base.bizible_ad_campaign_name,
     attribution_touchpoint_base.budget_holder,
     attribution_touchpoint_base.campaign_rep_role_name,
@@ -253,5 +255,5 @@ combined_models AS (
     created_by="@dmicovic",
     updated_by="@rkohnke",
     created_date="2023-09-01",
-    updated_date="2024-02-22",
+    updated_date="2024-09-12",
   ) }}
