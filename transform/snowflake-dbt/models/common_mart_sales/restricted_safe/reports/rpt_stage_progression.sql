@@ -7,8 +7,17 @@ WITH base AS (
     END                AS stage_name,
     created_date   AS created_date,
     -- Some opptys should be excluded from reporting
+    MIN(snapshot_date) AS stage_date
+  FROM {{ ref('mart_crm_opportunity_daily_snapshot') }}
+  GROUP BY all
+),
+
+reporting_eligibility AS (
+
+  SELECT 
+    dim_crm_opportunity_id,
     CASE 
-      WHEN is_eligible_open_pipeline 
+      WHEN (is_eligible_open_pipeline = 1 OR LOWER(stage_name) NOT LIKE '%clos%')
         AND sales_qualified_source_name != 'Web Direct Generated'
         AND created_date >= '2020-02-01'
         AND sales_type != 'Renewal'
@@ -18,10 +27,8 @@ WITH base AS (
         AND net_arr > 0
       THEN 1
       ELSE 0
-    END AS is_eligible_reporting,
-    MIN(snapshot_date) AS stage_date
-  FROM {{ ref('mart_crm_opportunity_daily_snapshot') }}
-  GROUP BY all
+    END AS is_eligible_reporting
+  FROM {{ ref('mart_crm_opportunity') }}
 ),
 
 stage_base AS (
@@ -54,7 +61,7 @@ stage_base AS (
     CASE 
       WHEN prev_stage_number IS NOT NULL AND prev_stage_number > stage_number THEN 1
       ELSE 0
-    END AS is_stage_regression ,
+    END AS is_stage_regression,
     created_date,
     stage_date
   FROM base
@@ -64,7 +71,7 @@ stage_base AS (
 flag_stages AS (
   SELECT
     dim_crm_opportunity_id,
-    MAX(is_stage_regression ) AS is_stage_regression  -- Set the flag to 1 if an opportunity regressed stages
+    MAX(is_stage_regression ) AS is_stage_regression
   FROM stage_base
   GROUP BY dim_crm_opportunity_id
 ),
@@ -114,10 +121,13 @@ dates_adj AS (
     COALESCE(stage6_date, stage7_date, close_date, created_date) AS stage6_date,
     COALESCE(stage7_date, close_date, created_date) AS stage7_date,
     COALESCE(close_date, created_date) AS close_date,
-    flag_stages.is_stage_regression 
+    flag_stages.is_stage_regression,
+    reporting_eligibility.is_eligible_reporting
   FROM stage_dates
   LEFT JOIN flag_stages 
     ON flag_stages.dim_crm_opportunity_id = stage_dates.dim_crm_opportunity_id
+  LEFT JOIN reporting_eligibility 
+    ON reporting_eligibility.dim_crm_opportunity_id = stage_dates.dim_crm_opportunity_id
 ),
 
 opp_snap AS (
@@ -148,7 +158,8 @@ opp_snap AS (
       WHEN stage_category = 'Open' 
       THEN CURRENT_DATE() - COALESCE(stage7_date, stage6_date, stage5_date, stage4_date, stage3_date, stage2_date, stage1_date, stage0_date, created_date) 
     END AS current_days,
-    is_stage_regression 
+    is_stage_regression, 
+    is_eligible_reporting
   FROM dates_adj
 )
 
