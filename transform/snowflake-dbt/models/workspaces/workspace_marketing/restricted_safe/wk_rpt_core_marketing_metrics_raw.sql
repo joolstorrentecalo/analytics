@@ -72,20 +72,19 @@ WITH l2r_base AS (
         daily_allocated_target
      FROM {{ref('mart_sales_funnel_target_daily')}}
 
-), s3_target_prep AS (
+-- ), s3_target_prep AS (
 
-    SELECT
-        target_month,
-        geo,
-        region,
-        segment,
-        s3_pipeline_quota,
-        days_in_month_count,
-        SUM(s3_pipeline_quota/days_in_month_count) AS daily_allocated_target
-    FROM {{ref('sheetload_sales_dev_targets_fy25_sources')}}
-    LEFT JOIN {{ref('dim_date')}}
-        ON sheetload_sales_dev_targets_fy25_sources.target_month=dim_date.first_day_of_month
-    GROUP BY 1,2,3,4
+--     SELECT
+--         target_month,
+--         geo,
+--         segment,
+--         s3_pipeline_quota,
+--         days_in_month_count,
+--         SUM(s3_pipeline_quota/days_in_month_count) AS daily_allocated_target
+--     FROM {{ref('sheetload_sales_dev_targets_fy25_sources')}}
+--     LEFT JOIN {{ref('dim_date')}}
+--         ON sheetload_sales_dev_targets_fy25_sources.target_month=dim_date.first_day_of_month
+--     GROUP BY 1,2,3,4
 
 ), inquiry_prep AS (
     
@@ -208,37 +207,37 @@ WITH l2r_base AS (
         OR l2r_base.close_date IS NULL)
         AND target_prep.kpi_name = 'Net ARR Pipeline Created'
 
-), stage_3_plus_pipeline_prep AS (
+-- ), stage_3_plus_pipeline_prep AS (
 
-    SELECT DISTINCT
-        CASE
-            WHEN opp_order_type = '1. New - First Order'
-                THEN TRUE 
-            ELSE FALSE        
-        END                                       AS is_first_order,
-        opp_account_demographics_sales_segment    AS segment,
-        opp_account_demographics_region           AS region,
-        opp_account_demographics_geo              AS geo,
-        parent_crm_account_upa_country            AS country,
-        l2r_base.sales_qualified_source_name,
-        stage_3_technical_evaluation_date         AS metric_date,
-        'S3+ Pipeline'                            AS metric,
-        CASE 
-            WHEN is_net_arr_pipeline_created = 1
-                THEN net_arr
-            ELSE NULL
-        END                                       AS metric_value,
-        daily_allocated_target                    AS target_value
-    FROM l2r_base
-    LEFT JOIN s3_target_prep
-        ON l2r_base.true_inquiry_date_pt=s3_target_prep.target_date
-            AND l2r_base.opp_account_demographics_sales_segment=s3_target_prep.segment
-            AND l2r_base.opp_account_demographics_geo=s3_target_prep.geo
-            AND l2r_base.opp_account_demographics_region=s3_target_prep.region
-    WHERE (l2r_base.stage_3_technical_evaluation_date <= l2r_base.close_date
-        OR l2r_base.close_date IS NULL)
-        AND l2r_base.sales_qualified_source_name= 'SDR'
-        AND is_first_order = TRUE
+--     SELECT DISTINCT
+--         CASE
+--             WHEN opp_order_type = '1. New - First Order'
+--                 THEN TRUE 
+--             ELSE FALSE        
+--         END                                       AS is_first_order,
+--         opp_account_demographics_sales_segment    AS segment,
+--         opp_account_demographics_region           AS region,
+--         opp_account_demographics_geo              AS geo,
+--         parent_crm_account_upa_country            AS country,
+--         l2r_base.sales_qualified_source_name,
+--         stage_3_technical_evaluation_date         AS metric_date,
+--         'S3+ Pipeline'                            AS metric,
+--         CASE 
+--             WHEN is_net_arr_pipeline_created = 1
+--                 THEN net_arr
+--             ELSE NULL
+--         END                                       AS metric_value,
+--         daily_allocated_target                    AS target_value
+--     FROM l2r_base
+--     LEFT JOIN s3_target_prep
+--         ON l2r_base.true_inquiry_date_pt=s3_target_prep.target_date
+--             AND l2r_base.opp_account_demographics_sales_segment=s3_target_prep.segment
+--             AND l2r_base.opp_account_demographics_geo=s3_target_prep.geo
+--             AND l2r_base.opp_account_demographics_region=s3_target_prep.region
+--     WHERE (l2r_base.stage_3_technical_evaluation_date <= l2r_base.close_date
+--         OR l2r_base.close_date IS NULL)
+--         AND l2r_base.sales_qualified_source_name= 'SDR'
+--         AND is_first_order = TRUE
 
 ), closed_won_prep AS (
 
@@ -362,5 +361,5 @@ WITH l2r_base AS (
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2024-09-03",
-    updated_date="2024-09-03",
+    updated_date="2024-09-18",
 ) }}

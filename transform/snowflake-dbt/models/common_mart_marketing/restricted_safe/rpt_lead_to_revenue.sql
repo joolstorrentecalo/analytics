@@ -149,7 +149,7 @@
     FROM mart_crm_person
     INNER JOIN dim_crm_person
       ON mart_crm_person.dim_crm_person_id = dim_crm_person.dim_crm_person_id
-    LEFT JOIN mart_crm_account
+    FULL JOIN mart_crm_account
       ON mart_crm_person.dim_crm_account_id = mart_crm_account.dim_crm_account_id
     LEFT JOIN mart_crm_touchpoint
       ON mart_crm_touchpoint.email_hash = mart_crm_person.email_hash
@@ -424,7 +424,7 @@
     FROM mart_crm_opportunity
     LEFT JOIN mart_crm_attribution_touchpoint
       ON mart_crm_opportunity.dim_crm_opportunity_id=mart_crm_attribution_touchpoint.dim_crm_opportunity_id
-    LEFT JOIN mart_crm_account
+    FULL JOIN mart_crm_account
       ON mart_crm_opportunity.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE mart_crm_opportunity.created_date >= '2021-02-01'
       OR mart_crm_opportunity.created_date IS NULL
@@ -759,5 +759,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-09-05",
+    updated_date="2024-09-18",
   ) }}
