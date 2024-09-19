@@ -1,3 +1,7 @@
+{{ config(
+    materialized='table'
+) }}
+
 WITH marketo_person AS (
   
   SELECT DISTINCT 
