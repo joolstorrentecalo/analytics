@@ -4,7 +4,7 @@
 
 WITH l2r_base AS (
 
-    SELECT DISTINCT
+    SELECT
         dim_crm_person_id,
         sfdc_record_id,
         email_hash,
@@ -279,7 +279,7 @@ WITH l2r_base AS (
         NULL AS sales_qualified_source_name,
         metric,
         target_value,
-        metric_value
+        metric_value::TEXT AS metric_value
     FROM inquiry_prep
     UNION ALL 
     SELECT
@@ -292,7 +292,7 @@ WITH l2r_base AS (
         NULL AS sales_qualified_source_name,
         metric,
         target_value,
-        metric_value
+        metric_value::TEXT AS metric_value
     FROM mql_prep
     UNION ALL 
     SELECT
@@ -305,7 +305,7 @@ WITH l2r_base AS (
         sales_qualified_source_name,
         metric,
         target_value,
-        metric_value
+        metric_value::TEXT AS metric_value
     FROM sao_prep
     UNION ALL 
     SELECT
@@ -318,7 +318,7 @@ WITH l2r_base AS (
         sales_qualified_source_name,
         metric,
         target_value,
-        metric_value
+        metric_value::TEXT AS metric_value
     FROM pipeline_prep
     UNION ALL 
     SELECT
@@ -331,7 +331,7 @@ WITH l2r_base AS (
         sales_qualified_source_name,
         metric,
         target_value,
-        metric_value
+        metric_value::TEXT AS metric_value
     FROM closed_won_prep
 
 ), final AS (
@@ -361,5 +361,5 @@ WITH l2r_base AS (
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2024-09-03",
-    updated_date="2024-09-18",
+    updated_date="2024-09-19",
 ) }}
