@@ -296,7 +296,7 @@
       mart_crm_person.person_score,
       mart_crm_person.behavior_score,
       mart_crm_person.employee_bucket,
-      mart_crm_person.leandata_matched_account_sales_Segment,
+      mart_crm_person.leandata_matched_account_sales_segment,
       mart_crm_person.sfdc_record_type,
       map_alternative_lead_demographics.employee_count_segment_custom,
       map_alternative_lead_demographics.employee_bucket_segment_custom,
@@ -423,7 +423,7 @@
       ON mart_crm_opportunity.dim_crm_account_id=dim_crm_account.dim_crm_account_id
     LEFT JOIN dim_crm_account partner_account
       ON mart_crm_opportunity.partner_account=partner_account.dim_crm_account_id
-  {{dbt_utils.group_by(n=203)}}
+  {{dbt_utils.group_by(n=201)}}
     
 ), cohort_base_combined AS (
   
