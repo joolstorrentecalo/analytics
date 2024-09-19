@@ -336,7 +336,7 @@ WITH marketo_person AS (
     NULL AS scored_action
   FROM {{ ref('marketo_activity_fill_out_linkedin_lead_gen_form_source') }}
 
-), marketo_visit_web_page AS 
+), marketo_visit_web_page AS (
 
     SELECT {{ hash_sensitive_columns('marketo_activity_visit_webpage_source') }}
     FROM {{ ref('marketo_activity_visit_webpage_source') }}
@@ -399,7 +399,7 @@ WITH marketo_person AS (
     activity_date::DATE AS activity_date,
     COUNT(DISTINCT marketo_activity_visit_webpage_id) AS visits
   FROM marketo_visit_web_page
-  GROUP BY 1,2,3
+  {{dbt_utils.group_by(n=3)}}
 
 ), visit_multi_pages AS (
   
@@ -525,7 +525,6 @@ WITH marketo_person AS (
 
 ), trial_self_managed_personal AS (
 
-    -- SELECT DISTINCT
     SELECT
         dim_marketo_person_id,
         activity_datetime,
@@ -571,7 +570,6 @@ WITH marketo_person AS (
 
 ), trial_self_managed_business AS (
 
-    -- SELECT DISTINCT
     SELECT
         dim_marketo_person_id,
         activity_datetime,
@@ -1069,5 +1067,5 @@ COALESCE(trial_self_managed_default.trial_type,trial_saas_default.trial_type,tri
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2024-09-18",
-    updated_date="2024-09-18"
+    updated_date="2024-09-19"
 ) }}
