@@ -9,7 +9,7 @@
     ('dim_crm_user','dim_crm_user'),
     ('dim_date', 'dim_date'),
     ('mart_crm_person','mart_crm_person'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
+    ('mart_crm_opportunity','mart_crm_opportunity'),
     ('sfdc_campaign_member','sfdc_campaign_member'),
     ('mart_crm_opportunity_daily_snapshot','mart_crm_opportunity_daily_snapshot'),
     ('mart_crm_account','mart_crm_account'),
@@ -57,6 +57,9 @@
     fct_campaign.count_opportunities,
     fct_campaign.count_responses,
     fct_campaign.count_won_opportunities,
+    CASE 
+    WHEN true_event_date > CURRENT_DATE 
+    THEN TRUE END AS future_event_flag,
 
     -- dates
     campaign_start.fiscal_quarter_name_fy                                                       AS campaign_fiscal_quarter_name_fy,
@@ -137,14 +140,15 @@ campaign_members AS (
   -- partner from campaigns
   LEFT JOIN mart_crm_account AS campaign_partner_account
     ON campaigns.campaign_partner_crm_id = campaign_partner_account.dim_crm_account_id
+  WHERE mart_crm_person.email_domain != 'gitlab.com'
 
 ),
 
 account_open_pipeline_live AS (
   SELECT
-    mart_crm_opportunity_stamped_hierarchy_hist.dim_crm_account_id,
+    mart_crm_opportunity.dim_crm_account_id,
     SUM(COALESCE(net_arr, 0)) AS open_pipeline_live
-  FROM mart_crm_opportunity_stamped_hierarchy_hist
+  FROM mart_crm_opportunity
   WHERE 
     is_net_arr_pipeline_created = TRUE AND 
     is_eligible_open_pipeline = 1 AND 
@@ -160,7 +164,11 @@ account_summary AS (
     true_event_date,
     campaign_name,
     open_pipeline_live,
-    COUNT(DISTINCT dim_crm_person_id)                                                         AS registered_leads,
+    COUNT(DISTINCT
+          CASE
+          WHEN campaign_member_status IN ('Attended On-demand', 'No Show', 'Follow-up Requested', 'Meeting Requested', 'Registered', 'Attended', 'Subscribed to Updates', 'Cancelled', 'Meeting No Show', 'Visited Booth', 'Meeting Attended', 'Follow Up Requested') 
+          THEN dim_crm_person_id
+          END)                                                         AS registered_leads,
     COUNT(
       DISTINCT 
       CASE 
@@ -293,7 +301,7 @@ opportunity_snapshot_base AS (
     mart_crm_opportunity_daily_snapshot AS snapshot
   INNER JOIN snapshot_opportunity_dates
     ON snapshot.snapshot_date = snapshot_opportunity_dates.date_day
-  LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist AS live
+  LEFT JOIN mart_crm_opportunity AS live
     ON snapshot.dim_crm_opportunity_id = live.dim_crm_opportunity_id
   LEFT JOIN mart_crm_account AS account
     ON snapshot.dim_crm_account_id = account.dim_crm_account_id
@@ -379,6 +387,15 @@ eligible_opps AS (
       ELSE FALSE 
     END AS open_pipeline_at_event_date_flag,
     CASE 
+      WHEN event_snapshot_type = 'Current Date' AND 
+      opportunity_campaign_snapshot_prep.pipeline_created_date <= opportunity_campaign_snapshot_prep.true_event_date AND 
+      snapshot_is_eligible_open_pipeline = TRUE AND 
+      is_net_arr_pipeline_created = TRUE 
+      THEN TRUE 
+      ELSE FALSE 
+    END AS open_pipeline_current_date_flag,
+
+    CASE 
       WHEN opportunity_campaign_snapshot_prep.pipeline_created_date >= opportunity_campaign_snapshot_prep.true_event_date AND 
       opportunity_campaign_snapshot_prep.is_net_arr_pipeline_created
       THEN TRUE 
@@ -391,6 +408,7 @@ opportunity_campaign_snapshot_base AS (
     SELECT DISTINCT
     opportunity_campaign_snapshot_prep.*,
     eligible_opps.open_pipeline_at_event_date_flag,
+    eligible_opps.open_pipeline_current_date_flag,
     eligible_opps.sourced_pipeline_post_event_flag
     FROM 
     opportunity_campaign_snapshot_prep
@@ -403,7 +421,9 @@ opportunity_campaign_snapshot_base AS (
     AND 
     opportunity_campaign_snapshot_prep.dim_campaign_id = eligible_opps.dim_campaign_id
     WHERE 
-    eligible_opps.open_pipeline_at_event_date_flag = TRUE OR eligible_opps.sourced_pipeline_post_event_flag = TRUE 
+    eligible_opps.open_pipeline_at_event_date_flag = TRUE 
+    OR eligible_opps.sourced_pipeline_post_event_flag = TRUE 
+    OR eligible_opps.open_pipeline_current_date_flag = TRUE
 ),
 
 
@@ -611,6 +631,7 @@ final AS (
     campaigns.campaign_sub_region,
     campaigns.campaign_budgeted_cost,
     campaigns.campaign_actual_cost,
+    campaigns.future_event_flag,
   --Opportunity dimensions
     opportunity_snapshot_base.snapshot_stage_name,
     opportunity_snapshot_base.live_stage_name,
@@ -640,6 +661,7 @@ final AS (
     opportunity_snapshot_base.snapshot_is_net_arr_pipeline_created,
     opportunity_snapshot_base.snapshot_is_booked_net_arr,
     opportunity_campaign_snapshot_base.open_pipeline_at_event_date_flag,
+    opportunity_campaign_snapshot_base.open_pipeline_current_date_flag,
     opportunity_campaign_snapshot_base.sourced_pipeline_post_event_flag,
   --ACCOUNT LEVEL METRICS
     account_summary.open_pipeline_live,
@@ -693,5 +715,5 @@ final AS (
     created_by="@dmicovic",
     updated_by="@dmicovic",
     created_date="2024-04-23",
-    updated_date="2024-07-02",
+    updated_date="2024-09-11",
   ) }}

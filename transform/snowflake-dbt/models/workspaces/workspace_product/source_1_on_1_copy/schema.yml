@@ -87,7 +87,6 @@ models:
     description: Workspace model of the source data (deduplicated).
 
   - name: customers_db_provisions
-    description: Workspace model of the customers.gitlab.com provisions table. The table used to track the provision of SM and SaaS subscriptions through its entire life cycle.
     description: '{{ doc("customers_db_provisions_source") }}'  
     columns:
       - name: subscription_name

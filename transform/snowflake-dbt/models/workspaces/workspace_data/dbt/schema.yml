@@ -16,7 +16,7 @@ models:
     - name: dbt_compilation_runtime
       description: 'The most recent not null compilation time elapsed for each DBT model.'
       columns:
-        - name: model_name
+        - name: model_unique_id
           data_tests:
             - not_null
             - unique
@@ -54,3 +54,35 @@ models:
       description: "DBT test results by name and time"
     - name: dbt_gdpr_logs
       description: "DBT test results by name and time"
+    - name: wk_rpt_dbt_model_efficiency
+      description: A report for calculating the efficiency of dbt models.  It aggregates query data up to the dbt resource level and applies report level filtering.
+      columns:
+        - name: report_key
+          data_tests:
+            - unique
+        - name: dbt_invocation_id
+        - name: dbt_version
+        - name: dbt_run_started_at
+        - name: is_invocation_full_refresh
+        - name: airflow_dag_id
+        - name: airflow_task_id
+        - name: airflow_dag_run_date_id
+        - name: airflow_run_id
+        - name: airflow_try_number
+        - name: airflow_orchestration
+        - name: is_model_full_refresh
+        - name: model_materialization
+        - name: resource_id
+        - name: resource_name
+        - name: resource_type
+        - name: resource_bytes_scanned
+        - name: resource_bytes_written
+        - name: resource_bytes_spilled_to_remote_storage
+        - name: resource_bytes_spilled_to_local_storage
+        - name: resource_partitions_total
+        - name: resource_partitions_scanned
+        - name: resource_query_count
+        - name: resource_remote_storage_efficiency
+        - name: resource_local_storage_efficiency
+        - name: resource_partition_efficiency
+        - name: resource_efficiency_score

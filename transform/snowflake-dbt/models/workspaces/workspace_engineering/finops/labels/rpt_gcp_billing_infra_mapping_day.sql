@@ -84,12 +84,12 @@ runner_labels AS (
 
 ),
 
-unit_mapping AS (
+{# unit_mapping AS (
 
   SELECT * FROM {{ ref('gcp_billing_unit_mapping') }}
   WHERE category = 'usage'
 
-),
+), #}
 
 project_ancestory AS (
 
@@ -100,21 +100,10 @@ project_ancestory AS (
 
 ),
 
-folder_pl_mapping AS (
+full_path AS (
 
   SELECT *
-  FROM {{ ref('gcp_billing_folder_pl_mapping') }}
-
-),
-
-folder_labels AS (
-
-  SELECT
-    a.source_primary_key,
-    a.folder_id
-  FROM project_ancestory AS a
-  INNER JOIN folder_pl_mapping AS b ON a.folder_id = b.folder_id
-  WHERE a.has_project_to_exclude = 0 -- project to be excluded for folder_pl mapping
+  FROM {{ ref('project_full_path') }}
 
 ),
 
@@ -129,9 +118,9 @@ billing_base AS (
     infra_labels.resource_label_value                          AS infra_label,
     env_labels.resource_label_value                            AS env_label,
     runner_labels.resource_label_value                         AS runner_label,
-    IFF(export.project_id IS NULL, 1, folder_labels.folder_id) AS folder_label,
     export.usage_unit                                          AS usage_unit,
     export.pricing_unit                                        AS pricing_unit,
+    full_path.full_path                                        AS full_path,
     SUM(export.usage_amount)                                   AS usage_amount,
     SUM(export.usage_amount_in_pricing_units)                  AS usage_amount_in_pricing_units,
     SUM(export.cost_before_credits)                            AS cost_before_credits,
@@ -151,7 +140,9 @@ billing_base AS (
     ON
       export.source_primary_key = runner_labels.source_primary_key
   LEFT JOIN
-    folder_labels ON export.source_primary_key = folder_labels.source_primary_key
+        full_path ON (export.project_id = full_path.gcp_project_id 
+        AND DATE_TRUNC('day', export.usage_start_time) >= DATE_TRUNC('day', full_path.first_created_at) 
+        AND DATE_TRUNC('day', export.usage_start_time) <= DATEADD('day', -1, DATE_TRUNC('day', full_path.last_updated_at)))
   {{ dbt_utils.group_by(n=10) }}
 
 )
@@ -164,14 +155,13 @@ SELECT
   bill.infra_label                   AS infra_label,
   bill.env_label                     AS env_label,
   bill.runner_label                  AS runner_label,
-  bill.folder_label::VARCHAR         AS folder_label,
   bill.usage_unit,
   bill.pricing_unit,
+  full_path                AS full_path,
   bill.usage_amount                  AS usage_amount,
   bill.usage_amount_in_pricing_units AS usage_amount_in_pricing_units,
   bill.cost_before_credits           AS cost_before_credits,
   bill.net_cost                      AS net_cost,
-  usage.converted_unit               AS usage_standard_unit,
-  bill.usage_amount / usage.rate     AS usage_amount_in_standard_unit
+  bill.usage_amount                  AS usage_amount_in_standard_unit
 FROM billing_base AS bill
-LEFT JOIN unit_mapping AS usage ON usage.raw_unit = bill.usage_unit
+

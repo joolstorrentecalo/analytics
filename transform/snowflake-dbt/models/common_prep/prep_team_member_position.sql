@@ -22,23 +22,40 @@ employee_mapping AS (
 
 staffing_history AS (
 
-  SELECT *
+  SELECT *,
+    COALESCE(LAG(effective_date) OVER ( PARTITION BY employee_id ORDER BY effective_date DESC,date_time_initiated DESC ), '2099-01-01') AS next_effective_date
   FROM {{ref('staffing_history_approved_source')}}
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY employee_id, effective_date ORDER BY effective_date DESC) = 1 
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY employee_id, effective_date ORDER BY date_time_initiated DESC) = 1 
 
 ),
 
 job_profiles AS (
 
   SELECT 
+    job_workday_id,
     job_code,
     job_profile                                                                                                                AS position,
     job_family                                                                                                                 AS job_family,
     management_level                                                                                                           AS management_level, 
     job_level                                                                                                                  AS job_grade,
-    is_job_profile_active                                                                                                      AS is_position_active
-  FROM {{ref('job_profiles_snapshots_source')}}
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY job_code ORDER BY valid_from DESC) = 1 
+    is_job_profile_active                                                                                                      AS is_position_active,
+    valid_from,
+    valid_to
+  FROM {{ref('blended_job_profiles_source')}}
+
+),
+
+dates AS (
+
+  SELECT *
+  FROM {{ref('dim_date')}}
+
+),
+
+cost_centers AS (
+
+  SELECT *
+  FROM {{ref('cost_centers_source')}}
 
 ),
 
@@ -192,39 +209,35 @@ position_history AS (
     staffing_history.employee_id                                                                                               AS employee_id,
     staffing_history.team_id_current                                                                                           AS team_id,
     staffing_history.manager_current                                                                                           AS manager,
-    staffing_history.department_current                                                                                        AS department,
-    NULL                                                                                                                       AS division,
+    cost_centers.department_name                                                                                               AS department,
+    cost_centers.division                                                                                                      AS division,
     staffing_history.suporg_current                                                                                            AS suporg,
-
-    /*
-      We weren't capturing history of job codes and when they changed, we didn't capture it anywhere
-      The following job codes from staffing_history don't exist in job_profiles so 
-      we are capturing them through this case statement
-    */
-
-    CASE 
-      WHEN staffing_history.job_code_current = 'SA.FSDN.P5' 
-        THEN 'SA.FSDN.P5-SAE'                                                        
-      WHEN staffing_history.job_code_current = 'SA.FSDN.P4' 
-        THEN 'SA.FSDN.P4-SAE'
-      WHEN staffing_history.job_code_current = 'MK.PMMF.M3-PM'
-        THEN 'MK.PMMF.M4-PM'
-      ELSE staffing_history.job_code_current
-    END                                                                                                                        AS job_code,
+    job_profiles.job_code                                                                                                      AS job_code,
     staffing_history.job_specialty_single_current                                                                              AS job_specialty_single,
     staffing_history.job_specialty_multi_current                                                                               AS job_specialty_multi,
     staffing_history.entity_current                                                                                            AS entity,
-    staffing_history.termination_date                                                                                          AS termination_date,
+    IFF(business_process_type IN (
+			'End Contingent Worker Contract'
+			,'Termination'
+			), staffing_history.effective_date, NULL)                                                                                AS termination_date,           
     job_profiles.position                                                                                                      AS position,
     job_profiles.job_family                                                                                                    AS job_family,
     job_profiles.management_level                                                                                              AS management_level,
     job_profiles.job_grade::VARCHAR                                                                                            AS job_grade,
     job_profiles.is_position_active                                                                                            AS is_position_active,
-    staffing_history.effective_date                                                                                            AS effective_date
-  FROM staffing_history
+    MIN(dates.date_actual)                                                                                                    AS effective_date
+  FROM dates
+  INNER JOIN staffing_history
+    ON dates.date_actual >= staffing_history.effective_date
+      AND dates.date_actual < staffing_history.next_effective_date
   LEFT JOIN job_profiles
-    ON job_profiles.job_code = staffing_history.job_code_current
-  WHERE effective_date >= '2022-06-16'
+    ON staffing_history.job_workday_id_current = job_profiles.job_workday_id
+      AND dates.date_actual >= job_profiles.valid_from
+      AND dates.date_actual < job_profiles.valid_to
+  LEFT JOIN cost_centers
+    ON staffing_history.department_workday_id_current = cost_centers.department_workday_id
+  WHERE dates.date_actual BETWEEN '2022-06-16' and CURRENT_DATE
+  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,staffing_history.hire_date
 
   UNION
 
@@ -269,9 +282,8 @@ union_clean AS (
     position_history.entity                                                                                                    AS entity,
     position_history.termination_date                                                                                          AS termination_date,
     position_history.is_position_active                                                                                        AS is_position_active,
-    MIN(position_history.effective_date)                                                                                       AS effective_date
+    position_history.effective_date                                                                                            AS effective_date
   FROM position_history
-  {{ dbt_utils.group_by(n=16)}}
 
 ),
 
@@ -279,8 +291,8 @@ final AS (
 
   SELECT 
     -- Surrogate keys
-    {{ dbt_utils.generate_surrogate_key(['union_clean.employee_id'])}}                                                                  AS dim_team_member_sk,
-    {{ dbt_utils.generate_surrogate_key(['union_clean.team_id'])}}                                                                      AS dim_team_sk,
+    {{ dbt_utils.generate_surrogate_key(['union_clean.employee_id'])}}                                                         AS dim_team_member_sk,
+    {{ dbt_utils.generate_surrogate_key(['union_clean.team_id'])}}                                                             AS dim_team_sk,
 
     -- Team member position attributes
     union_clean.employee_id                                                                                                    AS employee_id,
@@ -329,7 +341,7 @@ SELECT
     WHEN ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY valid_from DESC) = 1 
       THEN TRUE
     ELSE FALSE
-  END                                                                                                                          AS is_current
+  END                                                                                                                        AS is_current
 FROM final
 WHERE termination_date IS NULL
 QUALIFY ROW_NUMBER() OVER (PARTITION BY employee_id, DATE(valid_from) ORDER BY valid_from DESC)  = 1 

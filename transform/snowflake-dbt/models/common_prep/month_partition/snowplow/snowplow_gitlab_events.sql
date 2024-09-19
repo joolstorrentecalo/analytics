@@ -449,7 +449,17 @@ WITH filtered_source as (
       events_with_flattened_context.unload_event_end,
       events_with_flattened_context.unload_event_start,
       events_with_flattened_context.instance_version,
-      events_with_flattened_context.correlation_id
+      events_with_flattened_context.correlation_id,
+      events_with_flattened_context.total_context_size_bytes,
+      events_with_flattened_context.content_above_cursor_size_bytes,
+      events_with_flattened_context.content_below_cursor_size_bytes,
+      events_with_flattened_context.context_items,
+      events_with_flattened_context.context_items_count,
+      events_with_flattened_context.input_tokens,
+      events_with_flattened_context.output_tokens,
+      events_with_flattened_context.context_tokens_sent,
+      events_with_flattened_context.context_tokens_used,
+      events_with_flattened_context.debounce_interval
 
     FROM base
     LEFT JOIN events_with_flattened_context

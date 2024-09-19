@@ -178,3 +178,23 @@ models:
         description: The earliest date the localities and factors were is in a source file.
       - name: is_current
         description: The earliest date the localities and factors were is in a source file.
+
+  - name: cloud_connector_configuration
+    description: Emphemeral layer for extracting and cleaning data from [cloud_connector.yml file](https://gitlab.com/gitlab-org/customers-gitlab-com/-/blob/main/config/cloud_connector.yml).
+    columns:
+      - name: environment_name
+        description: '{{ doc("cloud_connector_environment_name") }}'
+      - name: backend
+        description: '{{ doc("cloud_connector_backend") }}'
+      - name: feature_name
+        description: '{{ doc("cloud_connector_feature_name") }}'
+      - name: bundled_with_add_on_name
+        description: '{{ doc("cloud_connector_bundled_with_add_on_name") }}'
+      - name: unit_primitive_name
+        description: '{{ doc("cloud_connector_unit_primitive_name") }}'
+      - name: cut_off_date
+        description: '{{ doc("cloud_connector_cut_off_date") }}'
+      - name: min_gitlab_version
+        description: '{{ doc("cloud_connector_min_gitlab_version") }}'
+      - name: min_gitlab_version_for_free_access
+        description: '{{ doc("cloud_connector_min_gitlab_version_for_free_access") }}'

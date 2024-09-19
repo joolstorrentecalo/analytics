@@ -760,7 +760,9 @@ Industry dimension, based off of salesforce account data, using the `generate_si
 
 {% docs dim_installation %}
 
-Installation dimension, based off of version ping data and version host table. The primary key comes from `prep_ping_instance` and is built as a surrogate key based off of the `dim_host_id` and the `dim_instance_id`
+Installation dimension, based off of version ping data and version host table. The primary key comes from `prep_ping_instance` and is built as a surrogate key based off of the `dim_host_id` and the `dim_instance_id`. Importantly, this means that any installation that has never sent a Service Ping will not appear in this table. We want to add installations that have never sent a ping to this model, that work will be coordinated [here](https://gitlab.com/gitlab-data/analytics/-/issues/21661).
+
+An installtion can change from one delivery/deployment type to another. For example, an installation can start as a Self-Managed installation, but later transition to GitLab Dedicated. In this case, the installation would have multiple valid `product_delivery_type` and `product_deployment_type` values. To account for this, in this model, these fields are [Type 1 Slowly Changing Dimensions](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/type-1/), meaning that we always populate the field with the most recent value.
 
 {% enddocs %}
 
@@ -2130,5 +2132,11 @@ It combines daily targets, daily actuals along with the total quarterly targets 
 
 This table is a derived fact from fct_team_status and gitlab_pto. Sensitive columns are masked and only visible by team members with the `analyst_people` role assigned in Snowflake.
 The grain of this table is one row per pto_uuid per absence_date per dim_team_member_sk combination. 
+
+{% enddocs %}
+
+{% docs fct_team_member_history %}
+
+Contains the team members' employment history.
 
 {% enddocs %}

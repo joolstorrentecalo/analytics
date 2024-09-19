@@ -92,7 +92,8 @@ renamed AS (
     qualifying_datetime__c AS qualifying_datetime,
     qualified_datetime__c AS qualified_datetime,
     unqualified_datetime__c AS unqualified_datetime,
-    nurture_datetime__c AS nurture_datetime,
+    nurture_datetime__c AS initial_recycle_datetime,
+    initial_nurture_datetime__c AS most_recent_recycle_datetime,
     bad_data_datetime__c AS bad_data_datetime,
     worked_date__c AS worked_datetime,
     web_portal_purchase_datetime__c AS web_portal_purchase_datetime,
@@ -140,6 +141,8 @@ renamed AS (
     pql_namespace_name__c AS pql_namespace_name,
     pqlnamespaceusers__c AS pql_namespace_users,
     lead_score_classification__c AS lead_score_classification,
+    assignment_date__c AS assignment_date,
+    assignment_type__c AS assignment_type,
 
     {{ sfdc_source_buckets('leadsource') }}
 

@@ -18,6 +18,7 @@
       fct_sales_funnel_target_daily.fiscal_quarter_name_fy,
       fct_sales_funnel_target_daily.fiscal_year,
       fct_sales_funnel_target_daily.kpi_name,
+      dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk,
       dim_crm_user_hierarchy.crm_user_sales_segment,
       dim_crm_user_hierarchy.crm_user_sales_segment_grouped,
       dim_crm_user_hierarchy.crm_user_business_unit,

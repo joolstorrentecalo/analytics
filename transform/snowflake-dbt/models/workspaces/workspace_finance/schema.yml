@@ -1206,3 +1206,12 @@ models:
         description: Raw value of the actuals for the quaerter
       - name: target_attainment
         description: actuals_raw divided by targets_raw to calculate % of attainment
+  
+  - name: wk_rpt_retention_future_parent_account_inc_delta_arr
+    columns:
+      - name: primary_key
+        data_tests:
+          - not_null
+          - unique
+
+  - name: wk_rpt_arr_snapshot

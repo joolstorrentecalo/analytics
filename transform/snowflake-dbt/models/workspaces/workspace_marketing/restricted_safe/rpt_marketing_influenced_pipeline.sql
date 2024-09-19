@@ -5,23 +5,23 @@
 {{ simple_cte([
     ('mart_crm_attribution_touchpoint','mart_crm_attribution_touchpoint'),
     ('mart_crm_opportunity_daily_snapshot','mart_crm_opportunity_daily_snapshot'),
-    ('mart_crm_opportunity_stamped_hierarchy_hist','mart_crm_opportunity_stamped_hierarchy_hist'),
+    ('mart_crm_opportunity','mart_crm_opportunity'),
     ('mart_crm_account','mart_crm_account'),
     ('sfdc_bizible_attribution_touchpoint_snapshots_source', 'sfdc_bizible_attribution_touchpoint_snapshots_source'),
     ('dim_date','dim_date')
 ]) }}
 
 , snapshot_dates AS (
-  SELECT DISTINCT
-  date_day,
-  fiscal_year,
-  fiscal_quarter,
-  fiscal_quarter_name_fy,
-  snapshot_date_fpa
-  FROM 
-  dim_date
-  WHERE 
-  day_of_fiscal_quarter_normalised = 90 AND date_day BETWEEN '2023-01-31' AND CURRENT_DATE-2
+  SELECT
+    date_day,
+    LAG(fiscal_year, 1) OVER (ORDER BY date_day) AS fiscal_year,
+    LAG(fiscal_quarter, 1) OVER (ORDER BY date_day) AS fiscal_quarter,
+    LAG(fiscal_quarter_name_fy, 1) OVER (ORDER BY date_day) AS fiscal_quarter_name_fy
+  FROM
+  dim_date 
+  WHERE day_of_fiscal_quarter = 4 
+    AND date_day >= '2023-01-31'
+  
   UNION 
   
 --latest snapshot for current quarter
@@ -29,13 +29,12 @@
   date_day,
   fiscal_year,
   fiscal_quarter,
-  fiscal_quarter_name_fy,
-  snapshot_date_fpa
+  fiscal_quarter_name_fy
   FROM 
   dim_date 
-  WHERE (day_of_fiscal_quarter_normalised BETWEEN 3 AND 89) AND date_day = CURRENT_DATE-2 
+  WHERE day_of_fiscal_quarter <> 4 AND date_day = CURRENT_DATE-2 
 
-    ORDER BY 1 DESC
+  ORDER BY 1 DESC
 
 
 ),  attribution_touchpoint_snapshot_base AS (
@@ -51,6 +50,7 @@
     mart_crm_attribution_touchpoint.bizible_marketing_channel_path,
     sfdc_bizible_attribution_touchpoint_snapshots_source.bizible_marketing_channel AS snapshot_marketing_channel,
     sfdc_bizible_attribution_touchpoint_snapshots_source.bizible_marketing_channel_path AS snapshot_marketing_channel_path,
+    mart_crm_attribution_touchpoint.marketing_review_channel_grouping,
     mart_crm_attribution_touchpoint.bizible_ad_campaign_name,
     mart_crm_attribution_touchpoint.bizible_form_url,
     mart_crm_attribution_touchpoint.budget_holder,
@@ -88,11 +88,11 @@
         (dbt_valid_FROM <= date_day AND dbt_valid_to > date_day) OR (dbt_valid_from <= date_day AND dbt_valid_to is null)
 
 
-    LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist ON
-    sfdc_bizible_attribution_touchpoint_snapshots_source.opportunity_id = mart_crm_opportunity_stamped_hierarchy_hist.DIM_CRM_OPPORTUNITY_ID
+    LEFT JOIN mart_crm_opportunity ON
+    sfdc_bizible_attribution_touchpoint_snapshots_source.opportunity_id = mart_crm_opportunity.DIM_CRM_OPPORTUNITY_ID
 
     WHERE 
-    snapshot_dates.fiscal_quarter_name_fy = mart_crm_opportunity_stamped_hierarchy_hist.pipeline_created_fiscal_quarter_name 
+    snapshot_dates.fiscal_quarter_name_fy = mart_crm_opportunity.pipeline_created_fiscal_quarter_name 
 
 )
 
@@ -145,6 +145,27 @@ SELECT
   --    report_opportunity_user_sub_business_unit,
   --    report_opportunity_user_division,
   --    report_opportunity_user_asm,
+  live.report_role_level_1,
+  live.report_role_level_2,
+  SPLIT_PART(live.report_role_level_2, '_', 2)                         AS report_role_level_2_clean,
+  live.report_role_level_3,
+  COALESCE(SPLIT_PART(live.report_role_level_3, '_', 3),SPLIT_PART(live.report_role_level_2, '_', 2) )                         AS report_role_level_3_clean,
+  live.report_role_level_4,
+  live.report_role_level_5,
+  CASE
+  WHEN live.report_role_level_1 = 'APJ' THEN 'APJ'
+  WHEN live.report_role_level_1 = 'SMB' THEN 'SMB'
+  WHEN live.report_role_level_1 = 'PUBSEC' THEN 'PUBSEC'
+  WHEN live.report_role_level_2 = 'AMER_COMM' THEN 'AMER COMM'
+  WHEN live.report_role_level_1 = 'AMER' THEN 'AMER ENT'
+  WHEN live.report_role_level_2 = 'EMEA_COMM' THEN 'EMEA COMM'
+  WHEN live.report_role_level_2 = 'EMEA_NEUR' THEN 'EMEA NEUR'
+  WHEN live.report_role_level_2 = 'EMEA_DACH' THEN 'EMEA DACH'
+  WHEN live.report_role_level_2 = 'EMEA_SEUR' THEN 'EMEA SEUR'
+  WHEN live.report_role_level_2 = 'EMEA_META' THEN 'EMEA META'
+  WHEN live.report_role_level_2 = 'EMEA_TELCO' THEN 'EMEA TELCO'
+  END          
+  AS pipe_council_grouping,  
 
   --Flags
   live.is_sao,
@@ -166,11 +187,10 @@ SELECT
   --Metrics
   snapshot.net_arr                          AS opp_net_arr
 
-FROM
-  mart_crm_opportunity_daily_snapshot AS snapshot
+FROM mart_crm_opportunity_daily_snapshot AS snapshot
 INNER JOIN snapshot_dates
   ON snapshot.snapshot_date = snapshot_dates.date_day
-LEFT JOIN mart_crm_opportunity_stamped_hierarchy_hist AS live
+LEFT JOIN mart_crm_opportunity AS live
   ON snapshot.dim_crm_opportunity_id = live.dim_crm_opportunity_id
 LEFT JOIN mart_crm_account AS account
   ON snapshot.dim_crm_account_id = account.dim_crm_account_id
@@ -221,6 +241,18 @@ combined_models AS (
     opportunity_snapshot_base.order_type,
     opportunity_snapshot_base.sales_qualified_source_name,
     opportunity_snapshot_base.stage_name,
+    opportunity_snapshot_base.report_segment,
+    opportunity_snapshot_base.report_geo,
+    opportunity_snapshot_base.report_area,
+    opportunity_snapshot_base.report_region,
+    opportunity_snapshot_base.report_role_level_1,
+    opportunity_snapshot_base.report_role_level_2,
+    opportunity_snapshot_base.report_role_level_2_clean,
+    opportunity_snapshot_base.report_role_level_3,
+    opportunity_snapshot_base.report_role_level_3_clean,
+    opportunity_snapshot_base.report_role_level_4,
+    opportunity_snapshot_base.report_role_level_5,
+    opportunity_snapshot_base.pipe_council_grouping,
 
 --Touchpoint Dimensions
     attribution_touchpoint_snapshot_base.bizible_touchpoint_type,
@@ -246,6 +278,7 @@ combined_models AS (
     END AS bizible_marketing_channel_path,
     attribution_touchpoint_snapshot_base.snapshot_marketing_channel,
     attribution_touchpoint_snapshot_base.snapshot_marketing_channel_path,
+    attribution_touchpoint_snapshot_base.marketing_review_channel_grouping,
     attribution_touchpoint_snapshot_base.bizible_ad_campaign_name,
     attribution_touchpoint_snapshot_base.bizible_form_url,
     attribution_touchpoint_snapshot_base.budget_holder,
@@ -359,6 +392,18 @@ combined_models AS (
     opportunity_snapshot_base.order_type,
     opportunity_snapshot_base.sales_qualified_source_name,
     opportunity_snapshot_base.stage_name,
+    opportunity_snapshot_base.report_segment,
+    opportunity_snapshot_base.report_geo,
+    opportunity_snapshot_base.report_area,
+    opportunity_snapshot_base.report_region,
+    opportunity_snapshot_base.report_role_level_1,
+    opportunity_snapshot_base.report_role_level_2,
+    opportunity_snapshot_base.report_role_level_2_clean,
+    opportunity_snapshot_base.report_role_level_3,
+    opportunity_snapshot_base.report_role_level_3_clean,
+    opportunity_snapshot_base.report_role_level_4,
+    opportunity_snapshot_base.report_role_level_5,
+    opportunity_snapshot_base.pipe_council_grouping,
 
 
 --Touchpoint Dimensions
@@ -369,6 +414,7 @@ combined_models AS (
     'Other.Removed Touchpoint' AS bizible_marketing_channel_path,
     'Other' AS snapshot_marketing_channel,
     'Other.Removed Touchpoint' AS snapshot_marketing_channel_path,
+    'Other.Removed Touchpoint' AS marketing_review_channel_grouping,
     NULL AS bizible_ad_campaign_name,
     NULL AS bizible_form_url,
     NULL AS budget_holder,
@@ -420,26 +466,22 @@ combined_models AS (
     opportunity_snapshot_base.is_eligible_age_analysis_flag
 
     FROM missing_net_arr_difference
-    INNER JOIN
-    opportunity_snapshot_base ON missing_net_arr_difference.dim_crm_opportunity_id = opportunity_snapshot_base.dim_crm_opportunity_id 
-    AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = opportunity_snapshot_base.pipeline_created_fiscal_quarter_name
+    INNER JOIN opportunity_snapshot_base 
+      ON missing_net_arr_difference.dim_crm_opportunity_id = opportunity_snapshot_base.dim_crm_opportunity_id 
+        AND missing_net_arr_difference.pipeline_created_fiscal_quarter_name = opportunity_snapshot_base.pipeline_created_fiscal_quarter_name
 
 ), final AS (
-    SELECT 
-    *
-    FROM 
-    combined_models
+    SELECT *
+    FROM combined_models
     UNION ALL
-    SELECT
-    *
-    FROM
-    missing_net_arr_base
+    SELECT *
+    FROM missing_net_arr_base
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@rkohnke",
-    updated_by="@dmicovic",
+    updated_by="@rkohnke",
     created_date="2023-04-11",
-    updated_date="2024-03-04",
+    updated_date="2024-09-12",
   ) }}

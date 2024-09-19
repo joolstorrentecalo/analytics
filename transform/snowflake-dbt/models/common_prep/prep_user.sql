@@ -48,7 +48,8 @@ user_preferences AS (
 
   SELECT
     user_id                                         AS user_id,
-    COALESCE(setup_for_company::VARCHAR, 'Unknown') AS setup_for_company
+    COALESCE(setup_for_company::VARCHAR, 'Unknown') AS setup_for_company,
+    COALESCE(early_access_program_participant::VARCHAR, 'Unknown') AS early_access_program_participant
   FROM gitlab_dotcom_user_preferences_source
 
 ),
@@ -125,12 +126,16 @@ renamed AS (
     source.commit_email_domain                                                                  AS commit_email_domain,
     commit_email_domain.classification                                                          AS commit_email_domain_classification,
     closest_provider.identity_provider                                                          AS identity_provider,
+    source.user_type_id                                                                         AS user_type_id,
+    source.user_type                                                                            AS user_type,
+    source.is_bot                                                                               AS is_bot,
 
     -- Expanded Attributes  (Not Found = Joined Row Not found for the Attribute)
     COALESCE(source.role, 'Unknown')                                                            AS role,
     COALESCE(TO_DATE(source.last_activity_on)::VARCHAR, 'Unknown')                              AS last_activity_date,
     COALESCE(TO_DATE(source.last_sign_in_at)::VARCHAR, 'Unknown')                               AS last_sign_in_date,
     COALESCE(user_preferences.setup_for_company, 'Not Found')                                   AS setup_for_company,
+    COALESCE(user_preferences.early_access_program_participant, 'Not Found')                    AS early_access_program_participant,
     COALESCE(user_details.jobs_to_be_done, 'Not Found')                                         AS jobs_to_be_done,
     COALESCE(customer_leads.for_business_use, 'Not Found')                                      AS for_business_use,
     COALESCE(customer_leads.employee_count, 'Not Found')                                        AS employee_count,
@@ -166,7 +171,7 @@ renamed AS (
 {{ dbt_audit(
     cte_ref="renamed",
     created_by="@mpeychet",
-    updated_by="@tpoole",
+    updated_by="@mdrussell",
     created_date="2021-05-31",
-    updated_date="2022-08-25"
+    updated_date="2024-08-29"
 ) }}

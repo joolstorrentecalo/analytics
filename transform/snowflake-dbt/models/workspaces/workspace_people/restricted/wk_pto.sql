@@ -5,12 +5,12 @@ WITH directory AS (
 
 pto_source AS (
   SELECT *
-  FROM {{ ref('gitlab_pto') }}
+  FROM {{ ref('prep_pto') }}
 ),
 
 date_details AS (
   SELECT *
-  FROM {{ ref('date_details') }}
+  FROM {{ ref('dim_date') }}
 ),
 
 start_date AS (
@@ -54,7 +54,6 @@ pto AS (
   SELECT
     *,
     DATEDIFF(DAY, start_date, end_date) + 1                AS pto_days_requested,
-    DAYOFWEEK(pto_date)                                    AS pto_day_of_week,
     NOT COALESCE(total_hours < employee_day_length, FALSE) AS is_full_day,
     ROW_NUMBER() OVER (
       PARTITION BY
@@ -63,13 +62,9 @@ pto AS (
       ORDER BY
         end_date DESC,
         pto_uuid DESC
-    )                                                      AS pto_rank,
-    'Y'                                                    AS is_pto_date
+    )                                                      AS pto_rank
   FROM pto_source
-  WHERE pto_status = 'AP'
-    AND pto_date <= CURRENT_DATE
-    AND pto_day_of_week BETWEEN 1
-    AND 5
+  WHERE pto_date <= CURRENT_DATE
     AND pto_days_requested <= 25
     AND COALESCE(pto_group_type, '') != 'EXL'
     AND NOT COALESCE(pto_type_name, '') IN ('CEO Shadow Program', 'Conference', 'Customer Visit')

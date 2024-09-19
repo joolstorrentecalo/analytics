@@ -2,12 +2,13 @@
         materialized = "incremental",
         unique_key = "fct_behavior_website_page_view_sk",
         on_schema_change='sync_all_columns',
+        post_hook=["{{ rolling_window_delete('behavior_at','month',25) }}"],
         tags=['product']
 ) }}
 
 {{
     simple_cte([
-    ('page_views', 'prep_snowplow_page_views_all'),
+    ('page_views', 'prep_snowplow_page_views_all')
     ])
 }}
 
@@ -40,15 +41,17 @@
       page_view_index,
       page_view_in_session_index,
       referer_url_path,
-      page_url,
-      referer_url,
+      page_url_original                                                             AS page_url,
+      page_referrer                                                                 AS referrer_url,
       page_url_scheme,
       referer_url_scheme,
       IFNULL(geo_city, 'Unknown')::VARCHAR                                          AS user_city,
       IFNULL(geo_country, 'Unknown')::VARCHAR                                       AS user_country,
       IFNULL(geo_region, 'Unknown')::VARCHAR                                        AS user_region,
       IFNULL(geo_region_name, 'Unknown')::VARCHAR                                   AS user_region_name,
-      IFNULL(geo_timezone, 'Unknown')::VARCHAR                                      AS user_timezone_name
+      IFNULL(geo_timezone, 'Unknown')::VARCHAR                                      AS user_timezone_name,
+      REGEXP_REPLACE(page_url_original, '^https?:\/\/')                             AS page_url_host_path,
+      REGEXP_REPLACE(page_referrer, '^https?:\/\/')                                 AS referrer_url_host_path,
     FROM page_views
 
     {% if is_incremental() %}
@@ -61,18 +64,18 @@
 
     SELECT
       -- Primary Key
-      {{ dbt_utils.generate_surrogate_key(['event_id','page_view_end_at']) }}                    AS fct_behavior_website_page_view_sk,
+      {{ dbt_utils.generate_surrogate_key(['event_id','page_view_end_at']) }}                               AS fct_behavior_website_page_view_sk,
 
       -- Foreign Keys
-      {{ dbt_utils.generate_surrogate_key(['page_url', 'app_id', 'page_url_scheme']) }}          AS dim_behavior_website_page_sk,
-      {{ dbt_utils.generate_surrogate_key(['referer_url', 'app_id', 'referer_url_scheme']) }}    AS dim_behavior_referrer_page_sk,
+      {{ dbt_utils.generate_surrogate_key(['page_url', 'app_id', 'page_url_scheme']) }}                     AS dim_behavior_website_page_sk,
+      {{ dbt_utils.generate_surrogate_key(['referrer_url', 'app_id', 'referer_url_scheme']) }}              AS dim_behavior_referrer_page_sk,
       page_views_w_clean_url.dim_namespace_id,
       page_views_w_clean_url.dim_project_id,
 
       --Time Attributes
       page_views_w_clean_url.page_view_start_at,
       page_views_w_clean_url.page_view_end_at,
-      page_views_w_clean_url.page_view_start_at                                                  AS behavior_at,
+      page_views_w_clean_url.page_view_start_at                                                             AS behavior_at,
 
       -- Natural Keys
       page_views_w_clean_url.session_id,
@@ -101,13 +104,16 @@
       page_views_w_clean_url.page_url_path,
       page_views_w_clean_url.page_url,
       page_views_w_clean_url.page_url_host,
+      page_views_w_clean_url.referrer_url,
       page_views_w_clean_url.referer_url_path,
       page_views_w_clean_url.event_name,
       NULL                                                                                       AS sf_formid,
       page_views_w_clean_url.engaged_seconds,
       page_views_w_clean_url.page_load_time_in_ms,
       page_views_w_clean_url.page_view_index,
-      page_views_w_clean_url.page_view_in_session_index
+      page_views_w_clean_url.page_view_in_session_index,
+      page_views_w_clean_url.page_url_host_path,
+      page_views_w_clean_url.clean_url_path
     FROM page_views_w_clean_url
 
 )
@@ -115,7 +121,7 @@
 {{ dbt_audit(
     cte_ref="page_views_w_dim",
     created_by="@chrissharp",
-    updated_by="@utkarsh060",
+    updated_by="@michellecooper",
     created_date="2022-07-22",
-    updated_date="2024-06-17"
+    updated_date="2024-08-27"
 ) }}

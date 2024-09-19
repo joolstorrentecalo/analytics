@@ -14,6 +14,7 @@ WITH date_details AS (
      *,
      IFNULL(valid_to, CURRENT_TIMESTAMP) AS valid_to_
    FROM {{ ref('gitlab_dotcom_project_statistics_snapshots_base') }}
+   QUALIFY ROW_NUMBER() OVER (PARTITION BY project_id, valid_from::DATE ORDER BY valid_from DESC) = 1
 
 ), project_snapshots_daily AS (
 
@@ -34,8 +35,8 @@ WITH date_details AS (
       project_snapshots.last_update_started_at
     FROM project_snapshots
     INNER JOIN date_details
-      ON date_details.date_actual BETWEEN project_snapshots.valid_from::DATE AND project_snapshots.valid_to_::DATE
-      QUALIFY ROW_NUMBER() OVER(PARTITION BY snapshot_day, project_id ORDER BY valid_to_ DESC) = 1
+      ON date_details.date_actual >= project_snapshots.valid_from::DATE
+      AND date_details.date_actual < project_snapshots.valid_to_::DATE
 
 )
 

@@ -9,9 +9,47 @@
     ('xmau_metrics', 'map_gitlab_dotcom_xmau_metrics'),
     ('namespace_order_subscription', 'bdg_namespace_order_subscription'),
     ('dim_subscription', 'dim_subscription'),
-    ('dim_namespace', 'dim_namespace')
+    ('dim_namespace', 'dim_namespace'),
+    ('dim_plan','dim_plan')
     ])
 }},
+
+plan_history AS (
+  SELECT
+    dim_namespace_id,
+    dim_plan_id,
+    valid_from,
+    valid_to
+  FROM {{ ref('dim_namespace_plan_hist') }}
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY dim_namespace_id, DATE_TRUNC('day', valid_from) ORDER BY valid_from DESC) = 1
+),
+
+plan_changes AS (
+  SELECT
+    dim_namespace_id,
+    dim_plan_id,
+    LAG(dim_plan_id, 1, -1)
+        OVER (PARTITION BY dim_namespace_id
+          ORDER BY valid_from DESC) AS lag_plan_id,
+    CONDITIONAL_TRUE_EVENT(dim_plan_id != lag_plan_id)
+                           OVER (PARTITION BY dim_namespace_id
+                             ORDER BY valid_from DESC) AS plan_id_group,
+    valid_from,
+    valid_to
+  FROM plan_history
+
+),
+
+filtered_namespace_plan_scd AS (
+  SELECT
+    dim_namespace_id,
+    dim_plan_id,
+    MIN(valid_from)::DATE AS valid_from_date,
+    MAX(COALESCE(valid_to, CURRENT_DATE))::DATE AS valid_to_date
+  FROM plan_changes
+  GROUP BY dim_namespace_id, dim_plan_id, plan_id_group
+
+),
 
 fct_event_valid AS (
     
@@ -34,13 +72,22 @@ fct_event_valid AS (
       xmau_metrics.stage_name,
       xmau_metrics.smau AS is_smau,
       xmau_metrics.gmau AS is_gmau,
-      xmau_metrics.is_umau
+      xmau_metrics.is_umau,
+      dim_plan.dim_plan_id AS plan_id_at_event_date,
+      dim_plan.is_plan_paid AS plan_was_paid_at_event_date,
+      dim_plan.plan_name AS plan_name_at_event_date
     FROM fct_event
     LEFT JOIN xmau_metrics
       ON fct_event.event_name = xmau_metrics.common_events_to_include
     LEFT JOIN dim_user
       ON fct_event.dim_user_sk = dim_user.dim_user_sk
-    WHERE event_created_at >= DATEADD(MONTH, -36, DATE_TRUNC(MONTH,CURRENT_DATE)) 
+    LEFT JOIN filtered_namespace_plan_scd 
+      ON fct_event.dim_ultimate_parent_namespace_id = filtered_namespace_plan_scd.dim_namespace_id
+      AND fct_event.event_date >= filtered_namespace_plan_scd.valid_from_date
+      AND fct_event.event_date < filtered_namespace_plan_scd.valid_to_date
+    LEFT JOIN dim_plan
+      ON COALESCE(filtered_namespace_plan_scd.dim_plan_id,fct_event.plan_id_at_event_timestamp) = dim_plan.dim_plan_id
+    WHERE event_created_at >= DATEADD(MONTH, -24, DATE_TRUNC(MONTH,CURRENT_DATE)) 
       AND (fct_event.days_since_user_creation_at_event_date >= 0
            OR fct_event.days_since_user_creation_at_event_date IS NULL)
       AND (dim_user.is_blocked_user = FALSE 
@@ -60,7 +107,7 @@ deduped_namespace_bdg AS (
   INNER JOIN dim_subscription
     ON namespace_order_subscription.dim_subscription_id = dim_subscription.dim_subscription_id
   WHERE namespace_order_subscription.product_tier_name_subscription IN ('SaaS - Bronze', 'SaaS - Ultimate', 'SaaS - Premium')
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY dim_namespace_id ORDER BY subscription_version DESC) = 1
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY dim_namespace_id ORDER BY subscription_version DESC, subscription_updated_date DESC) = 1
 
 ),
 
@@ -76,21 +123,6 @@ dim_namespace_w_bdg AS (
   FROM deduped_namespace_bdg
   INNER JOIN dim_namespace
     ON dim_namespace.dim_namespace_id = deduped_namespace_bdg.dim_namespace_id
-
-),
-
-paid_flag_by_day AS (
-
-  SELECT
-    dim_ultimate_parent_namespace_id,
-    plan_was_paid_at_event_timestamp AS plan_was_paid_at_event_date,
-    plan_id_at_event_timestamp AS plan_id_at_event_date,
-    plan_name_at_event_timestamp AS plan_name_at_event_date,
-    event_created_at,
-    event_date
-  FROM fct_event_valid
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY dim_ultimate_parent_namespace_id, event_date
-      ORDER BY event_created_at DESC) = 1
 
 ),
 
@@ -125,15 +157,12 @@ fct_event_w_flags AS (
     dim_namespace_w_bdg.order_id,
     dim_namespace_w_bdg.dim_crm_account_id,
     dim_namespace_w_bdg.dim_billing_account_id,
-    COALESCE(paid_flag_by_day.plan_was_paid_at_event_date, FALSE) AS plan_was_paid_at_event_date,
-    COALESCE(paid_flag_by_day.plan_id_at_event_date, 34) AS plan_id_at_event_date,
-    COALESCE(paid_flag_by_day.plan_name_at_event_date, 'free') AS plan_name_at_event_date
+    plan_was_paid_at_event_date,
+    plan_id_at_event_date,
+    plan_name_at_event_date
   FROM fct_event_valid
   LEFT JOIN dim_namespace_w_bdg
     ON fct_event_valid.dim_ultimate_parent_namespace_id = dim_namespace_w_bdg.dim_namespace_id
-  LEFT JOIN paid_flag_by_day
-    ON fct_event_valid.dim_ultimate_parent_namespace_id = paid_flag_by_day.dim_ultimate_parent_namespace_id
-      AND fct_event_valid.event_date = paid_flag_by_day.event_date
 
 ),
 
@@ -187,7 +216,7 @@ gitlab_dotcom_fact AS (
 {{ dbt_audit(
     cte_ref="gitlab_dotcom_fact",
     created_by="@iweeks",
-    updated_by="@michellecooper",
+    updated_by="@pempey",
     created_date="2022-04-09",
-    updated_date="2023-07-21"
+    updated_date="2024-09-17"
 ) }}

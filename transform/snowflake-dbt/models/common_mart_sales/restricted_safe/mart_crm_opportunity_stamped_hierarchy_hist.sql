@@ -18,6 +18,7 @@
 
       --primary key
       fct_crm_opportunity.dim_crm_opportunity_id,
+      fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
       
       --surrogate keys
       dim_crm_account.dim_parent_crm_account_id,
@@ -61,8 +62,6 @@
       fct_crm_opportunity.opportunity_deal_size,
       dim_crm_opportunity.primary_campaign_source_id,
       fct_crm_opportunity.ga_client_id,
-      dim_crm_opportunity.military_invasion_comments,
-      dim_crm_opportunity.military_invasion_risk_scale,
       dim_crm_opportunity.vsa_readout,
       dim_crm_opportunity.vsa_start_date,
       dim_crm_opportunity.vsa_end_date,
@@ -176,6 +175,19 @@
       dim_crm_opportunity.critical_deal_flag,
       fct_crm_opportunity.is_abm_tier_sao,
       fct_crm_opportunity.is_abm_tier_closed_won,
+
+      -- Hierarchy reporting fields
+      report_hierarchy.crm_user_sales_segment                                                         AS report_segment,
+      report_hierarchy.crm_user_geo                                                                   AS report_geo,
+      report_hierarchy.crm_user_region                                                                AS report_region,
+      report_hierarchy.crm_user_area                                                                  AS report_area,
+      report_hierarchy.crm_user_business_unit                                                         AS report_business_unit,
+      report_hierarchy.crm_user_role_name                                                             AS report_role_name,
+      report_hierarchy.crm_user_role_level_1                                                          AS report_role_level_1,
+      report_hierarchy.crm_user_role_level_2                                                          AS report_role_level_2,
+      report_hierarchy.crm_user_role_level_3                                                          AS report_role_level_3,
+      report_hierarchy.crm_user_role_level_4                                                          AS report_role_level_4,
+      report_hierarchy.crm_user_role_level_5                                                          AS report_role_level_5,
 
       -- crm owner/sales rep live fields
       dim_crm_user_hierarchy_live.crm_user_sales_segment,
@@ -316,16 +328,6 @@
 
       -- Pipeline Velocity Account and Opp Owner Fields and Key Reporting Fields
       dim_crm_opportunity.opportunity_owner_user_segment,
-      dim_crm_opportunity.report_segment,
-      dim_crm_opportunity.report_geo,
-      dim_crm_opportunity.report_region,
-      dim_crm_opportunity.report_area,
-      dim_crm_opportunity.report_role_name,
-      dim_crm_opportunity.report_role_level_1,
-      dim_crm_opportunity.report_role_level_2,
-      dim_crm_opportunity.report_role_level_3,
-      dim_crm_opportunity.report_role_level_4,
-      dim_crm_opportunity.report_role_level_5,
       LOWER(
         dim_crm_opportunity.crm_account_owner_sales_segment
       ) AS account_owner_user_segment,
@@ -362,6 +364,7 @@
       fct_crm_opportunity.partner_discount,
       fct_crm_opportunity.partner_discount_calc,
       fct_crm_opportunity.comp_channel_neutral,
+      fct_crm_opportunity.aggregate_partner,
       fct_crm_opportunity.count_crm_attribution_touchpoints,
       fct_crm_opportunity.weighted_linear_iacv,
       fct_crm_opportunity.count_campaigns,
@@ -568,7 +571,6 @@
       fct_crm_opportunity.renewal_amount,
       fct_crm_opportunity.total_contract_value,
       fct_crm_opportunity.days_in_stage,
-      fct_crm_opportunity.pre_military_invasion_arr,
       fct_crm_opportunity.vsa_start_date_net_arr,
       fct_crm_opportunity.won_arr_basis_for_clari,
       fct_crm_opportunity.arr_basis_for_clari,
@@ -607,6 +609,8 @@
       ON fct_crm_opportunity.dim_channel_type_id = dim_channel_type.dim_channel_type_id
     LEFT JOIN dim_date                                       AS dim_date_close_date
       ON fct_crm_opportunity.close_date = dim_date_close_date.date_day
+    LEFT JOIN dim_crm_user_hierarchy AS report_hierarchy
+      ON fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk = report_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_crm_user_hierarchy
       ON fct_crm_opportunity.dim_crm_opp_owner_stamped_hierarchy_sk = dim_crm_user_hierarchy.dim_crm_user_hierarchy_sk
     LEFT JOIN dim_crm_user_hierarchy AS dim_crm_user_hierarchy_live

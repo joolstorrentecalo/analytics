@@ -31,22 +31,26 @@ SELECT
       THEN 'Engineering'
     WHEN department = 'UX'
       THEN 'Product'
-    WHEN department = 'Data'
-      THEN 'Marketing'      
+    WHEN department in ('Data', 'Data (inactive)')
+      THEN 'Marketing' 
+    WHEN department = 'Security'
+      THEN 'Security'
+    WHEN department = 'Product'
+      THEN 'Product' 
     ELSE division
   END AS modified_division,
   cost_center,
   department,
   CASE
-    WHEN department IN ('eCommerce','MM','SMB')
+    WHEN department IN ('eCommerce', 'MM', 'SMB')
       THEN 'Commercial Sales'
-    WHEN department IN ('Channel-Indirect','Channel-Program')
+    WHEN department IN ('Channel-Indirect', 'Channel-Program')
       THEN 'Channel'
-    WHEN department IN ('Consulting Delivery', 'Education Delivery','Education Services','Practice Management','SA','TAM','CSM')
+    WHEN department IN ('Consulting Delivery', 'Education Delivery', 'Education Services', 'Practice Management', 'SA', 'TAM', 'CSM')
       THEN 'Customer Success'
-    WHEN department IN ('ENTR','PubSec')
+    WHEN department IN ('ENTR', 'PubSec')
       THEN 'Enterprise Sales'
-    WHEN department IN ('Enablement','Field Ops - Child')
+    WHEN department IN ('Enablement', 'Field Ops - Child')
       THEN 'Field Operations'
     WHEN department = 'Development'
       THEN 'Core Development'
@@ -60,22 +64,24 @@ SELECT
       THEN 'Product Leadership'
     WHEN department = 'Product Monetization'
       THEN 'Monetization'
-    WHEN department = 'UX'
-      THEN 'UX Research'
+    WHEN department IN ('UX Research', 'Technical Writing (inactive)', 'Product Design (inactive)')
+      THEN 'UX'
+    WHEN department = 'Marketing Strategy and Analytics'
+      THEN 'Marketing Analytics'  
     WHEN department = 'Security'
       THEN 'Office of CISO'
-    WHEN department in ('Field Marketing', 'Partner Marketing')
+    WHEN department in ('Field Marketing', 'Partner Marketing', 'Partner Marketing (inactive)')
       THEN 'Regional Marketing'
-    WHEN department in ('Account Based Marketing', 'Campaigns', 'Search Marketing')
+    WHEN department in ('Account Based Marketing', 'Account Based Marketing (inactive)', 'Campaigns', 'Search Marketing', 'Search Marketing (inactive)')
       THEN 'Digital Marketing'
-    WHEN department = 'Data'
+    WHEN department in ('Data', 'Data (inactive)')
       THEN 'Enterprise Data'
     WHEN department = 'Community Relations'
       THEN 'Developer Relations'
     ELSE department
   END AS modified_department,
   CASE
-    WHEN department IN ('Commercial Sales','Enterprise Sales')
+    WHEN department IN ('Commercial Sales', 'Enterprise Sales')
       THEN 'Y'
       ELSE 'N'
   END AS is_quota_carrying,

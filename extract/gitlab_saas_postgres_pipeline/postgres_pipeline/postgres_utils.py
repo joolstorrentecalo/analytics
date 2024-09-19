@@ -93,21 +93,21 @@ def get_internal_identifier_keys(identifiers: list) -> str:
     """
     Get a list of current internal GitLab project or namespace keys from dbt seed files
     """
-    dbt_seed_data_path = "https://gitlab.com/gitlab-data/analytics/-/raw/master/transform/snowflake-dbt/data"
+    dbt_seed_data_path = "https://gitlab.com/gitlab-data/analytics/-/raw/master/transform/snowflake-dbt/seeds"
 
     internal_identifiers = {
         "project_id": [
-            "projects_part_of_product_ops.csv",
-            "projects_part_of_product.csv",
-            "internal_gitlab_projects.csv",
+            "seed_engineering/projects_part_of_product_ops.csv",
+            "seed_engineering/projects_part_of_product.csv",
+            "seed_data/internal_gitlab_projects.csv",
         ],
         "project_path": [
-            "projects_part_of_product_ops.csv",
-            "projects_part_of_product.csv",
-            "internal_gitlab_projects.csv",
+            "seed_engineering/projects_part_of_product_ops.csv",
+            "seed_engineering/projects_part_of_product.csv",
+            "seed_data/internal_gitlab_projects.csv",
         ],
-        "namespace_id": ["internal_gitlab_namespaces.csv"],
-        "namespace_path": ["internal_gitlab_namespaces.csv"],
+        "namespace_id": ["seed_data/internal_gitlab_namespaces.csv"],
+        "namespace_path": ["seed_data/internal_gitlab_namespaces.csv"],
     }
 
     internal_identifier_keys = []

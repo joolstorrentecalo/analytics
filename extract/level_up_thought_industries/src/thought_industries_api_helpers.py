@@ -2,35 +2,36 @@
 Helpers to the main level_up module
 """
 
-import os
 import datetime
 import json
-
+import logging
+import os
 from typing import Any, Dict
 
 import dateutil.parser
-
 from gitlabdata.orchestration_utils import (
-    snowflake_stage_load_copy_remove,
     snowflake_engine_factory,
+    snowflake_stage_load_copy_remove,
 )
+from sqlalchemy import create_engine
+from sqlalchemy.engine.base import Engine
 
 config_dict = os.environ.copy()
 
 
-def upload_payload_to_snowflake(
-    payload: Dict[Any, Any],
+def upload_dict_to_snowflake(
+    upload_dict: Dict[Any, Any],
     schema_name: str,
     stage_name: str,
     table_name: str,
     json_dump_filename: str = "to_upload.json",
 ):
     """
-    Upload payload to Snowflake using snowflake_stage_load_copy_remove()
+    Upload upload_dict to Snowflake using snowflake_stage_load_copy_remove()
     """
     loader_engine = snowflake_engine_factory(config_dict, "LOADER")
     with open(json_dump_filename, "w+", encoding="utf8") as upload_file:
-        json.dump(payload, upload_file)
+        json.dump(upload_dict, upload_file)
 
     snowflake_stage_load_copy_remove(
         json_dump_filename,
@@ -53,7 +54,9 @@ def iso8601_to_epoch_ts_ms(iso8601_timestamp: str) -> int:
     Returns:
     int: Epoch timestamp, i.e number of seconds elapsed since 1/1/1970
     """
-    date_time = dateutil.parser.isoparse(iso8601_timestamp)
+    date_time = dateutil.parser.isoparse(iso8601_timestamp).replace(
+        tzinfo=datetime.timezone.utc
+    )
     # 1/1/1970
     dt_epoch_beginning = datetime.datetime.utcfromtimestamp(0).replace(
         tzinfo=datetime.timezone.utc
@@ -82,3 +85,32 @@ def is_invalid_ms_timestamp(epoch_start_ms, epoch_end_ms):
     if len(str(epoch_start_ms)) != 13 or (len(str(epoch_end_ms)) != 13):
         return True
     return False
+
+
+def postgres_engine_factory(
+    password: str, host: str, database: str, port: str, user: str
+) -> Engine:
+    """
+    Create a postgres engine to be used by pandas.
+    """
+    # Inject the values to create the engine
+    engine = create_engine(
+        f"postgresql://{user}:{password}@{host}:{port}/{database}",
+        connect_args={"sslcompression": 0, "options": "-c statement_timeout=10000"},
+    )
+    logging.info(engine)
+    return engine
+
+
+def get_metadata_engine() -> Engine:
+    """
+    Returns a postgres engine that is connected to the metadata db
+    """
+    password = os.environ["GITLAB_METADATA_DB_PASS"]
+    host = os.environ["GITLAB_METADATA_DB_HOST"]
+    database = os.environ["LEVEL_UP_METADATA_DB_NAME"]
+    port = os.environ["GITLAB_METADATA_PG_PORT"]
+    user = os.environ["GITLAB_METADATA_DB_USER"]
+
+    metadata_engine = postgres_engine_factory(password, host, database, port, user)
+    return metadata_engine

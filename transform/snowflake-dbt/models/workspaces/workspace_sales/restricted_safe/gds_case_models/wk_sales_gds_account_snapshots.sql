@@ -19,15 +19,16 @@ usage_data AS (
     rpt_product_usage_health_score.snapshot_month,
     rpt_product_usage_health_score.dim_crm_account_id,
     rpt_product_usage_health_score.crm_account_name,
-    rpt_product_usage_health_score.scm_score,
-    rpt_product_usage_health_score.ci_score,
-    mart_product_usage_paid_user_metrics_monthly.epics_28_days_user,
-    mart_product_usage_paid_user_metrics_monthly.issues_28_days_user,
-    mart_product_usage_paid_user_metrics_monthly.issues_edit_28_days_user,
-    mart_product_usage_paid_user_metrics_monthly.epics_usage_28_days_user
+    MIN(rpt_product_usage_health_score.scm_score)                              AS scm_score,
+    MIN(rpt_product_usage_health_score.ci_score)                               AS ci_score,
+    MIN(mart_product_usage_paid_user_metrics_monthly.epics_28_days_user)       AS epics_28_days_user,
+    MIN(mart_product_usage_paid_user_metrics_monthly.issues_28_days_user)      AS issues_28_days_user,
+    MIN(mart_product_usage_paid_user_metrics_monthly.issues_edit_28_days_user) AS issues_edit_28_days_user,
+    MIN(mart_product_usage_paid_user_metrics_monthly.epics_usage_28_days_user) AS epics_usage_28_days_user
   FROM rpt_product_usage_health_score
   LEFT JOIN mart_product_usage_paid_user_metrics_monthly ON rpt_product_usage_health_score.primary_key = mart_product_usage_paid_user_metrics_monthly.primary_key
   WHERE rpt_product_usage_health_score.snapshot_month > '2023-01-30'
+  GROUP BY 1, 2, 3
 ),
 
 first_order AS (
@@ -68,10 +69,10 @@ latest_churn AS (
 
 high_value_case_prep AS (
   SELECT
-    dim_crm_account_id,
-    case_id,
+    prep_crm_case.dim_crm_account_id,
+    prep_crm_case.case_id,
     prep_crm_case.dim_crm_user_id,
-    subject,
+    prep_crm_case.subject,
     dim_crm_user.user_name                                                 AS case_owner_name,
     dim_crm_user.department                                                AS case_department,
     dim_crm_user.team,
@@ -79,13 +80,13 @@ high_value_case_prep AS (
     dim_crm_user.user_role_name                                            AS case_user_role_name,
     dim_crm_user.user_role_type,
     prep_crm_case.created_date,
-    MAX(prep_crm_case.created_date) OVER (PARTITION BY dim_crm_account_id) AS last_high_value_date
+    MAX(prep_crm_case.created_date) OVER (PARTITION BY prep_crm_case.dim_crm_account_id) AS last_high_value_date
   FROM prep_crm_case
   LEFT JOIN dim_crm_user
     ON prep_crm_case.dim_crm_user_id = dim_crm_user.dim_crm_user_id
-  WHERE record_type_id IN ('0128X000001pPRkQAM')
+  WHERE prep_crm_case.record_type_id IN ('0128X000001pPRkQAM')
     --    and account_id = '0014M00001gTGESQA4'
-    AND LOWER(subject) LIKE '%high value account%'
+    AND LOWER(prep_crm_case.subject) LIKE '%high value account%'
 ),
 
 high_value_case AS (
@@ -108,10 +109,10 @@ start_values AS ( -- This is a large slow to query table
 
 first_high_value_case_prep AS (
   SELECT
-    dim_crm_account_id,
-    case_id,
+    prep_crm_case.dim_crm_account_id,
+    prep_crm_case.case_id,
     prep_crm_case.dim_crm_user_id,
-    subject,
+    prep_crm_case.subject,
     dim_crm_user.user_name                                                 AS case_owner_name,
     dim_crm_user.department                                                AS case_department,
     dim_crm_user.team,
@@ -119,12 +120,12 @@ first_high_value_case_prep AS (
     dim_crm_user.user_role_name                                            AS case_user_role_name,
     dim_crm_user.user_role_type,
     prep_crm_case.created_date,
-    MIN(prep_crm_case.created_date) OVER (PARTITION BY dim_crm_account_id) AS first_high_value_date
+    MIN(prep_crm_case.created_date) OVER (PARTITION BY prep_crm_case.dim_crm_account_id) AS first_high_value_date
   FROM prep_crm_case
   LEFT JOIN dim_crm_user
     ON prep_crm_case.dim_crm_user_id = dim_crm_user.dim_crm_user_id
-  WHERE record_type_id IN ('0128X000001pPRkQAM')
-    AND LOWER(subject) LIKE '%high value account%'
+  WHERE prep_crm_case.record_type_id IN ('0128X000001pPRkQAM')
+    AND LOWER(prep_crm_case.subject) LIKE '%high value account%'
 ), -----subject placeholder - this could change
 
 first_high_value_case AS (
@@ -167,7 +168,7 @@ eoa_cohorts_prep AS (
     mart_arr.product_delivery_type,
     mart_arr.product_rate_plan_name,
     mart_arr.arr,
-    --,monthly_mart.max_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
+    --,monthly_mart.MAX_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
     (mart_arr.arr / NULLIFZERO(mart_arr.quantity))                                                                  AS arr_per_user,
     arr_per_user / 12                                                                                               AS monthly_price_per_user,
     mart_arr.mrr / NULLIFZERO(mart_arr.quantity)                                                                    AS mrr_check
@@ -176,8 +177,8 @@ eoa_cohorts_prep AS (
 --     ON mart_arr.DIM_CRM_ACCOUNT_ID = MART_CRM_ACCOUNT.DIM_CRM_ACCOUNT_ID
   INNER JOIN bronze_starter_accounts
     ON mart_arr.dim_crm_account_id = bronze_starter_accounts.dim_crm_account_id
-  WHERE arr_month = '2023-01-01'
-    AND product_tier_name LIKE '%Premium%'
+  WHERE mart_arr.arr_month = '2023-01-01'
+    AND mart_arr.product_tier_name LIKE '%Premium%'
     AND ((
       monthly_price_per_user >= 14
       AND monthly_price_per_user <= 16
@@ -200,18 +201,18 @@ free_promo AS (
 price_increase_prep AS (
   SELECT
     charge.* EXCLUDE created_by,
-    arr / NULLIFZERO(quantity)     AS actual_price,
+    charge.arr / NULLIFZERO(charge.quantity)     AS actual_price,
     prod.annual_billing_list_price AS list_price
   FROM mart_charge AS charge
   INNER JOIN dim_product_detail AS prod
     ON charge.dim_product_detail_id = prod.dim_product_detail_id
-  WHERE subscription_start_date >= '2023-04-01'
-    AND subscription_start_date <= '2023-07-01'
-    AND type_of_arr_change = 'New'
-    AND quantity > 0
+  WHERE charge.subscription_start_date >= '2023-04-01'
+    AND charge.subscription_start_date <= '2023-07-01'
+    AND charge.type_of_arr_change = 'New'
+    AND charge.quantity > 0
     AND actual_price > 228
     AND actual_price < 290
-    AND rate_plan_charge_name LIKE '%Premium%'
+    AND charge.rate_plan_charge_name LIKE '%Premium%'
 ),
 
 price_increase AS (
@@ -222,7 +223,8 @@ price_increase AS (
 ultimate AS (
   SELECT DISTINCT
     dim_parent_crm_account_id,
-    arr_month
+    arr_month,
+    MAX(arr_month) OVER (PARTITION BY dim_parent_crm_account_id ORDER BY arr_month DESC) AS last_ultimate_arr_month
   FROM mart_arr
   WHERE product_tier_name LIKE '%Ultimate%'
     AND arr > 0
@@ -339,7 +341,8 @@ account_base AS (
     ON acct.dim_crm_account_id = price_increase.dim_crm_account_id
   LEFT JOIN ultimate
     ON acct.dim_parent_crm_account_id = ultimate.dim_parent_crm_account_id
-      AND ultimate.arr_month = DATE_TRUNC('month', acct.snapshot_date)
+      AND (ultimate.arr_month = DATE_TRUNC('month', acct.snapshot_date)
+      OR ultimate.last_ultimate_arr_month = dateadd('month', -1, DATE_TRUNC('month', acct.snapshot_date)))
   ----- amer and apac accounts
   LEFT JOIN amer_accounts
     ON acct.dim_crm_account_id = amer_accounts.dim_crm_account_id

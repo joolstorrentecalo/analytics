@@ -231,7 +231,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = 'all'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_release_alltime_features,
+    ) AS stage_release_alltime_features, -- TO BE DELETED
     COUNT(
         DISTINCT CASE
             WHEN
@@ -239,7 +239,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = '28d'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_release_28days_features,
+    ) AS stage_release_28days_features, -- TO BE DELETED
 
     COUNT(
         DISTINCT CASE
@@ -248,7 +248,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = 'all'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_configure_alltime_features,
+    ) AS stage_configure_alltime_features, -- TO BE DELETED
     COUNT(
         DISTINCT CASE
             WHEN
@@ -256,7 +256,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = '28d'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_configure_28days_features,
+    ) AS stage_configure_28days_features, -- TO BE DELETED
 
     COUNT(
         DISTINCT CASE
@@ -282,7 +282,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = 'all'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_manage_alltime_features,
+    ) AS stage_manage_alltime_features, -- TO BE DELETED
     COUNT(
         DISTINCT CASE
             WHEN
@@ -290,7 +290,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = '28d'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_manage_28days_features,
+    ) AS stage_manage_28days_features, -- TO BE DELETED
 
     COUNT(
         DISTINCT CASE
@@ -316,7 +316,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = 'all'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_enablement_alltime_features,
+    ) AS stage_enablement_alltime_features, -- TO BE DELETED
     COUNT(
         DISTINCT CASE
             WHEN
@@ -324,7 +324,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = '28d'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS stage_enablement_28days_features,
+    ) AS stage_enablement_28days_features, -- TO BE DELETED
 
     COUNT(
         DISTINCT CASE
@@ -343,7 +343,7 @@ SELECT
         END
     ) AS stage_govern_28days_features,
 
-        COUNT(
+    COUNT(
         DISTINCT CASE
             WHEN
                 usage_ping_metrics.stage_name = 'deploy'
@@ -359,6 +359,23 @@ SELECT
                 THEN flattened_metrics.metrics_path
         END
     ) AS stage_deploy_28days_features,
+
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.stage_name = 'foundations'
+                AND usage_ping_metrics.time_frame = 'all'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS stage_foundations_alltime_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.stage_name = 'foundations'
+                AND usage_ping_metrics.time_frame = '28d'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS stage_foundations_28days_features,
 
 
     -- NUMBER OF FEATURES USED BY PRODUCT SECTION
@@ -386,7 +403,7 @@ SELECT
                 AND usage_ping_metrics.time_frame = 'all'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS section_enablement_alltime_features,
+    ) AS section_enablement_alltime_features, -- TO BE DELETED
     COUNT(
         DISTINCT CASE
             WHEN
@@ -394,26 +411,23 @@ SELECT
                 AND usage_ping_metrics.time_frame = '28d'
                 THEN flattened_metrics.metrics_path
         END
-    ) AS section_enablement_28days_features,
-
-
+    ) AS section_enablement_28days_features, -- TO BE DELETED
     COUNT(
         DISTINCT CASE
             WHEN
                 usage_ping_metrics.section_name = 'ops'
                 AND usage_ping_metrics.time_frame = 'all'
-                THEN flattened_metrics.metrics_path
+                THEN flattened_metrics.metrics_path 
         END
-    ) AS section_ops_alltime_features,
+    ) AS section_ops_alltime_features, -- TO BE DELETED
     COUNT(
         DISTINCT CASE
             WHEN
                 usage_ping_metrics.section_name = 'ops'
                 AND usage_ping_metrics.time_frame = '28d'
-                THEN flattened_metrics.metrics_path
+                THEN flattened_metrics.metrics_path -- TO BE DELETED
         END
     ) AS section_ops_28days_features,
-
     COUNT(
         DISTINCT CASE
             WHEN
@@ -430,6 +444,70 @@ SELECT
                 THEN flattened_metrics.metrics_path
         END
     ) AS section_sec_28days_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'ci'
+                AND usage_ping_metrics.time_frame = 'all'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_ci_alltime_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'ci'
+                AND usage_ping_metrics.time_frame = '28d'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_ci_28days_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'cd'
+                AND usage_ping_metrics.time_frame = 'all'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_cd_alltime_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'cd'
+                AND usage_ping_metrics.time_frame = '28d'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_cd_28days_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'core_platform'
+                AND usage_ping_metrics.time_frame = 'all'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_core_platform_alltime_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'core_platform'
+                AND usage_ping_metrics.time_frame = '28d'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_core_platform_28days_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'analytics'
+                AND usage_ping_metrics.time_frame = 'all'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_analytics_alltime_features,
+    COUNT(
+        DISTINCT CASE
+            WHEN
+                usage_ping_metrics.section_name = 'analytics'
+                AND usage_ping_metrics.time_frame = '28d'
+                THEN flattened_metrics.metrics_path
+        END
+    ) AS section_analytics_28days_features,        
 
 
     -- NUMBER OF FEATURES USED BY PRODUCT TIER
@@ -553,7 +631,7 @@ SELECT
             END
         ),
         0
-    ) AS stage_release_alltime_feature_sum,
+    ) AS stage_release_alltime_feature_sum, -- TO BE DELETED
     COALESCE(
         SUM(
             CASE
@@ -564,7 +642,7 @@ SELECT
             END
         ),
         0
-    ) AS stage_configure_alltime_features_sum,
+    ) AS stage_configure_alltime_features_sum, -- TO BE DELETED
     COALESCE(
         SUM(
             CASE
@@ -586,7 +664,7 @@ SELECT
             END
         ),
         0
-    ) AS stage_manage_alltime_feature_sum,
+    ) AS stage_manage_alltime_feature_sum, -- TO BE DELETED
     COALESCE(
         SUM(
             CASE
@@ -609,7 +687,7 @@ SELECT
             END
         ),
         0
-    ) AS stage_enablement_alltime_feature_sum,
+    ) AS stage_enablement_alltime_feature_sum, -- TO BE DELETED
     COALESCE(
         SUM(
             CASE
@@ -632,6 +710,17 @@ SELECT
         ),
         0
     ) AS stage_deploy_alltime_feature_sum,
+    COALESCE(
+        SUM(
+            CASE
+                WHEN
+                    usage_ping_metrics.stage_name = 'foundations'
+                    AND usage_ping_metrics.time_frame = 'all'
+                    THEN flattened_metrics.metrics_value
+            END
+        ),
+        0
+    ) AS stage_foundations_alltime_feature_sum,
     
 
     /* If want to calculate 28 day metrics, could use the lag function. Or
@@ -669,11 +758,11 @@ SELECT
     ROUND(
         DIV0(stage_release_alltime_feature_sum,
              all_stages_alltime_feature_sum), 4
-    ) AS stage_release_alltime_share_pct,
+    ) AS stage_release_alltime_share_pct, -- TO BE DELETED
     ROUND(
         DIV0(stage_configure_alltime_features_sum,
              all_stages_alltime_feature_sum), 4
-    ) AS stage_configure_alltime_share_pct,
+    ) AS stage_configure_alltime_share_pct, -- TO BE DELETED
     ROUND(
         DIV0(stage_monitor_alltime_features_sum,
              all_stages_alltime_feature_sum), 4
@@ -681,7 +770,7 @@ SELECT
     ROUND(
         DIV0(stage_manage_alltime_feature_sum,
              all_stages_alltime_feature_sum), 4
-    ) AS stage_manage_alltime_share_pct,
+    ) AS stage_manage_alltime_share_pct, -- TO BE DELETED
     ROUND(
         DIV0(stage_secure_alltime_feature_sum,
              all_stages_alltime_feature_sum), 4
@@ -689,7 +778,7 @@ SELECT
     ROUND(
         DIV0(stage_enablement_alltime_feature_sum,
              all_stages_alltime_feature_sum), 4
-    ) AS stage_enablement_alltime_share_pct,
+    ) AS stage_enablement_alltime_share_pct, -- TO BE DELETED
     ROUND(
         DIV0(stage_govern_alltime_feature_sum,
              all_stages_alltime_feature_sum), 4
@@ -698,6 +787,10 @@ SELECT
         DIV0(stage_deploy_alltime_feature_sum,
              all_stages_alltime_feature_sum), 4
     ) AS stage_deploy_alltime_share_pct,
+    ROUND(
+        DIV0(stage_foundations_alltime_feature_sum,
+             all_stages_alltime_feature_sum), 4
+    ) AS stage_foundations_alltime_share_pct,
 
 
     -- MOST USED STAGE ALL TIME
@@ -706,28 +799,22 @@ SELECT
         stage_create_alltime_share_pct,
         stage_verify_alltime_share_pct,
         stage_package_alltime_share_pct,
-        stage_release_alltime_share_pct,
-        stage_configure_alltime_share_pct,
         stage_monitor_alltime_share_pct,
-        stage_manage_alltime_share_pct,
         stage_secure_alltime_share_pct,
-        stage_enablement_alltime_share_pct,
         stage_govern_alltime_share_pct,
-        stage_deploy_alltime_share_pct
+        stage_deploy_alltime_share_pct,
+        stage_foundations_alltime_share_pct
 
     )
         WHEN stage_plan_alltime_share_pct THEN 'plan'
         WHEN stage_create_alltime_share_pct THEN 'create'
         WHEN stage_verify_alltime_share_pct THEN 'verify'
         WHEN stage_package_alltime_share_pct THEN 'package'
-        WHEN stage_release_alltime_share_pct THEN 'release'
-        WHEN stage_configure_alltime_share_pct THEN 'configure'
         WHEN stage_monitor_alltime_share_pct THEN 'monitor'
-        WHEN stage_manage_alltime_share_pct THEN 'manage'
         WHEN stage_secure_alltime_share_pct THEN 'secure'
-        WHEN stage_enablement_alltime_share_pct THEN 'enablement'
         WHEN stage_govern_alltime_share_pct THEN 'govern'
         WHEN stage_deploy_alltime_share_pct THEN 'deploy'
+        WHEN stage_foundations_alltime_share_pct THEN 'foundations'
         ELSE 'none'
     END AS stage_most_used_alltime,
 
@@ -781,7 +868,7 @@ SELECT
                     CASE WHEN stage_release_28days_features > 0 THEN 1 END
                 ORDER BY flattened_metrics.snapshot_month
             )
-    END AS stage_release_months_used,
+    END AS stage_release_months_used, -- TO BE DELETED
     CASE WHEN stage_configure_28days_features = 0 THEN 0
         ELSE
             ROW_NUMBER() OVER (
@@ -790,7 +877,7 @@ SELECT
                     CASE WHEN stage_configure_28days_features > 0 THEN 1 END
                 ORDER BY flattened_metrics.snapshot_month
             )
-    END AS stage_configure_months_used,
+    END AS stage_configure_months_used, -- TO BE DELETED
     CASE WHEN stage_monitor_28days_features = 0 THEN 0
         ELSE
             ROW_NUMBER() OVER (
@@ -808,7 +895,7 @@ SELECT
                     CASE WHEN stage_manage_28days_features > 0 THEN 1 END
                 ORDER BY flattened_metrics.snapshot_month
             )
-    END AS stage_manage_months_used,
+    END AS stage_manage_months_used, -- TO BE DELETED
     CASE WHEN stage_secure_28days_features = 0 THEN 0
         ELSE
             ROW_NUMBER() OVER (
@@ -827,7 +914,7 @@ SELECT
                     CASE WHEN stage_enablement_28days_features > 0 THEN 1 END
                 ORDER BY flattened_metrics.snapshot_month
             )
-    END AS stage_enablement_months_used,
+    END AS stage_enablement_months_used, -- TO BE DELETED
     CASE WHEN stage_govern_28days_features = 0 THEN 0
         ELSE
             ROW_NUMBER() OVER (
@@ -845,7 +932,17 @@ SELECT
                     CASE WHEN stage_deploy_28days_features > 0 THEN 1 END
                 ORDER BY flattened_metrics.snapshot_month
             )
-    END AS stage_deploy_months_used
+    END AS stage_deploy_months_used,
+    CASE WHEN stage_foundations_28days_features = 0 THEN 0
+        ELSE
+            ROW_NUMBER() OVER (
+                PARTITION BY
+                    flattened_metrics.dim_crm_account_id,
+                    CASE WHEN stage_foundations_28days_features > 0 THEN 1 END
+                ORDER BY flattened_metrics.snapshot_month
+            )
+    END AS stage_foundations_months_used
+
 
 FROM flattened_metrics
 LEFT JOIN

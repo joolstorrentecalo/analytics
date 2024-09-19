@@ -5,13 +5,6 @@ WITH team_yaml_historical AS (
 
 ),
 
-employee_directory_analysis AS (
-
-  SELECT *
-  FROM {{ ref('employee_directory_analysis') }}
-
-),
-
 date_details AS (
 
   SELECT *

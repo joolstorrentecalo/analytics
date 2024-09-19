@@ -2,7 +2,7 @@ WITH zuora_revenue_revenue_contract_schedule_deleted AS (
 
     SELECT DISTINCT *
     FROM {{source('zuora_revenue','zuora_revenue_revenue_contract_schedule_deleted')}}
-    QUALIFY RANK() OVER (PARTITION BY schd_id ORDER BY incr_updt_dt DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY schd_id ORDER BY incr_updt_dt DESC) = 1
 
 ), renamed AS (
 

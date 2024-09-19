@@ -21,6 +21,7 @@ final AS (
     fct_crm_opportunity.opportunity_weekly_snapshot_aggregate_pk,
     fct_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
 
+    --fields to deprecate
     dim_crm_user_hierarchy.crm_user_sales_segment                                                         AS crm_current_account_set_sales_segment,
     dim_crm_user_hierarchy.crm_user_geo                                                                   AS crm_current_account_set_geo,
     dim_crm_user_hierarchy.crm_user_region                                                                AS crm_current_account_set_region,
@@ -32,6 +33,18 @@ final AS (
     dim_crm_user_hierarchy.crm_user_role_level_3                                                          AS crm_current_account_set_role_level_3,
     dim_crm_user_hierarchy.crm_user_role_level_4                                                          AS crm_current_account_set_role_level_4,
     dim_crm_user_hierarchy.crm_user_role_level_5                                                          AS crm_current_account_set_role_level_5,
+
+    dim_crm_user_hierarchy.crm_user_sales_segment                                                         AS report_segment,
+    dim_crm_user_hierarchy.crm_user_geo                                                                   AS report_geo,
+    dim_crm_user_hierarchy.crm_user_region                                                                AS report_region,
+    dim_crm_user_hierarchy.crm_user_area                                                                  AS report_area,
+    dim_crm_user_hierarchy.crm_user_business_unit                                                         AS report_business_unit,
+    dim_crm_user_hierarchy.crm_user_role_name                                                             AS report_role_name,
+    dim_crm_user_hierarchy.crm_user_role_level_1                                                          AS report_role_level_1,
+    dim_crm_user_hierarchy.crm_user_role_level_2                                                          AS report_role_level_2,
+    dim_crm_user_hierarchy.crm_user_role_level_3                                                          AS report_role_level_3,
+    dim_crm_user_hierarchy.crm_user_role_level_4                                                          AS report_role_level_4,
+    dim_crm_user_hierarchy.crm_user_role_level_5                                                          AS report_role_level_5,
 
     --snapshot fields
     fct_crm_opportunity.sales_qualified_source,
@@ -188,7 +201,6 @@ final AS (
     fct_crm_opportunity.days_in_stage,
     fct_crm_opportunity.calculated_age_in_days,
     fct_crm_opportunity.days_since_last_activity,
-    fct_crm_opportunity.pre_military_invasion_arr,
     fct_crm_opportunity.won_arr_basis_for_clari,
     fct_crm_opportunity.arr_basis_for_clari,
     fct_crm_opportunity.forecasted_churn_for_clari,

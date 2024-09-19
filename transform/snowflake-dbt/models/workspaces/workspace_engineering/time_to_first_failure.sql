@@ -8,7 +8,7 @@ WITH pipelines AS (
 ci_stages AS (
 
   SELECT *
-  FROM {{ ref('gitlab_dotcom_ci_stages') }}
+  FROM {{ ref('dim_ci_stage') }}
 
 ),
 
@@ -26,13 +26,6 @@ ci_sources_pipelines AS (
 
 ),
 
-ci_pipelines AS (
-
-  SELECT *
-  FROM {{ ref('gitlab_dotcom_ci_pipelines') }}
-  
-),
-
 date_details AS (
 
   SELECT *
@@ -41,6 +34,7 @@ date_details AS (
 ),
 
 failed_mr_pipelines AS (
+
   SELECT 
     dim_ci_pipeline_id AS ci_pipeline_id,
     created_at,
@@ -51,7 +45,7 @@ failed_mr_pipelines AS (
   AND status = 'failed'
   AND PIPELINE_SCHEDULE_ID IS NULL
   AND ref LIKE 'refs/merge-requests%'
-  AND ci_pipeline_source != 12
+  AND ci_pipeline_source != 'parent_pipeline'
   AND dim_user_id != 1614863
 
 ),
@@ -84,8 +78,8 @@ failed_mr_pipelines_with_failed_builds AS (
       ELSE 'unknown'
     END AS pipeline_type
   FROM failed_mr_pipelines
-  JOIN ci_stages ON ci_stages.pipeline_id = failed_mr_pipelines.ci_pipeline_id
-  JOIN ci_builds ON ci_builds.dim_ci_stage_id = ci_stages.ci_stage_id AND ci_builds.ci_build_status = 'failed' AND ci_builds.allow_failure = 'false'
+  JOIN ci_stages ON ci_stages.dim_ci_pipeline_id = failed_mr_pipelines.ci_pipeline_id
+  JOIN ci_builds ON ci_builds.dim_ci_stage_id = ci_stages.dim_ci_stage_id AND ci_builds.ci_build_status = 'failed' AND ci_builds.allow_failure = 'false'
   
   UNION
 
@@ -102,7 +96,7 @@ failed_mr_pipelines_with_failed_builds AS (
     ci_builds.retried,
     ci_stages.ci_stage_name AS ci_stage_name,
     'child' AS pipeline_failure_type,
-    ci_pipelines.ci_pipeline_id AS failed_pipeline_id,
+    pipelines.ci_pipeline_id AS failed_pipeline_id,
     CASE
       WHEN ci_builds.ci_build_name IN ('docs lint', 'docs-lint links') 
         THEN 'docs'
@@ -116,9 +110,9 @@ failed_mr_pipelines_with_failed_builds AS (
     END AS pipeline_type
   FROM failed_mr_pipelines
   JOIN ci_sources_pipelines ON ci_sources_pipelines.SOURCE_PIPELINE_ID = failed_mr_pipelines.ci_pipeline_id
-  JOIN ci_pipelines ON ci_pipelines.ci_pipeline_id = ci_sources_pipelines.pipeline_id
-  JOIN ci_stages ON ci_stages.pipeline_id = ci_pipelines.ci_pipeline_id
-  JOIN ci_builds ON ci_builds.dim_ci_stage_id = ci_stages.ci_stage_id AND ci_builds.ci_build_status = 'failed' AND ci_builds.allow_failure = 'false'
+  JOIN pipelines ON pipelines.ci_pipeline_id = ci_sources_pipelines.pipeline_id
+  JOIN ci_stages ON ci_stages.dim_ci_pipeline_id = pipelines.ci_pipeline_id
+  JOIN ci_builds ON ci_builds.dim_ci_stage_id = ci_stages.dim_ci_stage_id AND ci_builds.ci_build_status = 'failed' AND ci_builds.allow_failure = 'false'
 
 ), 
 

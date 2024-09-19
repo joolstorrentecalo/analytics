@@ -10,11 +10,15 @@
 
 {{ simple_cte([
     ('fct_ping_instance', 'fct_ping_instance'),
-    ('dim_ping_metric','dim_ping_metric'),
     ('dim_ping_instance','dim_ping_instance')
 
 ]) }}
 
+, health_score_metrics AS (
+    SELECT metrics_path
+    FROM {{ ref('dim_ping_metric') }}
+    WHERE is_health_score_metric = TRUE
+)
 
 , fct_ping_instance_metric_with_license  AS (
     SELECT *
@@ -57,12 +61,13 @@
     fct_ping_instance_metric_with_license.is_service_ping_license_in_customerDot               AS is_service_ping_license_in_customerDot,
     dim_ping_instance.ping_delivery_type                                                       AS ping_delivery_type,
     dim_ping_instance.ping_deployment_type                                                     AS ping_deployment_type,
-    dim_ping_instance.cleaned_version                                                          AS cleaned_version
+    dim_ping_instance.cleaned_version                                                          AS cleaned_version,
+    dim_ping_instance.is_dedicated_metric                                                      AS is_dedicated_metric,
+    dim_ping_instance.is_dedicated_hostname                                                    AS is_dedicated_hostname
 
     FROM fct_ping_instance_metric_with_license
-    INNER JOIN dim_ping_metric
-      ON fct_ping_instance_metric_with_license.metrics_path = dim_ping_metric.metrics_path
-      AND dim_ping_metric.is_health_score_metric = TRUE
+    INNER JOIN health_score_metrics
+      ON fct_ping_instance_metric_with_license.metrics_path = health_score_metrics.metrics_path
     LEFT JOIN fct_ping_instance
       ON fct_ping_instance_metric_with_license.dim_ping_instance_id =  fct_ping_instance.dim_ping_instance_id
     LEFT JOIN dim_ping_instance
@@ -97,20 +102,22 @@
       instance_user_count,
       hostname,
       cleaned_version,
+      is_dedicated_metric,
+      is_dedicated_hostname,
       is_license_mapped_to_subscription,
       is_license_subscription_id_valid,
       is_service_ping_license_in_customerDot,
       {{ ping_instance_wave_metrics() }}
 
     FROM final
-    {{ dbt_utils.group_by(n=28)}}
+    {{ dbt_utils.group_by(n=30)}}
 
 )
 
 {{ dbt_audit(
     cte_ref="pivoted",
     created_by="@snalamaru",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2022-07-06",
-    updated_date="2024-07-22"
+    updated_date="2024-09-04"
 ) }}

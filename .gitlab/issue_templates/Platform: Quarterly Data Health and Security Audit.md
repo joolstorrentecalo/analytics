@@ -24,8 +24,13 @@ Below checklist of activities would be run once for quarter to validate security
 1. [ ] Deprovision access if an account has not logged-in within the past 90 days from the moment of performing audit. [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/quarterly_data_health_and_security_audit/montecarlo.md#deprovision-access-if-an-account-has-not-logged-in-within-the-past-90-days-from-the-moment-of-performing-audit)
 
 ## Tableau
-1. [ ] Validate offboarded employess have been removed from Tableau Cloud. [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/quarterly_data_health_and_security_audit/tableau.md#validate-offboarded-employess-have-been-removed-from-tableau-cloud)
-1. [ ] Deprovision access if a user has had access for >=90 days, but have not logged in during the past 90 days from the moment of performing audit. [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/quarterly_data_health_and_security_audit/tableau.md#deprovision-access-if-a-user-has-had-access-for-90-days-but-have-not-logged-in-during-the-past-90-days-from-the-moment-of-performing-audit)
+1. [ ] Validate offboarded employess have been removed from Tableau Cloud and purge from systems: [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/quarterly_data_health_and_security_audit/tableau.md#validate-offboarded-employees-have-been-removed-from-tableau-cloud-and-purge-from-systems)
+
+1. [ ] Deprovision access if a user has had access for >=90 days, but have not logged in during the past 90 days from the moment of performing audit: [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/quarterly_data_health_and_security_audit/tableau.md#deprovision-access-if-a-user-has-had-access-for-90-days-but-have-not-logged-in-during-the-past-90-days-from-the-moment-of-performing-audit)
+
+1. [ ] Downgrade Inactive Role Users: [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/quarterly_data_health_and_security_audit/tableau.md#downgrade_inactive_role_users)
+
+1. [ ] Role Credentials for Snowflake Service Accounts: [Runbook](https://gitlab.com/gitlab-data/runbooks/-/blob/main/tableau/update_service_account_password.md?ref_type=heads)
 
 ## Package version inventory
 

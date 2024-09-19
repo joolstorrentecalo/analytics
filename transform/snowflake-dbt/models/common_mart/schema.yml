@@ -705,6 +705,8 @@ models:
           - dim_installation_id
           - metrics_path
           - ping_created_date_week
+        config:
+          where: "ping_created_at >= DATEADD('day',-3,CURRENT_DATE())"
   columns:
     - name: ping_instance_metric_id
       description: Outdated, misstated primary key. Leaving in the model to not break dependencies, but can be ignored in the future.
@@ -1585,3 +1587,25 @@ models:
       description: ' {{ doc("code_suggestions_is_direct_connection") }} '
     - name: product_deployment_type
       description: ' {{ doc("product_deployment_type") }} '
+    - name: gsc_instance_version
+      description: ' {{ doc("gsc_instance_version") }}'
+    - name: total_context_size_bytes
+      description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+    - name: content_above_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+    - name: content_below_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+    - name: context_items
+      description: ' {{ doc("code_suggestions_context_items") }}'
+    - name: context_items_count
+      description: ' {{ doc("code_suggestions_context_items_count") }}'
+    - name: input_tokens
+      description: ' {{ doc("code_suggestions_input_tokens") }}'
+    - name: output_tokens
+      description: ' {{ doc("code_suggestions_output_tokens") }}'
+    - name: context_tokens_sent
+      description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+    - name: context_tokens_used
+      description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+    - name: debounce_interval
+      description: ' {{ doc("code_suggestions_debounce_interval") }}'

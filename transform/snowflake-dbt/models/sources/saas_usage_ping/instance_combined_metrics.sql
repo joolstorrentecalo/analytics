@@ -97,15 +97,14 @@ final AS (
     run_results['grafana_link_enabled']::BOOLEAN AS is_grafana_link_enabled,
     run_results['container_registry_server']['vendor']::VARCHAR AS container_registry_vendor,
     PARSE_JSON(run_results['analytics_unique_visits'])::VARIANT AS analytics_unique_visits,
-    run_results['container_registry_server']['version']::VARCHAR AS container_registry_version,
-    'SaaS - Automated'::VARCHAR AS ping_type
+    run_results['container_registry_server']['version']::VARCHAR AS container_registry_version
   FROM cleaned
 )
 
 {{ dbt_audit(
     cte_ref="final",
     created_by="@mdrussell",
-    updated_by="@mdrussell",
+    updated_by="@utkarsh060",
     created_date="2022-11-09",
-    updated_date="2023-01-18"
+    updated_date="2024-08-01"
 ) }}

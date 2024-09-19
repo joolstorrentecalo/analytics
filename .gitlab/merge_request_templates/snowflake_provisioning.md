@@ -11,7 +11,12 @@
 
 1. [ ] Approve MR after checking against linked Access Request.
     - If the user requests a role outside of `snowflake_analyst`, update `roles.yml` manually,  or via CI job [handbook](https://handbook.gitlab.com/handbook/business-technology/data-team/platform/ci-jobs/#further-explanation-1)
-1. [ ] Manually trigger new CI pipeline to unlock CI jobs:
+1. Run 2 CI jobs *concurrently*, jobs take ~2 minutes total:
+    - [ ] manually trigger new CI pipeline (to unlock CI job)
+        <details><summary>screenshot showing how to manually trigger</summary>
+
+        ![image](/uploads/2a5ecbdf3adc6093069bf8951282af43/image.png){width=525 height=116}
+        </details>
     - [ ] Run CI job: Stage :snake: Python `snowflake_provisioning_snowflake_users`
     - [ ] Run CI job: Stage :snake: Python: `🧊permifrost_spec_test`
 1. [ ] Merge MR

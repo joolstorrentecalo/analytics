@@ -1,10 +1,4 @@
-WITH prep_crm_event AS (
-
-  SELECT *
-  FROM {{ ref('prep_crm_event') }}
-  WHERE is_deleted = FALSE
-
-), final AS (
+WITH final AS (
 
     SELECT
 
@@ -42,7 +36,6 @@ WITH prep_crm_event AS (
         prep_crm_event.created_at,
         prep_crm_event.event_end_date,
 
-
     --Event Flags
         prep_crm_event.is_all_day_event, 
         prep_crm_event.is_archived,
@@ -52,14 +45,9 @@ WITH prep_crm_event AS (
         prep_crm_event.is_recurrence,
         prep_crm_event.has_reminder_set,
         prep_crm_event.is_answered,
-        prep_crm_event.is_bad_number, 
-        prep_crm_event.is_busy, 
         prep_crm_event.is_correct_contact,
-        prep_crm_event.is_left_message,
-        prep_crm_event.is_not_answered,
         prep_crm_event.is_meeting_canceled,
         prep_crm_event.is_closed_event,
-        prep_crm_event.is_activity,
 
     --Recurrence Info
         prep_crm_event.event_recurrence_activity_id,
@@ -81,7 +69,8 @@ WITH prep_crm_event AS (
         prep_crm_event.last_modified_date,
         prep_crm_event.systemmodstamp
 
-    FROM prep_crm_event
+    FROM {{ ref('prep_crm_event') }}
+    WHERE is_deleted = FALSE
 
     )
 
@@ -90,5 +79,5 @@ WITH prep_crm_event AS (
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2023-08-22",
-    updated_date="2023-08-23"
+    updated_date="2024-07-31"
 ) }}

@@ -365,7 +365,11 @@ models:
           - tdf
           - customers_db
         description: Reason to justify the set status after auditing
-
+      - name: contract_effective_date
+        tags:
+          - tdf
+          - customers_db
+        description: Contract effective date
 
   - name: customers_db_billing_account_contacts_source
     description: '{{ doc("customers_db_billing_account_contacts_source") }}'  

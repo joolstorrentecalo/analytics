@@ -33,7 +33,7 @@ models:
       - name: multi_year_booking_subscription_end_month
 
   - name: rpt_retention_future_parent_account 
-    description: Report table to support Net Dollar Retention analysis at the ultimate_parent_account level using the following year's parent account. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day.
+    description: Report table to support Net Dollar Retention analysis at the ultimate_parent_account level using the following year's parent account. This model is built on top of rpt_delta_arr_parent_month_8th_calendar_day. We have added report_retention_fiscal_quarter_name_fy and report_retention_fiscal_year as columns that allow seamless data filtering in Tableau. Teport_retention_fiscal_quarter_name_fy will populate a value in every row where retention_month is the third month of the quarter - except in the current quarter, where it will populate the current month. Report_retention_fiscal_year similarly will populate only for the last month of the year, except in the current year where it will populate a value only for rows where the retention_month is the current month. The non-report fields will only populate values for the third month of the quarter / last month of the year, which does not account for the live data that is accessible in the current month of the year.
     columns:
       - name: primary_key
         data_tests:
@@ -75,10 +75,10 @@ models:
     description: ' {{ doc("rpt_subscription_renewal_linking") }} '
     columns:
       - name: renewal_subscription_name
-        tests:
+        data_tests:
           - not_null
       - name: previous_term_subscription_name
-        tests:
+        data_tests:
           - not_null
 
   - name: rpt_accounting_period_balance_monthly 
@@ -86,7 +86,7 @@ models:
     columns:
       - name: period
         description: Calendar month and year when the transactions took place
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: starting_accounts_receivable
@@ -97,7 +97,7 @@ models:
     columns:
       - name: period
         description: Calendar month and year for which the metric is calculated
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: booking_amount
@@ -114,7 +114,7 @@ models:
     columns:
       - name: period
         description: Calendar month and year for which the metric is calculated
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: dso and cei

@@ -542,6 +542,7 @@ tables:
       , ldap
       , override
       , member_role_id
+      , member_namespace_id
       FROM members
   merge_request_diff_commit_users:
     advanced_metadata: true
@@ -712,6 +713,20 @@ tables:
       SELECT id
       , name
       FROM programming_languages
+  project_authorizations:
+    dbt_source_model: true
+    is_incremental: False
+    database_type: main
+    export_schema: 'gitlab_com'
+    export_table: 'project_authorizations'
+    export_table_primary_key: user_id
+    import_db: GITLAB_DB
+    import_query: |-
+      SELECT user_id
+      , project_id
+      , access_level
+      , is_unique
+      FROM project_authorizations
   project_ci_cd_settings:
     is_incremental: False
     database_type: main

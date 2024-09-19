@@ -869,6 +869,10 @@ models:
           - not_null
       - name: installation_creation_date
         description: '{{ doc("installation_creation_date") }}'
+      - name: product_delivery_type
+        description: Delivery type of GitLab; either SaaS or Self-Managed. In this model it is a Type 1 SCD, meaning that we show the most recent Delivery Type when an installation has multiple values.
+      - name: product_deployment_type
+        description: Deployment type of GitLab; either GitLab.com, Dedicated, or Self-Managed. In this model it is a Type 1 SCD, meaning that we show the most recent Deployment Type when an installation has multiple values.
 
   - name: dim_invoice
     description: '{{ doc("dim_invoice") }}'
@@ -1366,6 +1370,10 @@ models:
         description: '{{ doc("oldest_subscription_start_date") }}'
       - name: oldest_subscription_cohort_month
         description: '{{ doc("oldest_subscription_cohort_month") }}'
+      - name: ramp_id
+        description: The unique identifier of each ramp deal.  
+      - name: is_ramp
+        description: The indicator flag to identify ramp deals based on ramp_id and multi_year_deal_subscription_linkage fields.
 
   - name: dim_app_release_major_minor
     description: '{{ doc("dim_app_release_major_minor") }}'
@@ -2699,6 +2707,12 @@ models:
         description: User Country selected during registration
       - name: state
         description: A state that is part of the given country selected during registration
+      - name: user_type_id
+        description: '{{ doc("user_type_id") }}'
+      - name: user_type
+        description: '{{ doc("user_type") }}'
+      - name: is_bot
+        description: '{{ doc("is_bot") }}'
 
   - name: dim_user_snapshot_bottom_up
     description: '{{ doc("dim_user_snapshot_bottom_up") }}'
@@ -2736,7 +2750,7 @@ models:
   - name: dim_ci_runner
     description: '{{ doc("dim_ci_runner") }}'
     columns:
-      - name: dim_ci_runner_id
+      - name: dim_ci_runner_sk
         description: The unique ID of the runner with which the CI build has been run
         data_tests:
           - unique
@@ -3099,8 +3113,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: is_saas_dedicated
         description: '{{ doc("is_saas_dedicated") }}'
       - name: ping_delivery_type
@@ -3306,8 +3318,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: dim_app_release_major_minor_sk
         description: '{{ doc("dim_app_release_major_minor_sk") }}'
       - name: dim_latest_available_app_release_major_minor_sk
@@ -4169,8 +4179,6 @@ models:
         description: '{{ doc("model_created_date") }}'
       - name: model_updated_date
         description: '{{ doc("model_updated_date") }}'
-      - name: ping_type
-        description: '{{ doc("ping_type") }}'
       - name: installation_creation_date
         description: '{{ doc("installation_creation_date") }}'
 
@@ -4855,6 +4863,20 @@ models:
         description: Qualified's count of visitors on the account
       - name: account_domains
         description: All domain names associated with this account, separated by a comma.
+      - name: dnb_match_confidence_score
+        description: This is a 1-10 number that describes the level of confidence in match quality between our Salesforce record and D&B's Company record. 10 means D&B is confident that this is a high quality match.
+      - name: dnb_match_grade
+        description: This is a series of letters (A, B, F, Z) that describe the match grade between our Salesforce record and D&B's Company record within particular fields. A means values match exactly, B means values are similar, F means values are different, and Z means values are missing. Fields are graded in this order - Account Name, Street number, Street Name, City, State/Region, Mailing Address, Telephone, Postal Code, Density, Uniqueness, Industry.
+      - name: dnb_connect_company_profile_id
+        description: This is the id of the D&B Connect Company Profile record that has been matched to this Salesforce Account record.
+      - name: dnb_duns
+        description: The Data Universal Numbering System (DUNS) is a 9-digit id number created by D&B to identify a business entity at a particular location.
+      - name: dnb_global_ultimate_duns
+        description: This is the DUNS of the highest global corporate linkage in this company hierarchy.
+      - name: dnb_domestic_ultimate_duns
+        description: This is the DUNS of the highest domestic corporate linkage (within each country) in this company hierarchy.
+      - name: dnb_exclude_company
+        description: This checkbox indicates that this Account record has been excluded from D&B enrichment.
 
   - name: dim_crm_account_daily_snapshot
     description: '{{ doc("dim_crm_account_daily_snapshot") }}'
@@ -5092,6 +5114,7 @@ models:
       - name: zoom_info_company_revenue
       - name: zoom_info_company_state_province
       - name: zoominfo_account_phone
+      
 
   - name: dim_crm_opportunity
     description: '{{ doc("dim_crm_opportunity") }}'
@@ -5235,10 +5258,6 @@ models:
         description: '{{ doc("vsa_status") }}'
       - name: vsa_end_date
         description: '{{ doc("vsa_end_date") }}'
-      - name: military_invasion_comments
-        description: '{{ doc("military_invasion_comments") }}'
-      - name: military_invasion_risk_scale
-        description: '{{ doc("military_invasion_risk_scale") }}'
       - name: downgrade_details
         description: '{{ doc("downgrade_details") }}'
       - name: intended_product_tier
@@ -5262,8 +5281,6 @@ models:
         description:  Renewals Manager supporting this Opportunity
       - name: renewal_forecast_health
         description: Red, Yellow, Green health rating based on the Net ARR field
-      - name: renewal_ownership
-        description: This field determines Rules of Engagement (ROE) and ownership for the Renewal between the Renewals Manager and the Account Executive
       - name: ptc_predicted_arr
         description: This field contains the predicted amount of ARR after renewal, generated by a machine learning model when the subscription is within 6 months of renewal date.
       - name: ptc_predicted_renewal_risk_category
@@ -5566,8 +5583,6 @@ models:
         description: '{{ doc("order_type") }}'
       - name: dim_order_type_current_id
         description: '{{ doc("order_type_current") }}'
-      - name: pre_military_invasion_arr
-        description: '{{ doc("pre_military_invasion_arr") }}'
       - name: won_arr_basis_for_clari
         description: '{{ doc("won_arr_basis_for_clari") }}'
       - name: arr_basis_for_clari
@@ -5594,7 +5609,8 @@ models:
         description: The total Net Arr of the SFDC opportunity, as they move to/past Stage 1.
       - name: valid_deal_count
         description: A Salesforce Opportunity field that gives a -1, 0, or 1 value based on whether or not it should be counted as a true closed won for accounting/reporting purposes
-      
+      - name: aggregate_partner
+        description: The Aggregate Partner field shows the primary partner, using the Resale Partner first, or the Deal Registration partner if the Resale Partner isn't available.
 
   - name: fct_crm_opportunity_daily_snapshot
     description: '{{ doc("fct_crm_opportunity_daily_snapshot") }}'
@@ -5611,8 +5627,9 @@ models:
         description: Amount on an opportunity that is from Educational Services only
       - name: investment_services_value
         description: Amount on an opportunity that is from Investment Services only
-        
-
+      - name: aggregate_partner
+        description: The Aggregate Partner field shows the primary partner, using the Resale Partner first, or the Deal Registration partner if the Resale Partner isn't available.
+      
   - name: fct_crm_opportunity_7th_day_weekly_snapshot
     description: '{{ doc("fct_crm_opportunity_7th_day_weekly_snapshot") }}'
     columns:
@@ -6201,22 +6218,12 @@ models:
         description: Boolean value - Whether or not there is a reminder set for this Event. 
       - name: is_answered
         description: Boolean value - Whether or not the prospect/customer answered/responded to the Event invite. 
-      - name: is_bad_number
-        description: Boolean value - Whether or not the number dialed was a bad/faulty number. 
-      - name: is_busy
-        description: Boolean value - Whether or not the recipient of the call was busy. 
       - name: is_correct_contact
-        description: Boolean value - Whether or not the sales rep reached the correct contact.  
-      - name: is_left_message
-        description: Boolean value - Whether or not a VM message was left. 
-      - name: is_not_answered
-        description: Boolean value - Whether or not the recipient did not answer the phone. 
+        description: Boolean value - Whether or not the sales rep reached the correct contact.   
       - name: is_meeting_canceled
         description: Boolean value - Whether or not the meeting was cancelled. 
       - name: is_closed_event
         description: Boolean value - Whether or not the Event is closed. 
-      - name: is_activity
-        description: Boolean value - Whether or not this Event is tracked as an activity. 
       - name: event_recurrence_activity_id
         description: ID of the Event's recurring activity. 
       - name: event_recurrence_day_of_week
@@ -6252,7 +6259,6 @@ models:
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
 
-
   - name: dim_crm_task
     description: '{{ doc("dim_crm_task") }}'
     columns:
@@ -6270,6 +6276,68 @@ models:
            masking_policy: data_science_sensitive
       - name: partner_marketing_task_subject
         description: A non-pii field with the type of subject.
+
+  - name: dim_sales_dev_user_hierarchy
+    description: A snapshotted history of sales dev user hierarchy from SFDC.
+    columns:
+      - name: sales_dev_rep_user_hierarchy_pk
+        description: The primary key generated from a combination of dim_crm_user_id and snapshot_date
+      - name: dim_crm_user_id
+        description: The SFDC User ID of the sales dev rep
+      - name: sales_dev_rep_direct_manager_id
+        description: The SFDC User ID of the sales dev rep's manager
+      - name: sales_dev_leader_id
+        description: The SFDC User ID of the sales dev rep's leader
+      - name: sales_dev_rep_role_name
+        description: The Sales Dev Rep's role name
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_user_role_hierarchy_fiscal_year
+        description: The fiscal year of the Sales Dev Rep's role hierarchy data
+      - name: sales_dev_rep_email
+        description: The Sales Dev Rep's email
+      - name: sales_dev_rep_user_full_name
+        description: The Sales Dev Rep's Full Name
+      - name: sales_dev_rep_title
+        description: The Sales Dev Rep's title
+      - name: sales_dev_rep_department
+        description: The Sales Dev Rep's department
+      - name: sales_dev_rep_team
+        description: The Sales Dev Rep's team
+      - name: sales_dev_rep_is_active
+        description: Whether The Sales Dev Rep is active
+      - name: sales_dev_rep_employee_number
+        description: The Sales Dev Rep's employee number
+      - name: crm_user_sales_segment
+        description: The Sales Dev Rep's sales segment
+      - name: crm_user_geo
+        description: The Sales Dev Rep's geo
+      - name: crm_user_region
+        description: The Sales Dev Rep's region
+      - name: crm_user_area
+        description: The Sales Dev Rep's area
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_manager_email
+        description: The Sales Dev Rep's Manager'semail
+      - name: sales_dev_manager_employee_number
+        description: The Sales Dev Rep's Manager'semployee number
+      - name: sales_dev_manager_user_role_name
+        description: The Sales Dev Rep's Manager'srole name
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name
+      - name: sales_dev_leader_employee_number
+        description: The Sales Dev Rep's Leader's employee number
+      - name: sales_dev_leader_email
+        description: The Sales Dev Rep's Leader's email
+      - name: snapshot_date
+        description: The snapshot date of the sales dev hierarchy data depicted
 
   - name: fct_crm_task
     description: '{{ doc("fct_crm_task") }}'
@@ -6357,6 +6425,8 @@ models:
                 error_if: ">10"
                 warn_if: ">10"
         description: '{{ doc("dim_behavior_website_page_sk") }}'
+      - name: page_url
+        description: '{{ doc("page_url") }}' 
       - name: page_url_host_path
         description: '{{ doc("page_url_host_path") }}' 
       - name: app_id
@@ -6468,6 +6538,10 @@ models:
         description: '{{ doc("page_view_index") }}' 
       - name: page_view_in_session_index
         description: '{{ doc("page_view_in_session_index") }}' 
+      - name: page_url
+        description: '{{ doc("page_url") }}'
+      - name: referrer_url
+        description: '{{ doc("referrer_url") }}'
       - name: created_by
         description: '{{ doc("created_by") }}'
       - name: updated_by
@@ -6904,6 +6978,26 @@ models:
         description: ' {{ doc("gsc_instance_version") }} '
       - name: gsc_correlation_id
         description: ' { doc("gsc_correlation_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+      - name: debounce_interval
+        description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_30
     description: '{{ doc("fct_behavior_structured_event_30") }}'
@@ -7161,6 +7255,26 @@ models:
         description: ' {{ doc("gsc_instance_version") }} '
       - name: gsc_correlation_id
         description: ' { doc("gsc_correlation_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+      - name: debounce_interval
+        description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_90
     description: '{{ doc("fct_behavior_structured_event_90") }}'
@@ -7418,6 +7532,26 @@ models:
         description: ' {{ doc("gsc_instance_version") }} '
       - name: gsc_correlation_id
         description: ' { doc("gsc_correlation_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+      - name: debounce_interval
+        description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_experiment
     description:  '{{ doc("fct_behavior_structured_event_experiment") }}'
@@ -7784,6 +7918,24 @@ models:
         description: ' {{ doc("gsc_instance_version") }} '
       - name: gsc_correlation_id
         description: ' { doc("gsc_correlation_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
 
   - name: fct_behavior_structured_event_without_assignment_190
     description: '{{ doc("fct_behavior_structured_event_without_assignment_190") }}'
@@ -8029,6 +8181,24 @@ models:
         description: ' {{ doc("gsc_instance_version") }} '
       - name: gsc_correlation_id
         description: ' { doc("gsc_correlation_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
 
 
   - name: fct_behavior_structured_event_without_assignment_400
@@ -8275,6 +8445,24 @@ models:
         description: ' {{ doc("gsc_instance_version") }} '
       - name: gsc_correlation_id
         description: ' { doc("gsc_correlation_id") } '
+      - name: total_context_size_bytes
+        description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+      - name: content_above_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+      - name: content_below_cursor_size_bytes
+        description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+      - name: context_items
+        description: ' {{ doc("code_suggestions_context_items") }}'
+      - name: context_items_count
+        description: ' {{ doc("code_suggestions_context_items_count") }}'
+      - name: input_tokens
+        description: ' {{ doc("code_suggestions_input_tokens") }}'
+      - name: output_tokens
+        description: ' {{ doc("code_suggestions_output_tokens") }}'
+      - name: context_tokens_sent
+        description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+      - name: context_tokens_used
+        description: ' {{ doc("code_suggestions_context_tokens_used") }}'
 
   - name: fct_behavior_structured_event_redis_hll_counters
     description: '{{ doc("fct_behavior_structured_event_redis_hll_counters") }}'
@@ -9836,6 +10024,28 @@ models:
       description: ' {{ doc("code_suggestions_is_direct_connection") }} '
     - name: product_deployment_type
       description: ' {{ doc("product_deployment_type") }} '
+    - name: gsc_instance_version
+      description: ' {{ doc("gsc_instance_version") }} '
+    - name: total_context_size_bytes
+      description: ' {{ doc("code_suggestions_total_context_size_bytes") }}'
+    - name: content_above_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_above_cursor_size_bytes") }}'
+    - name: content_below_cursor_size_bytes
+      description: ' {{ doc("code_suggestions_content_below_cursor_size_bytes") }}'
+    - name: context_items
+      description: ' {{ doc("code_suggestions_context_items") }}'
+    - name: context_items_count
+      description: ' {{ doc("code_suggestions_context_items_count") }}'
+    - name: input_tokens
+      description: ' {{ doc("code_suggestions_input_tokens") }}'
+    - name: output_tokens
+      description: ' {{ doc("code_suggestions_output_tokens") }}'
+    - name: context_tokens_sent
+      description: ' {{ doc("code_suggestions_context_tokens_sent") }}'
+    - name: context_tokens_used
+      description: ' {{ doc("code_suggestions_context_tokens_used") }}'
+    - name: debounce_interval
+      description: ' {{ doc("code_suggestions_debounce_interval") }}'
 
   - name: fct_behavior_structured_event_ide_extension_version
     description: '{{ doc("fct_behavior_structured_event_ide_extension_version") }}'
@@ -9894,7 +10104,7 @@ models:
 
   - name: fct_team_member_absence
     description: '{{ doc("fct_team_member_absence") }}'
-    tests:
+    data_tests:
       - dbt_utils.unique_combination_of_columns:
             combination_of_columns:
               - dim_team_member_sk
@@ -9904,51 +10114,27 @@ models:
     columns:
       - name: dim_team_member_sk
         description: A unique ID for each team member.
-        tests:
+        data_tests:
           - not_null
       - name: dim_team_sk
         description: A unique ID for each team.
-        tests:
+        data_tests:
           - not_null
       - name: employee_id
         description: Unique ID of the team member.
-        tests:
+        data_tests:
           - not_null
-      - name: team_id
-        description: Unique ID of the team.
-      - name: job_code
-        description: The code of the team member's job position.
-      - name: job_specialty_single
-        description: The team member's job specialty.
-      - name: job_specialty_multi
-        description: The team member's job specialty (multi-select).
-      - name: position
-        description: The team member's job profile name.
-      - name: job_family
-        description: The team member's job family.
-      - name: management_level
-        description: The team member's management level.
-      - name: job_grade
-        description: The team member's job grade.
-      - name: entity
-        description: The team member's entity.
-        meta:
-          masking_policy: analyst_people_sensitive
-      - name: is_position_active
-        description: Whether the team member's job position is active.
-      - name: is_current_team_member_position
-        description: Whether the team member's job position is the most current as of the date the query is run.
       - name: position_valid_from
       - name: position_valid_to
       - name: absence_start
         description: The team member's absence start date
-        tests: 
+        data_tests: 
           - not_null
       - name: absence_end
         description: The team member's absence end date
       - name: absence_date  
         description: The team member's day of absence   
-        tests: 
+        data_tests: 
           - not_null
       - name: is_pto
         description: If this absence day overlaps with a PTO.
@@ -9981,3 +10167,28 @@ models:
           masking_policy: analyst_people_sensitive
       - name: employee_day_length
         description: How long this User's "day" is in hours
+
+  - name: fct_team_member_history
+    description: '{{ doc("fct_team_member_history") }}'
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+            combination_of_columns:
+              - dim_team_member_sk
+              - hired_date
+    columns:
+      - name: dim_team_member_sk
+        description: A unique ID for each team member.
+        data_tests:
+          - not_null
+      - name: employee_id
+        description: Workday Employee Identification 
+      - name: hire_rank_asc
+        description: Hire event of a team member ranked earliest by date
+      - name: hired_date
+        description: Date of hire
+      - name: termination_date
+        description: Date of termination of employment  
+      - name: term_rank_asc
+        description: Termination event of a team member ranked earliest by date
+      - name: last_date
+        description:  Date of termination or current date, whichever comes first

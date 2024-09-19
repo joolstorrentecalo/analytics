@@ -87,12 +87,12 @@ def test_transform_postgres_snowflake() -> None:
 
     input_query = {"my_metrics": "SELECT 1 from DUAL"}
 
-    actual = dict(
-        my_metrics="SELECT 'my_metrics' AS counter_name,  "
+    actual = {
+        "my_metrics": "SELECT 'my_metrics' AS counter_name,  "
         "1 AS counter_value, "
         "TO_DATE(CURRENT_DATE) AS run_day   "
         "from DUAL"
-    )
+    }
 
     assert actual == transform(input_query)
 
@@ -552,3 +552,72 @@ def test_is_for_renaming_true():
     expected = True
 
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "input_query, expected_result",
+    [
+        (
+            {
+                "test": 'SELECT COUNT("work_item_parent_links"."id") FROM "work_item_parent_links" INNER JOIN "issues" "work_item_parent" ON "work_item_parent"."id" = "work_item_parent_links"."work_item_parent_id" WHERE "work_item_parent"."work_item_type_id" = 91413915'
+            },
+            [
+                "work_item_parent_links",
+                "prep.gitlab_dotcom.gitlab_dotcom_work_item_parent_links_dedupe_source AS work_item_parent_links",
+            ],
+        ),
+        (
+            {
+                "test": 'SELECT COUNT("issue_links"."id") FROM "issue_links" INNER JOIN "issues" "target" ON "target"."id" = "issue_links"."target_id" WHERE "target"."work_item_type_id" = 91413915'
+            },
+            [
+                "issue_links",
+                "prep.gitlab_dotcom.gitlab_dotcom_issues_dedupe_source AS target",
+            ],
+        ),
+        (
+            {
+                "test": 'SELECT COUNT(*) FROM (SELECT COUNT("approval_project_rules"."id") FROM "approval_project_rules" INNER JOIN approval_project_rules_users ON approval_project_rules_users.approval_project_rule_id = approval_project_rules.id WHERE "approval_project_rules"."rule_type" = 0 GROUP BY "approval_project_rules"."id" HAVING (COUNT(approval_project_rules_users) > approvals_required)) subquery'
+            },
+            [
+                "COUNT(*) AS counter_value",
+                "approval_project_rules",
+                "prep.gitlab_dotcom.gitlab_dotcom_approval_project_rules_users_dedupe_source AS approval_project_rules_users",
+            ],
+        ),
+    ],
+)
+def test_special_case_alias(input_query, expected_result):
+    """
+    Test special cases:
+    - epic_parent
+    - epic
+    as aliases are constructed differently.
+    """
+
+    actual = list(transform(json_data=input_query).values())
+
+    for index, query in enumerate(actual):
+        for result in expected_result[index]:
+            assert result in query
+
+
+@pytest.mark.parametrize(
+    "expected",
+    [
+        ("SELECT"),
+        ("'test_short'"),
+        ("TO_DATE(CURRENT_DATE)"),
+        ("prep.gitlab_dotcom.gitlab_dotcom_approval_project_rules_dedupe_source"),
+        ("approval_project_rules"),
+    ],
+)
+def test_short_sql(expected):
+    """
+    Test test_short_sql
+    """
+    input_metrics = {"test_short": 'SELECT COUNT(*) FROM "approval_project_rules"'}
+
+    actual = transform(json_data=input_metrics)
+
+    assert expected in actual["test_short"]

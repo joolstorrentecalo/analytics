@@ -22,6 +22,8 @@ macros:
     description: '{{ doc("resource_event_action_type") }}'
   - name: user_role_mapping
     description: '{{ doc("user_role_mapping") }}'
+  - name: user_type_mapping
+    description: '{{ doc("user_type_mapping") }}'
   - name: dedupe_source
     description: '{{ doc("dedupe_source") }}'
     arguments:

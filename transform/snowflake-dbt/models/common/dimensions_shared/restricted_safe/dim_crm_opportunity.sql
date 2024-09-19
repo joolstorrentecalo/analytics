@@ -22,6 +22,7 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.opportunity_name,
       prep_crm_opportunity.dim_crm_user_id,
       prep_crm_opportunity.dim_parent_crm_opportunity_id,
+      prep_crm_opportunity.dim_crm_current_account_set_hierarchy_sk,
 
       -- logistical information
       prep_crm_opportunity.generated_source,
@@ -83,7 +84,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.churn_contraction_type,
       prep_crm_opportunity.churn_contraction_net_arr_bucket,
       prep_crm_opportunity.payment_schedule,
-      prep_crm_opportunity.comp_y2_iacv,
       prep_crm_opportunity.opportunity_term,
       prep_crm_opportunity.primary_solution_architect,
       prep_crm_opportunity.growth_type,
@@ -120,7 +120,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.renewal_swing_arr,
       prep_crm_opportunity.renewal_manager, 
       prep_crm_opportunity.renewal_forecast_health,
-      prep_crm_opportunity.renewal_ownership,
 
       --account people attributes
       prep_crm_opportunity.crm_account_owner_sales_segment,
@@ -187,20 +186,11 @@ WITH prep_crm_opportunity AS (
 
       -- Pipeline Velocity Account and Opp Owner Fields and Key Reporting Fields
       prep_crm_opportunity.opportunity_owner_user_segment,
-      prep_crm_opportunity.report_segment,
-      prep_crm_opportunity.report_geo,
-      prep_crm_opportunity.report_region,
-      prep_crm_opportunity.report_area,
-      prep_crm_opportunity.report_role_name,
-      prep_crm_opportunity.report_role_level_1,
-      prep_crm_opportunity.report_role_level_2,
-      prep_crm_opportunity.report_role_level_3,
-      prep_crm_opportunity.report_role_level_4,
-      prep_crm_opportunity.report_role_level_5,
 
       -- channel reporting
       prep_crm_opportunity.dr_partner_deal_type,
       prep_crm_opportunity.dr_partner_engagement,
+      prep_crm_opportunity.aggregate_partner,
 
       -- vsa reporting
       prep_crm_opportunity.vsa_readout,
@@ -208,10 +198,6 @@ WITH prep_crm_opportunity AS (
       prep_crm_opportunity.vsa_url,
       prep_crm_opportunity.vsa_status,
       prep_crm_opportunity.vsa_end_date,
-
-      -- military invasion information
-      prep_crm_opportunity.military_invasion_comments,
-      prep_crm_opportunity.military_invasion_risk_scale,
 
       -- PS related
       prep_crm_opportunity.intended_product_tier,

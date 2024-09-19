@@ -1,6 +1,7 @@
 {{ config(
     tags=["product", "mnpi_exception"],
     materialized = "incremental",
+    on_schema_change='sync_all_columns',
     unique_key = "ping_instance_id"
 ) }}
 
@@ -80,7 +81,6 @@
       add_country_info_to_usage_ping.umau_value                                          AS umau_value,
       add_country_info_to_usage_ping.product_tier                                        AS product_tier,
       add_country_info_to_usage_ping.main_edition                                        AS main_edition,
-      add_country_info_to_usage_ping.ping_type                                           AS ping_type
     FROM add_country_info_to_usage_ping
     LEFT JOIN dim_product_tier
       ON TRIM(LOWER(add_country_info_to_usage_ping.product_tier)) = TRIM(LOWER(dim_product_tier.product_tier_historical_short))
@@ -128,7 +128,6 @@
       prep_usage_ping_cte.product_tier                                                                    AS product_tier,
       prep_usage_ping_cte.main_edition                                                                    AS main_edition_product_tier,
       'VERSION_DB'                                                                                        AS data_source,
-      ping_type                                                                                           AS ping_type
     FROM prep_usage_ping_cte
     LEFT JOIN prep_license AS md5
       ON prep_usage_ping_cte.license_md5 = md5.license_md5
@@ -183,7 +182,7 @@
 {{ dbt_audit(
     cte_ref="joined_payload",
     created_by="@icooper-acp",
-    updated_by="@jpeguero",
+    updated_by="@utkarsh060",
     created_date="2022-03-08",
-    updated_date="2023-06-12"
+    updated_date="2024-08-01"
 ) }}

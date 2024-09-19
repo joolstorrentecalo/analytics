@@ -2,7 +2,7 @@ WITH zuora_revenue_accounting_type AS (
 
     SELECT *
     FROM {{source('zuora_revenue','zuora_revenue_accounting_type')}}
-    QUALIFY RANK() OVER (PARTITION BY id ORDER BY incr_updt_dt DESC) = 1
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY id ORDER BY incr_updt_dt DESC) = 1
 
 ), renamed AS (
 

@@ -894,3 +894,9 @@ This table contains all changes to SFDC Case fields if field history tracking is
 Unioned monthly partitions for all Snowplow sessions.
 
 {% enddocs %}
+
+{% docs prep_team_member_history %}
+
+Directory of team_members' employment dates.
+
+{% enddocs %}

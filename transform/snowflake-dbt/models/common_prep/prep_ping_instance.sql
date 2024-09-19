@@ -1,6 +1,7 @@
 {{ config(
     tags=["product", "mnpi_exception"],
     materialized = "incremental",
+    on_schema_change='sync_all_columns',
     unique_key = "dim_ping_instance_id"
 ) }}
 
@@ -62,20 +63,16 @@
         WHEN original_edition = 'EEP'                                    THEN 'Premium'
         WHEN original_edition = 'EEU'                                    THEN 'Ultimate'
         ELSE NULL END                                                                                                                             AS product_tier,
-      CASE
-        WHEN hostname LIKE ANY ('%gitlab-dedicated.us%', '%gitlab-dedicated.com%', -- Production instances
-                                                                    '%gitlab-dedicated.systems%', '%testpony.net%', '%gitlab-private.org%') -- beta, sandbox, test
-          THEN TRUE
-        ELSE FALSE
-      END                                                                                                                                         AS is_saas_dedicated,
-      -- CASE
-      --   WHEN ping_created_at <= '2023-06-01' AND hostname LIKE ANY ('%gitlab-dedicated.us%', '%gitlab-dedicated.com%', -- Production instances
-      --                                                               '%gitlab-dedicated.systems%', '%testpony.net%', '%gitlab-private.org%') -- beta, sandbox, test
-      --     THEN TRUE
-      --   WHEN ping_created_at > '2023-06-01'  AND COALESCE(raw_usage_data.raw_usage_data_payload, usage_data.raw_usage_data_payload_reconstructed)['gitlab_dedicated']::BOOLEAN = TRUE
-      --     THEN TRUE
-      --   ELSE FALSE
-      -- END                                                                                                                                         AS is_saas_dedicated,
+      NULLIF(
+        COALESCE(
+          raw_usage_data.raw_usage_data_payload,
+          usage_data.raw_usage_data_payload_reconstructed
+        )['gitlab_dedicated'], -1
+      )::BOOLEAN AS is_dedicated_metric,
+      IFF(hostname LIKE ANY ('%gitlab-dedicated.us%', '%gitlab-dedicated.com%', -- Production instances
+                              '%gitlab-dedicated.systems%', '%testpony.net%', '%gitlab-private.org%') -- beta, sandbox, test
+          , TRUE, FALSE)                                                                                                                          AS is_dedicated_hostname,
+      IFF(is_dedicated_metric = TRUE OR is_dedicated_hostname = TRUE, TRUE, FALSE)                                                                AS is_saas_dedicated,
       CASE
         WHEN uuid = 'ea8bf810-1d6f-4a6a-b4fd-93e8cbd8b57f' THEN 'SaaS'
         WHEN is_saas_dedicated = TRUE THEN 'SaaS' 
@@ -87,7 +84,6 @@
         ELSE 'Self-Managed'
       END                                                                                                                                         AS ping_deployment_type,
       COALESCE(raw_usage_data.raw_usage_data_payload, usage_data.raw_usage_data_payload_reconstructed)                                            AS raw_usage_data_payload,
-      IFF(dim_installation_id = '8b52effca410f0a380b0fcffaa1260e7', 'SaaS - Manual', 'Self-Managed') AS ping_type --GitLab SaaS pings here are manual, everything else is SM
     FROM usage_data
     LEFT JOIN raw_usage_data
       ON usage_data.raw_usage_data_id = raw_usage_data.raw_usage_data_id
@@ -172,11 +168,12 @@
         WHEN edition = 'EEU'                  THEN 'Ultimate'
         ELSE NULL
       END AS product_tier,
+      FALSE AS is_dedicated_metric,
+      FALSE AS is_dedicated_hostname,
       FALSE AS is_saas_dedicated,
       'SaaS' AS ping_delivery_type,
       'GitLab.com' AS ping_deployment_type,
-      raw_usage_data_payload,
-      ping_type
+      raw_usage_data_payload
     FROM automated_instance_service_ping
     WHERE created_at >= '2023-02-19' --start using the automated SaaS Service Ping as of 2023-02-19
 
@@ -193,7 +190,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@icooper-acp",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2022-03-17",
-    updated_date="2024-05-10"
+    updated_date="2024-09-04"
 ) }}

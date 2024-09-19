@@ -265,6 +265,7 @@ tables:
       , updated_at
       , state_reason
       , subscription_version
+      , contract_effective_date
       FROM provisions
   reconciliations:
     advanced_metadata: true
