@@ -8,8 +8,8 @@ import re
 from hashlib import md5
 from os import environ as env
 
-
 import requests
+
 
 class Utils:
     """

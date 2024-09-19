@@ -13,7 +13,6 @@ import responses
 from extract.saas_usage_ping.utils import Utils
 
 
-
 @pytest.fixture(autouse=True, name="set_env_variables")
 def mock_settings_env_vars():
     """
@@ -75,8 +74,6 @@ def test_excluded_sql_metrics(utils):
         for x in utils.METRICS_EXCEPTION_INSTANCE_SQL
     )
     assert all(actual)
-
-
 
 
 def test_utils(utils):

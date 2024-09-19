@@ -1,7 +1,9 @@
+"""
+Test engine_factory
+"""
 import pytest
-
 from extract.saas_usage_ping.engine_factory import EngineFactory
-import pandas as pd
+
 
 @pytest.fixture(autouse=True, name="engine_factory")
 def create_engine_factory():
@@ -9,6 +11,7 @@ def create_engine_factory():
     Create class object
     """
     return EngineFactory()
+
 
 def test_engine_factory(engine_factory):
     """
@@ -51,8 +54,11 @@ def test_engine_factory_connected(engine_factory):
     """
     assert engine_factory.connected is False
 
-def test_engine_factory_initialization(engine_factory):
 
+def test_engine_factory_initialization(engine_factory):
+    """
+    Test engine_factory_initialization
+    """
     assert engine_factory is not None
     assert engine_factory.connected is False
     assert engine_factory.loader_engine is None

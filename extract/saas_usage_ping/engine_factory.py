@@ -19,9 +19,11 @@ Methods:
     dispose(): Closes the current Snowflake connection
     upload_to_snowflake(table_name: str, data: pd.DataFrame): Uploads a DataFrame to a Snowflake table
 """
+from os import environ as env
+
 import pandas as pd
 from gitlabdata.orchestration_utils import dataframe_uploader, snowflake_engine_factory
-from os import environ as env
+
 
 class EngineFactory:
     """

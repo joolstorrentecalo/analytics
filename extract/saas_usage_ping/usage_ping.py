@@ -15,10 +15,10 @@ from typing import Any, Dict, List, Tuple
 
 import pandas as pd
 import yaml
+from engine_factory import EngineFactory
 from fire import Fire
 from sqlalchemy.exc import SQLAlchemyError
 from utils import Utils
-from engine_factory import EngineFactory
 
 
 class UsagePing:

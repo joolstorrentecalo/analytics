@@ -11,9 +11,9 @@ import os
 import sys
 from logging import basicConfig, info
 
+from engine_factory import EngineFactory
 from fire import Fire
 from utils import Utils
-from engine_factory import EngineFactory
 
 
 class InstanceNamespaceMetrics:
