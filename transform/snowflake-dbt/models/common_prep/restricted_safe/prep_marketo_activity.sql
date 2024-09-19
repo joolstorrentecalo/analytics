@@ -24,7 +24,8 @@ WITH marketo_person AS (
   
   SELECT DISTINCT
     dim_campaign_id,
-    campaign_name
+    campaign_name,
+    type
   FROM {{ ref('dim_campaign') }}
 
 ), add_to_campaign AS (
