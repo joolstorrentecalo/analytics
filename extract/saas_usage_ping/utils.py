@@ -8,52 +8,8 @@ import re
 from hashlib import md5
 from os import environ as env
 
-import pandas as pd
+
 import requests
-from gitlabdata.orchestration_utils import dataframe_uploader, snowflake_engine_factory
-
-
-class EngineFactory:
-    """
-    Class to manage connection to Snowflake
-    """
-
-    def __init__(self):
-        self.connected = False
-        self.config_vars = env.copy()
-        self.loader_engine = None
-        self.processing_role = "LOADER"
-        self.schema_name = "saas_usage_ping"
-
-    def connect(self):
-        """
-        Connect to engine factory, return connection object
-        """
-        self.loader_engine = snowflake_engine_factory(
-            self.config_vars, self.processing_role
-        )
-        self.connected = True
-
-        return self.loader_engine.connect()
-
-    def dispose(self) -> None:
-        """
-        Dispose from engine factory
-        """
-        if self.connected:
-            self.loader_engine.dispose()
-
-    def upload_to_snowflake(self, table_name: str, data: pd.DataFrame) -> None:
-        """
-        Upload dataframe to Snowflake
-        """
-        dataframe_uploader(
-            dataframe=data,
-            engine=self.loader_engine,
-            table_name=table_name,
-            schema=self.schema_name,
-        )
-
 
 class Utils:
     """

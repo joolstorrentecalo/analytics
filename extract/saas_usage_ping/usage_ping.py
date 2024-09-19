@@ -17,7 +17,8 @@ import pandas as pd
 import yaml
 from fire import Fire
 from sqlalchemy.exc import SQLAlchemyError
-from utils import EngineFactory, Utils
+from utils import Utils
+from engine_factory import EngineFactory
 
 
 class UsagePing:
