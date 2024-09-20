@@ -1404,7 +1404,7 @@ cases AS (
     --     )
     --     THEN 'High Value Account Check In'
     -- END AS check_in_trigger_name,
-    CASE WHEN duo_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Renewal with Duo'
+    CASE WHEN duo_renewal_flag = TRUE AND (current_subscription_end_date <= current_date_60_days) THEN 'Renewal with Duo'
     -- WHEN
     --   future_tier_1_account_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND any_case_last_90 = FALSE
     -- THEN 'Future Tier 1 Account Check In'
