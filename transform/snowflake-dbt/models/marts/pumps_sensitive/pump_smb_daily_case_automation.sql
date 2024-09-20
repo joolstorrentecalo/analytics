@@ -922,6 +922,7 @@ account_blended AS (
   LEFT JOIN mart_crm_opportunity
     ON account_base.dim_crm_account_id = mart_crm_opportunity.dim_crm_account_id
       AND DATEDIFF('day', CURRENT_DATE, mart_crm_opportunity.close_date) <= 365
+      AND mart_crm_opportunity.is_closed = false
   LEFT JOIN dim_subscription
     ON mart_crm_opportunity.dim_crm_opportunity_id = dim_subscription.dim_crm_opportunity_id_current_open_renewal
      and mart_crm_opportunity.is_closed = false
