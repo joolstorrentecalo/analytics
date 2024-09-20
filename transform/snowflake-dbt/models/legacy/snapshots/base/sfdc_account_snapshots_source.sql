@@ -156,6 +156,15 @@ renamed AS (
     account_demographics_upa_street__c AS account_upa_street,
     account_demographics_upa_postal_code__c AS account_upa_postal_code,
 
+      --D&B Fields
+    dnbconnect__d_b_match_confidence_code__c::NUMERIC AS dnb_match_confidence_score,
+    dnbconnect__d_b_match_grade__c::TEXT AS dnb_match_grade,
+    dnbconnect__d_b_connect_company_profile__c::TEXT AS dnb_connect_company_profile_id,
+    IFF( duns__c REGEXP '^\\d{9}$', duns__c, NULL ) AS dnb_duns,
+    IFF( global_ultimate_duns__c REGEXP '^\\d{9}$', global_ultimate_duns__c , NULL ) AS dnb_global_ultimate_duns,
+    IFF( domestic_ultimate_duns__c REGEXP '^\\d{9}$', domestic_ultimate_duns__c , NULL ) AS dnb_domestic_ultimate_duns,
+    dnb_exclude_company__c::BOOLEAN AS dnb_exclude_company,
+
     -- present state info
     gs_health_score__c AS health_number,
     gs_health_score_color__c AS health_score_color,

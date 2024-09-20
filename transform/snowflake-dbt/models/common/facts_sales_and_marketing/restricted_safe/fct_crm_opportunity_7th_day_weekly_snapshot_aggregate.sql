@@ -120,7 +120,6 @@ final AS (
     SUM(days_in_stage)                                                 AS days_in_stage,
     SUM(calculated_age_in_days)                                        AS calculated_age_in_days,
     SUM(days_since_last_activity)                                      AS days_since_last_activity,
-    SUM(pre_military_invasion_arr)                                     AS pre_military_invasion_arr,
     SUM(won_arr_basis_for_clari)                                       AS won_arr_basis_for_clari,
     SUM(arr_basis_for_clari)                                           AS arr_basis_for_clari,
     SUM(forecasted_churn_for_clari)                                    AS forecasted_churn_for_clari,

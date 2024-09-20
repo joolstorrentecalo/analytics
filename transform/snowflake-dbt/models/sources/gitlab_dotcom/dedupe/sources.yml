@@ -195,6 +195,14 @@ sources:
         identifier: gitlab_db_group_group_links
       - name: identities
         identifier: gitlab_db_identities
+      - name: incident_management_issuable_escalation_statuses
+        identifier: gitlab_db_incident_management_issuable_escalation_statuses
+      - name: incident_management_timeline_events
+        identifier: gitlab_db_incident_management_timeline_events
+      - name: incident_management_timeline_event_tags
+        identifier: gitlab_db_incident_management_timeline_event_tags
+      - name: incident_management_timeline_event_tag_links
+        identifier: gitlab_db_incident_management_timeline_event_tag_links
       - name: issuable_severities
         identifier: gitlab_db_issuable_severities
       - name: issue_assignees
@@ -261,6 +269,8 @@ sources:
         identifier: gitlab_db_notes_internal_only
       - name: notification_settings
         identifier: gitlab_db_notification_settings
+      - name: onboarding_progresses
+        identifier: gitlab_db_onboarding_progresses
       - name: oauth_access_tokens
         identifier: gitlab_db_oauth_access_tokens
       - name: packages_packages
@@ -294,9 +304,6 @@ sources:
         identifier: gitlab_db_project_statistics
       - name: projects
         identifier: gitlab_db_projects
-      - name: prometheus_alerts
-        identifier: gitlab_db_prometheus_alerts
-        freshness: null #https://gitlab.com/gitlab-data/analytics/-/issues/10835
       - name: protected_branches
         identifier: gitlab_db_protected_branches
       - name: protected_branch_merge_access_levels
@@ -311,6 +318,8 @@ sources:
         freshness: null
       - name: remote_development_agent_configs
         identifier: gitlab_db_remote_development_agent_configs
+      - name: related_epic_links
+        identifier: gitlab_db_related_epic_links
       - name: releases
         identifier: gitlab_db_releases
       - name: repository_languages
@@ -493,10 +502,14 @@ sources:
         identifier: gitlab_db_users_ops_dashboard_projects
       - name: web_hooks
         identifier: gitlab_db_web_hooks
+      - name: work_item_parent_links
+        identifier: gitlab_db_work_item_parent_links
       - name: work_item_types
         identifier: gitlab_db_work_item_types
       - name: workspaces
         identifier: gitlab_db_workspaces
+      - name: workspaces_agent_configs
+        identifier: gitlab_db_workspaces_agent_configs
       - name: zoekt_enabled_namespaces
         identifier: gitlab_db_zoekt_enabled_namespaces
       - name: zoekt_indices

@@ -194,7 +194,6 @@ renamed AS (
       ELSE 'Missing opportunity_deal_size'
     END                                                                              AS opportunity_deal_size,
     payment_schedule__c                                                              AS payment_schedule,
-    comp_y2_iacv__c                                                                  AS comp_y2_iacv,
     comp_new_logo_override__c                                                        AS comp_new_logo_override,
     is_pipeline_created_eligible_flag__c                                             AS is_pipeline_created_eligible,
     next_steps__c                                                                    AS next_steps,
@@ -206,7 +205,6 @@ renamed AS (
     renewal_swing_arr__c                                                             AS renewal_swing_arr,
     isr__c                                                                           AS renewal_manager,
     renewal_forecast_category__c                                                     AS renewal_forecast_health,
-    isr_priority__c                                                                  AS renewal_ownership,
 
 
 
@@ -264,6 +262,7 @@ renamed AS (
     partner_discount_calc__c                                                         AS partner_discount_calc,
     partner_margin__c                                                                AS partner_margin_percentage,
     NULL                                                                             AS comp_channel_neutral,
+    aggregate_partner__c                                                             AS aggregate_partner,
 
     -- command plan fields
     fm_champion__c                                                                   AS cp_champion,
@@ -305,9 +304,6 @@ renamed AS (
     vsa_end_date__c                                                                  AS vsa_end_date,
 
     -- original issue: https://gitlab.com/gitlab-com/sales-team/field-operations/customer-success-operations/-/issues/2464
-    military_invasion_comments__c                                                    AS military_invasion_comments,
-    pre_military_invasion_arr__c                                                     AS pre_military_invasion_arr,
-    military_invasion_risk_scale__c                                                  AS military_invasion_risk_scale,
     downgrade_details__c                                                             AS downgrade_details,
     won_arr_basis_for_clari__c                                                       AS won_arr_basis_for_clari,
     arr_basis_for_clari__c                                                           AS arr_basis_for_clari,

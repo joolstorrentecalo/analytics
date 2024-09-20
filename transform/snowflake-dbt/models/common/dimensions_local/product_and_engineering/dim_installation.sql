@@ -32,6 +32,20 @@ installation_agg AS (
   {{ dbt_utils.group_by(n = 1) }}
 ),
 
+most_recent_ping AS (
+
+-- Accounting for installation that change from one delivery/deployment type to another.
+-- Typically, this is a Self-Managed installation that converts to Dedicated.
+
+  SELECT
+    dim_installation_id,
+    ping_delivery_type,
+    ping_deployment_type
+  FROM prep_ping_instance
+  QUALIFY ROW_NUMBER() OVER(PARTITION BY dim_installation_id ORDER BY ping_created_at DESC) = 1
+
+),
+
 joined AS (
 
   SELECT DISTINCT
@@ -45,21 +59,23 @@ joined AS (
     -- Dimensional contexts  
     prep_host.host_name,
     installation_agg.installation_creation_date,
-    prep_ping_instance.ping_delivery_type   AS product_delivery_type,
-    prep_ping_instance.ping_deployment_type AS product_deployment_type 
+    most_recent_ping.ping_delivery_type   AS product_delivery_type,
+    most_recent_ping.ping_deployment_type AS product_deployment_type 
 
   FROM prep_ping_instance
   INNER JOIN prep_host 
     ON prep_ping_instance.dim_host_id = prep_host.dim_host_id
   LEFT JOIN installation_agg 
     ON prep_ping_instance.dim_installation_id = installation_agg.dim_installation_id
+  LEFT JOIN most_recent_ping
+    ON most_recent_ping.dim_installation_id = prep_ping_instance.dim_installation_id
 
 )
 
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@mpeychet_",
-    updated_by="@michellecooper",
+    updated_by="@mdrussell",
     created_date="2021-05-20",
-    updated_date="2024-06-07"
+    updated_date="2024-09-09"
 ) }}

@@ -375,3 +375,7 @@ sheets:
     owner: '@nhervas'
     tabs: 
       - ci_runner_machine_type_mapping
+  - name: cost_centers_historical
+    owner: '@rakhireddy'
+    tabs: 
+      - cost_centers_historical

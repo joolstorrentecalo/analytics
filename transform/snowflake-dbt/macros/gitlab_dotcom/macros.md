@@ -85,3 +85,9 @@ and this is handy as the files for data deduplication as smaller and unified.
 Maps visibility level ids to their corresponding names (Public, Internal, Private).
 
 {% enddocs %}
+
+{% docs user_type_mapping %}
+
+Maps user type ids to their corresponding names based on the enum mapping in this [source](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/models/concerns/has_user_type.rb).
+
+{% enddocs %}

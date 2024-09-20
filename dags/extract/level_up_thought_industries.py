@@ -1,5 +1,9 @@
 """
-Run daily Level Up extract
+Run daily Level Up extract.
+
+This DAG is used for endpoints that take a start/end date argument.
+
+Each Airflow task returns just that day's data idempotently.
 """
 
 import os
@@ -47,7 +51,7 @@ dag = DAG(
     # FYI: on first run, data is backfilled thru 2022-03-01
     start_date=datetime(2022, 3, 1),
     catchup=True,
-    max_active_runs=1,  # due to API rate limiting
+    max_active_runs=2,  # due to API rate limiting
     concurrency=3,  # num of max_tasks, limit due to API rate limiting
 )
 
@@ -57,13 +61,18 @@ endpoint_classes = (
     "CourseViews",
     "Logins",
     "Visits",
+    "CoursePurchases",
+    "LearningPathActions",
+    "EmailCaptures",
+    "CodeRedemptions",
 )
 extract_tasks = []
 
 for endpoint_class in endpoint_classes:
     extract_command = (
         f"{clone_and_setup_extraction_cmd} && "
-        f"python level_up_thought_industries/src/execute.py --class_name_to_run={endpoint_class}"
+        f"""python level_up_thought_industries/src/execute.py \
+        execute-date-interval-endpoint --class-name-to-run={endpoint_class}"""
     )
 
     extract_task = KubernetesPodOperator(

@@ -103,6 +103,7 @@
       mart_crm_touchpoint.bizible_landing_page_raw,
       mart_crm_touchpoint.bizible_marketing_channel,
       mart_crm_touchpoint.bizible_marketing_channel_path,
+      mart_crm_touchpoint.marketing_review_channel_grouping,
       mart_crm_touchpoint.bizible_medium,
       mart_crm_touchpoint.bizible_referrer_page,
       mart_crm_touchpoint.bizible_referrer_page_raw,
@@ -239,6 +240,7 @@
       mart_crm_attribution_touchpoint.bizible_landing_page_raw,
       mart_crm_attribution_touchpoint.bizible_marketing_channel,
       mart_crm_attribution_touchpoint.bizible_marketing_channel_path,
+      mart_crm_attribution_touchpoint.marketing_review_channel_grouping,
       mart_crm_attribution_touchpoint.bizible_medium,
       mart_crm_attribution_touchpoint.bizible_referrer_page,
       mart_crm_attribution_touchpoint.bizible_referrer_page_raw,
@@ -427,7 +429,7 @@
       ON opp.dim_crm_account_id=mart_crm_account.dim_crm_account_id
     WHERE opp.created_date >= '2021-02-01'
       OR opp.created_date IS NULL
-    {{dbt_utils.group_by(n=118)}}
+    {{dbt_utils.group_by(n=119)}}
     
 ), cohort_base_combined AS (
   
@@ -575,6 +577,8 @@
       COALESCE(person_base_with_tp.bizible_marketing_channel,opp_base_with_batp.bizible_marketing_channel) AS bizible_marketing_channel, 
       opp_base_with_batp.bizible_marketing_channel AS opp_bizible_marketing_channel,
       COALESCE(person_base_with_tp.bizible_marketing_channel_path,opp_base_with_batp.bizible_marketing_channel_path) AS bizible_marketing_channel_path, 
+      COALESCE(person_base_with_tp.marketing_review_channel_grouping,opp_base_with_batp.marketing_review_channel_grouping) AS marketing_review_channel_grouping,
+      opp_base_with_batp.marketing_review_channel_grouping AS opp_marketing_review_channel_grouping,
       opp_base_with_batp.bizible_marketing_channel_path AS opp_bizible_marketing_channel_path,
       COALESCE(person_base_with_tp.bizible_medium,opp_base_with_batp.bizible_medium) AS bizible_medium, 
       COALESCE(person_base_with_tp.bizible_referrer_page,opp_base_with_batp.bizible_referrer_page) AS bizible_referrer_page, 
@@ -739,5 +743,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-10-05",
-    updated_date="2024-07-24",
+    updated_date="2024-09-12",
   ) }}

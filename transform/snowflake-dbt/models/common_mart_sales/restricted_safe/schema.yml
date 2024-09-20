@@ -447,6 +447,20 @@ models:
         description: Qualified's count of visitors on the account
       - name: account_domains
         description: All domain names associated with this account, separated by a comma.
+      - name: dnb_match_confidence_score
+        description: This is a 1-10 number that describes the level of confidence in match quality between our Salesforce record and D&B's Company record. 10 means D&B is confident that this is a high quality match.
+      - name: dnb_match_grade
+        description: This is a series of letters (A, B, F, Z) that describe the match grade between our Salesforce record and D&B's Company record within particular fields. A means values match exactly, B means values are similar, F means values are different, and Z means values are missing. Fields are graded in this order - Account Name, Street number, Street Name, City, State/Region, Mailing Address, Telephone, Postal Code, Density, Uniqueness, Industry.
+      - name: dnb_connect_company_profile_id
+        description: This is the id of the D&B Connect Company Profile record that has been matched to this Salesforce Account record.
+      - name: dnb_duns
+        description: The Data Universal Numbering System (DUNS) is a 9-digit id number created by D&B to identify a business entity at a particular location.
+      - name: dnb_global_ultimate_duns
+        description: This is the DUNS of the highest global corporate linkage in this company hierarchy.
+      - name: dnb_domestic_ultimate_duns
+        description: This is the DUNS of the highest domestic corporate linkage (within each country) in this company hierarchy.
+      - name: dnb_exclude_company
+        description: This checkbox indicates that this Account record has been excluded from D&B enrichment.
 
   - name: mart_crm_opportunity
     description:  >-
@@ -474,8 +488,6 @@ models:
         description: '{{ doc("vsa_status") }}'
       - name: vsa_end_date
         description: '{{ doc("vsa_end_date") }}'
-      - name: pre_military_invasion_arr
-        description: '{{ doc("pre_military_invasion_arr") }}'
       - name: won_arr_basis_for_clari
         description: '{{ doc("won_arr_basis_for_clari") }}'
       - name: arr_basis_for_clari
@@ -484,10 +496,6 @@ models:
         description: '{{ doc("forecasted_churn_for_clari") }}'
       - name: override_arr_basis_clari
         description: '{{ doc("override_arr_basis_clari") }}'
-      - name: military_invasion_comments
-        description: '{{ doc("military_invasion_comments") }}'
-      - name: military_invasion_risk_scale
-        description: '{{ doc("military_invasion_risk_scale") }}'
       - name: downgrade_details
         description: '{{ doc("downgrade_details") }}'
       - name: intended_product_tier
@@ -511,8 +519,6 @@ models:
         description:  Renewals Manager supporting this Opportunity
       - name: renewal_forecast_health
         description: Red, Yellow, Green health rating based on the Net ARR field
-      - name: renewal_ownership
-        description: This field determines Rules of Engagement (ROE) and ownership for the Renewal between the Renewals Manager and the Account Executive
       - name: is_abm_tier_sao
         description: A flag that indicates whether or not the opportunity's account was in an ABM Tier at the time of SAO
       - name: is_abm_tier_closed_won
@@ -541,6 +547,20 @@ models:
         description: Amount on an opportunity that is from Educational Services only
       - name: investment_services_value
         description: Amount on an opportunity that is from Investment Services only
+      - name: sales_dev_rep_user_role_level_1
+        description: The Sales Dev Rep's role hierarchy level 1
+      - name: sales_dev_rep_user_role_level_2
+        description: The Sales Dev Rep's role hierarchy level 2
+      - name: sales_dev_rep_user_role_level_3
+        description: The Sales Dev Rep's role hierarchy level 3
+      - name: sales_dev_rep_leader_full_name
+        description: The Sales Dev Rep's Leader's full name. 
+      - name: sales_dev_manager_full_name
+        description: The Sales Dev Rep's Manager's full name. 
+      - name: sales_dev_rep_user_full_name
+        description: The Sales Dev Rep's Full Name
+      - name: aggregate_partner
+        description: The Aggregate Partner field shows the primary partner, using the Resale Partner first, or the Deal Registration partner if the Resale Partner isn't available.
 
   - name: mart_crm_opportunity_daily_snapshot
     description: Model with single pane of glass sales and marketing metrics, snapshotted daily.
@@ -575,8 +595,6 @@ models:
         description: '{{ doc("vsa_status") }}'
       - name: vsa_end_date
         description: '{{ doc("vsa_end_date") }}'
-      - name: pre_military_invasion_arr
-        description: '{{ doc("pre_military_invasion_arr") }}'
       - name: won_arr_basis_for_clari
         description: '{{ doc("won_arr_basis_for_clari") }}'
       - name: arr_basis_for_clari
@@ -585,10 +603,6 @@ models:
         description: '{{ doc("forecasted_churn_for_clari") }}'
       - name: override_arr_basis_clari
         description: '{{ doc("override_arr_basis_clari") }}'
-      - name: military_invasion_comments
-        description: '{{ doc("military_invasion_comments") }}'
-      - name: military_invasion_risk_scale
-        description: '{{ doc("military_invasion_risk_scale") }}'
       - name: downgrade_details
         description: '{{ doc("downgrade_details") }}'
       - name: cycle_time_in_days
@@ -611,8 +625,8 @@ models:
         description: Amount on an opportunity that is from Educational Services only
       - name: investment_services_value
         description: Amount on an opportunity that is from Investment Services only
-
-          
+      - name: aggregate_partner
+        description: The Aggregate Partner field shows the primary partner, using the Resale Partner first, or the Deal Registration partner if the Resale Partner isn't available.
 
   - name: mart_crm_opportunity_stamped_hierarchy_hist
     description: >-
@@ -642,8 +656,6 @@ models:
         description: '{{ doc("vsa_status") }}'
       - name: vsa_end_date
         description: '{{ doc("vsa_end_date") }}'
-      - name: pre_military_invasion_arr
-        description: '{{ doc("pre_military_invasion_arr") }}'
       - name: won_arr_basis_for_clari
         description: '{{ doc("won_arr_basis_for_clari") }}'
       - name: arr_basis_for_clari
@@ -652,10 +664,6 @@ models:
         description: '{{ doc("forecasted_churn_for_clari") }}'
       - name: override_arr_basis_clari
         description: '{{ doc("override_arr_basis_clari") }}'
-      - name: military_invasion_comments
-        description: '{{ doc("military_invasion_comments") }}'
-      - name: military_invasion_risk_scale
-        description: '{{ doc("military_invasion_risk_scale") }}'
       - name: downgrade_details
         description: '{{ doc("downgrade_details") }}' 
       - name: next_steps
@@ -675,8 +683,6 @@ models:
         description:  Renewals Manager supporting this Opportunity
       - name: renewal_forecast_health
         description: Red, Yellow, Green health rating based on the Net ARR field
-      - name: renewal_ownership
-        description: This field determines Rules of Engagement (ROE) and ownership for the Renewal between the Renewals Manager and the Account Executive
       - name: xdr_net_arr_stage_1
         description: The XDR influenced value of an Opportunity's Net ARR as of Stage 1 in SFDC.
       - name: xdr_net_arr_stage_3

@@ -69,7 +69,7 @@ joined AS (
       WHEN c.mapping = '10 - shared saas runners - xlarge' THEN c.usage_amount_in_pricing_units / g.total_ci_minutes * (6 / 16) -- cost factor = 6, 16 cores
       WHEN c.mapping = '11 - shared saas runners - 2xlarge' THEN c.usage_amount_in_pricing_units / g.total_ci_minutes * (12 / 32) -- cost factor = 12, 32 cores
       WHEN c.mapping = '8 - shared saas runners gpu - medium' THEN c.usage_amount_in_pricing_units / g.total_ci_minutes * (7 / 4) -- cost factor = 7, 4 cores
-      WHEN c.mapping = '6 - private internal runners' THEN c.usage_amount_in_pricing_units / g.total_ci_minutes * (1 / 4) -- cost factor none, 4 cores
+      WHEN c.mapping = '6 - private internal runners' THEN c.usage_amount_in_pricing_units / g.total_ci_minutes * (1 / 2) -- cost factor none, 2 cores
       WHEN c.mapping = '1 - shared gitlab org runners' THEN c.usage_amount_in_pricing_units / g.total_ci_minutes * (1 / 2) -- cost factor none, 2 cores
     END                                                  AS compute_efficiency,
     c.net_cost / (g.total_ci_minutes / 1000)             AS dollar_efficency_cost_for_1000_ci_minutes

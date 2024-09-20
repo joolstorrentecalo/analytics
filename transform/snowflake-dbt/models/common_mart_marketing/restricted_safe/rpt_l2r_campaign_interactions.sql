@@ -123,6 +123,7 @@
       -- Touchpoint Data Cont.
       mart_crm_touchpoint.bizible_marketing_channel,
       mart_crm_touchpoint.bizible_marketing_channel_path,
+      mart_crm_touchpoint.marketing_review_channel_grouping,
       mart_crm_touchpoint.bizible_medium,
       mart_crm_touchpoint.bizible_referrer_page,
       mart_crm_touchpoint.bizible_referrer_page_raw,
@@ -366,6 +367,7 @@
       -- Touchpoint Data Cont.
       mart_crm_attribution_touchpoint.bizible_marketing_channel,
       mart_crm_attribution_touchpoint.bizible_marketing_channel_path,
+      mart_crm_attribution_touchpoint.marketing_review_channel_grouping,
       mart_crm_attribution_touchpoint.bizible_medium,
       mart_crm_attribution_touchpoint.bizible_referrer_page,
       mart_crm_attribution_touchpoint.bizible_referrer_page_raw,
@@ -423,7 +425,7 @@
       ON opp.dim_crm_account_id=dim_crm_account.dim_crm_account_id
     LEFT JOIN dim_crm_account partner_account
       ON opp.partner_account=partner_account.dim_crm_account_id
-  {{dbt_utils.group_by(n=203)}}
+  {{dbt_utils.group_by(n=204)}}
     
 ), cohort_base_combined AS (
   
@@ -624,6 +626,7 @@
       -- Touchpoint Data Cont.
       bizible_marketing_channel,
       bizible_marketing_channel_path,
+      marketing_review_channel_grouping,
       bizible_medium,
       bizible_referrer_page,
       bizible_referrer_page_raw,
@@ -857,6 +860,7 @@
       -- Touchpoint Data Cont.
       bizible_marketing_channel,
       bizible_marketing_channel_path,
+      marketing_review_channel_grouping,
       bizible_medium,
       bizible_referrer_page,
       bizible_referrer_page_raw,
@@ -1120,5 +1124,5 @@
     created_by="@rkohnke",
     updated_by="@rkohnke",
     created_date="2022-07-05",
-    updated_date="2024-07-24",
+    updated_date="2024-09-12",
   ) }}

@@ -56,6 +56,7 @@ the paid user count. Removing this filter could lead to double-counting of users
   * The exception is [Enterprise Agile Planning seats](https://docs.gitlab.com/ee/subscriptions/gitlab_com/#enterprise-agile-planning) (those _are_ included) since they are 
   incremental seats (and a base product license is not required to use them).
 * Seats are limited to subscriptions with a status of `Active` or `Cancelled`.
+* `Inherited` - Non-production GitLab.com usage is excluded.
 
 **Business Logic in this Model:**
 
@@ -71,5 +72,52 @@ from the last ping of the month per installation.
 * Even though Dedicated is a paid-only product, there are only free users in January-March 2022. 
 This is because there were not yet active paid subscriptions for Dedicated.
 * There are edge cases where `paid_user_count` is greater than `total_user_count` (ex: more Dedicated licenses were sold than there were registered Dedicated users). In this case, we set `paid_user_count` to equal `total_user_count`.
+
+{% enddocs %}
+
+{% docs wk_ping_installation_latest %}
+
+**Description:**
+
+This model contains the installation-level attributes from the latest ping for each installation.
+
+**Data Grain:**
+* dim_installation_id
+
+**Filters in this Model:**
+
+* This model inherits all filters from [`mart_ping_instance`](https://dbt.gitlabdata.com/#!/model/model.gitlab_snowflake.mart_ping_instance#description).
+
+**Business Logic in this Model:**
+
+* Determine the first ping date for each installation.
+* Retrieve various attributes from the most recent ping for each installation.
+* Resulting table is a JOIN of the above two informations where each row represents a unique installation, containing both first ping date and latest ping attributes.
+* The `latest_` prefix on the columns indicates the status as of the most recent ping.
+
+{% enddocs %}
+
+{% docs wk_cloud_connector_configuration %}
+
+**Description:** This model contains detailed information about cloud connector configurations within GitLab data ecosystem.
+- Data is extracted and cleaned from [cloud_connector.yml file](https://gitlab.com/gitlab-org/customers-gitlab-com/-/blob/main/config/cloud_connector.yml) in the underlying model.
+- [GitLab Cloud Connector](https://about.gitlab.com/direction/cloud-connector/) is a way to access services common to multiple GitLab deployments, instances, and cells.
+
+**Data Grain:**
+- environment_name
+- backend
+- feature_name
+- bundled_with_add_on_name
+- unit_primitive_name
+
+**Filters Applied to Model:**
+- None - `ALL Data` at the Atomic (`lowest level/grain`) is brought through from the source, providing a complete view of all cloud connector configurations.
+
+**Business Logic in this Model:**
+- None - this model does not contain any business logic
+
+**Other Comments:**
+- This model is crucial for understanding the features that differentiate Duo Pro and Duo Enterprise.
+- Consider using this model in conjunction with usage metrics to gain insights into the utilization of different cloud services.
 
 {% enddocs %}

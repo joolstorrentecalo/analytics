@@ -1,8 +1,12 @@
 {{ config(
-    tags=["product", "mnpi_exception"],
+
     materialized = "incremental",
     unique_key = "ping_instance_flattened_id",
+    full_refresh = only_force_full_refresh(),
+    on_schema_change = "sync_all_columns",
+    tags=["product", "mnpi_exception"],
     tmp_relation_type = "table"
+
 ) }}
 
 
@@ -30,6 +34,8 @@ WITH source AS (
         original_edition                                                                        AS original_edition,
         main_edition                                                                            AS main_edition,
         product_tier                                                                            AS product_tier,
+        is_dedicated_metric                                                                     AS is_dedicated_metric,
+        is_dedicated_hostname                                                                   AS is_dedicated_hostname,
         is_saas_dedicated                                                                       AS is_saas_dedicated,
         ping_delivery_type                                                                      AS ping_delivery_type,
         ping_deployment_type                                                                    AS ping_deployment_type,
@@ -39,7 +45,6 @@ WITH source AS (
         path                                                                                    AS metrics_path,
         IFF(value = -1, 0, value)                                                               AS metric_value,
         IFF(value = -1, TRUE, FALSE)                                                            AS has_timed_out,
-        ping_type                                                                               AS ping_type,
         version
       FROM source,
         LATERAL FLATTEN(input => raw_usage_data_payload,
@@ -50,7 +55,7 @@ WITH source AS (
   {{ dbt_audit(
       cte_ref="flattened_high_level",
       created_by="@icooper-acp",
-      updated_by="@chrissharp",
+      updated_by="@mdrussell",
       created_date="2022-03-17",
-      updated_date="2023-11-17"
+      updated_date="2024-09-04"
   ) }}

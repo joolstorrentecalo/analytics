@@ -62,3 +62,13 @@ This model is used to store hand raise and trial leads sourced from leads table(
 Prep model that captures a snapshotted history of the Sales Dev Org's user hierarchy with appropriate dimensions. 
 
 {% enddocs %}
+
+{% docs prep_charge_mrr_daily %}
+
+This model can be used to determine what products/MRR were associated with a subscription on a given date.
+
+In order to find the charges associated with a subscription, filter to the most recent subscription version for the original subscription/subscription name. To expand this to the daily grain, fan out the most recent subscription version by the effective dates of the charges.
+This represents the actual effective dates of the products, as updated with each subscription version and carried through as
+a history in the charges.
+
+{% enddocs %}

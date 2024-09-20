@@ -69,13 +69,7 @@
       AND dates.day_of_month = 1
     LEFT JOIN subscriptions ON charges.dim_subscription_id = subscriptions.dim_subscription_id
     WHERE charges.subscription_status IN ('Active','Cancelled')
-      AND charges.product_tier_name != 'Storage'
-      AND charges.rate_plan_charge_name NOT IN (
-        'Dedicated - Administration Fee [Large] - 1 Year',
-        'Dedicated - Administration Fee  [XLarge] - 1 Year',
-        'Dedicated - Administration Fee [2XLarge] - 1 Year',
-        'Dedicated - Storage 10GB - 1 Year'
-      )
+      AND charges.is_licensed_user = TRUE
     {{ dbt_utils.group_by(n = 2) }}
     
 ), action_active_users_project_repo_users AS (
@@ -213,10 +207,22 @@
       location_country.country_name,
       location_country.iso_2_country_code,
       location_country.iso_3_country_code,
-      COALESCE(monthly_sm_metrics.ping_delivery_type, subscription_with_deployment_type.product_delivery_type, 'Self-Managed')
-                                                                                   AS delivery_type,
-      COALESCE(monthly_sm_metrics.ping_deployment_type, subscription_with_deployment_type.product_deployment_type, 'Self-Managed')
-                                                                                   AS deployment_type,
+      CASE
+        WHEN monthly_sm_metrics.is_dedicated_metric = TRUE THEN 'SaaS'
+        WHEN monthly_sm_metrics.is_dedicated_metric = FALSE THEN 'Self-Managed'
+        WHEN subscription_with_deployment_type.product_delivery_type IS NOT NULL THEN subscription_with_deployment_type.product_delivery_type
+        WHEN monthly_sm_metrics.is_dedicated_hostname = TRUE THEN 'SaaS'
+        WHEN monthly_sm_metrics.is_dedicated_hostname = FALSE THEN 'Self-Managed'
+        ELSE 'Self-Managed'
+      END AS delivery_type,
+      CASE
+        WHEN monthly_sm_metrics.is_dedicated_metric = TRUE THEN 'Dedicated'
+        WHEN monthly_sm_metrics.is_dedicated_metric = FALSE THEN 'Self-Managed'
+        WHEN subscription_with_deployment_type.product_deployment_type IS NOT NULL THEN subscription_with_deployment_type.product_deployment_type
+        WHEN monthly_sm_metrics.is_dedicated_hostname = TRUE THEN 'Dedicated'
+        WHEN monthly_sm_metrics.is_dedicated_hostname = FALSE THEN 'Self-Managed'
+        ELSE 'Self-Managed'
+      END AS deployment_type,
       monthly_sm_metrics.installation_creation_date,
       -- Wave 1
       DIV0(
@@ -733,7 +739,7 @@
 {{ dbt_audit(
     cte_ref="final",
     created_by="@ischweickartDD",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2021-06-11",
-    updated_date="2024-06-11"
+    updated_date="2024-09-04"
 ) }}

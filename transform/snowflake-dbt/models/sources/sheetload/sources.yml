@@ -136,3 +136,4 @@ sources:
       - name: ta_team_assignment
       - name: job_profiles_historical
       - name: ci_runner_machine_type_mapping
+      - name: cost_centers_historical

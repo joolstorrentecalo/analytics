@@ -600,3 +600,34 @@ models:
       - name: business_title_current
       - name: date_time_initiated
       - name: effective_date
+  - name: workday_cost_centers_snapshots_source
+    columns:
+      - name: report_effective_date
+      - name: dept_workday_id
+        description: The unique identifier
+        data_tests:
+          - not_null
+      - name: department_name
+      - name: division
+      - name: division_workday_id
+      - name: cost_center_workday_id
+      - name: cost_center
+      - name: dept_inactive
+      - name: is_dept_active
+      - name: valid_from
+      - name: valid_to
+  - name: blended_cost_centers_source
+    columns:
+      - name: dept_workday_id
+        description: The unique identifier
+        data_tests:
+          - not_null
+      - name: cost_center_workday_id
+      - name: department
+      - name: division
+      - name: division_workday_id
+      - name: cost_center
+      - name: is_department_active
+      - name: valid_from
+      - name: valid_to
+

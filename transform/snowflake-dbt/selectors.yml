@@ -187,3 +187,29 @@ selectors:
               #- method: fqn
                 #value: snowplow_page_views
                 #parents: true
+
+  - name: unsafe_models
+    description: This is a selector used for finding the tables in-between a list of tables
+    definition:
+      union:
+        - 'tag:mnpi+'
+        - exclude:
+          - tag:mnpi_exception
+          - config.database:{{ env_var('SNOWFLAKE_PREP_DATABASE') }}
+          - config.schema:restricted_safe_common
+          - config.schema:restricted_safe_common_mapping
+          - config.schema:restricted_safe_common_mart_finance
+          - config.schema:restricted_safe_common_mart_sales
+          - config.schema:restricted_safe_common_mart_marketing
+          - config.schema:restricted_safe_common_mart_product
+          - config.schema:restricted_safe_common_prep
+          - config.schema:restricted_safe_legacy
+          - config.schema:restricted_safe_workspace_finance
+          - config.schema:restricted_safe_workspace_sales
+          - config.schema:restricted_safe_workspace_marketing
+          - config.schema:restricted_safe_workspace_engineering
+
+  - name: contiguous_list
+    description: This selector designed for use with the `make build-changes` command and will select the intersection of the passed list of models. 
+    definition:
+      intersection: [{"union": "{{ var('DOWNSTREAM_LIST','[]').split(',') }}"},{"union": "{{ var('UPSTREAM_LIST','[]').split(',') }}"}]

@@ -25,7 +25,7 @@ def get_product_project_list() -> List[str]:
     """
     Extracts the part of product CSV and returns the unique project_ids listed in the CSV.
     """
-    url = "https://gitlab.com/gitlab-data/analytics/raw/master/transform/snowflake-dbt/data/projects_part_of_product.csv"
+    url = "https://gitlab.com/gitlab-data/analytics/raw/master/transform/snowflake-dbt/seeds/seed_engineering/projects_part_of_product.csv"
     csv_bytes = requests.get(url, timeout=20).content
     df = pd.read_csv(io.StringIO(csv_bytes.decode("utf-8")))
     df = df.drop_duplicates(subset=[PROJECT_ID_KEY])

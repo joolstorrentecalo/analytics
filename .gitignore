@@ -8,7 +8,8 @@
 *.DS_Store
 *.idea
 *.csv
-!/transform/snowflake-dbt/data/*.csv
+!/transform/snowflake-dbt/data/*/*.csv
+!/transform/snowflake-dbt/seeds/*/*.csv
 *.csv.gz
 tmp_log.txt
 */*.env
@@ -30,6 +31,7 @@ config.json
 /transform/snowflake-dbt/dbt_modules/*
 /transform/snowflake-dbt/dbt_packages/*
 /transform/safe_models.json
+/transform/snowflake-dbt/safe_models.json
 .env
 snowsql_rt.log_bootstrap
 .python-version

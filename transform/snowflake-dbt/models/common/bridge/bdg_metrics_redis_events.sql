@@ -12,6 +12,7 @@ final AS (
       TRIM(events.value['name'], '"'),
       TRIM(data_by_row['options']['event'], '"')
     ) AS redis_event,
+    TRIM(events.value['filter']['label'], '"') AS filter_label,
     metrics.metrics_status,
     metrics.time_frame,
     metrics.data_source,
@@ -26,5 +27,5 @@ final AS (
     created_by="@mdrussell",
     updated_by="@mdrussell",
     created_date="2022-12-02",
-    updated_date="2024-05-22"
+    updated_date="2024-09-18"
 ) }}

@@ -16,12 +16,6 @@ lookback_pl_mappings AS (
 
 ),
 
-project_full_path AS (
-
-  SELECT *
-  FROM {{ ref('project_full_path') }}
-
-),
 
 overlaps AS (
 
@@ -33,7 +27,7 @@ overlaps AS (
     pl_combined.infra_label,
     pl_combined.env_label,
     pl_combined.runner_label,
-    COALESCE(pl_combined.folder_label, 0)                                                    AS folder_label,
+    pl_combined.full_path,
     COALESCE(lookback_pl_mappings.pl_category, pl_combined.pl_category)                      AS pl_category,
     pl_combined.usage_unit,
     pl_combined.pricing_unit,
@@ -41,8 +35,8 @@ overlaps AS (
     pl_combined.usage_amount_in_pricing_units * COALESCE(lookback_pl_mappings.pl_percent, 1) AS usage_amount_in_pricing_units,
     pl_combined.cost_before_credits * COALESCE(lookback_pl_mappings.pl_percent, 1)           AS cost_before_credits,
     pl_combined.net_cost * COALESCE(lookback_pl_mappings.pl_percent, 1)                      AS net_cost,
-    pl_combined.usage_standard_unit,
-    pl_combined.usage_amount_in_standard_unit * COALESCE(lookback_pl_mappings.pl_percent, 1) AS usage_amount_in_standard_unit,
+    {# pl_combined.usage_standard_unit, #}
+    {# pl_combined.usage_amount_in_standard_unit * COALESCE(lookback_pl_mappings.pl_percent, 1) AS usage_amount_in_standard_unit, #}
     COALESCE(lookback_pl_mappings.from_mapping, pl_combined.from_mapping)                    AS from_mapping,
     combined_pk,
     DENSE_RANK() OVER (PARTITION BY pl_combined.date_day,
@@ -52,9 +46,9 @@ overlaps AS (
       pl_combined.infra_label,
       pl_combined.env_label,
       pl_combined.runner_label,
-      pl_combined.folder_label
+      pl_combined.full_path
       ORDER BY
-        (CASE WHEN lookback_pl_mappings.folder_label IS NOT NULL THEN 1 ELSE 0 END) DESC,
+        (CASE WHEN lookback_pl_mappings.full_path IS NOT NULL THEN 1 ELSE 0 END) DESC,
         (CASE WHEN lookback_pl_mappings.gcp_service_description IS NOT NULL THEN 1 ELSE 0 END) DESC,
         (CASE WHEN lookback_pl_mappings.gcp_sku_description IS NOT NULL THEN 1 ELSE 0 END) DESC,
         (CASE WHEN lookback_pl_mappings.infra_label IS NOT NULL THEN 1 ELSE 0 END) DESC,
@@ -71,7 +65,7 @@ overlaps AS (
     AND COALESCE(lookback_pl_mappings.infra_label, COALESCE(pl_combined.infra_label, '')) = COALESCE(pl_combined.infra_label, '')
     AND COALESCE(lookback_pl_mappings.env_label, COALESCE(pl_combined.env_label, '')) = COALESCE(pl_combined.env_label, '')
     AND COALESCE(lookback_pl_mappings.runner_label, COALESCE(pl_combined.runner_label, '')) = COALESCE(pl_combined.runner_label, '')
-    AND COALESCE(lookback_pl_mappings.folder_label, COALESCE(pl_combined.folder_label, 0)) = COALESCE(pl_combined.folder_label, 0)
+    AND COALESCE(lookback_pl_mappings.full_path, COALESCE(pl_combined.full_path, '')) = COALESCE(pl_combined.full_path, '')
 
 ),
 
@@ -85,7 +79,7 @@ grouping AS (
     infra_label,
     env_label,
     runner_label,
-    folder_label,
+    full_path,
     pl_category,
     usage_unit,
     pricing_unit,
@@ -93,8 +87,8 @@ grouping AS (
     SUM(usage_amount_in_pricing_units) AS usage_amount_in_pricing_units,
     SUM(cost_before_credits)           AS cost_before_credits,
     SUM(net_cost)                      AS net_cost,
-    usage_standard_unit,
-    usage_amount_in_standard_unit,
+    {# usage_standard_unit,
+    usage_amount_in_standard_unit, #}
     from_mapping,
     combined_pk
   FROM overlaps
@@ -106,32 +100,19 @@ grouping AS (
     infra_label,
     env_label,
     runner_label,
-    folder_label,
+    full_path,
     pl_category,
     usage_unit,
     pricing_unit,
-    usage_standard_unit,
-    usage_amount_in_standard_unit,
+    {# usage_standard_unit,
+    usage_amount_in_standard_unit, #}
     from_mapping,
     combined_pk
 )
 
-,
-
-add_path AS (
-
-  SELECT
-    grouping.*,
-    project_full_path.full_path
-  FROM grouping
-  LEFT JOIN project_full_path ON (grouping.gcp_project_id = project_full_path.gcp_project_id 
-  AND DATE_TRUNC('day', grouping.date_day) >= DATE_TRUNC('day', project_full_path.first_created_at) 
-  AND DATE_TRUNC('day', grouping.date_day) <= DATEADD('day', -1, DATE_TRUNC('day', project_full_path.last_updated_at)))
-
-)
 
 SELECT
   *,
-  {{ dbt_utils.generate_surrogate_key([ 'date_day', 'gcp_project_id', 'gcp_service_description', 'gcp_sku_description', 'infra_label', 'env_label', 'runner_label', 'folder_label', 'pl_category', 'from_mapping']) }} AS pl_pk
-FROM add_path
+  {{ dbt_utils.generate_surrogate_key([ 'date_day', 'gcp_project_id', 'gcp_service_description', 'gcp_sku_description', 'infra_label', 'env_label', 'runner_label', 'full_path', 'pl_category', 'from_mapping']) }} AS pl_pk
+FROM grouping
 

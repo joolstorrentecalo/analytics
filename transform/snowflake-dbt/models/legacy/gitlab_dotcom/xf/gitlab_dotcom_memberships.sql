@@ -225,7 +225,7 @@ WITH members AS ( -- direct group and project members
       user_type,
       IFF(access_level = 10 OR group_access = 10, TRUE, FALSE) AS is_guest, -- exclude any user with guest access
       IFF(
-          user_state = 'active' AND (user_type != 6 OR user_type IS NULL) AND requested_at IS NULL, 
+          user_state = 'active' AND (user_type != 'Project Bot' OR user_type IS NULL) AND requested_at IS NULL, 
           TRUE, FALSE -- must be active, not a project bot, and not awaiting access
       )                                                        AS is_active,
       IFF(

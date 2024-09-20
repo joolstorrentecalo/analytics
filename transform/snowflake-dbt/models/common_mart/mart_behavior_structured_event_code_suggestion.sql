@@ -158,7 +158,19 @@ filtered_code_suggestion_events AS (
     dim_installation_id,
     installation_host_name,
     product_deployment_type,
-    namespace_is_internal
+    namespace_is_internal,
+    gsc_instance_version,
+    total_context_size_bytes,
+    content_above_cursor_size_bytes,
+    content_below_cursor_size_bytes,
+    context_items,
+    context_items_count,
+    input_tokens,
+    output_tokens,
+    context_tokens_sent,
+    context_tokens_used,
+    debounce_interval
+
   FROM code_suggestions_joined_to_fact_and_dim
   WHERE app_id IN ('gitlab_ai_gateway', 'gitlab_ide_extension') --"official" Code Suggestions app_ids
     AND is_event_to_exclude = FALSE --only include the good events
@@ -170,5 +182,5 @@ filtered_code_suggestion_events AS (
     created_by="@michellecooper",
     updated_by="@michellecooper",
     created_date="2024-04-09",
-    updated_date="2024-07-26"
+    updated_date="2024-08-23"
 ) }}

@@ -237,7 +237,7 @@ models:
       includes relevant and common flags that are used in engineering metrics.
     columns:
       - name: merge_request_id
-        tests:
+        data_tests:
           - not_null
           - unique
       - name: merge_request_iid
@@ -893,7 +893,6 @@ models:
         description: the identifier for the ci_pipeline
         data_tests:
           - not_null
-    columns:
       - name: pipeline_finished_date
         description: the date the pipeline finished
         data_tests:

@@ -51,6 +51,8 @@ models:
         description: max_duo_pro_active_users / paid_duo_pro_seats Result cannot exceed 100%.
       - name: standard_pct_assignment_seat_utilization
         description: number_of_seats_assigned / paid_duo_pro_seats Result cannot exceed 100%.
+      - name: is_oss_or_edu_rate_plan
+        description: Flag for rate plans containing OSS or EDU.
 
   - name:  wk_rpt_gitlab_registered_users_monthly
     description: '{{ doc("wk_rpt_gitlab_registered_users_monthly") }}'
@@ -128,4 +130,6 @@ models:
         description: max_duo_pro_active_users / paid_duo_pro_seats Result cannot exceed 100%.
       - name: standard_pct_assignment_seat_utilization
         description: number_of_seats_assigned / paid_duo_pro_seats Result cannot exceed 100%.
+      - name: is_oss_or_edu_rate_plan
+        description: Flag for rate plans containing OSS or EDU.
 

@@ -902,3 +902,9 @@ This model contains data for the self managed instance cloud activations sourced
 This model contains other join keys like `crm_account_id `, `subscription_id` etc.. to be able to join back to Salesforce, Zuora, dimdate data respectively.
 
 {% enddocs %}
+
+{% docs prep_team_member_history %}
+
+Directory of team_members' employment dates.
+
+{% enddocs %}

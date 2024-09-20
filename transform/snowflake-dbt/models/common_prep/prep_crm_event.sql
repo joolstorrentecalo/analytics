@@ -64,14 +64,9 @@ WITH source AS (
       source.is_recurrence,
       source.has_reminder_set,
       source.is_answered,
-      source.is_bad_number, 
-      source.is_busy, 
       source.is_correct_contact,
-      source.is_left_message,
-      source.is_not_answered,
       source.is_meeting_canceled,
       source.is_closed_event,
-      source.is_activity,
 
     --Recurrence Info
       source.event_recurrence_activity_id,
