@@ -1685,8 +1685,8 @@ case_output AS (
     END                                                                                                              AS context_final,
     COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
     CURRENT_DATE  AS query_run_date,
-    CASE WHEN distinct_cases.team = 'AMER' THEN ABS((RANDOM() % POW(2,24) / POW(2,24))::INT) * amer_count + 1
-      ELSE  ABS((RANDOM() % POW(2,24) / POW(2,24))::INT) * emea_count + 1           END AS advocate_number_assignment                                                                                                                                                                               
+    CASE WHEN distinct_cases.team = 'AMER' THEN (ABS(RANDOM() % POW(2,24) / POW(2,24)) * (amer_count - 1))::INT + 1
+      ELSE  (ABS(RANDOM() % POW(2,24) / POW(2,24)) * (emea_count - 1))::INT + 1           END AS advocate_number_assignment                                                                                                                                                                               
   FROM distinct_cases
   LEFT JOIN prep_crm_case
     ON distinct_cases.account_id = prep_crm_case.dim_crm_account_id
