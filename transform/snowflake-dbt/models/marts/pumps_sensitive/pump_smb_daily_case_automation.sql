@@ -1394,48 +1394,48 @@ case_flags AS (
 cases AS (
   SELECT
     *,
-    CASE
-      WHEN
-        check_in_case_needed_flag = TRUE
-        AND (
-          (current_subscription_end_date = current_date_60_days)
-          OR (current_subscription_end_date = current_date_180_days)
-          OR (current_subscription_end_date = current_date_270_days)
-        )
-        THEN 'High Value Account Check In'
-    END AS check_in_trigger_name,
+    -- CASE
+    --   WHEN
+    --     check_in_case_needed_flag = TRUE
+    --     AND (
+    --       (current_subscription_end_date = current_date_60_days)
+    --       OR (current_subscription_end_date = current_date_180_days)
+    --       OR (current_subscription_end_date = current_date_270_days)
+    --     )
+    --     THEN 'High Value Account Check In'
+    -- END AS check_in_trigger_name,
     CASE WHEN duo_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Renewal with Duo'
     -- WHEN
     --   future_tier_1_account_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND any_case_last_90 = FALSE
     -- THEN 'Future Tier 1 Account Check In'
     END AS future_tier_1_trigger_name,
-    CASE WHEN po_required_flag = TRUE AND (current_subscription_end_date = current_date_60_days) AND arr_basis > 3000 THEN 'PO Required'
-      WHEN multiyear_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) AND arr_basis > 3000 THEN 'Multiyear Renewal'
-      WHEN eoa_auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Auto-Renewal Will Fail'
-      WHEN auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date = current_date_60_days) AND arr_basis > 3000 THEN 'Auto-Renewal Will Fail'
-      WHEN auto_renewal_will_fail_logic_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Auto-Renewal Will Fail'
+    CASE WHEN po_required_flag = TRUE AND (current_subscription_end_date <= current_date_60_days) AND arr_basis > 3000 THEN 'PO Required'
+      WHEN multiyear_renewal_flag = TRUE AND (current_subscription_end_date <= current_date_60_days) AND arr_basis > 3000 THEN 'Multiyear Renewal'
+      WHEN eoa_auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date <= current_date_60_days) THEN 'Auto-Renewal Will Fail'
+      WHEN auto_renewal_will_fail_flag = TRUE AND (current_subscription_end_date <= current_date_60_days) AND arr_basis > 3000 THEN 'Auto-Renewal Will Fail'
+      WHEN auto_renewal_will_fail_logic_flag = TRUE AND (current_subscription_end_date <= current_date_60_days) THEN 'Auto-Renewal Will Fail'
       --      WHEN eoa_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'EOA Renewal'
-      WHEN will_churn_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'Renewal Risk: Will Churn'
-      WHEN renewal_payment_failure = TRUE AND current_subscription_end_date <= CURRENT_DATE AND failure_date = DATEADD('day', -1, CURRENT_DATE) THEN 'Renewal with Payment Failure'
+      WHEN will_churn_flag = TRUE AND (current_subscription_end_date <= current_date_60_days) THEN 'Renewal Risk: Will Churn'
+      WHEN renewal_payment_failure = TRUE AND current_subscription_end_date <= CURRENT_DATE THEN 'Renewal with Payment Failure'
       WHEN
-        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date = DATEADD('day', -1, CURRENT_DATE) AND (eoa_flag = FALSE AND arr_basis > 3000)
+        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date <= CURRENT_DATE AND (eoa_flag = FALSE AND arr_basis > 3000)
         THEN 'Auto-Renew Recently Turned Off'
       WHEN
-        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date = DATEADD('day', -1, CURRENT_DATE) AND eoa_flag = TRUE
+        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date <= CURRENT_DATE AND eoa_flag = TRUE
         THEN 'EOA Account - Auto-Renew Recently Turned Off'
       WHEN qsr_failed_flag = TRUE AND qsr_failed_last_75 = FALSE AND net_arr > 1000 THEN 'Failed QSR'
     END
       AS renewal_trigger_name,
-    CASE WHEN
-        overage_with_qsr_off_19_offer = TRUE
-        AND (
-          (current_subscription_end_date = current_date_80_days)
-          OR (current_subscription_end_date = current_date_180_days)
-          OR (current_subscription_end_date = current_date_270_days)
-        )
-        THEN 'Overage and QSR Off'
+    CASE --WHEN
+        -- overage_with_qsr_off_19_offer = TRUE
+        -- AND (
+        --   (current_subscription_end_date = current_date_80_days)
+        --   OR (current_subscription_end_date = current_date_180_days)
+        --   OR (current_subscription_end_date = current_date_270_days)
+        -- )
+        -- THEN 'Overage and QSR Off'
       WHEN overage_with_qsr_off AND ha_last_90 = FALSE THEN 'Overage and QSR Off'
-      WHEN duo_trial_flag = TRUE AND existing_duo_trial_flag = FALSE AND duo_trial_start_date > DATEADD('day', -1, CURRENT_DATE) THEN 'Duo Trial Started'
+      WHEN duo_trial_flag = TRUE AND existing_duo_trial_flag = FALSE AND duo_trial_start_date > DATEADD('day', -2, CURRENT_DATE) THEN 'Duo Trial Started'
     END
       AS high_adoption_case_trigger_name
   FROM case_flags
@@ -1445,8 +1445,8 @@ cases AS (
 final AS (
   SELECT
     *,
-    CASE WHEN check_in_trigger_name IS NOT NULL THEN check_in_trigger_name
-      WHEN future_tier_1_trigger_name IS NOT NULL THEN future_tier_1_trigger_name
+    CASE --WHEN check_in_trigger_name IS NOT NULL THEN check_in_trigger_name
+     -- WHEN future_tier_1_trigger_name IS NOT NULL THEN future_tier_1_trigger_name
       WHEN renewal_trigger_name IS NOT NULL THEN renewal_trigger_name
       WHEN (renewal_trigger_name IS NULL AND high_adoption_case_trigger_name IS NOT NULL) THEN high_adoption_case_trigger_name
       --WHEN (renewal_trigger_name IS NULL and low_adoption_case_trigger_name IS NULL and high_adoption_case_trigger_name IS NOT NULL) 
@@ -1473,7 +1473,8 @@ distinct_cases AS (
     case_data.type,
     CASE WHEN case_data.case_trigger_id IN (6, 26) THEN COALESCE(CONCAT(case_data.case_subject, ' ', final.latest_switch_date), case_data.case_subject)
       WHEN case_data.case_trigger_id IN (28) THEN COALESCE(CONCAT(case_data.case_subject, ' ', final.duo_trial_start_date), case_data.case_subject)
-      WHEN case_data.case_trigger_id IN (31, 32) THEN CONCAT(case_data.case_subject, ' ', final.failure_date)
+      WHEN case_data.case_trigger_id IN (31) THEN CONCAT(case_data.case_subject, ' ', final.failure_date)
+      WHEN case_data.case_trigger_id IN (32) THEN CONCAT(case_data.case_subject, ' ', final.close_date)
       WHEN renewal_case = TRUE AND case_data.case_trigger_id NOT IN (31, 32) THEN CONCAT(case_data.case_subject, ' ', final.close_date) ELSE case_data.case_subject
     END                                       AS case_subject,
     CASE WHEN final.calculated_tier = 'Tier 1' THEN final.high_value_case_owner_id
@@ -1683,11 +1684,11 @@ case_output AS (
   LEFT JOIN prep_crm_case
     ON distinct_cases.account_id = prep_crm_case.dim_crm_account_id
       AND distinct_cases.case_subject = prep_crm_case.subject
-      AND (
-        distinct_cases.case_opportunity_id = prep_crm_case.dim_crm_opportunity_id OR (distinct_cases.case_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
-        OR
-        (prep_crm_case.dim_crm_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
-      )
+      -- AND (
+      --   distinct_cases.case_opportunity_id = prep_crm_case.dim_crm_opportunity_id OR (distinct_cases.case_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
+      --   OR
+      --   (prep_crm_case.dim_crm_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
+      -- )
 
   WHERE remove_flag = FALSE
     AND prep_crm_case.dim_crm_account_id IS NULL
@@ -1698,5 +1699,5 @@ case_output AS (
     created_by="@sglad",
     updated_by="@mfleisher",
     created_date="2024-07-02",
-    updated_date="2024-07-30"
+    updated_date="2024-09-20"
 ) }}
