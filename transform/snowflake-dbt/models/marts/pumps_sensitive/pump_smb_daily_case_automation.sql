@@ -1282,7 +1282,9 @@ all_data AS (
     failure_sub.failure_date,
     autorenew_switch.cancel_reason,
     autorenew_switch.cancel_comments,
-    COALESCE(eoa_accounts_fy24.dim_crm_account_id IS NOT NULL, FALSE) as eoa_flag
+    COALESCE(eoa_accounts_fy24.dim_crm_account_id IS NOT NULL, FALSE) as eoa_flag,
+    team_totals.amer_count,
+    team_totals.emea_count
   FROM account_blended
   LEFT JOIN utilization
     ON utilization.dim_crm_account_id = account_blended.account_id
@@ -1300,6 +1302,7 @@ all_data AS (
     AND (failure_sub.failure_subscription_name = account_blended.sub_subscription_name or (account_blended.sub_subscription_name is null and failure_sub.failure_date >= dateadd('day',-7,current_date)))
   LEFT JOIN eoa_accounts_fy24
     ON eoa_accounts_fy24.dim_crm_account_id = account_blended.account_id
+  LEFT JOIN team_totals
 ),
 
 ------------flags each account/opportunity with any applicable flags
@@ -1460,6 +1463,8 @@ final AS (
 distinct_cases AS (
   SELECT DISTINCT
     final.case_trigger,
+    final.amer_count,
+    final.emea_count,
     final.account_id,
     final.calculated_tier
       AS account_tier,
@@ -1681,8 +1686,8 @@ case_output AS (
     END                                                                                                              AS context_final,
     COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
     CURRENT_DATE  AS query_run_date,
-    CASE WHEN distinct_cases.team = 'AMER' THEN ABS(INT(random() % (2^24) / (2^24))) * amer_count + 1
-      ELSE  ABS(INT(random() % (2^24) / (2^24))) * emea_count + 1           END AS advocate_number_assignment                                                                                        
+    CASE WHEN distinct_cases.team = 'AMER' THEN ABS((RANDOM() % POW(2,24) / POW(2,24))::INT) * amer_count + 1
+      ELSE  ABS((RANDOM() % POW(2,24) / POW(2,24))::INT) * emea_count + 1           END AS advocate_number_assignment                                                                                                                                                                               
   FROM distinct_cases
   LEFT JOIN prep_crm_case
     ON distinct_cases.account_id = prep_crm_case.dim_crm_account_id
