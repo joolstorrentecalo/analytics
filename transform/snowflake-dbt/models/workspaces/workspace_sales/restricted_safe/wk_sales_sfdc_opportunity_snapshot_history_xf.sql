@@ -165,8 +165,8 @@ WITH date_details AS (
       edm_snapshot_opty.sales_qualified_date,
       edm_snapshot_opty.sales_accepted_date,
 
-      edm_snapshot_opty.opportunity_sales_development_representative,
-      edm_snapshot_opty.opportunity_business_development_representative,
+      edm_snapshot_opty.opportunity_crm_sales_dev_rep_id,
+      edm_snapshot_opty.crm_business_dev_rep_id,
       edm_snapshot_opty.opportunity_development_representative,
 
       edm_snapshot_opty.order_type                                  AS snapshot_order_type_stamped,

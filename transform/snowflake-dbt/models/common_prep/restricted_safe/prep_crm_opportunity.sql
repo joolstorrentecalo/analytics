@@ -757,13 +757,13 @@ LEFT JOIN cw_base
       CASE
         WHEN sfdc_opportunity.created_date < '2022-02-01'
           THEN 'Legacy'
-        WHEN sfdc_opportunity.opportunity_sales_development_representative IS NOT NULL AND sfdc_opportunity.opportunity_business_development_representative IS NOT NULL
+        WHEN sfdc_opportunity.opportunity_crm_sales_dev_rep_id IS NOT NULL AND sfdc_opportunity.crm_business_dev_rep_id IS NOT NULL
           THEN 'SDR & BDR'
-        WHEN sfdc_opportunity.opportunity_sales_development_representative IS NOT NULL
+        WHEN sfdc_opportunity.opportunity_crm_sales_dev_rep_id IS NOT NULL
           THEN 'SDR'
-        WHEN sfdc_opportunity.opportunity_business_development_representative IS NOT NULL
+        WHEN sfdc_opportunity.crm_business_dev_rep_id IS NOT NULL
           THEN 'BDR'
-        WHEN sfdc_opportunity.opportunity_business_development_representative IS NULL AND sfdc_opportunity.opportunity_sales_development_representative IS NULL
+        WHEN sfdc_opportunity.crm_business_dev_rep_id IS NULL AND sfdc_opportunity.opportunity_crm_sales_dev_rep_id IS NULL
           THEN 'No XDR Assigned'
       END                                               AS sdr_or_bdr,
       CASE

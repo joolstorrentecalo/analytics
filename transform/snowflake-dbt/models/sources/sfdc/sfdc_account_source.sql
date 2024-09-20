@@ -41,7 +41,7 @@ renamed AS (
     proposed_account_owner__c AS proposed_account_owner,
     business_development_rep__c AS business_development_rep,
     dedicated_service_engineer__c AS dedicated_service_engineer,
-    sdr_assigned__c AS sales_development_rep,
+    sdr_assigned__c AS crm_sales_dev_rep_id,
     executive_sponsor__c AS executive_sponsor_id,
 
     -- solutions_architect__c                     AS solutions_architect,

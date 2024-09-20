@@ -27,7 +27,7 @@ models:
       - name: proposed_account_owner
       - name: business_development_rep
       - name: dedicated_service_engineer
-      - name: sales_development_rep
+      - name: crm_sales_dev_rep_id
       - name: technical_account_manager_id
       - name: ultimate_parent_account_id
       - name: ultimate_parent_account_name

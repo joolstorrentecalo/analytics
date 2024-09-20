@@ -57,7 +57,7 @@ SELECT
     mart.account_owner,
     mart.business_development_rep,
     mart.dedicated_service_engineer,
-    mart.sales_development_rep,
+    mart.crm_sales_dev_rep_id,
     mart.technical_account_manager_id,
     mart.dim_parent_crm_account_id                           AS ultimate_parent_account_id,
     mart.crm_account_type                                    AS account_type,

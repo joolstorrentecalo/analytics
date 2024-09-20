@@ -37,8 +37,8 @@ WITH sfdc_opportunity_snapshots AS (
       opportunity_owner__c           AS opportunity_owner,
       account_owner__c               AS opportunity_owner_manager,
       sales_market__c                AS opportunity_owner_department,
-      SDR_LU__c                      AS opportunity_sales_development_representative,
-      BDR_LU__c                      AS opportunity_business_development_representative,
+      SDR_LU__c                      AS opportunity_crm_sales_dev_rep_id,
+      BDR_LU__c                      AS crm_business_dev_rep_id,
       BDR_SDR__c                     AS opportunity_development_representative,
       COALESCE({{ sales_segment_cleaning('ultimate_parent_sales_segment_emp_o__c') }}, {{ sales_segment_cleaning('ultimate_parent_sales_segment_o__c') }} )
                                      AS parent_segment,

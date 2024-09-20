@@ -57,9 +57,9 @@ WITH source AS (
         opportunity_owner__c                                                                AS opportunity_owner,
         manager_current__c                                                                  AS opportunity_owner_manager,
         sales_market__c                                                                     AS opportunity_owner_department,
-        SDR_LU__c                                                                           AS opportunity_sales_development_representative,
-        business_development_representative__c                                              AS opportunity_business_development_representative,
-        BDR_LU__c                                                                           AS opportunity_business_development_representative_lookup,
+        SDR_LU__c                                                                           AS opportunity_crm_sales_dev_rep_id,
+        business_development_representative__c                                              AS crm_business_dev_rep_id,
+        BDR_LU__c                                                                           AS crm_business_dev_rep_id_lookup,
         BDR_SDR__c                                                                          AS opportunity_development_representative,
 
         sales_accepted_date__c                                                              AS sales_accepted_date,

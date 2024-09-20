@@ -69,7 +69,7 @@ WITH prep_crm_user_daily_snapshot AS (
     stage_1_discovery_date.date_actual                                                                      AS stage_1_discovery_date,
     order_type,
     is_net_arr_closed_deal,
-    COALESCE(opportunity_business_development_representative, opportunity_sales_development_representative) AS sdr_bdr_user_id
+    COALESCE(crm_business_dev_rep_id, opportunity_crm_sales_dev_rep_id) AS sdr_bdr_user_id
   FROM {{ ref('prep_crm_opportunity') }}
   LEFT JOIN prep_date AS created_date
     ON prep_crm_opportunity.created_date_id = created_date.date_id

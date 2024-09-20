@@ -4769,7 +4769,7 @@ models:
       - name: record_type_id
       - name: risk_impact
       - name: risk_reason
-      - name: sales_development_rep
+      - name: crm_sales_dev_rep_id
       - name: support_level
       - name: technical_account_manager
       - name: technical_account_manager_date
@@ -5096,7 +5096,7 @@ models:
       - name: record_type_id
       - name: risk_impact
       - name: risk_reason
-      - name: sales_development_rep
+      - name: crm_sales_dev_rep_id
       - name: snapshot_date
       - name: snapshot_id
       - name: support_level

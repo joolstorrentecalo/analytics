@@ -97,8 +97,8 @@
     mart_crm_opportunity.is_net_arr_pipeline_created,
     mart_crm_opportunity.is_eligible_age_analysis,
     mart_crm_opportunity.is_eligible_open_pipeline,
-    mart_crm_opportunity.opportunity_business_development_representative,
-    mart_crm_opportunity.opportunity_sales_development_representative,
+    mart_crm_opportunity.crm_business_dev_rep_id,
+    mart_crm_opportunity.opportunity_crm_sales_dev_rep_id,
     mart_crm_account.bdr_next_steps,
     mart_crm_account.bdr_account_research,
     mart_crm_account.bdr_account_strategy,
@@ -106,12 +106,12 @@
     mart_crm_account.bdr_recycle_date,
     mart_crm_account.actively_working_start_date,
     CASE 
-    WHEN mart_crm_opportunity.opportunity_business_development_representative IS NOT NULL 
+    WHEN mart_crm_opportunity.crm_business_dev_rep_id IS NOT NULL 
     THEN 'BDR' 
-    WHEN mart_crm_opportunity.opportunity_sales_development_representative IS NOT NULL 
+    WHEN mart_crm_opportunity.opportunity_crm_sales_dev_rep_id IS NOT NULL 
     THEN 'SDR' 
     END AS sales_dev_bdr_or_sdr,
-    COALESCE(opportunity_business_development_representative,opportunity_sales_development_representative) AS sdr_bdr_user_id
+    COALESCE(crm_business_dev_rep_id,opportunity_crm_sales_dev_rep_id) AS sdr_bdr_user_id
     FROM mart_crm_opportunity
     LEFT JOIN dim_date 
       ON mart_crm_opportunity.sales_accepted_date = dim_date.date_day
@@ -387,8 +387,8 @@
     opp_to_lead.product_details,
     opp_to_lead.products_purchased,
     opp_to_lead.sales_dev_bdr_or_sdr,
-    opp_to_lead.opportunity_sales_development_representative,
-    opp_to_lead.opportunity_business_development_representative,
+    opp_to_lead.opportunity_crm_sales_dev_rep_id,
+    opp_to_lead.crm_business_dev_rep_id,
     /* 
     opp_to_lead.crm_opp_owner_sales_segment_stamped,
     opp_to_lead.crm_opp_owner_business_unit_stamped,
@@ -589,8 +589,8 @@
     opps_missing_link.product_details,
     opps_missing_link.products_purchased,
     opps_missing_link.sales_dev_bdr_or_sdr,
-    opps_missing_link.opportunity_sales_development_representative,
-    opps_missing_link.opportunity_business_development_representative,
+    opps_missing_link.opportunity_crm_sales_dev_rep_id,
+    opps_missing_link.crm_business_dev_rep_id,
     /* 
     opps_missing_link.crm_opp_owner_sales_segment_stamped,
     opps_missing_link.crm_opp_owner_business_unit_stamped,

@@ -185,8 +185,8 @@ WITH edm_opty AS (
     ----------------------------------------------------------
     ----------------------------------------------------------
     -- Support Team Members
-    edm_opty.opportunity_business_development_representative,
-    edm_opty.opportunity_sales_development_representative,
+    edm_opty.crm_business_dev_rep_id,
+    edm_opty.opportunity_crm_sales_dev_rep_id,
     edm_opty.opportunity_development_representative,
     -- Missing ISR & TAM
 

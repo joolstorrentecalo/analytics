@@ -410,7 +410,7 @@ WITH map_merged_crm_account AS (
       sfdc_account.zoom_info_total_funding                                AS crm_account_zoom_info_total_funding,
       sfdc_account.forbes_2000_rank,
       sfdc_account.parent_account_industry_hierarchy,
-      sfdc_account.sales_development_rep,
+      sfdc_account.crm_sales_dev_rep_id,
       sfdc_account.admin_manual_source_number_of_employees,
       sfdc_account.admin_manual_source_account_address,
       sfdc_account.eoa_sentiment,
