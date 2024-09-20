@@ -7,12 +7,14 @@
 ]) }}
 
 , snapshot_dates AS (
-    --Use the 5th calendar day to snapshot ARR, Licensed Users, and Customer Count Metrics
+    --Use the 8th calendar day up to 2024-03-01 and 5th calendar day after to snapshot ARR, Licensed Users, and Customer Count Metrics
     SELECT DISTINCT
       first_day_of_month,
-      snapshot_date_fpa_fifth
-    FROM dim_date
-    ORDER BY 1 DESC
+      CASE WHEN first_day_of_month < '2024-03-01'
+        THEN snapshot_date_fpa
+      ELSE snapshot_date_fpa_fifth 
+      END                                   AS snapshot_date_fpa
+    FROM {{ ref('dim_date') }}
 
 ), prep_recurring_charge AS (
   SELECT
@@ -30,7 +32,7 @@
   FROM mart_arr_snapshot_model
   INNER JOIN snapshot_dates
     ON mart_arr_snapshot_model.arr_month = snapshot_dates.first_day_of_month
-    AND mart_arr_snapshot_model.snapshot_date = snapshot_dates.snapshot_date_fpa_fifth
+    AND mart_arr_snapshot_model.snapshot_date = snapshot_dates.snapshot_date_fpa
   WHERE
     mrr != 0
 
