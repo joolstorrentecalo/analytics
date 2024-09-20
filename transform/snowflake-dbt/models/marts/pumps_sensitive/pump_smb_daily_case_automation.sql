@@ -632,7 +632,7 @@ account_base AS (
     start_values.pte_score                                          AS starting_pte_score,
     start_values.ptc_score                                          AS starting_ptc_score,
     start_values.parent_crm_account_lam_dev_count                   AS starting_parent_crm_account_lam_dev_count,
-    COALESCE(eoa_cohorts.dim_crm_account_id IS NOT NULL, FALSE)     AS eoa_flag,
+    -- COALESCE(eoa_cohorts.dim_crm_account_id IS NOT NULL, FALSE)     AS eoa_flag,
     COALESCE(free_promo.dim_crm_account_id IS NOT NULL, FALSE)      AS free_promo_flag,
     COALESCE(price_increase.dim_crm_account_id IS NOT NULL, FALSE)  AS price_increase_promo_flag,
     COALESCE(ultimate.dim_crm_account_id IS NOT NULL, FALSE) AS ultimate_customer_flag
@@ -653,8 +653,8 @@ account_base AS (
   LEFT JOIN first_high_value_case
     ON acct.dim_crm_account_id = first_high_value_case.account_id
   -----EOA cohort accounts
-  LEFT JOIN eoa_cohorts
-    ON acct.dim_crm_account_id = eoa_cohorts.dim_crm_account_id
+  -- LEFT JOIN eoa_cohorts
+  --   ON acct.dim_crm_account_id = eoa_cohorts.dim_crm_account_id
   ------free limit promo cohort accounts
   LEFT JOIN free_promo
     ON acct.dim_crm_account_id = free_promo.dim_crm_account_id
@@ -663,7 +663,12 @@ account_base AS (
     ON acct.dim_crm_account_id = price_increase.dim_crm_account_id
   LEFT JOIN ultimate
     ON acct.dim_crm_account_id = ultimate.dim_crm_account_id
-      AND ultimate.arr_month = DATE_TRUNC('month', acct.snapshot_date)
+      AND (ultimate.arr_month = DATE_TRUNC('month', acct.snapshot_date)
+      OR 
+      (
+      ultimate.last_ultimate_arr_month = dateadd('month', -1, DATE_TRUNC('month', acct.snapshot_date))
+      and ultimate.last_ultimate_arr_month = dateadd('month', -1, DATE_TRUNC('month', current_date))
+      ))
   ----- amer and apac accounts
   LEFT JOIN amer_accounts
     ON acct.dim_crm_account_id = amer_accounts.dim_crm_account_id
