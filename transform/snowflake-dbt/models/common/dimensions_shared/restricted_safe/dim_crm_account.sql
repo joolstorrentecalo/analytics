@@ -231,9 +231,6 @@
 
       --dates
       prep_crm_account.crm_account_created_date,
-      prep_crm_account.abm_tier_1_date,
-      prep_crm_account.abm_tier_2_date,
-      prep_crm_account.abm_tier_3_date,
       prep_crm_account.gtm_acceleration_date,
       prep_crm_account.gtm_account_based_date,
       prep_crm_account.gtm_account_centric_date,

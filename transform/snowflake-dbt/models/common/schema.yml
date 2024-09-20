@@ -4648,10 +4648,6 @@ models:
         description: ' {{ doc("gs_last_csm_activity_date") }} '
       - name: last_at_risk_update_comments
         description: ' {{ doc("last_at_risk_update_comments") }} '
-      - name: abm_tier
-      - name: abm_tier_1_date
-      - name: abm_tier_2_date
-      - name: abm_tier_3_date
       - name: account_manager
       - name: account_owner
       - name: account_phone
@@ -4929,13 +4925,6 @@ models:
         description: ' {{ doc("gs_last_csm_activity_date") }} '
       - name: last_at_risk_update_comments
         description: ' {{ doc("last_at_risk_update_comments") }} '
-      - name: abm_tier
-      - name: abm_tier_1_date
-      - name: abm_tier_1_date_id
-      - name: abm_tier_2_date
-      - name: abm_tier_2_date_id
-      - name: abm_tier_3_date
-      - name: abm_tier_3_date_id
       - name: account_manager
       - name: account_owner
       - name: account_phone

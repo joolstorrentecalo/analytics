@@ -547,12 +547,6 @@ WITH map_merged_crm_account AS (
       --dates
       {{ get_date_id('sfdc_account.created_date') }}                      AS crm_account_created_date_id,
       sfdc_account.created_date                                           AS crm_account_created_date,
-      {{ get_date_id('sfdc_account.abm_tier_1_date') }}                   AS abm_tier_1_date_id,
-      sfdc_account.abm_tier_1_date,
-      {{ get_date_id('sfdc_account.abm_tier_2_date') }}                   AS abm_tier_2_date_id,
-      sfdc_account.abm_tier_2_date,
-      {{ get_date_id('sfdc_account.abm_tier_3_date') }}                   AS abm_tier_3_date_id,
-      sfdc_account.abm_tier_3_date,
       {{ get_date_id('sfdc_account.gtm_acceleration_date') }}             AS gtm_acceleration_date_id,
       sfdc_account.gtm_acceleration_date,
       {{ get_date_id('sfdc_account.gtm_account_based_date') }}            AS gtm_account_based_date_id,

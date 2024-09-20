@@ -50,22 +50,6 @@ WITH account_dims_mapping AS (
 
     FROM {{ref('prep_crm_person')}}
 
-), account_history_final AS (
- 
-  SELECT
-    account_id_18 AS dim_crm_account_id,
-    owner_id AS dim_crm_user_id,
-    ultimate_parent_id AS dim_crm_parent_account_id,
-    abm_tier_1_date,
-    abm_tier_2_date,
-    abm_tier,
-    MIN(dbt_valid_from)::DATE AS valid_from,
-    MAX(dbt_valid_to)::DATE AS valid_to
-  FROM {{ref('sfdc_account_snapshots_source')}}
-  WHERE abm_tier_1_date >= '2022-02-01'
-    OR abm_tier_2_date >= '2022-02-01'
-  {{dbt_utils.group_by(n=6)}}
-
 ), industry AS (
 
     SELECT *
@@ -384,9 +368,6 @@ WITH account_dims_mapping AS (
 
   --Person Data
     person_final.true_inquiry_date,
-    -- account_history_final.abm_tier_1_date,
-    -- account_history_final.abm_tier_2_date,
-    -- account_history_final.abm_tier,
     CASE 
       WHEN true_inquiry_date IS NOT NULL
         AND true_inquiry_date BETWEEN valid_from AND valid_to
@@ -394,13 +375,8 @@ WITH account_dims_mapping AS (
       ELSE FALSE
     END AS is_abm_tier_inquiry
   FROM person_final
-  LEFT JOIN account_history_final
-    ON person_final.dim_crm_account_id=account_history_final.dim_crm_account_id
-  WHERE abm_tier IS NOT NULL
-  AND true_inquiry_date IS NOT NULL
+  WHERE true_inquiry_date IS NOT NULL
   AND true_inquiry_date >= '2022-02-01'
-  AND (abm_tier_1_date IS NOT NULL
-    OR abm_tier_2_date IS NOT NULL)
   AND is_abm_tier_inquiry = TRUE
   
 ), mql_base AS (
@@ -411,9 +387,6 @@ WITH account_dims_mapping AS (
   
   --Person Data
     person_final.mql_datetime_latest_pt,
-    -- account_history_final.abm_tier_1_date,
-    -- account_history_final.abm_tier_2_date,
-    -- account_history_final.abm_tier,
     CASE 
       WHEN mql_datetime_latest_pt IS NOT NULL
         AND mql_datetime_latest_pt BETWEEN valid_from AND valid_to
@@ -421,13 +394,8 @@ WITH account_dims_mapping AS (
       ELSE FALSE
     END AS is_abm_tier_mql  
   FROM person_final
-  LEFT JOIN account_history_final
-    ON person_final.dim_crm_account_id=account_history_final.dim_crm_account_id
-  WHERE abm_tier IS NOT NULL
-  AND mql_datetime_latest_pt IS NOT NULL
+  WHERE mql_datetime_latest_pt IS NOT NULL
   AND mql_datetime_latest_pt >= '2022-02-01'
-  AND (abm_tier_1_date IS NOT NULL
-    OR abm_tier_2_date IS NOT NULL)
   AND is_abm_tier_mql = TRUE
 
 ), abm_tier_id AS (

@@ -25,22 +25,6 @@
       ROW_NUMBER() OVER (PARTITION BY opportunity_id ORDER BY created_date ASC)   AS row_num
     FROM {{ ref('sfdc_opportunity_contact_role_source')}}
 
-), account_history_final AS (
- 
-  SELECT
-    account_id_18 AS dim_crm_account_id,
-    owner_id AS dim_crm_user_id,
-    ultimate_parent_id AS dim_crm_parent_account_id,
-    abm_tier_1_date,
-    abm_tier_2_date,
-    abm_tier,
-    MIN(dbt_valid_from)::DATE AS valid_from,
-    MAX(dbt_valid_to)::DATE AS valid_to
-  FROM sfdc_account_snapshots_source
-  WHERE abm_tier_1_date >= '2022-02-01'
-    OR abm_tier_2_date >= '2022-02-01'
-  {{dbt_utils.group_by(n=6)}}
-
 ), attribution_touchpoints AS (
 
     SELECT *
@@ -342,13 +326,8 @@
       ELSE FALSE
     END AS is_abm_tier_sao  
   FROM sfdc_opportunity
-  LEFT JOIN account_history_final
-    ON sfdc_opportunity.dim_crm_account_id=account_history_final.dim_crm_account_id
-  WHERE abm_tier IS NOT NULL
-  AND sales_accepted_date IS NOT NULL
+  WHERE sales_accepted_date IS NOT NULL
   AND sales_accepted_date >= '2022-02-01'
-  AND (abm_tier_1_date IS NOT NULL
-    OR abm_tier_2_date IS NOT NULL)
   AND is_abm_tier_sao = TRUE
 
 ), cw_base AS (
@@ -366,13 +345,8 @@
       ELSE FALSE
     END AS is_abm_tier_closed_won 
   FROM sfdc_opportunity
-  LEFT JOIN account_history_final
-    ON sfdc_opportunity.dim_crm_account_id=account_history_final.dim_crm_account_id
-  WHERE abm_tier IS NOT NULL
-  AND close_date IS NOT NULL
+  WHERE close_date IS NOT NULL
   AND close_date >= '2022-02-01'
-  AND (abm_tier_1_date IS NOT NULL
-    OR abm_tier_2_date IS NOT NULL)
   AND is_abm_tier_closed_won = TRUE
   
 ), abm_tier_id AS (

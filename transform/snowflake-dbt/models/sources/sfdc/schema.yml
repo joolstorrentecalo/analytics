@@ -107,9 +107,6 @@ models:
       - name: gtm_acceleration_date
       - name: gtm_account_based_date
       - name: gtm_account_centric_date
-      - name: abm_tier_1_date
-      - name: abm_tier_2_date
-      - name: abm_tier_3_date
       - name: demandbase_account_list
       - name: demandbase_intent
       - name: demandbase_page_views

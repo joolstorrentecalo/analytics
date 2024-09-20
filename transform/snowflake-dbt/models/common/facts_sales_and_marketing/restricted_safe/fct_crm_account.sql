@@ -17,9 +17,6 @@ WITH final AS (
 
       --dates
       prep_crm_account.crm_account_created_date_id,
-      prep_crm_account.abm_tier_1_date_id,
-      prep_crm_account.abm_tier_2_date_id,
-      prep_crm_account.abm_tier_3_date_id,
       prep_crm_account.gtm_acceleration_date_id,
       prep_crm_account.gtm_account_based_date_id,
       prep_crm_account.gtm_account_centric_date_id,
