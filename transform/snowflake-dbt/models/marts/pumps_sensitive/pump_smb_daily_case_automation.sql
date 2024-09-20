@@ -79,9 +79,7 @@ advocate_assignment as (
 select 
 smb_advocates.*,
 row_number() over(partition by smb_advocates.manager_name order by smb_advocates.employee_number asc) as advocate_number,
-count(distinct smb_advocates.employee_number) over(partition by smb_advocates.manager_name) as team_advocate_count,
-nullifzero(count(distinct case when smb_advocates.manager_name = 'Taylor Lund' then smb_advocates.employee_number else null end)  over(partition by smb_advocates.manager_name))  as amer_count,
-nullifzero(count(distinct case when smb_advocates.manager_name = 'Miguel Nunes' then smb_advocates.employee_number else null end)  over(partition by smb_advocates.manager_name))  as emea_count
+count(distinct smb_advocates.employee_number) over(partition by smb_advocates.manager_name) as team_advocate_count
 from smb_advocates 
 left join current_leave
 on smb_advocates.employee_number = current_leave.employee_id
@@ -92,9 +90,8 @@ order by smb_advocates.employee_number asc
 
 team_totals as (
 select
-distinct
-amer_count,
-emea_count
+count(distinct case when advocate_assignment.manager_name = 'Taylor Lund' then advocate_assignment.employee_number else null end) as amer_count,
+count(distinct case when advocate_assignment.manager_name = 'Miguel Nunes' then advocate_assignment.employee_number else null end) as emea_count
 from advocate_assignment
 ),
 
