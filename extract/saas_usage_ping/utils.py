@@ -7,8 +7,10 @@ import json
 import re
 from hashlib import md5
 from os import environ as env
+from os import path, remove
 
 import requests
+import yaml
 
 
 class Utils:
@@ -54,7 +56,9 @@ class Utils:
         "usage_activity_by_stage_monthly.configure.clusters_platforms_eks",
     )
 
-    # Map table which are partioned at the source side but still has same name in snowflake
+    # Map table which are partitioned
+    # at the source side but still has
+    # the same name in snowflake
 
     RENAMED_TABLE_MAPPING = {
         "p_ci_builds": "ci_builds",
@@ -67,6 +71,20 @@ class Utils:
         self.headers = {
             "PRIVATE-TOKEN": config_dict.get("GITLAB_ANALYTICS_PRIVATE_TOKEN", None)
         }
+
+    @staticmethod
+    def quoted(input_str: str) -> str:
+        """
+        Returns input string with single quote
+        """
+        return "'" + input_str + "'"
+
+    @staticmethod
+    def double_quoted(input_str: str) -> str:
+        """
+        Returns input string with double quote
+        """
+        return '"' + input_str + '"'
 
     @staticmethod
     def convert_response_to_json(response: requests.Response):
@@ -117,7 +135,7 @@ class Utils:
         return: None
         """
         with open(file=file_name, mode="w", encoding=self.ENCODING) as wr_file:
-            json.dump(json_data, wr_file)
+            json.dump(json_data, wr_file, indent=4)
 
     def load_from_json_file(self, file_name: str):
         """
@@ -125,6 +143,27 @@ class Utils:
         """
         with open(file=file_name, mode="r", encoding=self.ENCODING) as file:
             return json.load(file)
+
+    def save_to_yml_file(self, file_name: str, data: dict) -> None:
+        """
+        Save to yml file
+        """
+        with open(file=file_name, mode="wb") as file:
+            file.writelines(data)
+
+    def load_from_yml_file(self, file_name: str):
+        """
+        Load from YAML file
+        """
+        with open(file=file_name, mode="r", encoding=self.ENCODING) as file:
+            return yaml.load(file, Loader=yaml.FullLoader)
+
+    def delete_file(self, file_name: str) -> None:
+        """
+        Delete file if exists
+        """
+        if path.exists(file_name):
+            remove(file_name)
 
     @staticmethod
     def get_loaded_metadata(keys: list, values: list) -> dict:

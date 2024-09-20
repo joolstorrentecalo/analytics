@@ -8,6 +8,7 @@ from datetime import datetime
 from unittest import mock
 
 import pytest
+import yaml
 import requests
 import responses
 from extract.saas_usage_ping.utils import Utils
@@ -217,3 +218,59 @@ def test_get_metric_table_name(utils, test_value, expected_value):
     Test mapping dict for tables
     """
     assert utils.get_metric_table_name(test_value) == expected_value
+
+
+def test_load_from_yml_file(utils, tmp_path):
+    # Create a temporary YAML file
+    test_data = {
+        "key1": "value1",
+        "key2": {"nested_key": "nested_value"},
+        "key3": [1, 2, 3],
+    }
+    yaml_file = tmp_path / "test_config.yml"
+    yaml_file.write_text(yaml.dump(test_data))
+
+    # Load the YAML file using the function
+    loaded_data = utils.load_from_yml_file(str(yaml_file))
+
+    # Assert that the loaded data matches the original data
+    assert loaded_data == test_data
+    assert loaded_data["key1"] == "value1"
+    assert loaded_data["key2"]["nested_key"] == "nested_value"
+    assert loaded_data["key3"] == [1, 2, 3]
+
+
+def test_load_from_yml_file_file_not_found(utils):
+    with pytest.raises(FileNotFoundError):
+        utils.load_from_yml_file("non_existent_file.yml")
+
+
+def test_delete_file(utils):
+    # Create a temporary file
+    test_file = "test_file.txt"
+    with open(test_file, "w") as f:
+        f.write("Test content")
+
+    # Ensure the file exists
+    assert os.path.exists(test_file)
+
+    # Delete the file
+    utils.delete_file(test_file)
+
+    # Check that the file no longer exists
+    assert not os.path.exists(test_file)
+
+    # Test deleting a non-existent file (should not raise an error)
+    utils.delete_file("non_existent_file.txt")
+
+
+def test_delete_file_permission_error(monkeypatch, utils):
+    # Mock os.remove to raise a PermissionError
+    def mock_remove(file_name):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr(os, "remove", mock_remove)
+
+    # Test that PermissionError is handled gracefully
+    # Should not raise an exception
+    utils.delete_file("test_file.txt")

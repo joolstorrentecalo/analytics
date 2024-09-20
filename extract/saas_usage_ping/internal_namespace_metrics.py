@@ -1,64 +1,119 @@
-import datetime
-import math
-import os
-import sys
-from logging import basicConfig, info
+"""
+Routines for Internal Namespace Metrics
+"""
+import json
+from logging import info
 
-from engine_factory import EngineFactory
-from fire import Fire
 from utils import Utils
 
 
+class SQLGenerate:
+    def __init__(self):
+        self.table_name = "prod.common_mart_product.mart_behavior_structured_event_service_ping_metrics"
+        self.util = Utils()
+
+    def get_time_frame(self, time_frame: str) -> str:
+        """
+        Get time frame for specific SQL
+        """
+        res = ""
+
+        if time_frame == "7d":
+            res = "AND behavior_at BETWEEN DATEADD(DAY, -7, between_end_date) AND between_end_date "
+        if time_frame == "28d":
+            res = "AND behavior_at BETWEEN DATEADD(DAY, -28, between_end_date) AND between_end_date "
+        return res
+
+    def get_event_list(self, metrics: list) -> str:
+        """
+        Get event list for specific SQL
+        """
+        events_list = []
+        res = ""
+
+        if metrics.get("events"):
+            events_list.extend([x.get("name") for x in metrics.get("events")])
+
+        if metrics.get("options"):
+            events_list.extend(metrics.get("options"))
+
+        if events_list:
+            if len(events_list) == 1:
+                res += f"AND redis_event_name = {self.util.quoted(events_list[0])} "
+            else:
+                res += f"AND redis_event_name IN ({','.join([self.util.quoted(event) for event in events_list])}) "
+        return res
+
+    def transform(self, metrics: list) -> str:
+        """
+        Transform YML definition to SQL statement and template
+        """
+
+        res = f"SELECT ultimate_parent_namespace_id AS id, ultimate_parent_namespace_id AS namespace_ultimate_parent_id, COUNT(DISTINCT gsc_pseudonymized_user_id) AS counter_value FROM {self.table_name} "
+        #  res += F"WHERE metrics_path='{metrics.get("key_path")}' "
+
+        res += self.get_event_list(metrics=metrics)
+
+        res += self.get_time_frame(time_frame=metrics.get("time_frame"))
+
+        res += "GROUP BY ALL;"
+        return res
+
+
 class InternalNamespaceMetrics:
-    def __init__(
-        self,
-        ping_date=None,
-        chunk_no=0,
-        number_of_tasks=0,
-        internal_namespace_metrics_filter=None,
-    ):
-        if ping_date is not None:
-            self.end_date = datetime.datetime.strptime(ping_date, "%Y-%m-%d").date()
-        else:
-            self.end_date = datetime.datetime.now().date()
+    def __init__(self):
+        self.yml_file_name = "internal_namespace_metrics_definition.yml"
+        self.sql_file_name = "internal_namespace_metrics_queries.json"
+        self.util = Utils()
+        self.util.headers = {}
 
-        self.start_date_28 = self.end_date - datetime.timedelta(28)
+    @staticmethod
+    def get_sql_metrics_definition(metric: dict) -> dict:
+        """
+        Generate SQL template for internal namespace metrics
+        """
+        template = {}
+        sql = SQLGenerate()
 
-        if internal_namespace_metrics_filter is not None:
-            self.metrics_backfill_filter = internal_namespace_metrics_filter
-        else:
-            self.metrics_backfill_filter = []
-
-        # chunk_no = 0 - internal_namespace_metrics back filling (no chunks)
-        # chunk_no > 0 - load internal_namespace_metrics in chunks
-        self.chunk_no = chunk_no
-        self.number_of_tasks = number_of_tasks
-
-        self.table_name = "gitlab_internal_namespace"
-
-        self.engine_factory = EngineFactory()
-        self.utils = Utils()
-
-        self.SQL_INSERT_PART = (
-            "INSERT INTO "
-            f"{self.engine_factory.schema_name}.{self.table_name}"
-            "(id, "
-            "namespace_ultimate_parent_id, "
-            "counter_value, "
-            "ping_name, "
-            "level, "
-            "query_ran, "
-            "error, "
-            "ping_date, "
-            "_uploaded_at) "
+        template["counter_name"] = metric.get("key_path")
+        template["counter_query"] = sql.transform(metrics=metric)
+        template["time_window_query"] = (
+            True if metric.get("time_frame") in ("7d", "28d") else False
         )
+        template["level"] = "namespace"
+
+        return template
+
+    def generate_sql_metrics(self, metrics_data: json):
+        res = []
+        for metric in metrics_data:
+            if metric.get("status") == "active":
+                res.append(self.get_sql_metrics_definition(metric=metric))
+
+        return res
+
+    def transform_yml_json(self, yml_file: str, data) -> json:
+        """
+        transform yml to json file
+        """
+        try:
+            self.util.save_to_yml_file(file_name=yml_file, data=data)
+            return self.util.load_from_yml_file(file_name=yml_file)
+        finally:
+            self.util.delete_file(file_name=yml_file)
 
     def generate(self):
-        # download_file from RESTful API endpoint
-        # transform_yml_json
-        # generate_sql INSERT + SELECT
-        # save_sql_to_json
-        pass
+        info("Start generating internal namespace metrics")
+        url = "https://gitlab.com/api/v4/usage_data/metric_definitions"
+        metrics_raw = self.util.get_response(url=url)
+
+        metrics_prepared = self.transform_yml_json(
+            yml_file=self.yml_file_name, data=metrics_raw
+        )
+        metrics = self.generate_sql_metrics(metrics_data=metrics_prepared)
+        self.util.save_to_json_file(file_name=self.sql_file_name, json_data=metrics)
+
+        info("End generating internal namespace metrics")
 
     def calculate(self):
         # load_json
@@ -68,4 +123,5 @@ class InternalNamespaceMetrics:
 
 
 if __name__ == "__main__":
-    pass
+    internalnamespacemetrics = InternalNamespaceMetrics()
+    internalnamespacemetrics.generate()
