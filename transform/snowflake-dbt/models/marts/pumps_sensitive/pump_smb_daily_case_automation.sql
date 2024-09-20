@@ -395,7 +395,7 @@ high_value_case_prep AS (
     ON prep_crm_case.dim_crm_user_id = dim_crm_user.dim_crm_user_id
   WHERE prep_crm_case.record_type_id IN ('0128X000001pPRkQAM')
     --    and account_id = '0014M00001gTGESQA4'
-    AND LOWER(prep_crm_case.subject) LIKE '%high value account%'
+    AND LOWER(prep_crm_case.subject) LIKE '%fy25 high value account%'
 ),
 
 --Duplicative - gets most recent High Value case
@@ -437,7 +437,7 @@ first_high_value_case_one AS (
   LEFT JOIN dim_crm_user
     ON prep_crm_case.dim_crm_user_id = dim_crm_user.dim_crm_user_id
   WHERE prep_crm_case.record_type_id IN ('0128X000001pPRkQAM')
-    AND LOWER(prep_crm_case.subject) LIKE '%high value account%'
+    AND LOWER(prep_crm_case.subject) LIKE '%fy25 high value account%'
 ),
 
 first_high_value_case AS (
@@ -446,62 +446,64 @@ first_high_value_case AS (
   WHERE created_date = first_high_value_date
 ),
 
-eoa_cohorts_prep AS (
-  SELECT
-    mart_arr.arr_month,
-    --,ping_created_at
-    mart_arr.subscription_end_month,
-    mart_arr.dim_crm_account_id,
-    mart_arr.crm_account_name,
-    --,MART_CRM_ACCOUNT.CRM_ACCOUNT_OWNER
-    mart_arr.dim_subscription_id,
-    mart_arr.dim_subscription_id_original,
-    mart_arr.subscription_name,
-    mart_arr.subscription_sales_type,
-    mart_arr.auto_pay,
-    mart_arr.default_payment_method_type,
-    mart_arr.contract_auto_renewal,
-    mart_arr.turn_on_auto_renewal,
-    mart_arr.turn_on_cloud_licensing,
-    mart_arr.contract_seat_reconciliation,
-    mart_arr.turn_on_seat_reconciliation,
-    COALESCE(mart_arr.contract_seat_reconciliation = 'Yes' AND mart_arr.turn_on_seat_reconciliation = 'Yes', FALSE) AS qsr_enabled_flag,
-    mart_arr.product_tier_name,
-    mart_arr.product_delivery_type,
-    mart_arr.product_rate_plan_name,
-    mart_arr.arr,
-    --,monthly_mart.max_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
-    DIV0(mart_arr.arr, mart_arr.quantity)                                                                           AS arr_per_user,
-    arr_per_user
-    / 12                                                                                                            AS monthly_price_per_user,
-    DIV0(mart_arr.mrr, mart_arr.quantity)                                                                           AS mrr_check
-  FROM mart_arr
-  -- LEFT JOIN RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_ACCOUNT
-  --     ON mart_arr.DIM_CRM_ACCOUNT_ID = MART_CRM_ACCOUNT.DIM_CRM_ACCOUNT_ID
-  WHERE mart_arr.arr_month = '2023-01-01'
-    AND mart_arr.quantity > 0
-    AND mart_arr.product_tier_name LIKE '%Premium%'
-    AND ((
-      monthly_price_per_user >= 14
-      AND monthly_price_per_user <= 16
-    ) OR (monthly_price_per_user >= 7.5 AND monthly_price_per_user <= 9.5
-    ))
-    AND mart_arr.dim_crm_account_id IN
-    (
-      SELECT dim_crm_account_id
-      --,product_rate_plan_name
-      FROM mart_arr
-      WHERE arr_month >= '2020-02-01'
-        AND arr_month <= '2022-02-01'
-        AND product_rate_plan_name LIKE ANY ('%Bronze%', '%Starter%')
-    )
-),
 
---Identifies accounts that had EoA pricing in the past few years
-eoa_cohorts AS (
-  SELECT DISTINCT dim_crm_account_id FROM
-    eoa_cohorts_prep
-),
+
+-- eoa_cohorts_prep AS (
+--   SELECT
+--     mart_arr.arr_month,
+--     --,ping_created_at
+--     mart_arr.subscription_end_month,
+--     mart_arr.dim_crm_account_id,
+--     mart_arr.crm_account_name,
+--     --,MART_CRM_ACCOUNT.CRM_ACCOUNT_OWNER
+--     mart_arr.dim_subscription_id,
+--     mart_arr.dim_subscription_id_original,
+--     mart_arr.subscription_name,
+--     mart_arr.subscription_sales_type,
+--     mart_arr.auto_pay,
+--     mart_arr.default_payment_method_type,
+--     mart_arr.contract_auto_renewal,
+--     mart_arr.turn_on_auto_renewal,
+--     mart_arr.turn_on_cloud_licensing,
+--     mart_arr.contract_seat_reconciliation,
+--     mart_arr.turn_on_seat_reconciliation,
+--     COALESCE(mart_arr.contract_seat_reconciliation = 'Yes' AND mart_arr.turn_on_seat_reconciliation = 'Yes', FALSE) AS qsr_enabled_flag,
+--     mart_arr.product_tier_name,
+--     mart_arr.product_delivery_type,
+--     mart_arr.product_rate_plan_name,
+--     mart_arr.arr,
+--     --,monthly_mart.max_BILLABLE_USER_COUNT - monthly_mart.LICENSE_USER_COUNT AS overage_count
+--     DIV0(mart_arr.arr, mart_arr.quantity)                                                                           AS arr_per_user,
+--     arr_per_user
+--     / 12                                                                                                            AS monthly_price_per_user,
+--     DIV0(mart_arr.mrr, mart_arr.quantity)                                                                           AS mrr_check
+--   FROM mart_arr
+--   -- LEFT JOIN RESTRICTED_SAFE_COMMON_MART_SALES.MART_CRM_ACCOUNT
+--   --     ON mart_arr.DIM_CRM_ACCOUNT_ID = MART_CRM_ACCOUNT.DIM_CRM_ACCOUNT_ID
+--   WHERE mart_arr.arr_month = '2023-01-01'
+--     AND mart_arr.quantity > 0
+--     AND mart_arr.product_tier_name LIKE '%Premium%'
+--     AND ((
+--       monthly_price_per_user >= 14
+--       AND monthly_price_per_user <= 16
+--     ) OR (monthly_price_per_user >= 7.5 AND monthly_price_per_user <= 9.5
+--     ))
+--     AND mart_arr.dim_crm_account_id IN
+--     (
+--       SELECT dim_crm_account_id
+--       --,product_rate_plan_name
+--       FROM mart_arr
+--       WHERE arr_month >= '2020-02-01'
+--         AND arr_month <= '2022-02-01'
+--         AND product_rate_plan_name LIKE ANY ('%Bronze%', '%Starter%')
+--     )
+-- ),
+
+-- --Identifies accounts that had EoA pricing in the past few years
+-- eoa_cohorts AS (
+--   SELECT DISTINCT dim_crm_account_id FROM
+--     eoa_cohorts_prep
+-- ),
 
 --Identifies accounts that had their First Order discounted 70% as part of the Free User limits promotion
 free_promo AS (
@@ -538,10 +540,13 @@ price_increase AS (
 ultimate AS (
   SELECT DISTINCT
     dim_crm_account_id,
-    arr_month
+    arr_month,
+    MAX(arr_month) OVER (PARTITION BY dim_crm_account_id ORDER BY arr_month DESC) AS last_ultimate_arr_month
   FROM mart_arr
   WHERE product_tier_name LIKE '%Ultimate%'
     AND arr > 0
+qualify (arr_month = last_ultimate_arr_month and arr_month <= date_trunc('month',current_date))
+or (last_ultimate_arr_month > date_trunc('month',current_date) and arr_month = date_trunc('month',current_date))
 ),
 
 --All AMER/APJ team accounts
@@ -549,7 +554,7 @@ amer_accounts AS (
   SELECT dim_crm_account_id
   FROM mart_crm_account
   WHERE crm_account_owner IN
-    ('AMER SMB Sales', 'APAC SMB Sales')
+    ('AMER SMB Sales')
     OR owner_role = 'Advocate_SMB_AMER'
 ),
 
@@ -558,8 +563,8 @@ emea_accounts AS (
   SELECT dim_crm_account_id
   FROM mart_crm_account
   WHERE crm_account_owner IN
-    ('EMEA SMB Sales')
-    OR owner_role = 'Advocate_SMB_EMEA'
+    ('EMEA SMB Sales', 'APAC SMB Sales')
+    OR (owner_role = 'Advocate_SMB_EMEA' or owner_role = 'Advocate_SMB_APAC')
 ),
 
 --Full set of account data, calculates Tier based on CARR/LAM Dev Count, identifies Team, and labels historical snapshots with the GDS_ACCOUNT_FLAG 
@@ -581,12 +586,12 @@ account_base AS (
       WHEN (acct.snapshot_date >= '2024-02-01' AND amer_accounts.dim_crm_account_id IS NOT NULL)
         OR (
           acct.snapshot_date < '2024-02-01'
-          AND (acct.parent_crm_account_geo IN ('AMER', 'APJ', 'APAC') OR acct.parent_crm_account_region IN ('AMER', 'APJ', 'APAC'))
+          AND (acct.parent_crm_account_geo IN ('AMER') OR acct.parent_crm_account_region IN ('AMER'))
         )
-        THEN 'AMER/APJ'
+        THEN 'AMER'
       WHEN
         (acct.snapshot_date >= '2024-02-01' AND emea_accounts.dim_crm_account_id IS NOT NULL)
-        OR (acct.snapshot_date < '2024-02-01' AND (acct.parent_crm_account_geo IN ('EMEA') OR acct.parent_crm_account_region IN ('EMEA')))
+        OR (acct.snapshot_date < '2024-02-01' AND (acct.parent_crm_account_geo IN ('EMEA', 'APJ', 'APAC') OR acct.parent_crm_account_region IN ('EMEA', 'APJ', 'APAC')))
         THEN 'EMEA'
       ELSE 'Other'
     END                                                             AS team,
