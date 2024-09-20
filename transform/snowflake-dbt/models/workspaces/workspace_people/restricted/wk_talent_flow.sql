@@ -508,7 +508,8 @@ pr AS (
     job_grade     AS pr_job_grade,    
     department    AS pr_department,
     division      AS pr_division,
-    employee_type AS pr_employee_type
+    employee_type AS pr_employee_type,
+    hire_rank     AS pr_hire_rank
   FROM listing
 
 ),
@@ -528,7 +529,7 @@ hist_stage AS (
       WHEN employment_status = 'T'
         THEN cur_date_actual
       ELSE COALESCE(LAG(cur_date_actual) OVER (
-          PARTITION BY employee_id ORDER BY cur_date_actual DESC
+          PARTITION BY employee_id, hire_rank ORDER BY cur_date_actual DESC
         ) - 1, last_date)
     END                 AS end_date,
     reports_to          AS cur_reports_to,
@@ -593,6 +594,7 @@ hist_stage AS (
   LEFT JOIN pr
     ON cur_id = pr_id
       AND cur_date_actual - 1 = pr_date_actual
+      AND hire_rank = pr_hire_rank
   WHERE filter = 1
   ORDER BY 1, 2 DESC
 

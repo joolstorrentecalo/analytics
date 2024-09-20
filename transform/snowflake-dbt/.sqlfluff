@@ -3,7 +3,7 @@
 dialect = snowflake
 templater = dbt
 exclude_rules = L016,L031,L034
-large_file_skip_byte_limit = 25000
+large_file_skip_byte_limit = 0
 
 [sqlfluff:templater:dbt]
 project_dir = ./

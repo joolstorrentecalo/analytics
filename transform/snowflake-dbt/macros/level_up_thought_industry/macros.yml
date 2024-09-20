@@ -1,8 +1,8 @@
 version: 2
 
 macros:
-  - name: level_up_incremental
-    description: '{{ doc("level_up_incremental") }}'
+  - name: level_up_intermediate
+    description: '{{ doc("level_up_intermediate") }}'
     arguments:
       - name: source_table
         type: string

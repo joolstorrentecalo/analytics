@@ -1,9 +1,4 @@
-{{ config(
-    materialized='incremental',
-    unique_key='content_id'
-) }}
-
-{{ level_up_incremental('content') }}
+{{ level_up_intermediate('content') }}
 
 parsed AS (
   SELECT

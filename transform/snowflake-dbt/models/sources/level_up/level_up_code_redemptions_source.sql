@@ -1,16 +1,16 @@
-{{ level_up_incremental('code_redemptions') }}
+{{ level_up_intermediate('code_redemptions') }}
 
 parsed AS (
   SELECT
-    value['companyHost']::varchar as company_host,
-    value['companyId']::varchar as company_id,
-    value['companySubdomain']::varchar as company_subdomain,
-    value['event']::varchar as event,
-    value['redemptionCode']::varchar as redemption_code,
-    value['redemptionCodeGroupLabel']::varchar as redemption_code_group_label,
-    value['timestamp']::timestamp as event_timestamp,
-    {{ level_up_filter_gitlab_email("value['user']") }} as username,
-    value['userDetail']['id']::varchar as user_id,
+    value['companyHost']::VARCHAR              AS company_host,
+    value['companyId']::VARCHAR                AS company_id,
+    value['companySubdomain']::VARCHAR         AS company_subdomain,
+    value['event']::VARCHAR                    AS event,
+    value['redemptionCode']::VARCHAR           AS redemption_code,
+    value['redemptionCodeGroupLabel']::VARCHAR AS redemption_code_group_label,
+    value['timestamp']::TIMESTAMP              AS event_timestamp,
+    {{ level_up_filter_gitlab_email("value['user']") }} AS username,
+    value['userDetail']['id']::VARCHAR         AS user_id,
 
     uploaded_at
   FROM intermediate

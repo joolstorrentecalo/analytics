@@ -2409,6 +2409,7 @@ users:
     groups:
       - General All Access
       - General SAFE Access
+      - Finance Project Lead
   - user_name: aemara
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -5736,7 +5737,6 @@ users:
     auth_setting: SAML
     groups:
       - Finance All Access
-      - Finance Project Lead
       - General All Access
       - General SAFE Access
       - Go To Market Project Lead
@@ -5911,6 +5911,7 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
+      - General SAFE Access
   - user_name: jyanelli
     user_name_domain: gitlab.com
     site_role: Viewer
@@ -9109,12 +9110,6 @@ users:
     auth_setting: SAML
     groups:
       - General All Access
-  - user_name: tlauver
-    user_name_domain: gitlab.com
-    site_role: Viewer
-    auth_setting: SAML
-    groups:
-      - General All Access
   - user_name: tlenkiewicz
     user_name_domain: gitlab.com
     site_role: ExplorerCanPublish
@@ -10186,6 +10181,12 @@ users:
     groups:
       - General All Access
   - user_name: dchangkuon
+    user_name_domain: gitlab.com
+    site_role: Viewer
+    auth_setting: SAML
+    groups:
+      - General All Access
+  - user_name: fcatteau
     user_name_domain: gitlab.com
     site_role: Viewer
     auth_setting: SAML

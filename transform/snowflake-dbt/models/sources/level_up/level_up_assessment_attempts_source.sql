@@ -1,9 +1,4 @@
-{{ config(
-    materialized='incremental',
-    unique_key='assessment_attempt_id'
-) }}
-
-{{ level_up_incremental('assessment_attempts') }}
+{{ level_up_intermediate('assessment_attempts') }}
 
 parsed AS (
   SELECT

@@ -127,3 +127,11 @@ This model maps namespaces to their most recent paid GitLab.com (SaaS) subscript
 It provides a daily snapshot of active subscription product(s) for each namespace by expanding the subscription-product across the effective dates of the associated charge.
 
 {% enddocs %}
+
+{% docs map_installation_subscription_product %}
+
+This model maps installations to their most recent paid Self-Managed subscription product, excluding one-time charges and specific product offerings. 
+
+It provides a daily snapshot of active subscription product(s) for each namespace by expanding the subscription-product across the effective dates of the associated charge.
+
+{% enddocs %}

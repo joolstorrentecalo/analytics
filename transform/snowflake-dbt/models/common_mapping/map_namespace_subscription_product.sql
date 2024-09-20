@@ -3,65 +3,69 @@
 ) }}
 
 {{ simple_cte([
-    ('subscriptions', 'dim_subscription'),
-    ('charges', 'prep_charge'),
-    ('product_tier', 'dim_product_tier'),
-    ('product_detail', 'dim_product_detail'),
-    ('dim_date', 'dim_date')
-]) }},
+    ('prep_subscription', 'prep_subscription'),
+    ('prep_charge_mrr_daily', 'prep_charge_mrr_daily')
+]) }}
 
-joined AS (
+, prep_charge_mrr_daily_latest AS (
 
-  SELECT
-    dim_date.date_actual,
-    subscriptions.dim_subscription_id,
-    subscriptions.dim_subscription_id_original,
-    subscriptions.namespace_id                     AS dim_namespace_id,
-    subscriptions.dim_crm_account_id,
-    subscriptions.subscription_version,
-    subscriptions.subscription_created_date,
-    product_detail.product_rate_plan_charge_name,
-    product_detail.product_deployment_type,
-    charges.charge_type,
-    IFF(product_tier.product_ranking > 0, 1, 0)    AS is_paid_tier
-  FROM subscriptions
-  LEFT JOIN charges
-    ON subscriptions.dim_subscription_id = charges.dim_subscription_id
-  INNER JOIN dim_date
-    ON charges.effective_start_date <= dim_date.date_actual
-      AND (
-        charges.effective_end_date > dim_date.date_actual
-        OR charges.effective_end_date IS NULL
-     )
-  LEFT JOIN product_detail
-    ON product_detail.dim_product_detail_id = charges.dim_product_detail_id
-  LEFT JOIN product_tier
-    ON product_detail.dim_product_tier_id = product_tier.dim_product_tier_id
+/*
+To map the products (dim_product_detail_id) associated with the subscription, we need to look at the charges for the latest subscription version of the associated dim_subscription_id.
+We have created a mapping table in prep_charge_mrr_daily at the daily grain which expands all of the charges for a subscription_name across the effective dates of the charges.
+
+We want to limit this to the Active/Cancelled version of the subscription since this represents the latest valid version.
+
+*/
+
+  SELECT 
+    prep_charge_mrr_daily.*
+  FROM prep_charge_mrr_daily
+  LEFT JOIN prep_subscription
+    ON prep_charge_mrr_daily.dim_subscription_id = prep_subscription.dim_subscription_id
+  WHERE prep_subscription.subscription_status IN ('Active', 'Cancelled')
+
+), final AS (
+
+/*
+
+These charges contains a full history of the products associated with a subscription (dim_subscription_id_original/subscription_name) as well as the effective dates of the 
+products as they were used by the customer. They are all associated with the most current dim_subscription_id in the subscription_name lineage.
+
+We need to map these charges to the dim_subscription_id at the time the charges were effective otherwise the most recent version will be associated with dates before it was created, based on
+how the charges track the history of the subscription. To map between the current dim_subscription_id and the one active at the time of the charges, we join to the subscription object 
+between the subscription_created_datetime (adjusted for the first version of a subscription due to backdated effective dates in subscriptions) and the created date of the next subscription version.
+*/
+
+  SELECT DISTINCT
+    prep_charge_mrr_daily_latest.date_actual,
+    prep_subscription.dim_subscription_id,
+    prep_subscription.dim_subscription_id_original,
+    prep_subscription.namespace_id                  AS dim_namespace_id,
+    prep_charge_mrr_daily_latest.dim_crm_account_id,
+    prep_subscription.subscription_version,
+    prep_charge_mrr_daily_latest.dim_product_detail_id,
+    prep_charge_mrr_daily_latest.charge_type,
+    {{ dbt_utils.generate_surrogate_key
+      (
+        [
+          'prep_charge_mrr_daily_latest.date_actual',
+          'prep_subscription.namespace_id',
+          'prep_subscription.dim_subscription_id',
+          'prep_charge_mrr_daily_latest.dim_product_detail_id'
+        ]
+      )
+    }}                                        AS primary_key
+  FROM prep_charge_mrr_daily_latest
+  LEFT JOIN prep_subscription
+    ON prep_charge_mrr_daily_latest.subscription_name = prep_subscription.subscription_name
+      AND prep_charge_mrr_daily_latest.date_actual BETWEEN prep_subscription.subscription_created_datetime_adjusted AND prep_subscription.next_subscription_created_datetime
 
 )
 
-SELECT
-  date_actual,
-  dim_subscription_id,
-  dim_subscription_id_original,
-  dim_namespace_id,
-  dim_crm_account_id,
-  subscription_version,
-  product_rate_plan_charge_name,
-  charge_type
-FROM joined
-WHERE product_deployment_type = 'GitLab.com'
-  AND is_paid_tier = 1
-  AND product_rate_plan_charge_name NOT IN (
-    '1,000 CI Minutes',
-    'Gitlab Storage 10GB - 1 Year',
-    'Premium Support',
-    '1,000 Compute Minutes'
-  )
-  AND charge_type != 'OneTime'
--- picking most recent subscription version
-QUALIFY
-  ROW_NUMBER() OVER (
-    PARTITION BY dim_namespace_id, date_actual
-    ORDER BY subscription_created_date DESC, subscription_version DESC
-  ) = 1
+/*
+Filter out any records where dim_namespace_id is missing
+*/
+
+SELECT *
+FROM final
+WHERE dim_namespace_id IS NOT NULL

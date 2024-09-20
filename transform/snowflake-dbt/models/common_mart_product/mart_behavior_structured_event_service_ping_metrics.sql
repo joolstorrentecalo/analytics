@@ -20,8 +20,12 @@ WITH service_ping_events AS (
 ),
 
 metric_bridge AS (
-  SELECT
-    *
+  SELECT DISTINCT
+    metrics_path,
+    metrics_status,
+    time_frame,
+    data_source,
+    redis_event
   FROM {{ ref('bdg_metrics_redis_events') }}
 ),
 
@@ -53,7 +57,7 @@ joined AS (
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@mdrussell",
-    updated_by="@utkarsh060",
+    updated_by="@mdrussell",
     created_date="2022-12-21",
-    updated_date="2024-04-30"
+    updated_date="2024-09-18"
 ) }}

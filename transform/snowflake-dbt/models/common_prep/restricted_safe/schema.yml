@@ -40,6 +40,143 @@ models:
         data_tests:
           - not_null
           - unique
+
+  - name: prep_charge_mrr_daily
+    description: '{{ doc("prep_charge_mrr_daily") }}'
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+            combination_of_columns:
+              - dim_charge_id
+              - date_actual
+    columns:
+      - name: date_actual
+        description: Date the charge/mrr was effective
+      - name: subscription_name
+        description: ' {{ doc("subscription_name") }} ' 
+      - name: subscription_name_slugify
+        description: ' {{ doc("original_subscription_name_slugify") }} '
+      - name: subscription_version
+        description: ' {{ doc("subscription_version") }} '
+      - name: subscription_created_by_id
+        description: User id for the person who created the subscription
+      - name: rate_plan_charge_number
+        description: ' {{ doc("rate_plan_charge_number") }} '
+      - name: rate_plan_charge_version
+        description: ' {{ doc("rate_plan_charge_version") }} '
+      - name: rate_plan_charge_segment
+        description: ' {{ doc("rate_plan_charge_segment") }} '
+      - name: dim_charge_id
+        description: ' {{ doc("dim_charge_id") }} '
+      - name: dim_product_detail_id
+        description: ' {{ doc("dim_product_detail_id") }} '
+      - name: dim_amendment_id_charge
+        description: ' {{ doc("dim_amendment_id_charge") }} '
+      - name: dim_subscription_id
+        description: ' {{ doc("dim_subscription_id") }} '
+      - name: dim_billing_account_id
+        description: ' {{ doc("dim_billing_account_id") }} '
+      - name: dim_crm_account_id
+        description: ' {{ doc("dim_crm_account_id") }} '
+      - name: dim_parent_crm_account_id
+        description: ' {{ doc("dim_parent_crm_account_id") }} '
+      - name: dim_order_id
+        description: ' {{ doc("dim_order_id") }} '
+      - name: effective_start_date_id
+        description: ' {{ doc("effective_start_date_id") }} '
+      - name: effective_end_date_id
+        description: ' {{ doc("effective_end_date_id") }} '
+      - name: subscription_status
+        description: ' {{ doc("subscription_status") }} '
+      - name: rate_plan_name
+        description: ' {{ doc("rate_plan_name") }} '
+      - name: rate_plan_charge_name
+        description: ' {{ doc("rate_plan_charge_name") }} '
+      - name: rate_plan_charge_description
+        description: ' {{ doc("rate_plan_charge_description") }} '
+      - name: is_last_segment
+        description: ' {{ doc("is_last_segment") }} '
+      - name: discount_level
+        description: ' {{ doc("discount_level") }} '
+      - name: charge_type
+        description: ' {{ doc("charge_type") }} '
+      - name: rate_plan_charge_amendement_type
+        description: ' {{ doc("rate_plan_charge_amendement_type") }} '
+      - name: unit_of_measure
+        description: ' {{ doc("unit_of_measure") }} '
+      - name: is_paid_in_full
+        description: ' {{ doc("is_paid_in_full") }} '
+      - name: months_of_future_billings
+        description: ' {{ doc("months_of_future_billings") }} '
+      - name: is_included_in_arr_calc
+        description: ' {{ doc("is_included_in_arr_calc") }} '
+      - name: subscription_start_date
+        description: ' {{ doc("subscription_start_date") }} '
+      - name: subscription_end_date
+        description: ' {{ doc("subscription_end_date") }} '
+      - name: effective_start_date
+        description: ' {{ doc("effective_start_date") }} '
+      - name: effective_end_date
+        description: ' {{ doc("effective_end_date") }} '
+      - name: effective_start_month
+        description: ' {{ doc("effective_start_month") }} '
+      - name: effective_end_month
+        description: ' {{ doc("effective_end_month") }} '
+      - name: charged_through_date
+        description: ' {{ doc("charged_through_date") }} '
+      - name: charge_created_date
+        description: ' {{ doc("charge_created_date") }} '
+      - name: charge_created_datetime
+        description: ' {{ doc("charge_created_datetime") }} '
+      - name: charge_updated_date
+        description: ' {{ doc("charge_updated_date") }} '
+      - name: charge_term
+        description: ' {{ doc("charge_term") }} '
+      - name: billing_period
+        description: ' {{ doc("billing_period") }} '
+      - name: mrr
+        description: ' {{ doc("mrr") }} '
+      - name: previous_mrr_calc
+        description: ' {{ doc("previous_mrr_calc") }} '
+      - name: previous_mrr
+        description: ' {{ doc("previous_mrr") }} '
+      - name: delta_mrr_calc
+        description: ' {{ doc("delta_mrr_calc") }} '
+      - name: delta_mrr
+        description: ' {{ doc("delta_mrr") }} '
+      - name: delta_mrc
+        description: ' {{ doc("delta_mrc") }} '
+      - name: arr
+        description: ' {{ doc("arr") }} '
+      - name: previous_arr
+        description: ' {{ doc("previous_arr") }} '
+      - name: delta_arc
+        description: ' {{ doc("delta_arc") }} '
+      - name: delta_arr
+        description: ' {{ doc("delta_arr") }} '
+      - name: list_price
+        description: ' {{ doc("list_price") }} '
+      - name: extended_list_price
+        description: ' {{ doc("extended_list_price") }} '
+      - name: quantity
+        description: ' {{ doc("quantity") }} '
+      - name: previous_quantity_calc
+        description: ' {{ doc("previous_quantity_calc") }} '
+      - name: previous_quantity
+        description: ' {{ doc("previous_quantity") }} '
+      - name: delta_quantity_calc
+        description: ' {{ doc("delta_quantity_calc") }} '
+      - name: delta_quantity
+        description: ' {{ doc("delta_quantity") }} '
+      - name: tcv
+        description: ' {{ doc("tcv") }} '
+      - name: delta_tcv
+        description: ' {{ doc("delta_tcv") }} '
+      - name: estimated_total_future_billings
+        description: ' {{ doc("estimated_total_future_billings") }} '
+      - name: is_manual_charge
+        description: ' {{ doc("is_manual_charge") }} '
+      - name: type_of_arr_change
+        description: ' {{ doc("type_of_arr_change") }} '
   
   - name: prep_crm_account
     description: '{{ doc("prep_crm_account") }}'

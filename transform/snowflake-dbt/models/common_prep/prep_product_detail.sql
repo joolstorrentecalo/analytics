@@ -83,6 +83,7 @@ WITH zuora_product AS (
         WHEN common_product_tier.product_tier_name = 'Storage' 
             OR product_rate_plan_charge_name LIKE 'Dedicated - Administration%' 
             OR product_rate_plan_charge_name LIKE 'Dedicated - Storage%'
+            OR product_rate_plan_charge_name = 'GitLab Dedicated for US Public Sector - Administration Fee [Small] - 1 Year'
         THEN FALSE
         ELSE TRUE
       END                                                                               AS is_licensed_user,
@@ -91,6 +92,7 @@ WITH zuora_product AS (
             OR zuora_product_rate_plan.product_rate_plan_name LIKE '%EDU%'
             OR product_rate_plan_charge_name LIKE 'Dedicated - Administration%' 
             OR product_rate_plan_charge_name LIKE 'Dedicated - Storage%'
+            OR product_rate_plan_charge_name = 'GitLab Dedicated for US Public Sector - Administration Fee [Small] - 1 Year'
         THEN FALSE
         ELSE TRUE
       END                                                                               AS is_arpu,

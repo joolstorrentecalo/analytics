@@ -426,7 +426,7 @@ hist_stage AS (
     END AS employment_status,
     CASE
       WHEN employment_status = 'T' THEN cur_date_actual
-      ELSE COALESCE(LAG(cur_date_actual) OVER ( PARTITION BY employee_id ORDER BY cur_date_actual DESC, hire_rank DESC ) - 1, CURRENT_DATE())
+      ELSE COALESCE(LAG(cur_date_actual) OVER ( PARTITION BY employee_id, hire_rank ORDER BY cur_date_actual DESC, hire_rank DESC ) - 1, CURRENT_DATE())
     END                  AS end_date,
     reports_to           AS cur_reports_to,
     reports_to_id        AS cur_reports_to_id,
@@ -496,11 +496,11 @@ job_history AS (
 
   SELECT   
     employee_id,
+    hire_rank,
     date_actual,
     job_title,
     job_role,
-    COALESCE(LEAD(job_title) OVER ( PARTITION BY employee_id ORDER BY date_actual DESC ), job_title) AS pr_job_title,
-    LAG(date_actual) OVER ( PARTITION BY employee_id ORDER BY date_actual DESC ),
+    COALESCE(LEAD(job_title) OVER ( PARTITION BY employee_id, hire_rank ORDER BY date_actual DESC ), job_title) AS pr_job_title,
     is_hire_date,
     is_termination_date
   FROM eda 
@@ -512,8 +512,9 @@ job_date AS (
   
   SELECT   
     employee_id,
-    date_actual                                                                                                AS job_start_date,
-    COALESCE(lag(date_actual) OVER ( PARTITION BY employee_id ORDER BY date_actual DESC ) - 1, CURRENT_DATE()) AS job_end_date,
+    hire_rank,
+    date_actual                                                                                                           AS job_start_date,
+    COALESCE(lag(date_actual) OVER ( PARTITION BY employee_id, hire_rank ORDER BY date_actual DESC ) - 1, CURRENT_DATE()) AS job_end_date,
     job_title,
     job_role
   FROM job_history
@@ -528,8 +529,8 @@ SELECT
   cur_date_actual AS min_date,
   end_date        AS max_date,
   CASE
-    WHEN hire_date = min_date AND hire_rank = 1 THEN 'Hire'
-    WHEN hire_date = min_date AND hire_rank > 1 THEN 'Rehire'
+    WHEN hire_date = min_date AND hist_stage.hire_rank = 1 THEN 'Hire'
+    WHEN hire_date = min_date AND hist_stage.hire_rank > 1 THEN 'Rehire'
     WHEN hist_stage.employment_status = 'T' THEN 'Termination'
     WHEN cur_is_promotion = 'TRUE' OR min_date = promotion_date::DATE THEN 'Promotion'
     WHEN cur_is_transfer = 'TRUE' AND cur_transfer_job_change = 'TRUE' THEN 'Transfer'
@@ -569,7 +570,7 @@ SELECT
   cur_reports_to_id                  AS reports_to_id,
   cur_total_direct_reports           AS total_direct_reports,
   hire_date,
-  hire_rank,
+  hist_stage.hire_rank,
   last_date,
   term_date + 1                      AS termination_date,
   term_rank,
@@ -589,11 +590,13 @@ LEFT JOIN promo
     AND hist_stage.cur_date_actual = promo.promotion_date::DATE
 LEFT JOIN job_date
   ON hist_stage.cur_id = job_date.employee_id
+    AND hist_stage.hire_rank = job_date.hire_rank
     AND IFF(employment_status = 'T', hist_stage.last_date, hist_stage.cur_date_actual)
     BETWEEN job_date.job_start_date AND job_date.job_end_date
 LEFT JOIN job_date AS pr_job
   ON hist_stage.cur_id = pr_job.employee_id
-  AND DATEADD('d', -1, job_date.job_start_date) BETWEEN pr_job.job_start_date AND pr_job.job_end_date
-  AND pr_job.job_start_date BETWEEN hire_date AND last_date
+    AND hist_stage.hire_rank = pr_job.hire_rank
+    AND DATEADD('d', -1, job_date.job_start_date) BETWEEN pr_job.job_start_date AND pr_job.job_end_date
+    AND pr_job.job_start_date BETWEEN hire_date AND last_date
 WHERE NOT COALESCE(hist_stage.cur_employee_type,'') IN ('Intern (Trainee)')
 ORDER BY  hist_stage.cur_id ASC, min_date DESC

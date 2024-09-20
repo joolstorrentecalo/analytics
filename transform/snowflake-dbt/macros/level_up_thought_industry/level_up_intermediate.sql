@@ -1,4 +1,4 @@
-{%- macro level_up_incremental(source_table, source_schema='level_up') -%}
+{%- macro level_up_intermediate(source_table, source_schema='level_up') -%}
 
   WITH
   source AS (

@@ -1519,14 +1519,15 @@ Daily [snapshot](https://about.gitlab.com/handbook/business-technology/data-team
 
 {% docs bdg_metrics_redis_events %}
 ## Overview
-This model records the many-to-many relationship between Service Ping Metrics and Redis events. It pulls from the metrics dictionary yml files via `dim_ping_metric`, and contains the
-metric name, and the Redis event name. It will be joined to Snowplow events that contain the Service Ping Context to get SaaS product usage data at the namespace level.
+This model records the many-to-many relationship between Service Ping Metrics, internal events, and internal event filters.
+The grain is one record per metric, event, and filter. It pulls from the metrics dictionary yml files via `dim_ping_metric`, and contains the
+metric name, and the internal event name. It will be joined to Snowplow events that contain the Service Ping Context to get Gitlab.com product usage data at the namespace level.
 
 ## Aggregation Strategies
-[This thread](https://gitlab.com/gitlab-org/gitlab/-/issues/376244#note_1167575425) has a nice summary of the possible aggregation strategies. The important thing to know from an analyst perspective is that Redis-based metrics come in three basic varities:
-1. Have only one associated Redis event; if that event occurs, count the metric
-1. Have multiple associated Redis events; count the metric if _any_ Redis event in that list occurs
-1. Have multiple associated Redis events; count the metric if _all_ Redis events in that list occur
+[This thread](https://gitlab.com/gitlab-org/gitlab/-/issues/376244#note_1167575425) has a nice summary of the possible aggregation strategies. The important thing to know from an analyst perspective is that internal events metrics come in three basic varities:
+1. Have only one associated internal event; if that event occurs, count the metric
+1. Have multiple associated internal events; count the metric if _any_ internal event in that list occurs
+1. Have multiple associated internal events; count the metric if _all_ internal events in that list occur
 
 As a result, this bridge table will be used a bit differently to count intersection metrics compared to how it will be used to count union metrics.
 

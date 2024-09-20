@@ -727,6 +727,12 @@ models:
         description: The unique identifier of each ramp deal.
       - name: is_ramp
         description: The indicator flag to identify ramp deals based on ramp_id and multi_year_deal_subscription_linkage fields.
+      - name: subscription_created_datetime
+        description: '{{ doc("subscription_created_datetime") }}'
+      - name: subscription_created_datetime_adjusted
+        description: '{{ doc("subscription_created_datetime_adjusted") }}'
+      - name: next_subscription_created_datetime
+        description: '{{ doc("next_subscription_created_datetime") }}'
 
   - name: prep_subscription_lineage
     description:  '{{doc("prep_subscription_lineage")}}'
@@ -916,6 +922,12 @@ models:
         description: Flags rows where the `product_rate_plan_id` from `customers_db_orders_source` is not found in `dim_product_tier`.
       - name: is_active_user_count_available
         description: Flags rows where `active_user_count` is NULL in source.
+      - name: dim_installation_id
+        description: ' {{ doc("dim_installation_id") }} '
+      - name: dim_instance_id
+        description: ' {{ doc("dim_instance_id") }} '
+      - name: dim_host_id
+        description: ' {{ doc("dim_host_id") }} '
 
   - name: prep_latest_seat_link_installation
     description: '{{ doc("prep_latest_seat_link_installation") }}'

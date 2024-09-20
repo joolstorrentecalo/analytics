@@ -16,6 +16,17 @@ WITH raw_seat_link AS (
       zuora_subscription_id                                                 AS order_subscription_id,
       TRIM(zuora_subscription_id)                                           AS dim_subscription_id,
       zuora_subscription_name                                               AS subscription_name,
+      hostname,
+      uuid                                                                  AS dim_instance_id,
+      prep_host.dim_host_id,
+      {{ dbt_utils.generate_surrogate_key
+        (
+          [
+          'prep_host.dim_host_id', 
+          'dim_instance_id'
+          ]
+        )
+      }}                                                                    AS dim_installation_id,
       report_date,
       active_user_count,
       license_user_count,
@@ -29,6 +40,8 @@ WITH raw_seat_link AS (
             ORDER BY report_date DESC) = 1,
           TRUE, FALSE)                                                      AS is_last_seat_link_report_per_order
     FROM raw_seat_link
+    LEFT JOIN {{ ref('prep_host') }}
+      ON raw_seat_link.hostname = prep_host.host_name
 
 ), customers_orders AS (
 
@@ -53,6 +66,9 @@ WITH raw_seat_link AS (
     SELECT
       customers_orders.internal_order_id                                    AS customers_db_order_id,
       seat_links.order_subscription_id,
+      seat_links.dim_installation_id,
+      seat_links.dim_instance_id,
+      seat_links.dim_host_id,
       {{ get_keyed_nulls('subscriptions.dim_subscription_id') }}            AS dim_subscription_id,
       {{ get_keyed_nulls('subscriptions.dim_subscription_id_original') }}   AS dim_subscription_id_original,
       {{ get_keyed_nulls('subscriptions.dim_subscription_id_previous') }}   AS dim_subscription_id_previous,
@@ -83,7 +99,7 @@ WITH raw_seat_link AS (
 {{ dbt_audit(
     cte_ref="joined",
     created_by="@ischweickartDD",
-    updated_by="@mdrussell",
+    updated_by="@michellecooper",
     created_date="2021-02-02",
-    updated_date="2024-02-29"
+    updated_date="2024-09-06"
 ) }}

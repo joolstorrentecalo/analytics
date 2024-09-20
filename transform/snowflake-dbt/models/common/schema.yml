@@ -6079,6 +6079,7 @@ models:
           combination_of_columns:
             - metrics_path
             - redis_event
+            - filter_label
     columns:
       - name: is_health_scoring_metric
         description: '{{ doc("is_health_score_metric") }}'

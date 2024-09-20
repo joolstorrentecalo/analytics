@@ -3623,3 +3623,352 @@ Minimum required GitLab version to use the feature.
 Minimum required GitLab version to use the feature during free_access period (beta). If it's not set, the feature is available for all GitLab versions.
 
 {% enddocs %}
+
+{% docs subscription_created_datetime %}
+
+Datetime the subscription was created.
+
+{% enddocs %}
+
+{% docs subscription_created_datetime_adjusted %}
+
+Some subscriptions are created after the effective date of the subscription. In order to properly attribute subscriptions across the entire effective date, we adjust the created date to reflect the minimum between the first created date (version 1 of the subscription) and the subscription_start_date for that subscription version.
+
+{% enddocs %}
+
+{% docs next_subscription_created_datetime %}
+
+The created date of the next subscription in the lineage (version+1). If there is no next version of the subscription, this field will be filled in with the GREATER of the subscription_end_date and the CURRENT_DATE.
+
+{% enddocs %}
+
+{% docs rate_plan_charge_number %}
+
+A unique number that identifies the charge. This number is returned as a string.
+
+{% enddocs %}
+
+{% docs rate_plan_charge_version %}
+
+The version of the rate plan charge. Each time a charge is amended, Zuora creates a new version of the rate plan charge. 
+
+{% enddocs %}
+
+{% docs rate_plan_charge_segment %}
+
+The identifying number of the subscription rate plan segment. Segments are numbered sequentially, starting with 1.
+
+Zuora returns segmented rate plan charges, which are referred to as rate plan charge segments or charge segments. Every time an amendment (or an order action) changes a charge (except the Remove Product amendment), Zuora creates a new segmented RatePlanCharge object.
+
+{% enddocs %}
+
+{% docs rate_plan_name %}
+
+A rate plan is part of a subscription or an amendment to a subscription, and it comes from a product rate plan. This field displays the name of the rate plan.
+
+{% enddocs %}
+
+{% docs rate_plan_charge_name %}
+
+The name of the rate plan charge.
+
+{% enddocs %}
+
+{% docs rate_plan_charge_description %}
+
+A description of the charge.
+
+{% enddocs %}
+
+{% docs rate_plan_charge_amendement_type %}
+
+The type of amendment associated with the charge.
+
+{% enddocs %}
+
+{% docs dim_charge_id %}
+
+Unique identifier of the rate plan charge.
+
+{% enddocs %}
+
+{% docs dim_product_detail_id %}
+
+Unique identifier of the product rate plan charge. 
+
+A product rate plan charge represents a charge model or a set of fees associated with a product rate plan, which is the part of a product that your customers subscribe to. Each product rate plan can have multiple product rate plan charges.
+
+{% enddocs %}
+
+{% docs dim_amendment_id_charge %}
+
+Unique identifier of the amendment associated with a charge.
+
+{% enddocs %}
+
+{% docs effective_start_date_id %}
+
+The date id when the segmented charge starts or started that can be joined to dim_date.
+
+{% enddocs %}
+
+{% docs effective_end_date_id %}
+
+The date id when the segmented charge ends or ended that can be joined to dim_date.
+
+{% enddocs %}
+
+{% docs is_last_segment %}
+
+Indicates if the segment of the rate plan charge is the most recent segment.
+
+{% enddocs %}
+
+{% docs discount_level %}
+
+Specifies if the discount applies to just the product rate plan, the entire subscription, or to any activity in the account.
+
+{% enddocs %}
+
+{% docs unit_of_measure %}
+
+Specifies the units to measure usage.
+
+{% enddocs %}
+
+{% docs is_paid_in_full %}
+
+When the Charged Through Date is equal to the Effective End Month, flag the charge as paid in full.
+
+{% enddocs %}
+
+{% docs months_of_future_billings %}
+
+If the Charged Through Date is null, then take the Current Term from the subscription, otherwise calcualte the months of future billings as the number of months between the Charged Through Date and the Effective End Month of the charge.
+
+{% enddocs %}
+
+{% docs is_included_in_arr_calc %}
+
+Charges can be marked cancelled by upating the effective dates. We do not want to include these charges in a final ARR calculation, so we mark them for exclusion.
+
+When the Effective End Month > Effective Start Month OR Effective End Month is null, then include the records in the ARR calculation.
+
+{% enddocs %}
+
+{% docs charged_through_date %}
+
+The date through which a customer has been billed for the charge.
+
+{% enddocs %}
+
+{% docs charge_created_date %}
+
+Date the rate plan charge was created.
+
+{% enddocs %}
+
+{% docs charge_created_datetime %}
+
+Datetime the rate plan charge was created.
+
+{% enddocs %}
+
+{% docs charge_updated_date %}
+
+Date the rate plan charge was last updated.
+
+{% enddocs %}
+
+{% docs charge_term %}
+
+The number of months between the effective start date and the effective end date of a charge.
+
+{% enddocs %}
+
+{% docs billing_period %}
+
+Allows billing period to be overridden on rate plan charge.
+
+{% enddocs %}
+
+{% docs mrr %}
+
+Monthly recurring revenue (MRR) is the amount of recurring charges in a given month. The MRR calculation doesn't include one-time charges nor usage charges. This field returns MRR of a particular charge segment.
+
+{% enddocs %}
+
+{% docs previous_mrr_calc %}
+
+If the previous MRR is NULL, then replace it with 0.
+
+{% enddocs %}
+
+{% docs previous_mrr %}
+
+Previous MRR of the rate plan charge.
+
+{% enddocs %}
+
+{% docs delta_mrr_calc %}
+
+Difference between MRR and the previous MRR of a charge
+
+{% enddocs %}
+
+{% docs delta_mrr %}
+
+When a subscription is active, the subscription ended before today and this charge is the last segment of the charges, the delta_mrr is 
+equal to `-previous_mrr`. 
+
+When the subscription is cancelled and it is the last segment of the charge, then the delta_mrr is equal to `-previous_mrr`.
+
+Otherwise, delta_mrr is equal to the difference between MRR and the previous MRR of a charge.
+
+{% enddocs %}
+
+{% docs delta_mrc %}
+
+A delta monthly recurring charge is the change in monthly recurring revenue caused by an amendment or a new subscription. This is the value at the charge segment level.
+
+{% enddocs %}
+
+{% docs arr %}
+
+Monthly recurring revenue * 12
+
+{% enddocs %}
+
+{% docs previous_arr %}
+
+Previous ARR associated with the 
+
+{% enddocs %}
+
+{% docs delta_arc %}
+
+delta_mrc * 12
+
+{% enddocs %}
+
+{% docs delta_arr %}
+
+delta_mrr * 12
+
+{% enddocs %}
+
+{% docs list_price %}
+
+{% enddocs %}
+
+{% docs extended_list_price %}
+
+The list price base for the product rate plan charge.
+
+{% enddocs %}
+
+{% docs quantity %}
+
+The default quantity of units, such as the number of authors in a hosted wiki service. Valid for all charge models except for Flat Fee pricing.
+
+{% enddocs %}
+
+{% docs previous_quantity_calc %}
+
+The previous quantity associated with the charge.
+
+{% enddocs %}
+
+{% docs previous_quantity %}
+
+When previous quantity is NULL, replace the value with 0.
+
+{% enddocs %}
+
+{% docs delta_quantity_calc %}
+
+quantity - previous_quantity
+
+{% enddocs %}
+
+{% docs delta_quantity %}
+
+When a subscription is active, the subscription ended before today and this charge is the last segment of the charges, the delta_mrr is 
+equal to `-previous_quantity`. 
+
+When the subscription is cancelled and it is the last segment of the charge, then the delta_mrr is equal to `-previous_quantity`.
+
+Otherwise, delta_quantity is equal to the difference between MRR and the previous quantity of a charge.
+
+{% enddocs %}
+
+{% docs tcv %}
+
+The total contract value (TCV) is the value of a single rate plan charge at the segment level in a subscription over the lifetime of the subscription. This value does not represent all charges on the subscription. The TCV includes recurring charges and one-time charges, but it doesn't include usage charge.
+
+{% enddocs %}
+
+{% docs delta_tcv %}
+
+The difference in TCV between two charges.
+
+{% enddocs %}
+
+{% docs estimated_total_future_billings %}
+
+When a charge is not paid in full, then multiply the MRR by the months of future billings remaining.
+{% enddocs %}
+
+{% docs is_manual_charge %}
+
+Flag to indicate if a charge was added through a manual process outside of the billing system.
+
+{% enddocs %}
+
+{% docs dim_order_id %}
+
+Unique identifier of an order.
+
+{% enddocs %}
+
+{% docs subscription_status %}
+
+The status of the subscription.
+
+{% enddocs %}
+
+{% docs subscription_start_date %}
+
+The date when the subscription term starts. This date is the same as the start date of the original term, which isn't necessarily the start date of the current or new term.
+
+{% enddocs %}
+
+{% docs subscription_end_date %}
+
+The date when the subscription term ends, where the subscription ends at midnight the day before.
+
+{% enddocs %}
+
+{% docs effective_start_date %}
+
+The date when the segmented charge starts or started.
+
+{% enddocs %}
+
+{% docs effective_end_date %}
+
+The date when the segmented charge ends or ended.
+
+{% enddocs %}
+
+{% docs effective_start_month %}
+
+The month when the segmented charge starts or started.
+
+{% enddocs %}
+
+{% docs effective_end_month %}
+
+The month when the segmented charge ends or ended.
+
+{% enddocs %}

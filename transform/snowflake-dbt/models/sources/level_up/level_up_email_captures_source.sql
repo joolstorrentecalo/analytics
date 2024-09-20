@@ -1,9 +1,4 @@
-{{ config(
-    materialized='incremental',
-    unique_key='email_capture_id'
-) }}
-
-{{ level_up_incremental('email_captures') }}
+{{ level_up_intermediate('email_captures') }}
 
 parsed AS (
   SELECT

@@ -1,6 +1,6 @@
-{% docs level_up_incremental %}
+{% docs level_up_intermediate %}
 
-## level_up_incremental macro
+## level_up_intermediate macro
 
 Used to get rid of boilerplate within level_up models when initially parsing the json in the `raw` database.
 
