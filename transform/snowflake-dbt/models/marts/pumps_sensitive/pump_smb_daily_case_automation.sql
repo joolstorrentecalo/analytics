@@ -67,6 +67,14 @@ and current_leave.employee_id is null
 order by smb_advocates.employee_number asc
 ),
 
+team_totals as (
+select
+distinct
+amer_count,
+emea_count
+from advocate_assignment
+),
+
 --Pulls all current High Value account cases
 high_value_case_one AS (
   SELECT DISTINCT
