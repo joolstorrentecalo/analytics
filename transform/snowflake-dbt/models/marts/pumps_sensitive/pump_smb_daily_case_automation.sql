@@ -8,6 +8,7 @@
     ('mart_crm_opportunity', 'mart_crm_opportunity'),
     ('mart_arr', 'mart_arr'),
     ('dim_date', 'dim_date'),
+    ('sfdc_case', 'sfdc_case'),
     ('dim_crm_account_daily_snapshot', 'dim_crm_account_daily_snapshot'),
     ('dim_product_detail', 'dim_product_detail'),
     ('mart_charge', 'mart_charge'),
@@ -23,10 +24,48 @@
     ('zuora_subscription_source', 'zuora_subscription_source'),
     ('wk_sales_gds_cases','wk_sales_gds_cases'),
     ('mart_behavior_structured_event','mart_behavior_structured_event'),
-    ('customers_db_customers_source','customers_db_customers_source')
+    ('customers_db_customers_source','customers_db_customers_source'),
+    ('zuora_subscription_source' ,'zuora_subscription_source'),
+    ('mart_behavior_structured_event', 'mart_behavior_structured_event')
     ]) 
 
 }},
+
+with SMB_advocates as (
+SELECT 
+case when user_name in ('Katie Wilkinson','Matthew Wyman Jr','Amanda Shim','Erica Wilson','Joseph Hudson','Rasheed Power','Ellie Hickson','Luis Hernandez Calixto','Barbara Schreuder','Tom Elliott','Sarah Van Damme','Bastien Escudé','Hugo Barennes','Emma Szász','Nga Nguyen','Corey Lund','Devon Speth','Arthur Gabor') then true else false end as advocate_flag
+,
+*
+FROM PROD.COMMON.DIM_CRM_USER
+WHERE 
+(CRM_USER_SALES_SEGMENT = 'SMB' or user_name like '%SMB Sales' or title like '%SMB%')
+and is_active
+and user_name not in ('Sales Admin [DO NOT CHATTER THIS USER]','System','Automated Process','Platform Integration User')
+--and user_name like '%SMB%'
+and ((title not like '%Manager%' and title not like '%VP%') or title is null)
+),
+
+current_leave as
+(
+select distinct employee_id from PROD.COMMON.FCT_TEAM_MEMBER_ABSENCE
+where current_date >= fct_team_member_absence.absence_start
+and current_date <= fct_team_member_absence.absence_end
+),
+
+advocate_assignment as (
+select 
+smb_advocates.*,
+row_number() over(partition by smb_advocates.manager_name order by smb_advocates.employee_number asc) as advocate_number,
+count(distinct smb_advocates.employee_number) over(partition by smb_advocates.manager_name) as team_advocate_count,
+nullifzero(count(distinct case when smb_advocates.manager_name = 'Taylor Lund' then smb_advocates.employee_number else null end)  over(partition by smb_advocates.manager_name))  as amer_count,
+nullifzero(count(distinct case when smb_advocates.manager_name = 'Miguel Nunes' then smb_advocates.employee_number else null end)  over(partition by smb_advocates.manager_name))  as emea_count
+from smb_advocates 
+left join current_leave
+on smb_advocates.employee_number = current_leave.employee_id
+where smb_advocates.advocate_flag
+and current_leave.employee_id is null
+order by smb_advocates.employee_number asc
+),
 
 --Pulls all current High Value account cases
 high_value_case_one AS (
