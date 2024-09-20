@@ -1272,7 +1272,7 @@ all_data AS (
     ON account_blended.account_id = duo_trials.account_id
   LEFT JOIN failure_sub
     ON account_blended.account_id = failure_sub.dim_crm_account_id
-      AND account_blended.sub_subscription_id = failure_sub.failure_subscription_id
+    AND (failure_sub.failure_subscription_name = account_blended.sub_subscription_name or (account_blended.sub_subscription_name is null and failure_sub.failure_date >= dateadd('day',-7,current_date)))
   LEFT JOIN eoa_accounts_fy24
     ON eoa_accounts_fy24.dim_crm_account_id = account_blended.dim_crm_account_id
 ),
