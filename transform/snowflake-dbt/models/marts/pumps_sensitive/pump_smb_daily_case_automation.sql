@@ -10,29 +10,50 @@
     ('mart_arr_all','mart_arr_all'),
     ('dim_date', 'dim_date'),
     ('sfdc_case', 'sfdc_case'),
-    ('dim_crm_account_daily_snapshot', 'dim_crm_account_daily_snapshot'),
+--    ('dim_crm_account_daily_snapshot', 'dim_crm_account_daily_snapshot'),
     ('dim_product_detail', 'dim_product_detail'),
     ('mart_charge', 'mart_charge'),
     ('mart_crm_account', 'mart_crm_account'),
     ('dim_subscription', 'dim_subscription'),
     ('dim_billing_account', 'dim_billing_account'),
     ('mart_product_usage_paid_user_metrics_monthly', 'mart_product_usage_paid_user_metrics_monthly'),
-    ('dim_subscription_snapshot_bottom_up', 'dim_subscription_snapshot_bottom_up'),
+--    ('dim_subscription_snapshot_bottom_up', 'dim_subscription_snapshot_bottom_up'),
     ('mart_crm_task', 'mart_crm_task'),
     ('prep_billing_account_user','prep_billing_account_user'),
-    ('sfdc_contact_snapshots_source','sfdc_contact_snapshots_source'),
+--    ('sfdc_contact_snapshots_source','sfdc_contact_snapshots_source'),
     ('case_data','gds_case_inputs'),
     ('zuora_subscription_source', 'zuora_subscription_source'),
     ('wk_sales_gds_cases','wk_sales_gds_cases'),
-    ('mart_behavior_structured_event','mart_behavior_structured_event'),
     ('customers_db_customers_source','customers_db_customers_source'),
     ('zuora_subscription_source' ,'zuora_subscription_source'),
-    ('mart_behavior_structured_event', 'mart_behavior_structured_event')
+--    ('mart_behavior_structured_event', 'mart_behavior_structured_event')
     ]) 
 
 }},
 
-with SMB_advocates as (
+dim_crm_account_daily_snapshot as (
+select * from PROD.RESTRICTED_SAFE_COMMON.DIM_CRM_ACCOUNT_DAILY_SNAPSHOT
+    where snapshot_date = CURRENT_DATE
+),
+
+dim_subscription_snapshot_bottom_up as (
+select * from PROD.COMMON.DIM_SUBSCRIPTION_SNAPSHOT_BOTTOM_UP
+    where snapshot_id >= 20240201
+),
+
+sfdc_contact_snapshots_source as (
+select * from PROD.LEGACY.SFDC_CONTACT_SNAPSHOTS_SOURCE
+    where dbt_valid_from::DATE >= '2024-02-01'
+),
+
+mart_behavior_structured_event as (
+select *
+ from  PROD.COMMON_MART.MART_BEHAVIOR_STRUCTURED_EVENT
+where behavior_date >= '2024-07-20'
+and event_category = 'Webstore'
+),
+
+SMB_advocates as (
 SELECT 
 case when user_name in ('Katie Wilkinson','Matthew Wyman Jr','Amanda Shim','Erica Wilson','Joseph Hudson','Rasheed Power','Ellie Hickson','Luis Hernandez Calixto','Barbara Schreuder','Tom Elliott','Sarah Van Damme','Bastien Escudé','Hugo Barennes','Emma Szász','Nga Nguyen','Corey Lund','Devon Speth','Arthur Gabor') then true else false end as advocate_flag
 ,
