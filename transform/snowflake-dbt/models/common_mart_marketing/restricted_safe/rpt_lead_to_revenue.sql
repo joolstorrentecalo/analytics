@@ -665,7 +665,7 @@
       won_custom_net_arr,
       won_linear_net_arr
   FROM mart_crm_person_with_tp
-  LEFT JOIN opp_base_with_batp
+  FULL JOIN opp_base_with_batp
     ON mart_crm_person_with_tp.dim_crm_account_id=opp_base_with_batp.dim_crm_account_id
 
 ), intermediate AS (
