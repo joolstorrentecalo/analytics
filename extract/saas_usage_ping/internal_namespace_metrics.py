@@ -49,18 +49,24 @@ class SQLGenerate:
         Transform YML definition to SQL statement and template
         """
 
-        res = f"SELECT ultimate_parent_namespace_id AS id, ultimate_parent_namespace_id AS namespace_ultimate_parent_id, COUNT(DISTINCT gsc_pseudonymized_user_id) AS counter_value FROM {self.table_name} "
-        #  res += F"WHERE metrics_path='{metrics.get("key_path")}' "
-
+        # Generate SELECT part with columns
+        res = (f"SELECT "
+               f"ultimate_parent_namespace_id AS id, "
+               f"ultimate_parent_namespace_id AS namespace_ultimate_parent_id, "
+               f"COUNT(DISTINCT gsc_pseudonymized_user_id) AS counter_value "
+               f"FROM {self.table_name} ")
+        # Generate WHERE clause for metrics
+        res += f"WHERE metrics_path={self.util.quoted(metrics.get('key_path'))} "
+        # Generate list of event, if any
         res += self.get_event_list(metrics=metrics)
-
+        # Generate time frame, if any
         res += self.get_time_frame(time_frame=metrics.get("time_frame"))
 
         res += "GROUP BY ALL;"
         return res
 
 
-class InternalNamespaceMetrics:
+class internal_namespace_metrics:
     def __init__(self):
         self.yml_file_name = "internal_namespace_metrics_definition.yml"
         self.sql_file_name = "internal_namespace_metrics_queries.json"
@@ -77,9 +83,7 @@ class InternalNamespaceMetrics:
 
         template["counter_name"] = metric.get("key_path")
         template["counter_query"] = sql.transform(metrics=metric)
-        template["time_window_query"] = (
-            True if metric.get("time_frame") in ("7d", "28d") else False
-        )
+        template["time_window_query"] = metric.get("time_frame") in ("7d", "28d")
         template["level"] = "namespace"
 
         return template
@@ -123,5 +127,5 @@ class InternalNamespaceMetrics:
 
 
 if __name__ == "__main__":
-    internalnamespacemetrics = InternalNamespaceMetrics()
-    internalnamespacemetrics.generate()
+    internal_namespace_metrics = internal_namespace_metrics()
+    internal_namespace_metrics.generate()
