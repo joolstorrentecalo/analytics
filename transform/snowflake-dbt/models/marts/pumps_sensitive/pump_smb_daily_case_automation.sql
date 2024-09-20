@@ -1463,6 +1463,7 @@ distinct_cases AS (
     final.account_id,
     final.calculated_tier
       AS account_tier,
+    final.team,
     COALESCE(ROUND(final.arr_per_user, 2), 0)
       AS current_price,
     COALESCE(final.future_price * 12, 0)
@@ -1679,7 +1680,9 @@ case_output AS (
       ELSE CONCAT(distinct_cases.context, ' Skip Queue Flag: False')
     END                                                                                                              AS context_final,
     COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
-    CURRENT_DATE                                                                                                     AS query_run_date
+    CURRENT_DATE  AS query_run_date,
+    CASE WHEN distinct_cases.team = 'AMER' THEN ABS(INT(random() % (2^24) / (2^24))) * amer_count + 1
+      ELSE  ABS(INT(random() % (2^24) / (2^24))) * emea_count + 1           END AS advocate_number_assignment                                                                                        
   FROM distinct_cases
   LEFT JOIN prep_crm_case
     ON distinct_cases.account_id = prep_crm_case.dim_crm_account_id
@@ -1701,3 +1704,4 @@ case_output AS (
     created_date="2024-07-02",
     updated_date="2024-09-20"
 ) }}
+1
