@@ -79,7 +79,8 @@ advocate_assignment as (
 select 
 smb_advocates.*,
 row_number() over(partition by smb_advocates.manager_name order by smb_advocates.employee_number asc) as advocate_number,
-count(distinct smb_advocates.employee_number) over(partition by smb_advocates.manager_name) as team_advocate_count
+count(distinct smb_advocates.employee_number) over(partition by smb_advocates.manager_name) as team_advocate_count,
+case when smb_advocates.manager_name = 'Taylor Lund' then 'AMER' else 'EMEA' end as smb_team
 from smb_advocates 
 left join current_leave
 on smb_advocates.employee_number = current_leave.employee_id
@@ -1476,17 +1477,19 @@ distinct_cases AS (
     case_data.status,
     case_data.case_origin,
     case_data.type,
+    final.high_value_case_owner_id,
+    final.last_case_owner_id,
     CASE WHEN case_data.case_trigger_id IN (6, 26) THEN COALESCE(CONCAT(case_data.case_subject, ' ', final.latest_switch_date), case_data.case_subject)
       WHEN case_data.case_trigger_id IN (28) THEN COALESCE(CONCAT(case_data.case_subject, ' ', final.duo_trial_start_date), case_data.case_subject)
       WHEN case_data.case_trigger_id IN (31) THEN CONCAT(case_data.case_subject, ' ', final.failure_date)
       WHEN case_data.case_trigger_id IN (32) THEN CONCAT(case_data.case_subject, ' ', final.close_date)
       WHEN renewal_case = TRUE AND case_data.case_trigger_id NOT IN (31, 32) THEN CONCAT(case_data.case_subject, ' ', final.close_date) ELSE case_data.case_subject
     END                                       AS case_subject,
-    CASE WHEN final.calculated_tier = 'Tier 1' THEN final.high_value_case_owner_id
-      WHEN final.current_open_cases > 0 THEN final.last_case_owner_id
-      ELSE case_data.owner_id
-    END
-      AS owner_id,
+    -- CASE WHEN final.calculated_tier = 'Tier 1' THEN final.high_value_case_owner_id
+    --   WHEN final.current_open_cases > 0 THEN final.last_case_owner_id
+    --   ELSE case_data.owner_id
+    -- END
+    --   AS owner_id,
     case_data.case_reason,
     case_data.record_type_id,
     case_data.priority,
@@ -1679,14 +1682,13 @@ distinct_cases AS (
 
 case_output AS (
   SELECT
-    distinct_cases.* EXCLUDE (context),
-    CASE WHEN distinct_cases.owner_id != '00G8X000006WmU3' THEN CONCAT(distinct_cases.context, ' Skip Queue Flag: True')
-      ELSE CONCAT(distinct_cases.context, ' Skip Queue Flag: False')
-    END                                                                                                              AS context_final,
-    COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
+    distinct_cases.*,
+--    COALESCE(distinct_cases.owner_id IS NULL AND distinct_cases.case_trigger = 'High Value Account Check In', FALSE) AS remove_flag,
     CURRENT_DATE  AS query_run_date,
     CASE WHEN distinct_cases.team = 'AMER' THEN (ABS(RANDOM() % POW(2,24) / POW(2,24)) * (amer_count - 1))::INT + 1
-      ELSE  (ABS(RANDOM() % POW(2,24) / POW(2,24)) * (emea_count - 1))::INT + 1           END AS advocate_number_assignment                                                                                                                                                                               
+      ELSE  (ABS(RANDOM() % POW(2,24) / POW(2,24)) * (emea_count - 1))::INT + 1           END AS advocate_number_assignment,
+    COALESCE(distinct_cases.high_value_case_owner_id, distinct_cases.last_case_owner_id,
+    advocate_assignment.dim_crm_user_id)        as owner_id                                                                                                                                                                     
   FROM distinct_cases
   LEFT JOIN prep_crm_case
     ON distinct_cases.account_id = prep_crm_case.dim_crm_account_id
@@ -1696,9 +1698,9 @@ case_output AS (
       --   OR
       --   (prep_crm_case.dim_crm_opportunity_id IS NULL AND prep_crm_case.created_date >= DATEADD('day', -30, CURRENT_DATE))
       -- )
-
-  WHERE remove_flag = FALSE
-    AND prep_crm_case.dim_crm_account_id IS NULL
+  LEFT JOIN advocate_assignment on advocate_number_assignment = advocate_assignment.advocate_number
+  and advocate_assignment.smb_team = distinct_cases.team
+  WHERE prep_crm_case.dim_crm_account_id IS NULL
 )
 
 {{ dbt_audit(
