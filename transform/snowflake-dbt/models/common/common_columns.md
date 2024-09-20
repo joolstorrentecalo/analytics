@@ -3687,6 +3687,8 @@ Number of page views within this session
 {% docs session_user_bounced %}
 
 Did the user bounce on their first page view in this session?. Example: FALSE
+
+{% enddocs %}
 {% docs user_type_id %}
 
 Numeric id indicating the type of user in GitLab.com data.
