@@ -218,7 +218,7 @@ WITH prep_crm_opportunity AS (
 {{ dbt_audit(
     cte_ref="layered",
     created_by="@iweeks",
-    updated_by="@rakhireddy",
+    updated_by="@rkohnke",
     created_date="2020-11-20",
-    updated_date="2024-06-12"
+    updated_date="2024-09-20"
 ) }}
