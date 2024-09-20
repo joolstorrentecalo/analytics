@@ -34,6 +34,7 @@
 dim_crm_account_daily_snapshot as (
 select * from PROD.RESTRICTED_SAFE_COMMON.DIM_CRM_ACCOUNT_DAILY_SNAPSHOT
     where snapshot_date = CURRENT_DATE
+    and crm_account_owner in ('AMER SMB Sales','EMEA SMB Sales','APAC SMB Sales')
 ),
 
 dim_subscription_snapshot_bottom_up as (
