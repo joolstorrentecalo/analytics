@@ -708,12 +708,6 @@ Unique identifier of a subscription, does not change when amendments are made to
 
 {% enddocs %}
 
-{% docs subscription_version %}
-
-The version number of the subscription
-
-{% enddocs %}
-
 {% docs dim_namespace_id %}
 
 The namespace ID of the instance (GitLab.com only)
