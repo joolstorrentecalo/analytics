@@ -1687,7 +1687,8 @@ case_output AS (
     CURRENT_DATE  AS query_run_date,
     CASE WHEN distinct_cases.team = 'AMER' THEN (ABS(RANDOM() % POW(2,24) / POW(2,24)) * (amer_count - 1))::INT + 1
       ELSE  (ABS(RANDOM() % POW(2,24) / POW(2,24)) * (emea_count - 1))::INT + 1           END AS advocate_number_assignment,
-    COALESCE(distinct_cases.high_value_case_owner_id, distinct_cases.last_case_owner_id,
+    COALESCE(distinct_cases.high_value_case_owner_id,
+    (case when current_open_cases > 0 then distinct_cases.last_case_owner_id else null end),
     advocate_assignment.dim_crm_user_id)        as owner_id                                                                                                                                                                     
   FROM distinct_cases
   LEFT JOIN prep_crm_case
