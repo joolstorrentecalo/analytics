@@ -1407,18 +1407,18 @@ cases AS (
     --     )
     --     THEN 'High Value Account Check In'
     -- END AS check_in_trigger_name,
-    CASE WHEN duo_renewal_flag = TRUE AND (close_date <= current_date_60_days and close_date >= current_date) THEN 'Renewal with Duo'
+    CASE WHEN duo_renewal_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) THEN 'Renewal with Duo'
     -- WHEN
     --   future_tier_1_account_flag = TRUE AND (current_subscription_end_date = current_date_90_days) AND any_case_last_90 = FALSE
     -- THEN 'Future Tier 1 Account Check In'
     END AS future_tier_1_trigger_name,
-    CASE WHEN po_required_flag = TRUE AND (close_date <= current_date_60_days and close_date >= current_date) AND arr_basis > 3000 THEN 'PO Required'
-      WHEN multiyear_renewal_flag = TRUE AND (close_date <= current_date_60_days and close_date >= current_date) AND arr_basis > 3000 THEN 'Multiyear Renewal'
-      WHEN eoa_auto_renewal_will_fail_flag = TRUE AND (close_date <= current_date_60_days and close_date >= current_date) THEN 'Auto-Renewal Will Fail'
-      WHEN auto_renewal_will_fail_flag = TRUE AND (close_date <= current_date_60_days and close_date >= current_date) AND arr_basis > 3000 THEN 'Auto-Renewal Will Fail'
-      WHEN auto_renewal_will_fail_logic_flag = TRUE AND (close_date <= current_date_60_days and close_date >= current_date) THEN 'Auto-Renewal Will Fail'
+    CASE WHEN po_required_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) AND arr_basis > 3000 THEN 'PO Required'
+      WHEN multiyear_renewal_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) AND arr_basis > 3000 THEN 'Multiyear Renewal'
+      WHEN eoa_auto_renewal_will_fail_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) THEN 'Auto-Renewal Will Fail'
+      WHEN auto_renewal_will_fail_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) AND arr_basis > 3000 THEN 'Auto-Renewal Will Fail'
+      WHEN auto_renewal_will_fail_logic_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) THEN 'Auto-Renewal Will Fail'
       --      WHEN eoa_renewal_flag = TRUE AND (current_subscription_end_date = current_date_60_days) THEN 'EOA Renewal'
-      WHEN will_churn_flag = TRUE AND (close_date <= current_date_60_days and close_date >= current_date) THEN 'Renewal Risk: Will Churn'
+      WHEN will_churn_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) THEN 'Renewal Risk: Will Churn'
       WHEN renewal_payment_failure = TRUE AND close_date <= CURRENT_DATE THEN 'Renewal with Payment Failure'
       WHEN
         auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date <= CURRENT_DATE AND (eoa_flag = FALSE AND arr_basis > 3000)
