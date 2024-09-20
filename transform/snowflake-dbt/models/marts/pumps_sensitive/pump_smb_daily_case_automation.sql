@@ -7,6 +7,7 @@
     ('dim_crm_user', 'dim_crm_user'),
     ('mart_crm_opportunity', 'mart_crm_opportunity'),
     ('mart_arr', 'mart_arr'),
+    ('mart_arr_all','mart_arr_all'),
     ('dim_date', 'dim_date'),
     ('sfdc_case', 'sfdc_case'),
     ('dim_crm_account_daily_snapshot', 'dim_crm_account_daily_snapshot'),
@@ -310,7 +311,7 @@ existing_duo_trial AS (
   SELECT dim_crm_account_id
   FROM prep_crm_case
   WHERE record_type_id IN ('0128X000001pPRkQAM')
-    AND subject = 'Duo Trial Started' OR (subject = 'Customer MQL' AND dim_crm_account_id IN ('0014M00001sEismQAC', '001PL000004lgERYAY'))
+    AND subject = 'Duo Trial Started'
 ),
 
 --Identifies which subscriptions have Duo on them
@@ -324,7 +325,7 @@ duo_on_sub AS (
     COALESCE(CONTAINS(LOWER(product_rate_plan_name), 'duo'), FALSE) AS duo_flag
   --arr_month,
   --max(arr_month) over(partition by dim_subscription_id) as latest_arr_month
-  FROM mart_arr
+  FROM mart_arr_all
   WHERE (arr_month = DATE_TRUNC('month', CURRENT_DATE()) OR arr_month = DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month'))
     AND duo_flag = TRUE
 ),
@@ -332,21 +333,21 @@ duo_on_sub AS (
 --Pulls information about the most recent First Order on each account
 first_order AS (
   SELECT DISTINCT
-    mart_crm_opportunity.dim_parent_crm_account_id,
+    mart_crm_opportunity.dim_crm_account_id,
     LAST_VALUE(mart_crm_opportunity.net_arr)
-      OVER (PARTITION BY mart_crm_opportunity.dim_parent_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
+      OVER (PARTITION BY mart_crm_opportunity.dim_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
       AS net_arr,
     LAST_VALUE(mart_crm_opportunity.close_date)
-      OVER (PARTITION BY mart_crm_opportunity.dim_parent_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
+      OVER (PARTITION BY mart_crm_opportunity.dim_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
       AS close_date,
     LAST_VALUE(dim_date.fiscal_year)
-      OVER (PARTITION BY mart_crm_opportunity.dim_parent_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
+      OVER (PARTITION BY mart_crm_opportunity.dim_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
       AS fiscal_year,
     LAST_VALUE(mart_crm_opportunity.sales_qualified_source_name)
-      OVER (PARTITION BY mart_crm_opportunity.dim_parent_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
+      OVER (PARTITION BY mart_crm_opportunity.dim_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
       AS sqs,
     LAST_VALUE(mart_crm_opportunity.opportunity_name)
-      OVER (PARTITION BY mart_crm_opportunity.dim_parent_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
+      OVER (PARTITION BY mart_crm_opportunity.dim_crm_account_id ORDER BY mart_crm_opportunity.close_date ASC)
       AS fo_opp_name
   FROM mart_crm_opportunity
   LEFT JOIN dim_date
@@ -536,7 +537,7 @@ price_increase AS (
 --Identifies any accounts with Ultimate ARR
 ultimate AS (
   SELECT DISTINCT
-    dim_parent_crm_account_id,
+    dim_crm_account_id,
     arr_month
   FROM mart_arr
   WHERE product_tier_name LIKE '%Ultimate%'
@@ -596,7 +597,7 @@ account_base AS (
         acct.snapshot_date < '2024-02-01'
         AND (acct.carr_account_family <= 30000)
         AND (acct.parent_crm_account_max_family_employee <= 100 OR acct.parent_crm_account_max_family_employee IS NULL)
-        AND ultimate.dim_parent_crm_account_id IS NULL
+        AND ultimate.dim_crm_account_id IS NULL
         AND acct.parent_crm_account_sales_segment IN ('SMB', 'Mid-Market', 'Large')
         AND acct.parent_crm_account_upa_country != 'JP'
         AND acct.is_jihu_account = FALSE
@@ -629,11 +630,11 @@ account_base AS (
     COALESCE(eoa_cohorts.dim_crm_account_id IS NOT NULL, FALSE)     AS eoa_flag,
     COALESCE(free_promo.dim_crm_account_id IS NOT NULL, FALSE)      AS free_promo_flag,
     COALESCE(price_increase.dim_crm_account_id IS NOT NULL, FALSE)  AS price_increase_promo_flag,
-    COALESCE(ultimate.dim_parent_crm_account_id IS NOT NULL, FALSE) AS ultimate_customer_flag
+    COALESCE(ultimate.dim_crm_account_id IS NOT NULL, FALSE) AS ultimate_customer_flag
   FROM dim_crm_account_daily_snapshot AS acct
   ------subquery that gets latest FO data
   LEFT JOIN first_order
-    ON acct.dim_parent_crm_account_id = first_order.dim_parent_crm_account_id
+    ON acct.dim_crm_account_id = first_order.dim_crm_account_id
   ---------subquery that gets latest churn data
   LEFT JOIN latest_churn AS churn
     ON acct.dim_crm_account_id = churn.dim_crm_account_id
@@ -656,7 +657,7 @@ account_base AS (
   LEFT JOIN price_increase
     ON acct.dim_crm_account_id = price_increase.dim_crm_account_id
   LEFT JOIN ultimate
-    ON acct.dim_parent_crm_account_id = ultimate.dim_parent_crm_account_id
+    ON acct.dim_crm_account_id = ultimate.dim_crm_account_id
       AND ultimate.arr_month = DATE_TRUNC('month', acct.snapshot_date)
   ----- amer and apac accounts
   LEFT JOIN amer_accounts
