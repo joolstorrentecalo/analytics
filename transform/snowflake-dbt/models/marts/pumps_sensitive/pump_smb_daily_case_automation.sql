@@ -635,7 +635,9 @@ account_base AS (
     -- COALESCE(eoa_cohorts.dim_crm_account_id IS NOT NULL, FALSE)     AS eoa_flag,
     COALESCE(free_promo.dim_crm_account_id IS NOT NULL, FALSE)      AS free_promo_flag,
     COALESCE(price_increase.dim_crm_account_id IS NOT NULL, FALSE)  AS price_increase_promo_flag,
-    COALESCE(ultimate.dim_crm_account_id IS NOT NULL, FALSE) AS ultimate_customer_flag
+    COALESCE(ultimate.dim_crm_account_id IS NOT NULL, FALSE) AS ultimate_customer_flag,
+        team_totals.amer_count,
+    team_totals.emea_count
   FROM dim_crm_account_daily_snapshot AS acct
   ------subquery that gets latest FO data
   LEFT JOIN first_order
@@ -900,7 +902,8 @@ account_blended AS (
       AND DATEDIFF('day', CURRENT_DATE, mart_crm_opportunity.close_date) <= 365
   LEFT JOIN dim_subscription
     ON mart_crm_opportunity.dim_crm_opportunity_id = dim_subscription.dim_crm_opportunity_id_current_open_renewal
-      AND dim_subscription.subscription_status = 'Active'
+     and mart_crm_opportunity.is_closed = false
+ --     AND dim_subscription.subscription_status = 'Active'
   LEFT JOIN billing_accounts
     ON account_base.dim_crm_account_id = billing_accounts.dim_crm_account_id
   LEFT JOIN last_case_data
@@ -1082,7 +1085,7 @@ bronze_starter_accounts AS (
     AND product_rate_plan_name LIKE ANY ('%Bronze%', '%Starter%')
 ),
 
---Duplicative - identifies EOA accounts
+--identifies EOA accounts - replaces above EOA flag
 eoa_accounts_fy24_one AS (
   SELECT
     mart_arr.arr_month,
@@ -1253,7 +1256,8 @@ all_data AS (
     failure_sub.failed_sub_closed_opp,
     failure_sub.failure_date,
     autorenew_switch.cancel_reason,
-    autorenew_switch.cancel_comments
+    autorenew_switch.cancel_comments,
+    COALESCE(eoa_accounts_fy24.dim_crm_account_id IS NOT NULL, FALSE) as eoa_flag
   FROM account_blended
   LEFT JOIN utilization
     ON utilization.dim_crm_account_id = account_blended.account_id
@@ -1269,6 +1273,8 @@ all_data AS (
   LEFT JOIN failure_sub
     ON account_blended.account_id = failure_sub.dim_crm_account_id
       AND account_blended.sub_subscription_id = failure_sub.failure_subscription_id
+  LEFT JOIN eoa_accounts_fy24
+    ON eoa_accounts_fy24.dim_crm_account_id = account_blended.dim_crm_account_id
 ),
 
 ------------flags each account/opportunity with any applicable flags
