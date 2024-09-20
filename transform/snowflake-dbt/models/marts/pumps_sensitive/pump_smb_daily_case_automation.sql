@@ -1421,10 +1421,10 @@ cases AS (
       WHEN will_churn_flag = TRUE AND (close_date <= current_date_60_days and close_date >= DATEADD('day',50,current_date)) THEN 'Renewal Risk: Will Churn'
       WHEN renewal_payment_failure = TRUE AND close_date <= CURRENT_DATE THEN 'Renewal with Payment Failure'
       WHEN
-        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date <= CURRENT_DATE AND (eoa_flag = FALSE AND arr_basis > 3000)
+        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date <= CURRENT_DATE and latest_switch_date >= DATEADD('day',-7,current_date) AND (eoa_flag = FALSE AND arr_basis > 3000)
         THEN 'Auto-Renew Recently Turned Off'
       WHEN
-        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date <= CURRENT_DATE AND eoa_flag = TRUE
+        auto_renew_recently_turned_off_flag = TRUE AND latest_switch_date <= CURRENT_DATE and latest_switch_date >= DATEADD('day',-7,current_date) AND eoa_flag = TRUE
         THEN 'EOA Account - Auto-Renew Recently Turned Off'
       WHEN qsr_failed_flag = TRUE AND qsr_failed_last_75 = FALSE AND net_arr > 1000 THEN 'Failed QSR'
     END
