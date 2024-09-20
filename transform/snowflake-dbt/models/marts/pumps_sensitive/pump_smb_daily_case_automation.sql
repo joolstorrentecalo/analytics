@@ -1330,7 +1330,7 @@ case_flags AS (
       FALSE
     ) AS eoa_auto_renewal_will_fail_flag,
     COALESCE(
-      ((auto_renewal_status IS NOT NULL OR auto_renewal_status NOT IN ('On', 'Off')) AND eoa_auto_renewal_will_fail_flag = FALSE),
+      ((auto_renewal_status IS NULL OR auto_renewal_status NOT IN ('On', 'Off')) AND eoa_auto_renewal_will_fail_flag = FALSE),
       FALSE
     ) AS auto_renewal_will_fail_flag,
     COALESCE(
