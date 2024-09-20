@@ -677,6 +677,7 @@ account_base AS (
   ----- emea emea accounts
   LEFT JOIN emea_accounts
     ON acct.dim_crm_account_id = emea_accounts.dim_crm_account_id
+  LEFT JOIN team_totals
   -------filtering to get current account data
   WHERE acct.snapshot_date = CURRENT_DATE
 ),
@@ -794,6 +795,8 @@ account_blended AS (
       AS sub_subscription_id,
     dim_subscription.dim_subscription_id_original
       AS sub_subscription_id_original,
+    dim_subscription.subscription_name
+      AS sub_subscription_name,
     dim_subscription.subscription_status,
     dim_subscription.term_start_date
       AS current_subscription_start_date,
@@ -870,7 +873,7 @@ account_blended AS (
       mart_crm_opportunity.sales_type = 'Renewal',
       FALSE
     )                                                         AS renewal_flag,
-    account_base.eoa_flag,
+--    account_base.eoa_flag,
     billing_accounts.po_required,
     mart_crm_opportunity.auto_renewal_status,
     COALESCE(
@@ -1213,6 +1216,7 @@ duo_trials AS (
 failure_sub AS (
   SELECT
     dim_subscription.dim_subscription_id                                                          AS failure_subscription_id,
+    dim_subscription.subscription_name                                                            AS failure_subscription_name,
     dim_subscription.dim_crm_opportunity_id                                                       AS failed_sub_oppty,
     dim_subscription.dim_crm_opportunity_id_current_open_renewal                                  AS failed_sub_renewal_opp,
     dim_subscription.dim_crm_opportunity_id_closed_lost_renewal                                   AS failed_sub_closed_opp,
@@ -1274,7 +1278,7 @@ all_data AS (
     ON account_blended.account_id = failure_sub.dim_crm_account_id
     AND (failure_sub.failure_subscription_name = account_blended.sub_subscription_name or (account_blended.sub_subscription_name is null and failure_sub.failure_date >= dateadd('day',-7,current_date)))
   LEFT JOIN eoa_accounts_fy24
-    ON eoa_accounts_fy24.dim_crm_account_id = account_blended.dim_crm_account_id
+    ON eoa_accounts_fy24.dim_crm_account_id = account_blended.account_id
 ),
 
 ------------flags each account/opportunity with any applicable flags
