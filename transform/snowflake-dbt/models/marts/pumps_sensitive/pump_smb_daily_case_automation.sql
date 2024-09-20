@@ -1469,6 +1469,7 @@ distinct_cases AS (
     final.calculated_tier
       AS account_tier,
     final.team,
+    final.current_open_cases,
     COALESCE(ROUND(final.arr_per_user, 2), 0)
       AS current_price,
     COALESCE(final.future_price * 12, 0)
