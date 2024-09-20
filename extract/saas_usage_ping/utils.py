@@ -144,7 +144,8 @@ class Utils:
         with open(file=file_name, mode="r", encoding=self.ENCODING) as file:
             return json.load(file)
 
-    def save_to_yml_file(self, file_name: str, data: dict) -> None:
+    @staticmethod
+    def save_to_yml_file(file_name: str, data: dict) -> None:
         """
         Save to yml file
         """
@@ -158,7 +159,8 @@ class Utils:
         with open(file=file_name, mode="r", encoding=self.ENCODING) as file:
             return yaml.load(file, Loader=yaml.FullLoader)
 
-    def delete_file(self, file_name: str) -> None:
+    @staticmethod
+    def delete_file(file_name: str) -> None:
         """
         Delete file if exists
         """

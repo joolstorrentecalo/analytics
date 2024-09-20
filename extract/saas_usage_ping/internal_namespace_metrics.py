@@ -1,18 +1,28 @@
 """
 Routines for Internal Namespace Metrics
 """
-import json
 from logging import info
 
 from utils import Utils
 
 
 class SQLGenerate:
+    """
+    This class is responsible for generating SQL statements based on provided metrics.
+    It has a constructor to initialize the table name and a utility object.
+    It has three methods: get_time_frame, get_event_list, and transform.
+    The get_time_frame method returns a
+    """
+
     def __init__(self):
+        """
+        Initialize the SQLGenerate class with the table name and utility object.
+        """
         self.table_name = "prod.common_mart_product.mart_behavior_structured_event_service_ping_metrics"
         self.util = Utils()
 
-    def get_time_frame(self, time_frame: str) -> str:
+    @staticmethod
+    def get_time_frame(time_frame: dict) -> str:
         """
         Get time frame for specific SQL
         """
@@ -24,18 +34,19 @@ class SQLGenerate:
             res = "AND behavior_at BETWEEN DATEADD(DAY, -28, between_end_date) AND between_end_date "
         return res
 
-    def get_event_list(self, metrics: list) -> str:
+    def get_event_list(self, metrics: dict) -> str:
         """
         Get event list for specific SQL
         """
         events_list = []
+        events, options = metrics.get("events"), metrics.get("options")
         res = ""
 
-        if metrics.get("events"):
-            events_list.extend([x.get("name") for x in metrics.get("events")])
+        if events:
+            events_list.extend([event.get("name") for event in events])
 
-        if metrics.get("options"):
-            events_list.extend(metrics.get("options"))
+        if options:
+            events_list.extend(options)
 
         if events_list:
             if len(events_list) == 1:
@@ -44,17 +55,19 @@ class SQLGenerate:
                 res += f"AND redis_event_name IN ({','.join([self.util.quoted(event) for event in events_list])}) "
         return res
 
-    def transform(self, metrics: list) -> str:
+    def transform(self, metrics: dict) -> str:
         """
         Transform YML definition to SQL statement and template
         """
 
         # Generate SELECT part with columns
-        res = (f"SELECT "
-               f"ultimate_parent_namespace_id AS id, "
-               f"ultimate_parent_namespace_id AS namespace_ultimate_parent_id, "
-               f"COUNT(DISTINCT gsc_pseudonymized_user_id) AS counter_value "
-               f"FROM {self.table_name} ")
+        res = (
+            f"SELECT "
+            f"ultimate_parent_namespace_id AS id, "
+            f"ultimate_parent_namespace_id AS namespace_ultimate_parent_id, "
+            f"COUNT(DISTINCT gsc_pseudonymized_user_id) AS counter_value "
+            f"FROM {self.table_name} "
+        )
         # Generate WHERE clause for metrics
         res += f"WHERE metrics_path={self.util.quoted(metrics.get('key_path'))} "
         # Generate list of event, if any
@@ -66,8 +79,20 @@ class SQLGenerate:
         return res
 
 
-class internal_namespace_metrics:
+class InternalNamespaceMetrics:
+    """
+    Routines for internal namespace metrics
+    """
+
     def __init__(self):
+        """
+        Initialize the InternalNamespaceMetrics class.
+
+        This method sets up the initial state of the InternalNamespaceMetrics object.
+        It initializes the following attributes:
+        - yml_file_name: The name of the YAML file containing metric definitions.
+        - sql_file_name: The name of the JSON file to
+        """
         self.yml_file_name = "internal_namespace_metrics_definition.yml"
         self.sql_file_name = "internal_namespace_metrics_queries.json"
         self.util = Utils()
@@ -88,7 +113,10 @@ class internal_namespace_metrics:
 
         return template
 
-    def generate_sql_metrics(self, metrics_data: json):
+    def generate_sql_metrics(self, metrics_data: dict) -> list:
+        """
+        Generate SQL metrics for internal namespace metrics.
+        """
         res = []
         for metric in metrics_data:
             if metric.get("status") == "active":
@@ -96,7 +124,7 @@ class internal_namespace_metrics:
 
         return res
 
-    def transform_yml_json(self, yml_file: str, data) -> json:
+    def transform_yml_json(self, yml_file: str, data) -> dict:
         """
         transform yml to json file
         """
@@ -107,6 +135,12 @@ class internal_namespace_metrics:
             self.util.delete_file(file_name=yml_file)
 
     def generate(self):
+        """
+        1. Get metrics definition from API
+        2. Transform YML to JSON
+        3. Transform JSON to SQL
+        4. Save SQL to file
+        """
         info("Start generating internal namespace metrics")
         url = "https://gitlab.com/api/v4/usage_data/metric_definitions"
         metrics_raw = self.util.get_response(url=url)
@@ -119,13 +153,7 @@ class internal_namespace_metrics:
 
         info("End generating internal namespace metrics")
 
-    def calculate(self):
-        # load_json
-        # decouple SQLs in chunks
-        # execute SQL
-        pass
-
 
 if __name__ == "__main__":
-    internal_namespace_metrics = internal_namespace_metrics()
+    internal_namespace_metrics = InternalNamespaceMetrics()
     internal_namespace_metrics.generate()
