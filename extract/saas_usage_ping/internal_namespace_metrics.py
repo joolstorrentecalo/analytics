@@ -2,6 +2,7 @@
 Routines for Internal Namespace Metrics
 """
 from logging import info
+from typing import Any, Dict, Optional
 
 from utils import Utils
 
@@ -22,7 +23,8 @@ class SQLGenerate:
         self.util = Utils()
 
     @staticmethod
-    def get_time_frame(time_frame: dict) -> str:
+    def get_time_frame(time_frame: Optional[Dict[Any, Any]] = None) -> str:
+
         """
         Get time frame for specific SQL
         """

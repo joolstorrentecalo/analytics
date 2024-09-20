@@ -86,10 +86,7 @@ def test_internal_namespace_metrics_get_sql_metrics_definition(
     assert result["level"] == "namespace"
 
 
-@patch("extract.saas_usage_ping.internal_namespace_metrics.Utils")
-def test_internal_namespace_metrics_generate_sql_metrics(
-    mock_utils, internal_namespace_metrics
-):
+def test_internal_namespace_metrics_generate_sql_metrics(internal_namespace_metrics):
     """Test the generate_sql_metrics method of InternalNamespaceMetrics class"""
     metrics_data = [
         {"key_path": "metric1", "status": "active"},
