@@ -45,7 +45,7 @@ requests-oauthlib==1.3.0
 rsa==4.7.2
 s3transfer==0.3.3
 six==1.15.0
-snowflake-connector-python==2.4.2
+snowflake-connector-python==3.12.3
 termcolor==1.1.0
 typing-extensions==3.10.0.0
 typing-inspect==0.6.0
